@@ -1,0 +1,67 @@
+..
+  module.rst
+
+CIME.XML
+========
+
+.. automodule:: CIME.XML
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
+        .. rubric:: Modules
+
+        .. autosummary::
+            :toctree:
+            :template: autosummary/module.rst
+            :recursive:
+            
+                archive
+                archive_base
+                batch
+                component
+                compsets
+                entry_id
+                env_archive
+                env_base
+                env_batch
+                env_build
+                env_case
+                env_mach_pes
+                env_mach_specific
+                env_run
+                env_test
+                env_workflow
+                expected_fails_file
+                files
+                generic_xml
+                grids
+                headers
+                inputdata
+                machines
+                namelist_definition
+                pes
+                pio
+                standard_module_setup
+                stream
+                test_reporter
+                testlist
+                tests
+                testspec
+                workflow
+    

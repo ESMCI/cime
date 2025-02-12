@@ -1,0 +1,81 @@
+..
+  class.rst
+
+CIME.XML.entry\_id.EntryID
+==========================
+
+.. currentmodule:: CIME.XML.entry_id
+
+.. autoclass:: EntryID
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~EntryID.__init__
+                    ~EntryID.add_child
+                    ~EntryID.add_elements_by_group
+                    ~EntryID.attrib
+                    ~EntryID.change_file
+                    ~EntryID.check_if_comp_var
+                    ~EntryID.check_timestamp
+                    ~EntryID.cleanupnode
+                    ~EntryID.compare_xml
+                    ~EntryID.copy
+                    ~EntryID.get
+                    ~EntryID.get_child
+                    ~EntryID.get_child_content
+                    ~EntryID.get_children
+                    ~EntryID.get_default_value
+                    ~EntryID.get_description
+                    ~EntryID.get_element_text
+                    ~EntryID.get_elements_from_child_content
+                    ~EntryID.get_groups
+                    ~EntryID.get_id
+                    ~EntryID.get_node_element_info
+                    ~EntryID.get_nodes_by_id
+                    ~EntryID.get_optional_child
+                    ~EntryID.get_raw_record
+                    ~EntryID.get_resolved_value
+                    ~EntryID.get_type_info
+                    ~EntryID.get_valid_value_string
+                    ~EntryID.get_valid_values
+                    ~EntryID.get_value
+                    ~EntryID.get_value_match
+                    ~EntryID.get_values
+                    ~EntryID.get_version
+                    ~EntryID.has
+                    ~EntryID.invalidate
+                    ~EntryID.lock
+                    ~EntryID.make_child
+                    ~EntryID.make_child_comment
+                    ~EntryID.name
+                    ~EntryID.overwrite_existing_entries
+                    ~EntryID.pop
+                    ~EntryID.read
+                    ~EntryID.read_fd
+                    ~EntryID.remove_child
+                    ~EntryID.scan_child
+                    ~EntryID.scan_children
+                    ~EntryID.scan_optional_child
+                    ~EntryID.set
+                    ~EntryID.set_default_value
+                    ~EntryID.set_element_text
+                    ~EntryID.set_name
+                    ~EntryID.set_text
+                    ~EntryID.set_valid_values
+                    ~EntryID.set_value
+                    ~EntryID.text
+                    ~EntryID.to_string
+                    ~EntryID.unlock
+                    ~EntryID.validate_timestamp
+                    ~EntryID.validate_xml_file
+                    ~EntryID.write
+        
+    

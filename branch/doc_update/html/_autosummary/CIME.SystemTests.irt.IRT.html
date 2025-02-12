@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.SystemTests.irt.IRT &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CIME.SystemTests.ldsta" href="CIME.SystemTests.ldsta.html" />
+    <link rel="prev" title="CIME.SystemTests.irt" href="CIME.SystemTests.irt.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ccs/index.html">Case Control System (CCS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Servers.html">CIME.Servers</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.dae.html">CIME.SystemTests.dae</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.eri.html">CIME.SystemTests.eri</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.erio.html">CIME.SystemTests.erio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.erp.html">CIME.SystemTests.erp</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.err.html">CIME.SystemTests.err</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.erri.html">CIME.SystemTests.erri</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.ers.html">CIME.SystemTests.ers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.ers2.html">CIME.SystemTests.ers2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.ert.html">CIME.SystemTests.ert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.funit.html">CIME.SystemTests.funit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.homme.html">CIME.SystemTests.homme</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.hommebaseclass.html">CIME.SystemTests.hommebaseclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.hommebfb.html">CIME.SystemTests.hommebfb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.icp.html">CIME.SystemTests.icp</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="CIME.SystemTests.irt.html">CIME.SystemTests.irt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.ldsta.html">CIME.SystemTests.ldsta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.mcc.html">CIME.SystemTests.mcc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.mvk.html">CIME.SystemTests.mvk</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.nck.html">CIME.SystemTests.nck</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.ncr.html">CIME.SystemTests.ncr</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.nodefail.html">CIME.SystemTests.nodefail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.pea.html">CIME.SystemTests.pea</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.pem.html">CIME.SystemTests.pem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.pet.html">CIME.SystemTests.pet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.pfs.html">CIME.SystemTests.pfs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.pgn.html">CIME.SystemTests.pgn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.pre.html">CIME.SystemTests.pre</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.rep.html">CIME.SystemTests.rep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.restart_tests.html">CIME.SystemTests.restart_tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.reuseinitfiles.html">CIME.SystemTests.reuseinitfiles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.seq.html">CIME.SystemTests.seq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.sms.html">CIME.SystemTests.sms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.system_tests_common.html">CIME.SystemTests.system_tests_common</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.system_tests_compare_n.html">CIME.SystemTests.system_tests_compare_n</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.system_tests_compare_two.html">CIME.SystemTests.system_tests_compare_two</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.test_mods.html">CIME.SystemTests.test_mods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.test_utils.html">CIME.SystemTests.test_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.SystemTests.tsc.html">CIME.SystemTests.tsc</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Tools.html">CIME.Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.XML.html">CIME.XML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.aprun.html">CIME.aprun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.html">CIME.bless_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build.html">CIME.build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.case.html">CIME.case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.code_checker.html">CIME.code_checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.html">CIME.compare_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.config.html">CIME.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.cs_status.html">CIME.cs_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.cs_status_creator.html">CIME.cs_status_creator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.data.html">CIME.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.date.html">CIME.date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.expected_fails.html">CIME.expected_fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.html">CIME.get_tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.get_timing.html">CIME.get_timing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.gitinterface.html">CIME.gitinterface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.hist_utils.html">CIME.hist_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.jenkins_generic_job.html">CIME.jenkins_generic_job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.locked_files.html">CIME.locked_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.namelist.html">CIME.namelist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.nmlgen.html">CIME.nmlgen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.provenance.html">CIME.provenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html">CIME.scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.simple_compare.html">CIME.simple_compare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.status.html">CIME.status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_scheduler.html">CIME.test_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_status.html">CIME.test_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_utils.html">CIME.test_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html">CIME.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.user_mod_support.html">CIME.user_mod_support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.html">CIME.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.wait_for_tests.html">CIME.wait_for_tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.SystemTests.html">CIME.SystemTests</a></li>
+          <li class="breadcrumb-item"><a href="CIME.SystemTests.irt.html">CIME.SystemTests.irt</a></li>
+      <li class="breadcrumb-item active">CIME.SystemTests.irt.IRT</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/CIME.SystemTests.irt.IRT.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cime-systemtests-irt-irt">
+<h1>CIME.SystemTests.irt.IRT<a class="headerlink" href="#cime-systemtests-irt-irt" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.SystemTests.irt.</span></span><span class="sig-name descname"><span class="pre">IRT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="CIME.SystemTests.restart_tests.RestartTest.html#CIME.SystemTests.restart_tests.RestartTest" title="CIME.SystemTests.restart_tests.RestartTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">RestartTest</span></code></a></p>
+<blockquote>
+<div><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></p></td>
+<td><p>Initialize a SystemTestsCompareTwo object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.build" title="CIME.SystemTests.irt.IRT.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a></p></td>
+<td><p>Do NOT override this method, this method is the framework that controls the build phase.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.build_indv" title="CIME.SystemTests.irt.IRT.build_indv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_indv</span></code></a></p></td>
+<td><p>Perform an individual build</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.build_phase" title="CIME.SystemTests.irt.IRT.build_phase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_phase</span></code></a></p></td>
+<td><p>This is the default build phase implementation, it just does an individual build.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clean_build</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.compare_env_run" title="CIME.SystemTests.irt.IRT.compare_env_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_env_run</span></code></a></p></td>
+<td><p>Compare env_run file to original and warn about differences</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.copy_case1_restarts_to_case2" title="CIME.SystemTests.irt.IRT.copy_case1_restarts_to_case2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_case1_restarts_to_case2</span></code></a></p></td>
+<td><p>Makes a copy (or symlink) of restart files and related files (necessary history files, rpointer files) from case1 to case2.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.run" title="CIME.SystemTests.irt.IRT.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a></p></td>
+<td><p>Do NOT override this method, this method is the framework that controls the run phase.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.run_indv" title="CIME.SystemTests.irt.IRT.run_indv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_indv</span></code></a></p></td>
+<td><p>Perform an individual run.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.SystemTests.irt.IRT.run_phase" title="CIME.SystemTests.irt.IRT.run_phase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_phase</span></code></a></p></td>
+<td><p>Runs both phases of the two-phase test and compares their results If success_change is True, success requires some files to be different</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sharedlib_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ninja</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separate_builds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_submit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.build" title="Link to this definition"></a></dt>
+<dd><p>Do NOT override this method, this method is the framework that
+controls the build phase. build_phase is the extension point
+that subclasses should use.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.build_indv">
+<span class="sig-name descname"><span class="pre">build_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sharedlib_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.build_indv" title="Link to this definition"></a></dt>
+<dd><p>Perform an individual build</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.build_phase">
+<span class="sig-name descname"><span class="pre">build_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sharedlib_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.build_phase" title="Link to this definition"></a></dt>
+<dd><p>This is the default build phase implementation, it just does an individual build.
+This is the subclass’ extension point if they need to define a custom build
+phase.</p>
+<p>PLEASE THROW EXCEPTION ON FAIL</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.compare_env_run">
+<span class="sig-name descname"><span class="pre">compare_env_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.compare_env_run" title="Link to this definition"></a></dt>
+<dd><p>Compare env_run file to original and warn about differences</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.copy_case1_restarts_to_case2">
+<span class="sig-name descname"><span class="pre">copy_case1_restarts_to_case2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.copy_case1_restarts_to_case2" title="Link to this definition"></a></dt>
+<dd><p>Makes a copy (or symlink) of restart files and related files
+(necessary history files, rpointer files) from case1 to case2.</p>
+<p>This is not done automatically, but can be called by individual
+tests where case2 does a continue_run using case1’s restart
+files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_pnl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.run" title="Link to this definition"></a></dt>
+<dd><p>Do NOT override this method, this method is the framework that controls
+the run phase. run_phase is the extension point that subclasses should use.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.run_indv">
+<span class="sig-name descname"><span class="pre">run_indv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'base'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">st_archive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submit_resubmits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_init_generated_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.run_indv" title="Link to this definition"></a></dt>
+<dd><p>Perform an individual run. Raises an EXCEPTION on fail.</p>
+<p>keep_init_generated_files: If False (the default), we remove the
+init_generated_files subdirectory of the run directory before running the case.
+This is usually what we want for tests, but some specific tests may want to leave
+this directory in place, so can set this variable to True to do so.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.SystemTests.irt.IRT.run_phase">
+<span class="sig-name descname"><span class="pre">run_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">success_change</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/SystemTests/irt.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT.run_phase" title="Link to this definition"></a></dt>
+<dd><p>Runs both phases of the two-phase test and compares their results
+If success_change is True, success requires some files to be different</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="CIME.SystemTests.irt.html" class="btn btn-neutral float-left" title="CIME.SystemTests.irt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.SystemTests.ldsta.html" class="btn btn-neutral float-right" title="CIME.SystemTests.ldsta" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

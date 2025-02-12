@@ -1,0 +1,89 @@
+..
+  class.rst
+
+CIME.case.case.Case
+===================
+
+.. currentmodule:: CIME.case.case
+
+.. autoclass:: Case
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Case.__init__
+                    ~Case.apply_user_mods
+                    ~Case.archive_last_restarts
+                    ~Case.cancel_batch_jobs
+                    ~Case.case_cmpgen_namelists
+                    ~Case.case_run
+                    ~Case.case_setup
+                    ~Case.case_st_archive
+                    ~Case.case_test
+                    ~Case.check_DA_settings
+                    ~Case.check_all_input_data
+                    ~Case.check_case
+                    ~Case.check_if_comp_var
+                    ~Case.check_input_data
+                    ~Case.check_timestamps
+                    ~Case.clean_up_lookups
+                    ~Case.configure
+                    ~Case.copy
+                    ~Case.create
+                    ~Case.create_caseroot
+                    ~Case.create_clone
+                    ~Case.create_dirs
+                    ~Case.create_namelists
+                    ~Case.fix_sys_argv_quotes
+                    ~Case.flush
+                    ~Case.get_baseline_dir
+                    ~Case.get_batch_jobs
+                    ~Case.get_build_threaded
+                    ~Case.get_case_root
+                    ~Case.get_compset_components
+                    ~Case.get_compset_var_settings
+                    ~Case.get_env
+                    ~Case.get_first_job
+                    ~Case.get_job_id
+                    ~Case.get_job_info
+                    ~Case.get_latest_cpl_log
+                    ~Case.get_mpirun_cmd
+                    ~Case.get_primary_component
+                    ~Case.get_primary_job
+                    ~Case.get_record_fields
+                    ~Case.get_resolved_value
+                    ~Case.get_type_info
+                    ~Case.get_value
+                    ~Case.get_values
+                    ~Case.initialize_derived_attributes
+                    ~Case.is_save_timing_dir_project
+                    ~Case.load_env
+                    ~Case.new_hash
+                    ~Case.preview_run
+                    ~Case.read_xml
+                    ~Case.record_cmd
+                    ~Case.report_job_status
+                    ~Case.restore_from_archive
+                    ~Case.set_comp_classes
+                    ~Case.set_file
+                    ~Case.set_initial_test_values
+                    ~Case.set_lookup_value
+                    ~Case.set_model_version
+                    ~Case.set_valid_values
+                    ~Case.set_value
+                    ~Case.stage_refcase
+                    ~Case.submit
+                    ~Case.submit_jobs
+                    ~Case.test_env_archive
+                    ~Case.test_st_archive
+                    ~Case.update_env
+                    ~Case.valid_compset
+        
+    

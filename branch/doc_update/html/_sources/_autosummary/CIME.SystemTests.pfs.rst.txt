@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.pfs
+====================
+
+.. automodule:: CIME.SystemTests.pfs
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    PFS
+        
+    
+
+    
+        
+    
+
+
+    

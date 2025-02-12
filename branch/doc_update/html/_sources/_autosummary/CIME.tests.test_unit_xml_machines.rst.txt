@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_xml\_machines
+====================================
+
+.. automodule:: CIME.tests.test_unit_xml_machines
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestUnitXMLMachines
+        
+    
+
+    
+        
+    
+
+
+    

@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_expected\_fails\_file
+============================================
+
+.. automodule:: CIME.tests.test_unit_expected_fails_file
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestExpectedFailsFile
+        
+    
+
+    
+        
+    
+
+
+    

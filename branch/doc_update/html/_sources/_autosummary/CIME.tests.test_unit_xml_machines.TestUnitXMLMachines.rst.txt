@@ -1,0 +1,79 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_xml\_machines.TestUnitXMLMachines
+========================================================
+
+.. currentmodule:: CIME.tests.test_unit_xml_machines
+
+.. autoclass:: TestUnitXMLMachines
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestUnitXMLMachines.__init__
+                    ~TestUnitXMLMachines.addClassCleanup
+                    ~TestUnitXMLMachines.addCleanup
+                    ~TestUnitXMLMachines.addTypeEqualityFunc
+                    ~TestUnitXMLMachines.assertAlmostEqual
+                    ~TestUnitXMLMachines.assertCountEqual
+                    ~TestUnitXMLMachines.assertDictEqual
+                    ~TestUnitXMLMachines.assertEqual
+                    ~TestUnitXMLMachines.assertFalse
+                    ~TestUnitXMLMachines.assertGreater
+                    ~TestUnitXMLMachines.assertGreaterEqual
+                    ~TestUnitXMLMachines.assertIn
+                    ~TestUnitXMLMachines.assertIs
+                    ~TestUnitXMLMachines.assertIsInstance
+                    ~TestUnitXMLMachines.assertIsNone
+                    ~TestUnitXMLMachines.assertIsNot
+                    ~TestUnitXMLMachines.assertIsNotNone
+                    ~TestUnitXMLMachines.assertLess
+                    ~TestUnitXMLMachines.assertLessEqual
+                    ~TestUnitXMLMachines.assertListEqual
+                    ~TestUnitXMLMachines.assertLogs
+                    ~TestUnitXMLMachines.assertMultiLineEqual
+                    ~TestUnitXMLMachines.assertNoLogs
+                    ~TestUnitXMLMachines.assertNotAlmostEqual
+                    ~TestUnitXMLMachines.assertNotEqual
+                    ~TestUnitXMLMachines.assertNotIn
+                    ~TestUnitXMLMachines.assertNotIsInstance
+                    ~TestUnitXMLMachines.assertNotRegex
+                    ~TestUnitXMLMachines.assertRaises
+                    ~TestUnitXMLMachines.assertRaisesRegex
+                    ~TestUnitXMLMachines.assertRegex
+                    ~TestUnitXMLMachines.assertSequenceEqual
+                    ~TestUnitXMLMachines.assertSetEqual
+                    ~TestUnitXMLMachines.assertTrue
+                    ~TestUnitXMLMachines.assertTupleEqual
+                    ~TestUnitXMLMachines.assertWarns
+                    ~TestUnitXMLMachines.assertWarnsRegex
+                    ~TestUnitXMLMachines.countTestCases
+                    ~TestUnitXMLMachines.debug
+                    ~TestUnitXMLMachines.defaultTestResult
+                    ~TestUnitXMLMachines.doClassCleanups
+                    ~TestUnitXMLMachines.doCleanups
+                    ~TestUnitXMLMachines.enterClassContext
+                    ~TestUnitXMLMachines.enterContext
+                    ~TestUnitXMLMachines.fail
+                    ~TestUnitXMLMachines.id
+                    ~TestUnitXMLMachines.run
+                    ~TestUnitXMLMachines.setUp
+                    ~TestUnitXMLMachines.setUpClass
+                    ~TestUnitXMLMachines.shortDescription
+                    ~TestUnitXMLMachines.skipTest
+                    ~TestUnitXMLMachines.subTest
+                    ~TestUnitXMLMachines.tearDown
+                    ~TestUnitXMLMachines.tearDownClass
+                    ~TestUnitXMLMachines.test_has_batch_system
+                    ~TestUnitXMLMachines.test_is_valid_MPIlib
+                    ~TestUnitXMLMachines.test_is_valid_compiler
+        
+    

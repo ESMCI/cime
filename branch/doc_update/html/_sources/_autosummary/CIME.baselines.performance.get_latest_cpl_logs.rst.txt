@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.baselines.performance.get\_latest\_cpl\_logs
+=================================================
+
+.. currentmodule:: CIME.baselines.performance
+
+.. autofunction:: get_latest_cpl_logs

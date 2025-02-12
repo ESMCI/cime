@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.BuildTools
+===============
+
+.. automodule:: CIME.BuildTools
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
+        .. rubric:: Modules
+
+        .. autosummary::
+            :toctree:
+            :template: autosummary/module.rst
+            :recursive:
+            
+                configure
+    

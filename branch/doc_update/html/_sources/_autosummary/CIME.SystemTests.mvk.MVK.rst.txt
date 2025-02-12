@@ -1,0 +1,33 @@
+..
+  class.rst
+
+CIME.SystemTests.mvk.MVK
+========================
+
+.. currentmodule:: CIME.SystemTests.mvk
+
+.. autoclass:: MVK
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~MVK.__init__
+                    ~MVK.build
+                    ~MVK.build_indv
+                    ~MVK.build_phase
+                    ~MVK.clean_build
+                    ~MVK.compare_env_run
+                    ~MVK.process_evv_output
+                    ~MVK.run
+                    ~MVK.run_indv
+                    ~MVK.run_phase
+                    ~MVK.update_testlog
+        
+    

@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.ert.ERT
+========================
+
+.. currentmodule:: CIME.SystemTests.ert
+
+.. autoclass:: ERT
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ERT.__init__
+                    ~ERT.build
+                    ~ERT.build_indv
+                    ~ERT.build_phase
+                    ~ERT.clean_build
+                    ~ERT.compare_env_run
+                    ~ERT.run
+                    ~ERT.run_indv
+                    ~ERT.run_phase
+        
+    

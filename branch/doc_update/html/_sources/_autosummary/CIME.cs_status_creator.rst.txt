@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.cs\_status\_creator
+========================
+
+.. automodule:: CIME.cs_status_creator
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    create_cs_status
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

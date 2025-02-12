@@ -1,0 +1,63 @@
+..
+  class.rst
+
+CIME.XML.stream.Stream
+======================
+
+.. currentmodule:: CIME.XML.stream
+
+.. autoclass:: Stream
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Stream.__init__
+                    ~Stream.add_child
+                    ~Stream.attrib
+                    ~Stream.change_file
+                    ~Stream.check_timestamp
+                    ~Stream.copy
+                    ~Stream.get
+                    ~Stream.get_child
+                    ~Stream.get_children
+                    ~Stream.get_element_text
+                    ~Stream.get_id
+                    ~Stream.get_optional_child
+                    ~Stream.get_raw_record
+                    ~Stream.get_resolved_value
+                    ~Stream.get_value
+                    ~Stream.get_values
+                    ~Stream.get_version
+                    ~Stream.has
+                    ~Stream.invalidate
+                    ~Stream.lock
+                    ~Stream.make_child
+                    ~Stream.make_child_comment
+                    ~Stream.name
+                    ~Stream.pop
+                    ~Stream.read
+                    ~Stream.read_fd
+                    ~Stream.remove_child
+                    ~Stream.scan_child
+                    ~Stream.scan_children
+                    ~Stream.scan_optional_child
+                    ~Stream.set
+                    ~Stream.set_element_text
+                    ~Stream.set_name
+                    ~Stream.set_text
+                    ~Stream.set_value
+                    ~Stream.text
+                    ~Stream.to_string
+                    ~Stream.unlock
+                    ~Stream.validate_timestamp
+                    ~Stream.validate_xml_file
+                    ~Stream.write
+        
+    

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.Tools.testreporter.parse\_command\_line
+============================================
+
+.. currentmodule:: CIME.Tools.testreporter
+
+.. autofunction:: parse_command_line

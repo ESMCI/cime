@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.utils.chdir
+======================
+
+.. currentmodule:: CIME.tests.utils
+
+.. autofunction:: chdir

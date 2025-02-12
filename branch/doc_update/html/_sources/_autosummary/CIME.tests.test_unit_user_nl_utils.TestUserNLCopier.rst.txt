@@ -1,0 +1,82 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_user\_nl\_utils.TestUserNLCopier
+=======================================================
+
+.. currentmodule:: CIME.tests.test_unit_user_nl_utils
+
+.. autoclass:: TestUserNLCopier
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestUserNLCopier.__init__
+                    ~TestUserNLCopier.addClassCleanup
+                    ~TestUserNLCopier.addCleanup
+                    ~TestUserNLCopier.addTypeEqualityFunc
+                    ~TestUserNLCopier.assertAlmostEqual
+                    ~TestUserNLCopier.assertCountEqual
+                    ~TestUserNLCopier.assertDictEqual
+                    ~TestUserNLCopier.assertEqual
+                    ~TestUserNLCopier.assertFalse
+                    ~TestUserNLCopier.assertFileContentsEqual
+                    ~TestUserNLCopier.assertGreater
+                    ~TestUserNLCopier.assertGreaterEqual
+                    ~TestUserNLCopier.assertIn
+                    ~TestUserNLCopier.assertIs
+                    ~TestUserNLCopier.assertIsInstance
+                    ~TestUserNLCopier.assertIsNone
+                    ~TestUserNLCopier.assertIsNot
+                    ~TestUserNLCopier.assertIsNotNone
+                    ~TestUserNLCopier.assertLess
+                    ~TestUserNLCopier.assertLessEqual
+                    ~TestUserNLCopier.assertListEqual
+                    ~TestUserNLCopier.assertLogs
+                    ~TestUserNLCopier.assertMultiLineEqual
+                    ~TestUserNLCopier.assertNoLogs
+                    ~TestUserNLCopier.assertNotAlmostEqual
+                    ~TestUserNLCopier.assertNotEqual
+                    ~TestUserNLCopier.assertNotIn
+                    ~TestUserNLCopier.assertNotIsInstance
+                    ~TestUserNLCopier.assertNotRegex
+                    ~TestUserNLCopier.assertRaises
+                    ~TestUserNLCopier.assertRaisesRegex
+                    ~TestUserNLCopier.assertRegex
+                    ~TestUserNLCopier.assertSequenceEqual
+                    ~TestUserNLCopier.assertSetEqual
+                    ~TestUserNLCopier.assertTrue
+                    ~TestUserNLCopier.assertTupleEqual
+                    ~TestUserNLCopier.assertWarns
+                    ~TestUserNLCopier.assertWarnsRegex
+                    ~TestUserNLCopier.countTestCases
+                    ~TestUserNLCopier.debug
+                    ~TestUserNLCopier.defaultTestResult
+                    ~TestUserNLCopier.doClassCleanups
+                    ~TestUserNLCopier.doCleanups
+                    ~TestUserNLCopier.enterClassContext
+                    ~TestUserNLCopier.enterContext
+                    ~TestUserNLCopier.fail
+                    ~TestUserNLCopier.id
+                    ~TestUserNLCopier.run
+                    ~TestUserNLCopier.setUp
+                    ~TestUserNLCopier.setUpClass
+                    ~TestUserNLCopier.shortDescription
+                    ~TestUserNLCopier.skipTest
+                    ~TestUserNLCopier.subTest
+                    ~TestUserNLCopier.tearDown
+                    ~TestUserNLCopier.tearDownClass
+                    ~TestUserNLCopier.test_append
+                    ~TestUserNLCopier.test_append_list
+                    ~TestUserNLCopier.test_append_multiple_files
+                    ~TestUserNLCopier.test_append_without_files_raises_exception
+                    ~TestUserNLCopier.write_user_nl_file
+        
+    

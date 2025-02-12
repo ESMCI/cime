@@ -1,0 +1,316 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machines &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Model" href="model.html" />
+    <link rel="prev" title="Inputdata" href="inputdata.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../running-a-case.html">Running a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cloning-a-case.html">Cloning a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cime-change-namelist.html">Customizing your input variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cime-config.html">CIME user config directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Configuration</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="entry-id.html">Entry ID</a></li>
+<li class="toctree-l4"><a class="reference internal" href="archive.html">Archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch.html">Batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build-lib.html">Buildlib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">Case File Headers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">Cmake Macros</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compilers.html">Compilers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compsets.html">Compsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">Component Root Directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component_model_specific.html">Component Model Specific</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests.html">Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grids.html">Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inputdata.html">Inputdata</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Machines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namelist-definition.html">Namelist Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pes.html">Pes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pio.html">Pio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="system-tests.html">SystemTests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-mods.html">Test Mods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-spec.html">Test List</a></li>
+<li class="toctree-l4"><a class="reference internal" href="user-mods.html">User Mods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="workflow.html">Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../porting-cime.html">Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../unit_testing.html">Fortran Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cime-customize.html">CIME config and hooks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Model</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Configuration</a></li>
+      <li class="breadcrumb-item active">Machines</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/ccs/model/configuration/machine.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="machines">
+<span id="model-config-machines"></span><h1>Machines<a class="headerlink" href="#machines" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#entry" id="id1">Entry</a></p></li>
+<li><p><a class="reference internal" href="#config-machines-xml-machine-specific-file" id="id2">config_machines.xml - machine specific file</a></p></li>
+</ul>
+</nav>
+<p>CIME looks at the xml node <code class="docutils literal notranslate"><span class="pre">MACHINE_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to identify supported out-of-the-box machines for the target model. The node has the following contents:</p>
+<section id="entry">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Entry</a><a class="headerlink" href="#entry" title="Link to this heading"></a></h2>
+<p>This is an example entry for <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;MACHINES_SPEC_FILE&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
+<span class="w">    </span><span class="nt">&lt;default_value&gt;</span>$CIMEROOT/cime_config/$MODEL/machines/config_machines.xml<span class="nt">&lt;/default_value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
+<span class="w">    </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
+<span class="w">    </span><span class="nt">&lt;desc&gt;</span>file<span class="w"> </span>containing<span class="w"> </span>machine<span class="w"> </span>specifications<span class="w"> </span>for<span class="w"> </span>target<span class="w"> </span>model<span class="w"> </span>primary<span class="w"> </span>component<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
+<span class="w">    </span><span class="nt">&lt;schema&gt;</span>$CIMEROOT/cime_config/xml_schemas/config_machines.xsd<span class="nt">&lt;/schema&gt;</span>
+<span class="nt">&lt;/entry&gt;</span>
+</pre></div>
+</div>
+<p>You can supplement what is in the MACHINES_SPEC_FILE by adding a config_machines.xml file to your CIME config directory.</p>
+</section>
+<section id="config-machines-xml-machine-specific-file">
+<span id="machinefile"></span><h2><a class="toc-backref" href="#id2" role="doc-backlink">config_machines.xml - machine specific file</a><a class="headerlink" href="#config-machines-xml-machine-specific-file" title="Link to this heading"></a></h2>
+<p>Each <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> tag requires the following input:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">DESC</span></code>: a text description of the machine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NODENAME_REGEX</span></code>: a regular expression used to identify the machine. It must work on compute nodes as well as login nodes.
+| Use the <code class="docutils literal notranslate"><span class="pre">machine</span></code> option for <strong>create_test</strong> or <strong>create_newcase</strong> if this flag is not available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OS</span></code>: the machine’s operating system</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PROXY</span></code>: optional http proxy for access to the internet</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">COMPILERS</span></code>: compilers supported on the machine, in comma-separated list, default first</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MPILIBS</span></code>: mpilibs supported on the machine, in comma-separated list, default first</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PROJECT</span></code>: a project or account number used for batch jobs; can be overridden in environment or in <strong>$HOME/.cime/config</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SAVE_TIMING_DIR</span></code>: (E3SM only) target directory for archiving timing output</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SAVE_TIMING_DIR_PROJECTS</span></code>: (E3SM only) projects whose jobs archive timing output</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CIME_OUTPUT_ROOT</span></code>: Base directory for case output; the <strong>bld</strong> and <strong>run</strong> directories are written below here</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DIN_LOC_ROOT</span></code>: location of the input data directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DIN_LOC_ROOT_CLMFORC</span></code>: optional input location for clm forcing data</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DOUT_S_ROOT</span></code>: root directory of short-term archive files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DOUT_L_MSROOT</span></code>: root directory on mass store system for long-term archive files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BASELINE_ROOT</span></code>: root directory for system test baseline files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CCSM_CPRNC</span></code>: location of the cprnc tool, which compares model output in testing</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GMAKE</span></code>: gnu-compatible make tool; default is “gmake”</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GMAKE_J</span></code>: optional number of threads to pass to the gmake flag</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TESTS</span></code>: (E3SM only) list of tests to run on the machine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BATCH_SYSTEM</span></code>: batch system used on this machine (none is okay)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SUPPORTED_BY</span></code>: contact information for support for this system</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAX_TASKS_PER_NODE</span></code>: maximum number of threads/tasks per shared memory node on the machine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MAX_MPITASKS_PER_NODE</span></code>: number of physical PES per shared node on the machine. In practice the MPI tasks per node will not exceed this value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PROJECT_REQUIRED</span></code>: Does this machine require a project to be specified to the batch system?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mpirun</span></code>: The mpi exec to start a job on this machine.
+This is itself an element that has sub-elements that must be filled:</p>
+<ul class="simple">
+<li><p>Must have a required <code class="docutils literal notranslate"><span class="pre">&lt;executable&gt;</span></code> element</p></li>
+<li><p>May have optional attributes of <code class="docutils literal notranslate"><span class="pre">compiler</span></code>, <code class="docutils literal notranslate"><span class="pre">mpilib</span></code> and/or <code class="docutils literal notranslate"><span class="pre">threaded</span></code></p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;arguments&gt;</span></code> element which in turn contains one or more <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> elements.
+These specify the arguments to the mpi executable and are dependent on your mpi library implementation.</p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;run_exe&gt;</span></code> element which overrides the <code class="docutils literal notranslate"><span class="pre">default_run_exe</span></code></p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;run_misc_suffix&gt;</span></code> element which overrides the <code class="docutils literal notranslate"><span class="pre">default_run_misc_suffix</span></code></p></li>
+<li><p>May have an optional <code class="docutils literal notranslate"><span class="pre">&lt;aprun_mode&gt;</span></code> element which controls how CIME generates arguments when <code class="docutils literal notranslate"><span class="pre">&lt;executable&gt;</span></code> contains <code class="docutils literal notranslate"><span class="pre">aprun</span></code>.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;aprun_mode&gt;</span></code> element can be one of the following. The default value is <code class="docutils literal notranslate"><span class="pre">ignore</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ignore</span></code> will cause CIME to ignore it’s aprun module and join the values found in <code class="docutils literal notranslate"><span class="pre">&lt;arguments&gt;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">default</span></code> will use CIME’s aprun module to generate arguments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">override</span></code> behaves the same as <code class="docutils literal notranslate"><span class="pre">default</span></code> expect it will use <code class="docutils literal notranslate"><span class="pre">&lt;arguments&gt;</span></code> to mutate the generated arguments. When using this mode a <code class="docutils literal notranslate"><span class="pre">position</span></code> attribute can be placed on <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> tags to specify how it’s used.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">position</span></code> attribute on <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> can take one of the following values. The default value is <code class="docutils literal notranslate"><span class="pre">per</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">global</span></code> causes the value of the <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> element to be used as a global argument for <code class="docutils literal notranslate"><span class="pre">aprun</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">per</span></code> causes the value of the <code class="docutils literal notranslate"><span class="pre">&lt;arg&gt;</span></code> element to be appended to each separate binaries arguments.</p></li>
+</ul>
+<p>Example using <code class="docutils literal notranslate"><span class="pre">override</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">executable</span><span class="o">&gt;</span><span class="n">aprun</span><span class="o">&lt;/</span><span class="n">executable</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">aprun_mode</span><span class="o">&gt;</span><span class="n">override</span><span class="o">&lt;/</span><span class="n">aprun_mode</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">arguments</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">arg</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;global&quot;</span><span class="o">&gt;-</span><span class="n">e</span> <span class="n">DEBUG</span><span class="o">=</span><span class="n">true</span><span class="o">&lt;/</span><span class="n">arg</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">arg</span><span class="o">&gt;-</span><span class="n">j</span> <span class="mi">20</span><span class="o">&lt;/</span><span class="n">arg</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">arguments</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Sample command output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aprun</span> <span class="o">-</span><span class="n">e</span> <span class="n">DEBUG</span><span class="o">=</span><span class="n">true</span> <span class="o">...</span> <span class="o">-</span><span class="n">j</span> <span class="mi">20</span> <span class="n">e3sm</span><span class="o">.</span><span class="n">exe</span> <span class="p">:</span> <span class="o">...</span> <span class="o">-</span><span class="n">j</span> <span class="mi">20</span> <span class="n">e3sm</span><span class="o">.</span><span class="n">exe</span>
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">module_system</span></code>: How and what modules to load on this system. Module systems allow you to easily load multiple compiler environments on a machine. CIME provides support for two types of module tools: <a class="reference external" href="http://www.tacc.utexas.edu/tacc-projects/mclay/lmod">module</a> and <a class="reference external" href="http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html">soft</a>. If neither of these is available on your machine, simply set <code class="docutils literal notranslate"><span class="pre">&lt;module_system</span> <span class="pre">type=&quot;none&quot;\&gt;</span></code>.</p></li>
+<li><dl>
+<dt><code class="docutils literal notranslate"><span class="pre">environment_variables</span></code>: environment_variables to set on the system</dt><dd><p>This contains sub-elements <code class="docutils literal notranslate"><span class="pre">&lt;env&gt;</span></code> with the <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute specifying the environment variable name, and the element value specifying the corresponding environment variable value. If the element value is not set, the corresponding environment variable will be unset in your shell.</p>
+<p>For example, the following sets the environment variable <code class="docutils literal notranslate"><span class="pre">OMP_STACKSIZE</span></code> to 256M:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">env</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;OMP_STACKSIZE&quot;</span><span class="o">&gt;</span><span class="mi">256</span><span class="n">M</span><span class="o">&lt;/</span><span class="n">env</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The following unsets this environment variable in the shell:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">env</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;OMP_STACKSIZE&quot;</span><span class="o">&gt;&lt;/</span><span class="n">env</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These changes are <strong>ONLY</strong> activated for the CIME build and run environment, <strong>BUT NOT</strong> for your login shell. To activate them for your login shell, source either <strong>$CASEROOT/.env_mach_specific.sh</strong> or <strong>$CASEROOT/.env_mach_specific.csh</strong>, depending on your shell.</p>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inputdata.html" class="btn btn-neutral float-left" title="Inputdata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="model.html" class="btn btn-neutral float-right" title="Model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

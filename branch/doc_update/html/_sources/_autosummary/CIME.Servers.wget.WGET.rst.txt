@@ -1,0 +1,27 @@
+..
+  class.rst
+
+CIME.Servers.wget.WGET
+======================
+
+.. currentmodule:: CIME.Servers.wget
+
+.. autoclass:: WGET
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~WGET.__init__
+                    ~WGET.fileexists
+                    ~WGET.getdirectory
+                    ~WGET.getfile
+                    ~WGET.wget_login
+        
+    

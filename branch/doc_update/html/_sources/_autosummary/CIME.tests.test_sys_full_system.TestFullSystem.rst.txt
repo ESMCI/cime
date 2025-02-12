@@ -1,0 +1,85 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_full\_system.TestFullSystem
+=================================================
+
+.. currentmodule:: CIME.tests.test_sys_full_system
+
+.. autoclass:: TestFullSystem
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestFullSystem.__init__
+                    ~TestFullSystem.addClassCleanup
+                    ~TestFullSystem.addCleanup
+                    ~TestFullSystem.addTypeEqualityFunc
+                    ~TestFullSystem.assertAlmostEqual
+                    ~TestFullSystem.assertCountEqual
+                    ~TestFullSystem.assertDictEqual
+                    ~TestFullSystem.assertEqual
+                    ~TestFullSystem.assertFalse
+                    ~TestFullSystem.assertGreater
+                    ~TestFullSystem.assertGreaterEqual
+                    ~TestFullSystem.assertIn
+                    ~TestFullSystem.assertIs
+                    ~TestFullSystem.assertIsInstance
+                    ~TestFullSystem.assertIsNone
+                    ~TestFullSystem.assertIsNot
+                    ~TestFullSystem.assertIsNotNone
+                    ~TestFullSystem.assertLess
+                    ~TestFullSystem.assertLessEqual
+                    ~TestFullSystem.assertListEqual
+                    ~TestFullSystem.assertLogs
+                    ~TestFullSystem.assertMultiLineEqual
+                    ~TestFullSystem.assertNoLogs
+                    ~TestFullSystem.assertNotAlmostEqual
+                    ~TestFullSystem.assertNotEqual
+                    ~TestFullSystem.assertNotIn
+                    ~TestFullSystem.assertNotIsInstance
+                    ~TestFullSystem.assertNotRegex
+                    ~TestFullSystem.assertRaises
+                    ~TestFullSystem.assertRaisesRegex
+                    ~TestFullSystem.assertRegex
+                    ~TestFullSystem.assertSequenceEqual
+                    ~TestFullSystem.assertSetEqual
+                    ~TestFullSystem.assertTrue
+                    ~TestFullSystem.assertTupleEqual
+                    ~TestFullSystem.assertWarns
+                    ~TestFullSystem.assertWarnsRegex
+                    ~TestFullSystem.assert_dashboard_has_build
+                    ~TestFullSystem.assert_test_status
+                    ~TestFullSystem.countTestCases
+                    ~TestFullSystem.debug
+                    ~TestFullSystem.defaultTestResult
+                    ~TestFullSystem.doClassCleanups
+                    ~TestFullSystem.doCleanups
+                    ~TestFullSystem.enterClassContext
+                    ~TestFullSystem.enterContext
+                    ~TestFullSystem.fail
+                    ~TestFullSystem.get_casedir
+                    ~TestFullSystem.id
+                    ~TestFullSystem.kill_python_subprocesses
+                    ~TestFullSystem.kill_subprocesses
+                    ~TestFullSystem.run
+                    ~TestFullSystem.run_cmd_assert_result
+                    ~TestFullSystem.setUp
+                    ~TestFullSystem.setUpClass
+                    ~TestFullSystem.setup_proxy
+                    ~TestFullSystem.shortDescription
+                    ~TestFullSystem.skipTest
+                    ~TestFullSystem.subTest
+                    ~TestFullSystem.tearDown
+                    ~TestFullSystem.tearDownClass
+                    ~TestFullSystem.test_full_system
+                    ~TestFullSystem.verify_perms
+        
+    

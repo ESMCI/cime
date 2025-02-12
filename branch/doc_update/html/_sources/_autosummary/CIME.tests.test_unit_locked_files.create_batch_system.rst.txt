@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.test\_unit\_locked\_files.create\_batch\_system
+==========================================================
+
+.. currentmodule:: CIME.tests.test_unit_locked_files
+
+.. autofunction:: create_batch_system

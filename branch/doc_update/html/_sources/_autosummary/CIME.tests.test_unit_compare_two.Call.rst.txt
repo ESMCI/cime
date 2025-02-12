@@ -1,0 +1,25 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_compare\_two.Call
+========================================
+
+.. currentmodule:: CIME.tests.test_unit_compare_two
+
+.. autoclass:: Call
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Call.__init__
+                    ~Call.count
+                    ~Call.index
+        
+    

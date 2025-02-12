@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.hommebfb.HOMMEBFB
+==================================
+
+.. currentmodule:: CIME.SystemTests.hommebfb
+
+.. autoclass:: HOMMEBFB
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~HOMMEBFB.__init__
+                    ~HOMMEBFB.build
+                    ~HOMMEBFB.build_indv
+                    ~HOMMEBFB.build_phase
+                    ~HOMMEBFB.clean_build
+                    ~HOMMEBFB.compare_env_run
+                    ~HOMMEBFB.run
+                    ~HOMMEBFB.run_indv
+                    ~HOMMEBFB.run_phase
+        
+    

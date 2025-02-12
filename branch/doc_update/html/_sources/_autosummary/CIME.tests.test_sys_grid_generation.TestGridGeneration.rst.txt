@@ -1,0 +1,85 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_grid\_generation.TestGridGeneration
+=========================================================
+
+.. currentmodule:: CIME.tests.test_sys_grid_generation
+
+.. autoclass:: TestGridGeneration
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestGridGeneration.__init__
+                    ~TestGridGeneration.addClassCleanup
+                    ~TestGridGeneration.addCleanup
+                    ~TestGridGeneration.addTypeEqualityFunc
+                    ~TestGridGeneration.assertAlmostEqual
+                    ~TestGridGeneration.assertCountEqual
+                    ~TestGridGeneration.assertDictEqual
+                    ~TestGridGeneration.assertEqual
+                    ~TestGridGeneration.assertFalse
+                    ~TestGridGeneration.assertGreater
+                    ~TestGridGeneration.assertGreaterEqual
+                    ~TestGridGeneration.assertIn
+                    ~TestGridGeneration.assertIs
+                    ~TestGridGeneration.assertIsInstance
+                    ~TestGridGeneration.assertIsNone
+                    ~TestGridGeneration.assertIsNot
+                    ~TestGridGeneration.assertIsNotNone
+                    ~TestGridGeneration.assertLess
+                    ~TestGridGeneration.assertLessEqual
+                    ~TestGridGeneration.assertListEqual
+                    ~TestGridGeneration.assertLogs
+                    ~TestGridGeneration.assertMultiLineEqual
+                    ~TestGridGeneration.assertNoLogs
+                    ~TestGridGeneration.assertNotAlmostEqual
+                    ~TestGridGeneration.assertNotEqual
+                    ~TestGridGeneration.assertNotIn
+                    ~TestGridGeneration.assertNotIsInstance
+                    ~TestGridGeneration.assertNotRegex
+                    ~TestGridGeneration.assertRaises
+                    ~TestGridGeneration.assertRaisesRegex
+                    ~TestGridGeneration.assertRegex
+                    ~TestGridGeneration.assertSequenceEqual
+                    ~TestGridGeneration.assertSetEqual
+                    ~TestGridGeneration.assertTrue
+                    ~TestGridGeneration.assertTupleEqual
+                    ~TestGridGeneration.assertWarns
+                    ~TestGridGeneration.assertWarnsRegex
+                    ~TestGridGeneration.assert_dashboard_has_build
+                    ~TestGridGeneration.assert_test_status
+                    ~TestGridGeneration.countTestCases
+                    ~TestGridGeneration.debug
+                    ~TestGridGeneration.defaultTestResult
+                    ~TestGridGeneration.doClassCleanups
+                    ~TestGridGeneration.doCleanups
+                    ~TestGridGeneration.enterClassContext
+                    ~TestGridGeneration.enterContext
+                    ~TestGridGeneration.fail
+                    ~TestGridGeneration.get_casedir
+                    ~TestGridGeneration.id
+                    ~TestGridGeneration.kill_python_subprocesses
+                    ~TestGridGeneration.kill_subprocesses
+                    ~TestGridGeneration.run
+                    ~TestGridGeneration.run_cmd_assert_result
+                    ~TestGridGeneration.setUp
+                    ~TestGridGeneration.setUpClass
+                    ~TestGridGeneration.setup_proxy
+                    ~TestGridGeneration.shortDescription
+                    ~TestGridGeneration.skipTest
+                    ~TestGridGeneration.subTest
+                    ~TestGridGeneration.tearDown
+                    ~TestGridGeneration.tearDownClass
+                    ~TestGridGeneration.test_gen_domain
+                    ~TestGridGeneration.verify_perms
+        
+    

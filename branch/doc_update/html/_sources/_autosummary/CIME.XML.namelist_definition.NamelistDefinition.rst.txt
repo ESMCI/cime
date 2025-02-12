@@ -1,0 +1,95 @@
+..
+  class.rst
+
+CIME.XML.namelist\_definition.NamelistDefinition
+================================================
+
+.. currentmodule:: CIME.XML.namelist_definition
+
+.. autoclass:: NamelistDefinition
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~NamelistDefinition.__init__
+                    ~NamelistDefinition.add_attributes
+                    ~NamelistDefinition.add_child
+                    ~NamelistDefinition.add_elements_by_group
+                    ~NamelistDefinition.attrib
+                    ~NamelistDefinition.change_file
+                    ~NamelistDefinition.check_if_comp_var
+                    ~NamelistDefinition.check_timestamp
+                    ~NamelistDefinition.cleanupnode
+                    ~NamelistDefinition.compare_xml
+                    ~NamelistDefinition.copy
+                    ~NamelistDefinition.dict_to_namelist
+                    ~NamelistDefinition.get
+                    ~NamelistDefinition.get_attributes
+                    ~NamelistDefinition.get_child
+                    ~NamelistDefinition.get_child_content
+                    ~NamelistDefinition.get_children
+                    ~NamelistDefinition.get_default_value
+                    ~NamelistDefinition.get_description
+                    ~NamelistDefinition.get_element_text
+                    ~NamelistDefinition.get_elements_from_child_content
+                    ~NamelistDefinition.get_entry_nodes
+                    ~NamelistDefinition.get_group
+                    ~NamelistDefinition.get_group_name
+                    ~NamelistDefinition.get_groups
+                    ~NamelistDefinition.get_id
+                    ~NamelistDefinition.get_input_pathname
+                    ~NamelistDefinition.get_node_element_info
+                    ~NamelistDefinition.get_nodes_by_id
+                    ~NamelistDefinition.get_optional_child
+                    ~NamelistDefinition.get_per_stream_entries
+                    ~NamelistDefinition.get_raw_record
+                    ~NamelistDefinition.get_resolved_value
+                    ~NamelistDefinition.get_type_info
+                    ~NamelistDefinition.get_valid_value_string
+                    ~NamelistDefinition.get_valid_values
+                    ~NamelistDefinition.get_value
+                    ~NamelistDefinition.get_value_match
+                    ~NamelistDefinition.get_values
+                    ~NamelistDefinition.get_version
+                    ~NamelistDefinition.has
+                    ~NamelistDefinition.invalidate
+                    ~NamelistDefinition.is_valid_value
+                    ~NamelistDefinition.lock
+                    ~NamelistDefinition.make_child
+                    ~NamelistDefinition.make_child_comment
+                    ~NamelistDefinition.name
+                    ~NamelistDefinition.overwrite_existing_entries
+                    ~NamelistDefinition.pop
+                    ~NamelistDefinition.read
+                    ~NamelistDefinition.read_fd
+                    ~NamelistDefinition.remove_child
+                    ~NamelistDefinition.rename_group
+                    ~NamelistDefinition.scan_child
+                    ~NamelistDefinition.scan_children
+                    ~NamelistDefinition.scan_optional_child
+                    ~NamelistDefinition.set
+                    ~NamelistDefinition.set_default_value
+                    ~NamelistDefinition.set_element_text
+                    ~NamelistDefinition.set_name
+                    ~NamelistDefinition.set_node_values
+                    ~NamelistDefinition.set_nodes
+                    ~NamelistDefinition.set_text
+                    ~NamelistDefinition.set_valid_values
+                    ~NamelistDefinition.set_value
+                    ~NamelistDefinition.split_type_string
+                    ~NamelistDefinition.text
+                    ~NamelistDefinition.to_string
+                    ~NamelistDefinition.unlock
+                    ~NamelistDefinition.validate
+                    ~NamelistDefinition.validate_timestamp
+                    ~NamelistDefinition.validate_xml_file
+                    ~NamelistDefinition.write
+        
+    

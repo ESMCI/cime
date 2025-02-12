@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.query\_config.parse\_command\_line
+===============================================
+
+.. currentmodule:: CIME.scripts.query_config
+
+.. autofunction:: parse_command_line

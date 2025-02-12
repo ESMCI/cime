@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_compare\_test\_results
+=============================================
+
+.. automodule:: CIME.tests.test_unit_compare_test_results
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestCaseFake
+        
+    
+
+    
+        
+    
+
+
+    

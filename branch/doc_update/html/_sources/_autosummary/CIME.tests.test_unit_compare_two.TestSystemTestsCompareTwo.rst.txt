@@ -1,0 +1,92 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_compare\_two.TestSystemTestsCompareTwo
+=============================================================
+
+.. currentmodule:: CIME.tests.test_unit_compare_two
+
+.. autoclass:: TestSystemTestsCompareTwo
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestSystemTestsCompareTwo.__init__
+                    ~TestSystemTestsCompareTwo.addClassCleanup
+                    ~TestSystemTestsCompareTwo.addCleanup
+                    ~TestSystemTestsCompareTwo.addTypeEqualityFunc
+                    ~TestSystemTestsCompareTwo.assertAlmostEqual
+                    ~TestSystemTestsCompareTwo.assertCountEqual
+                    ~TestSystemTestsCompareTwo.assertDictEqual
+                    ~TestSystemTestsCompareTwo.assertEqual
+                    ~TestSystemTestsCompareTwo.assertFalse
+                    ~TestSystemTestsCompareTwo.assertGreater
+                    ~TestSystemTestsCompareTwo.assertGreaterEqual
+                    ~TestSystemTestsCompareTwo.assertIn
+                    ~TestSystemTestsCompareTwo.assertIs
+                    ~TestSystemTestsCompareTwo.assertIsInstance
+                    ~TestSystemTestsCompareTwo.assertIsNone
+                    ~TestSystemTestsCompareTwo.assertIsNot
+                    ~TestSystemTestsCompareTwo.assertIsNotNone
+                    ~TestSystemTestsCompareTwo.assertLess
+                    ~TestSystemTestsCompareTwo.assertLessEqual
+                    ~TestSystemTestsCompareTwo.assertListEqual
+                    ~TestSystemTestsCompareTwo.assertLogs
+                    ~TestSystemTestsCompareTwo.assertMultiLineEqual
+                    ~TestSystemTestsCompareTwo.assertNoLogs
+                    ~TestSystemTestsCompareTwo.assertNotAlmostEqual
+                    ~TestSystemTestsCompareTwo.assertNotEqual
+                    ~TestSystemTestsCompareTwo.assertNotIn
+                    ~TestSystemTestsCompareTwo.assertNotIsInstance
+                    ~TestSystemTestsCompareTwo.assertNotRegex
+                    ~TestSystemTestsCompareTwo.assertRaises
+                    ~TestSystemTestsCompareTwo.assertRaisesRegex
+                    ~TestSystemTestsCompareTwo.assertRegex
+                    ~TestSystemTestsCompareTwo.assertSequenceEqual
+                    ~TestSystemTestsCompareTwo.assertSetEqual
+                    ~TestSystemTestsCompareTwo.assertTrue
+                    ~TestSystemTestsCompareTwo.assertTupleEqual
+                    ~TestSystemTestsCompareTwo.assertWarns
+                    ~TestSystemTestsCompareTwo.assertWarnsRegex
+                    ~TestSystemTestsCompareTwo.countTestCases
+                    ~TestSystemTestsCompareTwo.debug
+                    ~TestSystemTestsCompareTwo.defaultTestResult
+                    ~TestSystemTestsCompareTwo.doClassCleanups
+                    ~TestSystemTestsCompareTwo.doCleanups
+                    ~TestSystemTestsCompareTwo.enterClassContext
+                    ~TestSystemTestsCompareTwo.enterContext
+                    ~TestSystemTestsCompareTwo.fail
+                    ~TestSystemTestsCompareTwo.get_caseroots
+                    ~TestSystemTestsCompareTwo.get_compare_phase_name
+                    ~TestSystemTestsCompareTwo.id
+                    ~TestSystemTestsCompareTwo.run
+                    ~TestSystemTestsCompareTwo.setUp
+                    ~TestSystemTestsCompareTwo.setUpClass
+                    ~TestSystemTestsCompareTwo.shortDescription
+                    ~TestSystemTestsCompareTwo.skipTest
+                    ~TestSystemTestsCompareTwo.subTest
+                    ~TestSystemTestsCompareTwo.tearDown
+                    ~TestSystemTestsCompareTwo.tearDownClass
+                    ~TestSystemTestsCompareTwo.test_compare_fails
+                    ~TestSystemTestsCompareTwo.test_compare_passes
+                    ~TestSystemTestsCompareTwo.test_internal_calls_multisubmit_failed_state
+                    ~TestSystemTestsCompareTwo.test_resetup_case_single_exe
+                    ~TestSystemTestsCompareTwo.test_run1_fails
+                    ~TestSystemTestsCompareTwo.test_run2_fails
+                    ~TestSystemTestsCompareTwo.test_run_phase_internal_calls
+                    ~TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1
+                    ~TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2
+                    ~TestSystemTestsCompareTwo.test_run_phase_passes
+                    ~TestSystemTestsCompareTwo.test_setup
+                    ~TestSystemTestsCompareTwo.test_setup_case2_exists
+                    ~TestSystemTestsCompareTwo.test_setup_error
+                    ~TestSystemTestsCompareTwo.test_setup_separate_builds_sharedlibroot
+        
+    

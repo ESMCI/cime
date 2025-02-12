@@ -1,0 +1,77 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_xml\_grids.TestXMLGrids
+==============================================
+
+.. currentmodule:: CIME.tests.test_unit_xml_grids
+
+.. autoclass:: TestXMLGrids
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestXMLGrids.__init__
+                    ~TestXMLGrids.addClassCleanup
+                    ~TestXMLGrids.addCleanup
+                    ~TestXMLGrids.addTypeEqualityFunc
+                    ~TestXMLGrids.assertAlmostEqual
+                    ~TestXMLGrids.assertCountEqual
+                    ~TestXMLGrids.assertDictEqual
+                    ~TestXMLGrids.assertEqual
+                    ~TestXMLGrids.assertFalse
+                    ~TestXMLGrids.assertGreater
+                    ~TestXMLGrids.assertGreaterEqual
+                    ~TestXMLGrids.assertIn
+                    ~TestXMLGrids.assertIs
+                    ~TestXMLGrids.assertIsInstance
+                    ~TestXMLGrids.assertIsNone
+                    ~TestXMLGrids.assertIsNot
+                    ~TestXMLGrids.assertIsNotNone
+                    ~TestXMLGrids.assertLess
+                    ~TestXMLGrids.assertLessEqual
+                    ~TestXMLGrids.assertListEqual
+                    ~TestXMLGrids.assertLogs
+                    ~TestXMLGrids.assertMultiLineEqual
+                    ~TestXMLGrids.assertNoLogs
+                    ~TestXMLGrids.assertNotAlmostEqual
+                    ~TestXMLGrids.assertNotEqual
+                    ~TestXMLGrids.assertNotIn
+                    ~TestXMLGrids.assertNotIsInstance
+                    ~TestXMLGrids.assertNotRegex
+                    ~TestXMLGrids.assertRaises
+                    ~TestXMLGrids.assertRaisesRegex
+                    ~TestXMLGrids.assertRegex
+                    ~TestXMLGrids.assertSequenceEqual
+                    ~TestXMLGrids.assertSetEqual
+                    ~TestXMLGrids.assertTrue
+                    ~TestXMLGrids.assertTupleEqual
+                    ~TestXMLGrids.assertWarns
+                    ~TestXMLGrids.assertWarnsRegex
+                    ~TestXMLGrids.countTestCases
+                    ~TestXMLGrids.debug
+                    ~TestXMLGrids.defaultTestResult
+                    ~TestXMLGrids.doClassCleanups
+                    ~TestXMLGrids.doCleanups
+                    ~TestXMLGrids.enterClassContext
+                    ~TestXMLGrids.enterContext
+                    ~TestXMLGrids.fail
+                    ~TestXMLGrids.id
+                    ~TestXMLGrids.run
+                    ~TestXMLGrids.setUp
+                    ~TestXMLGrids.setUpClass
+                    ~TestXMLGrids.shortDescription
+                    ~TestXMLGrids.skipTest
+                    ~TestXMLGrids.subTest
+                    ~TestXMLGrids.tearDown
+                    ~TestXMLGrids.tearDownClass
+                    ~TestXMLGrids.test_read_config_grids
+        
+    

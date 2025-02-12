@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.create\_clone.parse\_command\_line
+===============================================
+
+.. currentmodule:: CIME.scripts.create_clone
+
+.. autofunction:: parse_command_line

@@ -1,0 +1,26 @@
+..
+  class.rst
+
+CIME.tests.utils.MakefileTester
+===============================
+
+.. currentmodule:: CIME.tests.utils
+
+.. autoclass:: MakefileTester
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~MakefileTester.__init__
+                    ~MakefileTester.assert_variable_equals
+                    ~MakefileTester.assert_variable_matches
+                    ~MakefileTester.query_var
+        
+    

@@ -1,0 +1,64 @@
+..
+  class.rst
+
+CIME.XML.workflow.Workflow
+==========================
+
+.. currentmodule:: CIME.XML.workflow
+
+.. autoclass:: Workflow
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Workflow.__init__
+                    ~Workflow.add_child
+                    ~Workflow.attrib
+                    ~Workflow.change_file
+                    ~Workflow.check_timestamp
+                    ~Workflow.copy
+                    ~Workflow.get
+                    ~Workflow.get_child
+                    ~Workflow.get_children
+                    ~Workflow.get_element_text
+                    ~Workflow.get_id
+                    ~Workflow.get_optional_child
+                    ~Workflow.get_raw_record
+                    ~Workflow.get_resolved_value
+                    ~Workflow.get_value
+                    ~Workflow.get_values
+                    ~Workflow.get_version
+                    ~Workflow.get_workflow_jobs
+                    ~Workflow.has
+                    ~Workflow.invalidate
+                    ~Workflow.lock
+                    ~Workflow.make_child
+                    ~Workflow.make_child_comment
+                    ~Workflow.name
+                    ~Workflow.pop
+                    ~Workflow.read
+                    ~Workflow.read_fd
+                    ~Workflow.remove_child
+                    ~Workflow.scan_child
+                    ~Workflow.scan_children
+                    ~Workflow.scan_optional_child
+                    ~Workflow.set
+                    ~Workflow.set_element_text
+                    ~Workflow.set_name
+                    ~Workflow.set_text
+                    ~Workflow.set_value
+                    ~Workflow.text
+                    ~Workflow.to_string
+                    ~Workflow.unlock
+                    ~Workflow.validate_timestamp
+                    ~Workflow.validate_xml_file
+                    ~Workflow.write
+        
+    

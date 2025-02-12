@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.Tools.generate\_cylc\_workflow.cylc\_get\_ensemble\_first\_and\_last
+=========================================================================
+
+.. currentmodule:: CIME.Tools.generate_cylc_workflow
+
+.. autofunction:: cylc_get_ensemble_first_and_last

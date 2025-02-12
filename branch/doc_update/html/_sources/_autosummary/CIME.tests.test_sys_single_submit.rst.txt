@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_sys\_single\_submit
+====================================
+
+.. automodule:: CIME.tests.test_sys_single_submit
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestSingleSubmit
+        
+    
+
+    
+        
+    
+
+
+    

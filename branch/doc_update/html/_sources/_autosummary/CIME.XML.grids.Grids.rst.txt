@@ -1,0 +1,66 @@
+..
+  class.rst
+
+CIME.XML.grids.Grids
+====================
+
+.. currentmodule:: CIME.XML.grids
+
+.. autoclass:: Grids
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Grids.__init__
+                    ~Grids.add_child
+                    ~Grids.attrib
+                    ~Grids.change_file
+                    ~Grids.check_timestamp
+                    ~Grids.copy
+                    ~Grids.get
+                    ~Grids.get_child
+                    ~Grids.get_children
+                    ~Grids.get_element_text
+                    ~Grids.get_grid_info
+                    ~Grids.get_grid_longname
+                    ~Grids.get_id
+                    ~Grids.get_optional_child
+                    ~Grids.get_raw_record
+                    ~Grids.get_resolved_value
+                    ~Grids.get_value
+                    ~Grids.get_values
+                    ~Grids.get_version
+                    ~Grids.has
+                    ~Grids.invalidate
+                    ~Grids.lock
+                    ~Grids.make_child
+                    ~Grids.make_child_comment
+                    ~Grids.name
+                    ~Grids.pop
+                    ~Grids.print_values
+                    ~Grids.read
+                    ~Grids.read_fd
+                    ~Grids.remove_child
+                    ~Grids.scan_child
+                    ~Grids.scan_children
+                    ~Grids.scan_optional_child
+                    ~Grids.set
+                    ~Grids.set_element_text
+                    ~Grids.set_name
+                    ~Grids.set_text
+                    ~Grids.set_value
+                    ~Grids.text
+                    ~Grids.to_string
+                    ~Grids.unlock
+                    ~Grids.validate_timestamp
+                    ~Grids.validate_xml_file
+                    ~Grids.write
+        
+    

@@ -1,0 +1,38 @@
+..
+  module.rst
+
+CIME.tests.scripts\_regression\_tests
+=====================================
+
+.. automodule:: CIME.tests.scripts_regression_tests
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    cleanup
+                    configure_tests
+                    setup_arguments
+                    write_provenance_info
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.query\_testlists.count\_test\_data
+===============================================
+
+.. currentmodule:: CIME.scripts.query_testlists
+
+.. autofunction:: count_test_data

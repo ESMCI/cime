@@ -1,0 +1,85 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_single\_submit.TestSingleSubmit
+=====================================================
+
+.. currentmodule:: CIME.tests.test_sys_single_submit
+
+.. autoclass:: TestSingleSubmit
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestSingleSubmit.__init__
+                    ~TestSingleSubmit.addClassCleanup
+                    ~TestSingleSubmit.addCleanup
+                    ~TestSingleSubmit.addTypeEqualityFunc
+                    ~TestSingleSubmit.assertAlmostEqual
+                    ~TestSingleSubmit.assertCountEqual
+                    ~TestSingleSubmit.assertDictEqual
+                    ~TestSingleSubmit.assertEqual
+                    ~TestSingleSubmit.assertFalse
+                    ~TestSingleSubmit.assertGreater
+                    ~TestSingleSubmit.assertGreaterEqual
+                    ~TestSingleSubmit.assertIn
+                    ~TestSingleSubmit.assertIs
+                    ~TestSingleSubmit.assertIsInstance
+                    ~TestSingleSubmit.assertIsNone
+                    ~TestSingleSubmit.assertIsNot
+                    ~TestSingleSubmit.assertIsNotNone
+                    ~TestSingleSubmit.assertLess
+                    ~TestSingleSubmit.assertLessEqual
+                    ~TestSingleSubmit.assertListEqual
+                    ~TestSingleSubmit.assertLogs
+                    ~TestSingleSubmit.assertMultiLineEqual
+                    ~TestSingleSubmit.assertNoLogs
+                    ~TestSingleSubmit.assertNotAlmostEqual
+                    ~TestSingleSubmit.assertNotEqual
+                    ~TestSingleSubmit.assertNotIn
+                    ~TestSingleSubmit.assertNotIsInstance
+                    ~TestSingleSubmit.assertNotRegex
+                    ~TestSingleSubmit.assertRaises
+                    ~TestSingleSubmit.assertRaisesRegex
+                    ~TestSingleSubmit.assertRegex
+                    ~TestSingleSubmit.assertSequenceEqual
+                    ~TestSingleSubmit.assertSetEqual
+                    ~TestSingleSubmit.assertTrue
+                    ~TestSingleSubmit.assertTupleEqual
+                    ~TestSingleSubmit.assertWarns
+                    ~TestSingleSubmit.assertWarnsRegex
+                    ~TestSingleSubmit.assert_dashboard_has_build
+                    ~TestSingleSubmit.assert_test_status
+                    ~TestSingleSubmit.countTestCases
+                    ~TestSingleSubmit.debug
+                    ~TestSingleSubmit.defaultTestResult
+                    ~TestSingleSubmit.doClassCleanups
+                    ~TestSingleSubmit.doCleanups
+                    ~TestSingleSubmit.enterClassContext
+                    ~TestSingleSubmit.enterContext
+                    ~TestSingleSubmit.fail
+                    ~TestSingleSubmit.get_casedir
+                    ~TestSingleSubmit.id
+                    ~TestSingleSubmit.kill_python_subprocesses
+                    ~TestSingleSubmit.kill_subprocesses
+                    ~TestSingleSubmit.run
+                    ~TestSingleSubmit.run_cmd_assert_result
+                    ~TestSingleSubmit.setUp
+                    ~TestSingleSubmit.setUpClass
+                    ~TestSingleSubmit.setup_proxy
+                    ~TestSingleSubmit.shortDescription
+                    ~TestSingleSubmit.skipTest
+                    ~TestSingleSubmit.subTest
+                    ~TestSingleSubmit.tearDown
+                    ~TestSingleSubmit.tearDownClass
+                    ~TestSingleSubmit.test_single_submit
+                    ~TestSingleSubmit.verify_perms
+        
+    

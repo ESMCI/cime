@@ -1,0 +1,32 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_compare\_two.SystemTestsCompareTwoFake
+=============================================================
+
+.. currentmodule:: CIME.tests.test_unit_compare_two
+
+.. autoclass:: SystemTestsCompareTwoFake
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~SystemTestsCompareTwoFake.__init__
+                    ~SystemTestsCompareTwoFake.build
+                    ~SystemTestsCompareTwoFake.build_indv
+                    ~SystemTestsCompareTwoFake.build_phase
+                    ~SystemTestsCompareTwoFake.clean_build
+                    ~SystemTestsCompareTwoFake.compare_env_run
+                    ~SystemTestsCompareTwoFake.copy_case1_restarts_to_case2
+                    ~SystemTestsCompareTwoFake.run
+                    ~SystemTestsCompareTwoFake.run_indv
+                    ~SystemTestsCompareTwoFake.run_phase
+        
+    

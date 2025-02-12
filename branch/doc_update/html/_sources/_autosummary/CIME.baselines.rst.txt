@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.baselines
+==============
+
+.. automodule:: CIME.baselines
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
+        .. rubric:: Modules
+
+        .. autosummary::
+            :toctree:
+            :template: autosummary/module.rst
+            :recursive:
+            
+                performance
+    

@@ -1,0 +1,89 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_system\_tests.TestUnitSystemTests
+========================================================
+
+.. currentmodule:: CIME.tests.test_unit_system_tests
+
+.. autoclass:: TestUnitSystemTests
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestUnitSystemTests.__init__
+                    ~TestUnitSystemTests.addClassCleanup
+                    ~TestUnitSystemTests.addCleanup
+                    ~TestUnitSystemTests.addTypeEqualityFunc
+                    ~TestUnitSystemTests.assertAlmostEqual
+                    ~TestUnitSystemTests.assertCountEqual
+                    ~TestUnitSystemTests.assertDictEqual
+                    ~TestUnitSystemTests.assertEqual
+                    ~TestUnitSystemTests.assertFalse
+                    ~TestUnitSystemTests.assertGreater
+                    ~TestUnitSystemTests.assertGreaterEqual
+                    ~TestUnitSystemTests.assertIn
+                    ~TestUnitSystemTests.assertIs
+                    ~TestUnitSystemTests.assertIsInstance
+                    ~TestUnitSystemTests.assertIsNone
+                    ~TestUnitSystemTests.assertIsNot
+                    ~TestUnitSystemTests.assertIsNotNone
+                    ~TestUnitSystemTests.assertLess
+                    ~TestUnitSystemTests.assertLessEqual
+                    ~TestUnitSystemTests.assertListEqual
+                    ~TestUnitSystemTests.assertLogs
+                    ~TestUnitSystemTests.assertMultiLineEqual
+                    ~TestUnitSystemTests.assertNoLogs
+                    ~TestUnitSystemTests.assertNotAlmostEqual
+                    ~TestUnitSystemTests.assertNotEqual
+                    ~TestUnitSystemTests.assertNotIn
+                    ~TestUnitSystemTests.assertNotIsInstance
+                    ~TestUnitSystemTests.assertNotRegex
+                    ~TestUnitSystemTests.assertRaises
+                    ~TestUnitSystemTests.assertRaisesRegex
+                    ~TestUnitSystemTests.assertRegex
+                    ~TestUnitSystemTests.assertSequenceEqual
+                    ~TestUnitSystemTests.assertSetEqual
+                    ~TestUnitSystemTests.assertTrue
+                    ~TestUnitSystemTests.assertTupleEqual
+                    ~TestUnitSystemTests.assertWarns
+                    ~TestUnitSystemTests.assertWarnsRegex
+                    ~TestUnitSystemTests.countTestCases
+                    ~TestUnitSystemTests.debug
+                    ~TestUnitSystemTests.defaultTestResult
+                    ~TestUnitSystemTests.doClassCleanups
+                    ~TestUnitSystemTests.doCleanups
+                    ~TestUnitSystemTests.enterClassContext
+                    ~TestUnitSystemTests.enterContext
+                    ~TestUnitSystemTests.fail
+                    ~TestUnitSystemTests.id
+                    ~TestUnitSystemTests.run
+                    ~TestUnitSystemTests.setUp
+                    ~TestUnitSystemTests.setUpClass
+                    ~TestUnitSystemTests.shortDescription
+                    ~TestUnitSystemTests.skipTest
+                    ~TestUnitSystemTests.subTest
+                    ~TestUnitSystemTests.tearDown
+                    ~TestUnitSystemTests.tearDownClass
+                    ~TestUnitSystemTests.test_check_for_memleak
+                    ~TestUnitSystemTests.test_check_for_memleak_found
+                    ~TestUnitSystemTests.test_check_for_memleak_not_enough_samples
+                    ~TestUnitSystemTests.test_check_for_memleak_runtime_error
+                    ~TestUnitSystemTests.test_compare_memory
+                    ~TestUnitSystemTests.test_compare_memory_error_diff
+                    ~TestUnitSystemTests.test_compare_memory_error_fail
+                    ~TestUnitSystemTests.test_compare_throughput
+                    ~TestUnitSystemTests.test_compare_throughput_error_diff
+                    ~TestUnitSystemTests.test_compare_throughput_fail
+                    ~TestUnitSystemTests.test_dry_run
+                    ~TestUnitSystemTests.test_generate_baseline
+                    ~TestUnitSystemTests.test_kwargs
+        
+    

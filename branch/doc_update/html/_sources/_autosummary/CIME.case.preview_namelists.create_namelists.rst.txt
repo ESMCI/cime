@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.preview\_namelists.create\_namelists
+==============================================
+
+.. currentmodule:: CIME.case.preview_namelists
+
+.. autofunction:: create_namelists

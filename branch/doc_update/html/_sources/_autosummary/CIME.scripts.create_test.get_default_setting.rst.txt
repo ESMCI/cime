@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.create\_test.get\_default\_setting
+===============================================
+
+.. currentmodule:: CIME.scripts.create_test
+
+.. autofunction:: get_default_setting

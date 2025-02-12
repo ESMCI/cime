@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_common.TESTTESTDIFF
+===================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autoclass:: TESTTESTDIFF
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TESTTESTDIFF.__init__
+                    ~TESTTESTDIFF.build
+                    ~TESTTESTDIFF.build_indv
+                    ~TESTTESTDIFF.build_phase
+                    ~TESTTESTDIFF.clean_build
+                    ~TESTTESTDIFF.compare_env_run
+                    ~TESTTESTDIFF.run
+                    ~TESTTESTDIFF.run_indv
+                    ~TESTTESTDIFF.run_phase
+        
+    

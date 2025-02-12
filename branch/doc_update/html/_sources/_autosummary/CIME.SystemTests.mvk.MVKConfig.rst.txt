@@ -1,0 +1,30 @@
+..
+  class.rst
+
+CIME.SystemTests.mvk.MVKConfig
+==============================
+
+.. currentmodule:: CIME.SystemTests.mvk
+
+.. autoclass:: MVKConfig
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~MVKConfig.__init__
+                    ~MVKConfig.evv_test_config
+                    ~MVKConfig.generate_namelist
+                    ~MVKConfig.instance
+                    ~MVKConfig.load
+                    ~MVKConfig.print_method_rst
+                    ~MVKConfig.print_rst_table
+                    ~MVKConfig.print_variable_rst
+        
+    

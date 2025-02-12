@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.reuseinitfiles
+===============================
+
+.. automodule:: CIME.SystemTests.reuseinitfiles
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    REUSEINITFILES
+        
+    
+
+    
+        
+    
+
+
+    

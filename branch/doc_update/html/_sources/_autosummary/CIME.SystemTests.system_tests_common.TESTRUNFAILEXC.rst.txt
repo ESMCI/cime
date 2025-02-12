@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_common.TESTRUNFAILEXC
+=====================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autoclass:: TESTRUNFAILEXC
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TESTRUNFAILEXC.__init__
+                    ~TESTRUNFAILEXC.build
+                    ~TESTRUNFAILEXC.build_indv
+                    ~TESTRUNFAILEXC.build_phase
+                    ~TESTRUNFAILEXC.clean_build
+                    ~TESTRUNFAILEXC.compare_env_run
+                    ~TESTRUNFAILEXC.run
+                    ~TESTRUNFAILEXC.run_indv
+                    ~TESTRUNFAILEXC.run_phase
+        
+    

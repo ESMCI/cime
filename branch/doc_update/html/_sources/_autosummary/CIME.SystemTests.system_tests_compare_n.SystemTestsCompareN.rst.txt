@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_compare\_n.SystemTestsCompareN
+==============================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_compare_n
+
+.. autoclass:: SystemTestsCompareN
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~SystemTestsCompareN.__init__
+                    ~SystemTestsCompareN.build
+                    ~SystemTestsCompareN.build_indv
+                    ~SystemTestsCompareN.build_phase
+                    ~SystemTestsCompareN.clean_build
+                    ~SystemTestsCompareN.compare_env_run
+                    ~SystemTestsCompareN.run
+                    ~SystemTestsCompareN.run_indv
+                    ~SystemTestsCompareN.run_phase
+        
+    

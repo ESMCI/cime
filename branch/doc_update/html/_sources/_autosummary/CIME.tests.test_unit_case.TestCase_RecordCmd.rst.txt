@@ -1,0 +1,81 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_case.TestCase\_RecordCmd
+===============================================
+
+.. currentmodule:: CIME.tests.test_unit_case
+
+.. autoclass:: TestCase_RecordCmd
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestCase_RecordCmd.__init__
+                    ~TestCase_RecordCmd.addClassCleanup
+                    ~TestCase_RecordCmd.addCleanup
+                    ~TestCase_RecordCmd.addTypeEqualityFunc
+                    ~TestCase_RecordCmd.assertAlmostEqual
+                    ~TestCase_RecordCmd.assertCountEqual
+                    ~TestCase_RecordCmd.assertDictEqual
+                    ~TestCase_RecordCmd.assertEqual
+                    ~TestCase_RecordCmd.assertFalse
+                    ~TestCase_RecordCmd.assertGreater
+                    ~TestCase_RecordCmd.assertGreaterEqual
+                    ~TestCase_RecordCmd.assertIn
+                    ~TestCase_RecordCmd.assertIs
+                    ~TestCase_RecordCmd.assertIsInstance
+                    ~TestCase_RecordCmd.assertIsNone
+                    ~TestCase_RecordCmd.assertIsNot
+                    ~TestCase_RecordCmd.assertIsNotNone
+                    ~TestCase_RecordCmd.assertLess
+                    ~TestCase_RecordCmd.assertLessEqual
+                    ~TestCase_RecordCmd.assertListEqual
+                    ~TestCase_RecordCmd.assertLogs
+                    ~TestCase_RecordCmd.assertMultiLineEqual
+                    ~TestCase_RecordCmd.assertNoLogs
+                    ~TestCase_RecordCmd.assertNotAlmostEqual
+                    ~TestCase_RecordCmd.assertNotEqual
+                    ~TestCase_RecordCmd.assertNotIn
+                    ~TestCase_RecordCmd.assertNotIsInstance
+                    ~TestCase_RecordCmd.assertNotRegex
+                    ~TestCase_RecordCmd.assertRaises
+                    ~TestCase_RecordCmd.assertRaisesRegex
+                    ~TestCase_RecordCmd.assertRegex
+                    ~TestCase_RecordCmd.assertSequenceEqual
+                    ~TestCase_RecordCmd.assertSetEqual
+                    ~TestCase_RecordCmd.assertTrue
+                    ~TestCase_RecordCmd.assertTupleEqual
+                    ~TestCase_RecordCmd.assertWarns
+                    ~TestCase_RecordCmd.assertWarnsRegex
+                    ~TestCase_RecordCmd.assert_calls_match
+                    ~TestCase_RecordCmd.countTestCases
+                    ~TestCase_RecordCmd.debug
+                    ~TestCase_RecordCmd.defaultTestResult
+                    ~TestCase_RecordCmd.doClassCleanups
+                    ~TestCase_RecordCmd.doCleanups
+                    ~TestCase_RecordCmd.enterClassContext
+                    ~TestCase_RecordCmd.enterContext
+                    ~TestCase_RecordCmd.fail
+                    ~TestCase_RecordCmd.id
+                    ~TestCase_RecordCmd.run
+                    ~TestCase_RecordCmd.setUp
+                    ~TestCase_RecordCmd.setUpClass
+                    ~TestCase_RecordCmd.shortDescription
+                    ~TestCase_RecordCmd.skipTest
+                    ~TestCase_RecordCmd.subTest
+                    ~TestCase_RecordCmd.tearDown
+                    ~TestCase_RecordCmd.tearDownClass
+                    ~TestCase_RecordCmd.test_cmd_arg
+                    ~TestCase_RecordCmd.test_error
+                    ~TestCase_RecordCmd.test_init
+                    ~TestCase_RecordCmd.test_sub_relative
+        
+    

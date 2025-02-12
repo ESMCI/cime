@@ -1,0 +1,36 @@
+..
+  module.rst
+
+CIME.data
+=========
+
+.. automodule:: CIME.data
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
+        .. rubric:: Modules
+
+        .. autosummary::
+            :toctree:
+            :template: autosummary/module.rst
+            :recursive:
+            
+                config
+                templates
+    

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.wait\_for\_tests.create\_cdash\_build\_xml
+===============================================
+
+.. currentmodule:: CIME.wait_for_tests
+
+.. autofunction:: create_cdash_build_xml

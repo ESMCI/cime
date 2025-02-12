@@ -1,0 +1,80 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_xml\_archive\_base.TestXMLArchiveBase
+============================================================
+
+.. currentmodule:: CIME.tests.test_unit_xml_archive_base
+
+.. autoclass:: TestXMLArchiveBase
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestXMLArchiveBase.__init__
+                    ~TestXMLArchiveBase.addClassCleanup
+                    ~TestXMLArchiveBase.addCleanup
+                    ~TestXMLArchiveBase.addTypeEqualityFunc
+                    ~TestXMLArchiveBase.assertAlmostEqual
+                    ~TestXMLArchiveBase.assertCountEqual
+                    ~TestXMLArchiveBase.assertDictEqual
+                    ~TestXMLArchiveBase.assertEqual
+                    ~TestXMLArchiveBase.assertFalse
+                    ~TestXMLArchiveBase.assertGreater
+                    ~TestXMLArchiveBase.assertGreaterEqual
+                    ~TestXMLArchiveBase.assertIn
+                    ~TestXMLArchiveBase.assertIs
+                    ~TestXMLArchiveBase.assertIsInstance
+                    ~TestXMLArchiveBase.assertIsNone
+                    ~TestXMLArchiveBase.assertIsNot
+                    ~TestXMLArchiveBase.assertIsNotNone
+                    ~TestXMLArchiveBase.assertLess
+                    ~TestXMLArchiveBase.assertLessEqual
+                    ~TestXMLArchiveBase.assertListEqual
+                    ~TestXMLArchiveBase.assertLogs
+                    ~TestXMLArchiveBase.assertMultiLineEqual
+                    ~TestXMLArchiveBase.assertNoLogs
+                    ~TestXMLArchiveBase.assertNotAlmostEqual
+                    ~TestXMLArchiveBase.assertNotEqual
+                    ~TestXMLArchiveBase.assertNotIn
+                    ~TestXMLArchiveBase.assertNotIsInstance
+                    ~TestXMLArchiveBase.assertNotRegex
+                    ~TestXMLArchiveBase.assertRaises
+                    ~TestXMLArchiveBase.assertRaisesRegex
+                    ~TestXMLArchiveBase.assertRegex
+                    ~TestXMLArchiveBase.assertSequenceEqual
+                    ~TestXMLArchiveBase.assertSetEqual
+                    ~TestXMLArchiveBase.assertTrue
+                    ~TestXMLArchiveBase.assertTupleEqual
+                    ~TestXMLArchiveBase.assertWarns
+                    ~TestXMLArchiveBase.assertWarnsRegex
+                    ~TestXMLArchiveBase.countTestCases
+                    ~TestXMLArchiveBase.debug
+                    ~TestXMLArchiveBase.defaultTestResult
+                    ~TestXMLArchiveBase.doClassCleanups
+                    ~TestXMLArchiveBase.doCleanups
+                    ~TestXMLArchiveBase.enterClassContext
+                    ~TestXMLArchiveBase.enterContext
+                    ~TestXMLArchiveBase.fail
+                    ~TestXMLArchiveBase.id
+                    ~TestXMLArchiveBase.run
+                    ~TestXMLArchiveBase.setUp
+                    ~TestXMLArchiveBase.setUpClass
+                    ~TestXMLArchiveBase.shortDescription
+                    ~TestXMLArchiveBase.skipTest
+                    ~TestXMLArchiveBase.subTest
+                    ~TestXMLArchiveBase.tearDown
+                    ~TestXMLArchiveBase.tearDownClass
+                    ~TestXMLArchiveBase.test_exclude_testing
+                    ~TestXMLArchiveBase.test_extension_included
+                    ~TestXMLArchiveBase.test_match_files
+                    ~TestXMLArchiveBase.test_suffix
+        
+    

@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.XML.grids &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CIME.XML.grids.Grids" href="CIME.XML.grids.Grids.html" />
+    <link rel="prev" title="CIME.XML.generic_xml.GenericXML" href="CIME.XML.generic_xml.GenericXML.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ccs/index.html">Case Control System (CCS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Servers.html">CIME.Servers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Tools.html">CIME.Tools</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="CIME.XML.html">CIME.XML</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.archive.html">CIME.XML.archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.archive_base.html">CIME.XML.archive_base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.batch.html">CIME.XML.batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.component.html">CIME.XML.component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.compsets.html">CIME.XML.compsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.entry_id.html">CIME.XML.entry_id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_archive.html">CIME.XML.env_archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_base.html">CIME.XML.env_base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_batch.html">CIME.XML.env_batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_build.html">CIME.XML.env_build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_case.html">CIME.XML.env_case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_mach_pes.html">CIME.XML.env_mach_pes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_mach_specific.html">CIME.XML.env_mach_specific</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_run.html">CIME.XML.env_run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_test.html">CIME.XML.env_test</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_workflow.html">CIME.XML.env_workflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.expected_fails_file.html">CIME.XML.expected_fails_file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.files.html">CIME.XML.files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.generic_xml.html">CIME.XML.generic_xml</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">CIME.XML.grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.headers.html">CIME.XML.headers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.inputdata.html">CIME.XML.inputdata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.machines.html">CIME.XML.machines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.namelist_definition.html">CIME.XML.namelist_definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.pes.html">CIME.XML.pes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.pio.html">CIME.XML.pio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.standard_module_setup.html">CIME.XML.standard_module_setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.stream.html">CIME.XML.stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.test_reporter.html">CIME.XML.test_reporter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.testlist.html">CIME.XML.testlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.tests.html">CIME.XML.tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.testspec.html">CIME.XML.testspec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.workflow.html">CIME.XML.workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.aprun.html">CIME.aprun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.html">CIME.bless_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build.html">CIME.build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.case.html">CIME.case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.code_checker.html">CIME.code_checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.html">CIME.compare_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.config.html">CIME.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.cs_status.html">CIME.cs_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.cs_status_creator.html">CIME.cs_status_creator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.data.html">CIME.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.date.html">CIME.date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.expected_fails.html">CIME.expected_fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.html">CIME.get_tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.get_timing.html">CIME.get_timing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.gitinterface.html">CIME.gitinterface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.hist_utils.html">CIME.hist_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.jenkins_generic_job.html">CIME.jenkins_generic_job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.locked_files.html">CIME.locked_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.namelist.html">CIME.namelist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.nmlgen.html">CIME.nmlgen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.provenance.html">CIME.provenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html">CIME.scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.simple_compare.html">CIME.simple_compare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.status.html">CIME.status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_scheduler.html">CIME.test_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_status.html">CIME.test_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_utils.html">CIME.test_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html">CIME.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.user_mod_support.html">CIME.user_mod_support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.html">CIME.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.wait_for_tests.html">CIME.wait_for_tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.XML.html">CIME.XML</a></li>
+      <li class="breadcrumb-item active">CIME.XML.grids</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/CIME.XML.grids.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-CIME.XML.grids">
+<span id="cime-xml-grids"></span><h1>CIME.XML.grids<a class="headerlink" href="#module-CIME.XML.grids" title="Link to this heading"></a></h1>
+<p>Common interface to XML files which follow the grids format,
+This is not an abstract class - but inherits from the abstact class GenericXML</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.XML.grids.Grids.html#CIME.XML.grids.Grids" title="CIME.XML.grids.Grids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Grids</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="CIME.XML.generic_xml.GenericXML.html" class="btn btn-neutral float-left" title="CIME.XML.generic_xml.GenericXML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.XML.grids.Grids.html" class="btn btn-neutral float-right" title="CIME.XML.grids.Grids" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

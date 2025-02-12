@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.mcc
+====================
+
+.. automodule:: CIME.SystemTests.mcc
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    MCC
+        
+    
+
+    
+        
+    
+
+
+    

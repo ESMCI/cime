@@ -1,0 +1,64 @@
+..
+  class.rst
+
+CIME.XML.pes.Pes
+================
+
+.. currentmodule:: CIME.XML.pes
+
+.. autoclass:: Pes
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Pes.__init__
+                    ~Pes.add_child
+                    ~Pes.attrib
+                    ~Pes.change_file
+                    ~Pes.check_timestamp
+                    ~Pes.copy
+                    ~Pes.find_pes_layout
+                    ~Pes.get
+                    ~Pes.get_child
+                    ~Pes.get_children
+                    ~Pes.get_element_text
+                    ~Pes.get_id
+                    ~Pes.get_optional_child
+                    ~Pes.get_raw_record
+                    ~Pes.get_resolved_value
+                    ~Pes.get_value
+                    ~Pes.get_values
+                    ~Pes.get_version
+                    ~Pes.has
+                    ~Pes.invalidate
+                    ~Pes.lock
+                    ~Pes.make_child
+                    ~Pes.make_child_comment
+                    ~Pes.name
+                    ~Pes.pop
+                    ~Pes.read
+                    ~Pes.read_fd
+                    ~Pes.remove_child
+                    ~Pes.scan_child
+                    ~Pes.scan_children
+                    ~Pes.scan_optional_child
+                    ~Pes.set
+                    ~Pes.set_element_text
+                    ~Pes.set_name
+                    ~Pes.set_text
+                    ~Pes.set_value
+                    ~Pes.text
+                    ~Pes.to_string
+                    ~Pes.unlock
+                    ~Pes.validate_timestamp
+                    ~Pes.validate_xml_file
+                    ~Pes.write
+        
+    

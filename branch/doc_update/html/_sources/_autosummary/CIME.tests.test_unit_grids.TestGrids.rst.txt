@@ -1,0 +1,82 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_grids.TestGrids
+======================================
+
+.. currentmodule:: CIME.tests.test_unit_grids
+
+.. autoclass:: TestGrids
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestGrids.__init__
+                    ~TestGrids.addClassCleanup
+                    ~TestGrids.addCleanup
+                    ~TestGrids.addTypeEqualityFunc
+                    ~TestGrids.assertAlmostEqual
+                    ~TestGrids.assertCountEqual
+                    ~TestGrids.assertDictEqual
+                    ~TestGrids.assertEqual
+                    ~TestGrids.assertFalse
+                    ~TestGrids.assertGreater
+                    ~TestGrids.assertGreaterEqual
+                    ~TestGrids.assertIn
+                    ~TestGrids.assertIs
+                    ~TestGrids.assertIsInstance
+                    ~TestGrids.assertIsNone
+                    ~TestGrids.assertIsNot
+                    ~TestGrids.assertIsNotNone
+                    ~TestGrids.assertLess
+                    ~TestGrids.assertLessEqual
+                    ~TestGrids.assertListEqual
+                    ~TestGrids.assertLogs
+                    ~TestGrids.assertMultiLineEqual
+                    ~TestGrids.assertNoLogs
+                    ~TestGrids.assertNotAlmostEqual
+                    ~TestGrids.assertNotEqual
+                    ~TestGrids.assertNotIn
+                    ~TestGrids.assertNotIsInstance
+                    ~TestGrids.assertNotRegex
+                    ~TestGrids.assertRaises
+                    ~TestGrids.assertRaisesRegex
+                    ~TestGrids.assertRegex
+                    ~TestGrids.assertSequenceEqual
+                    ~TestGrids.assertSetEqual
+                    ~TestGrids.assertTrue
+                    ~TestGrids.assertTupleEqual
+                    ~TestGrids.assertWarns
+                    ~TestGrids.assertWarnsRegex
+                    ~TestGrids.assert_grid_info_f09_g17
+                    ~TestGrids.assert_grid_info_f09_g17_3glc
+                    ~TestGrids.countTestCases
+                    ~TestGrids.debug
+                    ~TestGrids.defaultTestResult
+                    ~TestGrids.doClassCleanups
+                    ~TestGrids.doCleanups
+                    ~TestGrids.enterClassContext
+                    ~TestGrids.enterContext
+                    ~TestGrids.fail
+                    ~TestGrids.id
+                    ~TestGrids.run
+                    ~TestGrids.setUp
+                    ~TestGrids.setUpClass
+                    ~TestGrids.shortDescription
+                    ~TestGrids.skipTest
+                    ~TestGrids.subTest
+                    ~TestGrids.tearDown
+                    ~TestGrids.tearDownClass
+                    ~TestGrids.test_get_grid_info_3glc
+                    ~TestGrids.test_get_grid_info_basic
+                    ~TestGrids.test_get_grid_info_extra_gridmaps
+                    ~TestGrids.test_get_grid_info_extra_required_gridmaps
+        
+    

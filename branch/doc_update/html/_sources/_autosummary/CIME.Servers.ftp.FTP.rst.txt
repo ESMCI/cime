@@ -1,0 +1,27 @@
+..
+  class.rst
+
+CIME.Servers.ftp.FTP
+====================
+
+.. currentmodule:: CIME.Servers.ftp
+
+.. autoclass:: FTP
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~FTP.__init__
+                    ~FTP.fileexists
+                    ~FTP.ftp_login
+                    ~FTP.getdirectory
+                    ~FTP.getfile
+        
+    

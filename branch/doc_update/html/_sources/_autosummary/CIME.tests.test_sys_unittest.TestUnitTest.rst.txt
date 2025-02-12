@@ -1,0 +1,86 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_unittest.TestUnitTest
+===========================================
+
+.. currentmodule:: CIME.tests.test_sys_unittest
+
+.. autoclass:: TestUnitTest
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestUnitTest.__init__
+                    ~TestUnitTest.addClassCleanup
+                    ~TestUnitTest.addCleanup
+                    ~TestUnitTest.addTypeEqualityFunc
+                    ~TestUnitTest.assertAlmostEqual
+                    ~TestUnitTest.assertCountEqual
+                    ~TestUnitTest.assertDictEqual
+                    ~TestUnitTest.assertEqual
+                    ~TestUnitTest.assertFalse
+                    ~TestUnitTest.assertGreater
+                    ~TestUnitTest.assertGreaterEqual
+                    ~TestUnitTest.assertIn
+                    ~TestUnitTest.assertIs
+                    ~TestUnitTest.assertIsInstance
+                    ~TestUnitTest.assertIsNone
+                    ~TestUnitTest.assertIsNot
+                    ~TestUnitTest.assertIsNotNone
+                    ~TestUnitTest.assertLess
+                    ~TestUnitTest.assertLessEqual
+                    ~TestUnitTest.assertListEqual
+                    ~TestUnitTest.assertLogs
+                    ~TestUnitTest.assertMultiLineEqual
+                    ~TestUnitTest.assertNoLogs
+                    ~TestUnitTest.assertNotAlmostEqual
+                    ~TestUnitTest.assertNotEqual
+                    ~TestUnitTest.assertNotIn
+                    ~TestUnitTest.assertNotIsInstance
+                    ~TestUnitTest.assertNotRegex
+                    ~TestUnitTest.assertRaises
+                    ~TestUnitTest.assertRaisesRegex
+                    ~TestUnitTest.assertRegex
+                    ~TestUnitTest.assertSequenceEqual
+                    ~TestUnitTest.assertSetEqual
+                    ~TestUnitTest.assertTrue
+                    ~TestUnitTest.assertTupleEqual
+                    ~TestUnitTest.assertWarns
+                    ~TestUnitTest.assertWarnsRegex
+                    ~TestUnitTest.assert_dashboard_has_build
+                    ~TestUnitTest.assert_test_status
+                    ~TestUnitTest.countTestCases
+                    ~TestUnitTest.debug
+                    ~TestUnitTest.defaultTestResult
+                    ~TestUnitTest.doClassCleanups
+                    ~TestUnitTest.doCleanups
+                    ~TestUnitTest.enterClassContext
+                    ~TestUnitTest.enterContext
+                    ~TestUnitTest.fail
+                    ~TestUnitTest.get_casedir
+                    ~TestUnitTest.id
+                    ~TestUnitTest.kill_python_subprocesses
+                    ~TestUnitTest.kill_subprocesses
+                    ~TestUnitTest.run
+                    ~TestUnitTest.run_cmd_assert_result
+                    ~TestUnitTest.setUp
+                    ~TestUnitTest.setUpClass
+                    ~TestUnitTest.setup_proxy
+                    ~TestUnitTest.shortDescription
+                    ~TestUnitTest.skipTest
+                    ~TestUnitTest.subTest
+                    ~TestUnitTest.tearDown
+                    ~TestUnitTest.tearDownClass
+                    ~TestUnitTest.test_a_unit_test
+                    ~TestUnitTest.test_b_cime_f90_unit_tests
+                    ~TestUnitTest.verify_perms
+        
+    

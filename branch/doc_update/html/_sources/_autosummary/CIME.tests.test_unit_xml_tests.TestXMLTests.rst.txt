@@ -1,0 +1,78 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_xml\_tests.TestXMLTests
+==============================================
+
+.. currentmodule:: CIME.tests.test_unit_xml_tests
+
+.. autoclass:: TestXMLTests
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestXMLTests.__init__
+                    ~TestXMLTests.addClassCleanup
+                    ~TestXMLTests.addCleanup
+                    ~TestXMLTests.addTypeEqualityFunc
+                    ~TestXMLTests.assertAlmostEqual
+                    ~TestXMLTests.assertCountEqual
+                    ~TestXMLTests.assertDictEqual
+                    ~TestXMLTests.assertEqual
+                    ~TestXMLTests.assertFalse
+                    ~TestXMLTests.assertGreater
+                    ~TestXMLTests.assertGreaterEqual
+                    ~TestXMLTests.assertIn
+                    ~TestXMLTests.assertIs
+                    ~TestXMLTests.assertIsInstance
+                    ~TestXMLTests.assertIsNone
+                    ~TestXMLTests.assertIsNot
+                    ~TestXMLTests.assertIsNotNone
+                    ~TestXMLTests.assertLess
+                    ~TestXMLTests.assertLessEqual
+                    ~TestXMLTests.assertListEqual
+                    ~TestXMLTests.assertLogs
+                    ~TestXMLTests.assertMultiLineEqual
+                    ~TestXMLTests.assertNoLogs
+                    ~TestXMLTests.assertNotAlmostEqual
+                    ~TestXMLTests.assertNotEqual
+                    ~TestXMLTests.assertNotIn
+                    ~TestXMLTests.assertNotIsInstance
+                    ~TestXMLTests.assertNotRegex
+                    ~TestXMLTests.assertRaises
+                    ~TestXMLTests.assertRaisesRegex
+                    ~TestXMLTests.assertRegex
+                    ~TestXMLTests.assertSequenceEqual
+                    ~TestXMLTests.assertSetEqual
+                    ~TestXMLTests.assertTrue
+                    ~TestXMLTests.assertTupleEqual
+                    ~TestXMLTests.assertWarns
+                    ~TestXMLTests.assertWarnsRegex
+                    ~TestXMLTests.countTestCases
+                    ~TestXMLTests.debug
+                    ~TestXMLTests.defaultTestResult
+                    ~TestXMLTests.doClassCleanups
+                    ~TestXMLTests.doCleanups
+                    ~TestXMLTests.enterClassContext
+                    ~TestXMLTests.enterContext
+                    ~TestXMLTests.fail
+                    ~TestXMLTests.id
+                    ~TestXMLTests.run
+                    ~TestXMLTests.setUp
+                    ~TestXMLTests.setUpClass
+                    ~TestXMLTests.shortDescription
+                    ~TestXMLTests.skipTest
+                    ~TestXMLTests.subTest
+                    ~TestXMLTests.tearDown
+                    ~TestXMLTests.tearDownClass
+                    ~TestXMLTests.test_support_single_exe
+                    ~TestXMLTests.test_support_single_exe_error
+        
+    

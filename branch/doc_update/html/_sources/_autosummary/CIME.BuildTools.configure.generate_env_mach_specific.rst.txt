@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.BuildTools.configure.generate\_env\_mach\_specific
+=======================================================
+
+.. currentmodule:: CIME.BuildTools.configure
+
+.. autofunction:: generate_env_mach_specific

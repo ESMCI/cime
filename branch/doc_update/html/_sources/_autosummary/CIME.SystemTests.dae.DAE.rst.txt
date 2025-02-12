@@ -1,0 +1,32 @@
+..
+  class.rst
+
+CIME.SystemTests.dae.DAE
+========================
+
+.. currentmodule:: CIME.SystemTests.dae
+
+.. autoclass:: DAE
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~DAE.__init__
+                    ~DAE.build
+                    ~DAE.build_indv
+                    ~DAE.build_phase
+                    ~DAE.clean_build
+                    ~DAE.compare_env_run
+                    ~DAE.copy_case1_restarts_to_case2
+                    ~DAE.run
+                    ~DAE.run_indv
+                    ~DAE.run_phase
+        
+    

@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_common.TESTRUNSLOWPASS
+======================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autoclass:: TESTRUNSLOWPASS
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TESTRUNSLOWPASS.__init__
+                    ~TESTRUNSLOWPASS.build
+                    ~TESTRUNSLOWPASS.build_indv
+                    ~TESTRUNSLOWPASS.build_phase
+                    ~TESTRUNSLOWPASS.clean_build
+                    ~TESTRUNSLOWPASS.compare_env_run
+                    ~TESTRUNSLOWPASS.run
+                    ~TESTRUNSLOWPASS.run_indv
+                    ~TESTRUNSLOWPASS.run_phase
+        
+    

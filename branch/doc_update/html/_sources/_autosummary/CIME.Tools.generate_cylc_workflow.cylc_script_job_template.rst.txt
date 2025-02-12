@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.Tools.generate\_cylc\_workflow.cylc\_script\_job\_template
+===============================================================
+
+.. currentmodule:: CIME.Tools.generate_cylc_workflow
+
+.. autofunction:: cylc_script_job_template

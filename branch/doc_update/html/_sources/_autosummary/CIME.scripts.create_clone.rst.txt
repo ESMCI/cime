@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.scripts.create\_clone
+==========================
+
+.. automodule:: CIME.scripts.create_clone
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    parse_command_line
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

@@ -1,0 +1,56 @@
+..
+  module.rst
+
+CIME.namelist
+=============
+
+.. automodule:: CIME.namelist
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    character_literal_to_string
+                    compress_literal_list
+                    convert_bool
+                    expand_literal_list
+                    fortran_namelist_base_value
+                    get_fortran_name_only
+                    get_fortran_variable_indices
+                    is_valid_fortran_name
+                    is_valid_fortran_namelist_literal
+                    literal_to_python_value
+                    merge_literal_lists
+                    parse
+                    string_to_character_literal
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    Namelist
+        
+    
+
+    
+        
+    
+
+
+    

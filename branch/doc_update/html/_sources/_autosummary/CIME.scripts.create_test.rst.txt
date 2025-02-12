@@ -1,0 +1,38 @@
+..
+  module.rst
+
+CIME.scripts.create\_test
+=========================
+
+.. automodule:: CIME.scripts.create_test
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    create_test
+                    get_default_setting
+                    parse_command_line
+                    single_submit_impl
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

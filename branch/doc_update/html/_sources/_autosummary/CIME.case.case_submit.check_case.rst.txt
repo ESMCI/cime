@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.case\_submit.check\_case
+==================================
+
+.. currentmodule:: CIME.case.case_submit
+
+.. autofunction:: check_case

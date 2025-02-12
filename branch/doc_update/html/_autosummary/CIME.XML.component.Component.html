@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIME.XML.component.Component &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CIME.XML.compsets" href="CIME.XML.compsets.html" />
+    <link rel="prev" title="CIME.XML.component" href="CIME.XML.component.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ccs/index.html">Case Control System (CCS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Servers.html">CIME.Servers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Tools.html">CIME.Tools</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="CIME.XML.html">CIME.XML</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.archive.html">CIME.XML.archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.archive_base.html">CIME.XML.archive_base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.batch.html">CIME.XML.batch</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="CIME.XML.component.html">CIME.XML.component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.compsets.html">CIME.XML.compsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.entry_id.html">CIME.XML.entry_id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_archive.html">CIME.XML.env_archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_base.html">CIME.XML.env_base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_batch.html">CIME.XML.env_batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_build.html">CIME.XML.env_build</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_case.html">CIME.XML.env_case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_mach_pes.html">CIME.XML.env_mach_pes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_mach_specific.html">CIME.XML.env_mach_specific</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_run.html">CIME.XML.env_run</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_test.html">CIME.XML.env_test</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.env_workflow.html">CIME.XML.env_workflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.expected_fails_file.html">CIME.XML.expected_fails_file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.files.html">CIME.XML.files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.generic_xml.html">CIME.XML.generic_xml</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.grids.html">CIME.XML.grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.headers.html">CIME.XML.headers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.inputdata.html">CIME.XML.inputdata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.machines.html">CIME.XML.machines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.namelist_definition.html">CIME.XML.namelist_definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.pes.html">CIME.XML.pes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.pio.html">CIME.XML.pio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.standard_module_setup.html">CIME.XML.standard_module_setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.stream.html">CIME.XML.stream</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.test_reporter.html">CIME.XML.test_reporter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.testlist.html">CIME.XML.testlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.tests.html">CIME.XML.tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.testspec.html">CIME.XML.testspec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.XML.workflow.html">CIME.XML.workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.aprun.html">CIME.aprun</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.html">CIME.bless_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build.html">CIME.build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.case.html">CIME.case</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.code_checker.html">CIME.code_checker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.html">CIME.compare_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.config.html">CIME.config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.cs_status.html">CIME.cs_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.cs_status_creator.html">CIME.cs_status_creator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.data.html">CIME.data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.date.html">CIME.date</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.expected_fails.html">CIME.expected_fails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.html">CIME.get_tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.get_timing.html">CIME.get_timing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.gitinterface.html">CIME.gitinterface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.hist_utils.html">CIME.hist_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.jenkins_generic_job.html">CIME.jenkins_generic_job</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.locked_files.html">CIME.locked_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.namelist.html">CIME.namelist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.nmlgen.html">CIME.nmlgen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.provenance.html">CIME.provenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.scripts.html">CIME.scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.simple_compare.html">CIME.simple_compare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.status.html">CIME.status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_scheduler.html">CIME.test_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_status.html">CIME.test_status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.test_utils.html">CIME.test_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.tests.html">CIME.tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.user_mod_support.html">CIME.user_mod_support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.html">CIME.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.wait_for_tests.html">CIME.wait_for_tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="CIME.html">CIME</a></li>
+          <li class="breadcrumb-item"><a href="CIME.XML.html">CIME.XML</a></li>
+          <li class="breadcrumb-item"><a href="CIME.XML.component.html">CIME.XML.component</a></li>
+      <li class="breadcrumb-item active">CIME.XML.component.Component</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/CIME.XML.component.Component.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cime-xml-component-component">
+<h1>CIME.XML.component.Component<a class="headerlink" href="#cime-xml-component-component" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.XML.component.Component">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.XML.component.</span></span><span class="sig-name descname"><span class="pre">Component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp_class</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="CIME.XML.entry_id.EntryID.html#CIME.XML.entry_id.EntryID" title="CIME.XML.entry_id.EntryID"><code class="xref py py-class docutils literal notranslate"><span class="pre">EntryID</span></code></a></p>
+<blockquote>
+<div><p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></p></td>
+<td><p>initialize a Component obect from the component xml file in infile associate the component class with comp_class if provided.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.add_child" title="CIME.XML.component.Component.add_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_child</span></code></a></p></td>
+<td><p>Add element node to self at root</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.add_elements_by_group" title="CIME.XML.component.Component.add_elements_by_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_elements_by_group</span></code></a></p></td>
+<td><p>Add elements from srcobj to self under the appropriate group element, entries to be added must have a child element &lt;file&gt; with value &quot;infile&quot;</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">attrib</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_file</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_if_comp_var</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.check_timestamp" title="CIME.XML.component.Component.check_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_timestamp</span></code></a></p></td>
+<td><p>Returns True if timestamp matches what is expected</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.cleanupnode" title="CIME.XML.component.Component.cleanupnode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cleanupnode</span></code></a></p></td>
+<td><p>in env_base.py, not expected to get here</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_xml</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_child</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_child_content</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_children" title="CIME.XML.component.Component.get_children"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_children</span></code></a></p></td>
+<td><p>This is the critical function, its interface and performance are crucial.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_default_value" title="CIME.XML.component.Component.get_default_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_value</span></code></a></p></td>
+<td><p>Set the value of an entry to the default value for that entry</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_description</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_element_text</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_elements_from_child_content</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_forcing_description</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_groups</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_id</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_node_element_info</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_nodes_by_id</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_optional_child</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_raw_record</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_resolved_value" title="CIME.XML.component.Component.get_resolved_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_resolved_value</span></code></a></p></td>
+<td><p>A value in the xml file may contain references to other xml variables or to environment variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_type_info</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_valid_model_components" title="CIME.XML.component.Component.get_valid_model_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_model_components</span></code></a></p></td>
+<td><p>return a list of all possible valid generic (e.g. atm, clm, ...) model components from the entries in the model CONFIG_CPL_FILE.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_value_string</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_valid_values</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_value" title="CIME.XML.component.Component.get_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value</span></code></a></p></td>
+<td><p>Get a value for entry with id attribute vid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_value_match" title="CIME.XML.component.Component.get_value_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_match</span></code></a></p></td>
+<td><p>Handle this case: &lt;entry id ...&gt;  &lt;values&gt;   &lt;value A=&quot;a1&quot;&gt;X&lt;/value&gt;   &lt;value A=&quot;a2&quot;&gt;Y&lt;/value&gt;   &lt;value A=&quot;a3&quot; B=&quot;b1&quot;&gt;Z&lt;/value&gt;  &lt;/values&gt; &lt;/entry&gt;</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.get_values" title="CIME.XML.component.Component.get_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_values</span></code></a></p></td>
+<td><p>Same functionality as get_value but it returns a list, if the value in xml contains commas the list have multiple elements split on commas</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_version</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">has</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">invalidate</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.lock" title="CIME.XML.component.Component.lock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lock</span></code></a></p></td>
+<td><p>A subclass is doing caching, we need to lock the tree structure in order to avoid invalidating cache.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_child</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_child_comment</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">overwrite_existing_entries</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.print_values" title="CIME.XML.component.Component.print_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_values</span></code></a></p></td>
+<td><p>print values for help and description in target config_component.xml file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.read" title="CIME.XML.component.Component.read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a></p></td>
+<td><p>Read and parse an xml file into the object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_fd</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_child</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.return_values" title="CIME.XML.component.Component.return_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">return_values</span></code></a></p></td>
+<td><p>return a list of hashes from target config_component.xml file This routine is used by external tools in <a class="reference external" href="https://github.com/NCAR/CESM_xml2html">https://github.com/NCAR/CESM_xml2html</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.scan_child" title="CIME.XML.component.Component.scan_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scan_child</span></code></a></p></td>
+<td><p>Get an xml element matching nodename with optional attributes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scan_children</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.scan_optional_child" title="CIME.XML.component.Component.scan_optional_child"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scan_optional_child</span></code></a></p></td>
+<td><p>Get an xml element matching nodename with optional attributes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_value</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_element_text</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_text</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_valid_values</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.set_value" title="CIME.XML.component.Component.set_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value</span></code></a></p></td>
+<td><p>Set the value of an entry-id field to value Returns the value or None if not found subgroup is ignored in the general routine and applied in specific methods</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">text</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_string</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unlock</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_timestamp</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.component.Component.validate_xml_file" title="CIME.XML.component.Component.validate_xml_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_xml_file</span></code></a></p></td>
+<td><p>validate an XML file against a provided schema file using pylint</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.component.Component.write" title="CIME.XML.component.Component.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a></p></td>
+<td><p>Write an xml file from data in self</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.CacheEntry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CacheEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modtime</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.CacheEntry" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.CacheEntry.count">
+<span class="sig-name descname"><span class="pre">count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.CacheEntry.count" title="Link to this definition"></a></dt>
+<dd><p>Return number of occurrences of value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.CacheEntry.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9223372036854775807</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.CacheEntry.index" title="Link to this definition"></a></dt>
+<dd><p>Return first index of value.</p>
+<p>Raises ValueError if the value is not present.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.CacheEntry.modtime">
+<span class="sig-name descname"><span class="pre">modtime</span></span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.CacheEntry.modtime" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.CacheEntry.root">
+<span class="sig-name descname"><span class="pre">root</span></span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.CacheEntry.root" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.CacheEntry.tree">
+<span class="sig-name descname"><span class="pre">tree</span></span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.CacheEntry.tree" title="Link to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.add_child" title="Link to this definition"></a></dt>
+<dd><p>Add element node to self at root</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.add_elements_by_group">
+<span class="sig-name descname"><span class="pre">add_elements_by_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">srcobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.add_elements_by_group" title="Link to this definition"></a></dt>
+<dd><p>Add elements from srcobj to self under the appropriate
+group element, entries to be added must have a child element
+&lt;file&gt; with value “infile”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.check_timestamp">
+<span class="sig-name descname"><span class="pre">check_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.check_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Returns True if timestamp matches what is expected</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.cleanupnode">
+<span class="sig-name descname"><span class="pre">cleanupnode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.cleanupnode" title="Link to this definition"></a></dt>
+<dd><p>in env_base.py, not expected to get here</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_children">
+<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_children" title="Link to this definition"></a></dt>
+<dd><p>This is the critical function, its interface and performance are crucial.</p>
+<p>You can specify attributes={key:None} if you want to select children
+with the key attribute but you don’t care what its value is.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_default_value">
+<span class="sig-name descname"><span class="pre">get_default_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_default_value" title="Link to this definition"></a></dt>
+<dd><p>Set the value of an entry to the default value for that entry</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_resolved_value">
+<span class="sig-name descname"><span class="pre">get_resolved_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_unresolved_envvars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_resolved_value" title="Link to this definition"></a></dt>
+<dd><p>A value in the xml file may contain references to other xml
+variables or to environment variables. These are refered to in
+the perl style with $name and $ENV{name}.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">GenericXML</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;FOO&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BAR&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;BAZ&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BARF&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;one $ENV</span><span class="si">{FOO}</span><span class="s2"> two $ENV</span><span class="si">{BAZ}</span><span class="s2"> three&quot;</span><span class="p">)</span>
+<span class="go">&#39;one BAR two BARF three&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;2 + 3 - 1&quot;</span><span class="p">)</span>
+<span class="go">&#39;4&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;0001-01-01&quot;</span><span class="p">)</span>
+<span class="go">&#39;0001-01-01&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;$SHELL{echo hi}&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;hi&#39;</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_valid_model_components">
+<span class="sig-name descname"><span class="pre">get_valid_model_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_valid_model_components" title="Link to this definition"></a></dt>
+<dd><p>return a list of all possible valid generic (e.g. atm, clm, …) model components
+from the entries in the model CONFIG_CPL_FILE</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolved</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_value" title="Link to this definition"></a></dt>
+<dd><p>Get a value for entry with id attribute vid.
+or from the values field if the attribute argument is provided
+and matches</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_value_match">
+<span class="sig-name descname"><span class="pre">get_value_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_match</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replacement_for_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_value_match" title="Link to this definition"></a></dt>
+<dd><p>Handle this case:
+&lt;entry id …&gt;</p>
+<blockquote>
+<div><dl class="simple">
+<dt>&lt;values&gt;</dt><dd><p>&lt;value A=”a1”&gt;X&lt;/value&gt;
+&lt;value A=”a2”&gt;Y&lt;/value&gt;
+&lt;value A=”a3” B=”b1”&gt;Z&lt;/value&gt;</p>
+</dd>
+</dl>
+<p>&lt;/values&gt;</p>
+</div></blockquote>
+<p>&lt;/entry&gt;</p>
+<p>If replacement_for_none is provided, then: if the found text value would give a
+None value, instead replace it with the value given by the replacement_for_none
+argument. (However, still return None if no match is found.) This may or may not
+be needed, but is in place to maintain some old logic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.get_values">
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolved</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.get_values" title="Link to this definition"></a></dt>
+<dd><p>Same functionality as get_value but it returns a list, if the
+value in xml contains commas the list have multiple elements split on
+commas</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.lock">
+<span class="sig-name descname"><span class="pre">lock</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.lock" title="Link to this definition"></a></dt>
+<dd><p>A subclass is doing caching, we need to lock the tree structure
+in order to avoid invalidating cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.print_values">
+<span class="sig-name descname"><span class="pre">print_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.print_values" title="Link to this definition"></a></dt>
+<dd><p>print values for help and description in target config_component.xml file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.read" title="Link to this definition"></a></dt>
+<dd><p>Read and parse an xml file into the object.  The schema variable can either be a path to an xsd schema file or
+a dictionary of paths to files by version.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.return_values">
+<span class="sig-name descname"><span class="pre">return_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.return_values" title="Link to this definition"></a></dt>
+<dd><p>return a list of hashes from target config_component.xml file
+This routine is used by external tools in <a class="reference external" href="https://github.com/NCAR/CESM_xml2html">https://github.com/NCAR/CESM_xml2html</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.scan_child">
+<span class="sig-name descname"><span class="pre">scan_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.scan_child" title="Link to this definition"></a></dt>
+<dd><p>Get an xml element matching nodename with optional attributes.</p>
+<p>Error unless exactly one match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.scan_optional_child">
+<span class="sig-name descname"><span class="pre">scan_optional_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.scan_optional_child" title="Link to this definition"></a></dt>
+<dd><p>Get an xml element matching nodename with optional attributes.</p>
+<p>Return None if no match.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subgroup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.set_value" title="Link to this definition"></a></dt>
+<dd><p>Set the value of an entry-id field to value
+Returns the value or None if not found
+subgroup is ignored in the general routine and applied in specific methods</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.validate_xml_file">
+<span class="sig-name descname"><span class="pre">validate_xml_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.validate_xml_file" title="Link to this definition"></a></dt>
+<dd><p>validate an XML file against a provided schema file using pylint</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="CIME.XML.component.Component.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/component.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.component.Component.write" title="Link to this definition"></a></dt>
+<dd><p>Write an xml file from data in self</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="CIME.XML.component.html" class="btn btn-neutral float-left" title="CIME.XML.component" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.XML.compsets.html" class="btn btn-neutral float-right" title="CIME.XML.compsets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.check\_input\_data.stage\_refcase
+===========================================
+
+.. currentmodule:: CIME.case.check_input_data
+
+.. autofunction:: stage_refcase

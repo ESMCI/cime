@@ -1,0 +1,36 @@
+..
+  module.rst
+
+CIME.Tools.testreporter
+=======================
+
+.. automodule:: CIME.Tools.testreporter
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    get_testreporter_xml
+                    parse_command_line
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

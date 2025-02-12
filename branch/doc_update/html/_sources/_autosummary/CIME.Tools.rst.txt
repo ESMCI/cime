@@ -1,0 +1,37 @@
+..
+  module.rst
+
+CIME.Tools
+==========
+
+.. automodule:: CIME.Tools
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
+        .. rubric:: Modules
+
+        .. autosummary::
+            :toctree:
+            :template: autosummary/module.rst
+            :recursive:
+            
+                generate_cylc_workflow
+                standard_script_setup
+                testreporter
+    

@@ -1,0 +1,37 @@
+..
+  module.rst
+
+CIME.case.case\_submit
+======================
+
+.. automodule:: CIME.case.case_submit
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    check_DA_settings
+                    check_case
+                    submit
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

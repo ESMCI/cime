@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_user\_mod\_support
+=========================================
+
+.. automodule:: CIME.tests.test_unit_user_mod_support
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestUserModSupport
+        
+    
+
+    
+        
+    
+
+
+    

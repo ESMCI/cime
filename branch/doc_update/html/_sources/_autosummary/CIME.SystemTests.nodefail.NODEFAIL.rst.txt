@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.nodefail.NODEFAIL
+==================================
+
+.. currentmodule:: CIME.SystemTests.nodefail
+
+.. autoclass:: NODEFAIL
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~NODEFAIL.__init__
+                    ~NODEFAIL.build
+                    ~NODEFAIL.build_indv
+                    ~NODEFAIL.build_phase
+                    ~NODEFAIL.clean_build
+                    ~NODEFAIL.compare_env_run
+                    ~NODEFAIL.run
+                    ~NODEFAIL.run_indv
+                    ~NODEFAIL.run_phase
+        
+    

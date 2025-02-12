@@ -1,0 +1,79 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_utils.TestFileContainsPythonFunction
+===========================================================
+
+.. currentmodule:: CIME.tests.test_unit_utils
+
+.. autoclass:: TestFileContainsPythonFunction
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestFileContainsPythonFunction.__init__
+                    ~TestFileContainsPythonFunction.addClassCleanup
+                    ~TestFileContainsPythonFunction.addCleanup
+                    ~TestFileContainsPythonFunction.addTypeEqualityFunc
+                    ~TestFileContainsPythonFunction.assertAlmostEqual
+                    ~TestFileContainsPythonFunction.assertCountEqual
+                    ~TestFileContainsPythonFunction.assertDictEqual
+                    ~TestFileContainsPythonFunction.assertEqual
+                    ~TestFileContainsPythonFunction.assertFalse
+                    ~TestFileContainsPythonFunction.assertGreater
+                    ~TestFileContainsPythonFunction.assertGreaterEqual
+                    ~TestFileContainsPythonFunction.assertIn
+                    ~TestFileContainsPythonFunction.assertIs
+                    ~TestFileContainsPythonFunction.assertIsInstance
+                    ~TestFileContainsPythonFunction.assertIsNone
+                    ~TestFileContainsPythonFunction.assertIsNot
+                    ~TestFileContainsPythonFunction.assertIsNotNone
+                    ~TestFileContainsPythonFunction.assertLess
+                    ~TestFileContainsPythonFunction.assertLessEqual
+                    ~TestFileContainsPythonFunction.assertListEqual
+                    ~TestFileContainsPythonFunction.assertLogs
+                    ~TestFileContainsPythonFunction.assertMultiLineEqual
+                    ~TestFileContainsPythonFunction.assertNoLogs
+                    ~TestFileContainsPythonFunction.assertNotAlmostEqual
+                    ~TestFileContainsPythonFunction.assertNotEqual
+                    ~TestFileContainsPythonFunction.assertNotIn
+                    ~TestFileContainsPythonFunction.assertNotIsInstance
+                    ~TestFileContainsPythonFunction.assertNotRegex
+                    ~TestFileContainsPythonFunction.assertRaises
+                    ~TestFileContainsPythonFunction.assertRaisesRegex
+                    ~TestFileContainsPythonFunction.assertRegex
+                    ~TestFileContainsPythonFunction.assertSequenceEqual
+                    ~TestFileContainsPythonFunction.assertSetEqual
+                    ~TestFileContainsPythonFunction.assertTrue
+                    ~TestFileContainsPythonFunction.assertTupleEqual
+                    ~TestFileContainsPythonFunction.assertWarns
+                    ~TestFileContainsPythonFunction.assertWarnsRegex
+                    ~TestFileContainsPythonFunction.countTestCases
+                    ~TestFileContainsPythonFunction.create_test_file
+                    ~TestFileContainsPythonFunction.debug
+                    ~TestFileContainsPythonFunction.defaultTestResult
+                    ~TestFileContainsPythonFunction.doClassCleanups
+                    ~TestFileContainsPythonFunction.doCleanups
+                    ~TestFileContainsPythonFunction.enterClassContext
+                    ~TestFileContainsPythonFunction.enterContext
+                    ~TestFileContainsPythonFunction.fail
+                    ~TestFileContainsPythonFunction.id
+                    ~TestFileContainsPythonFunction.run
+                    ~TestFileContainsPythonFunction.setUp
+                    ~TestFileContainsPythonFunction.setUpClass
+                    ~TestFileContainsPythonFunction.shortDescription
+                    ~TestFileContainsPythonFunction.skipTest
+                    ~TestFileContainsPythonFunction.subTest
+                    ~TestFileContainsPythonFunction.tearDown
+                    ~TestFileContainsPythonFunction.tearDownClass
+                    ~TestFileContainsPythonFunction.test_contains_correct_def_and_others
+                    ~TestFileContainsPythonFunction.test_does_not_contain_correct_def
+        
+    

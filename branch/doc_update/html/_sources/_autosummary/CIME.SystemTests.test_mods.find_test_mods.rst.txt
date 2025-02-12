@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.SystemTests.test\_mods.find\_test\_mods
+============================================
+
+.. currentmodule:: CIME.SystemTests.test_mods
+
+.. autofunction:: find_test_mods

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.test\_utils.get\_tests\_from\_xml
+======================================
+
+.. currentmodule:: CIME.test_utils
+
+.. autofunction:: get_tests_from_xml

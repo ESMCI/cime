@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.Tools.standard\_script\_setup.check\_minimum\_python\_version
+==================================================================
+
+.. currentmodule:: CIME.Tools.standard_script_setup
+
+.. autofunction:: check_minimum_python_version

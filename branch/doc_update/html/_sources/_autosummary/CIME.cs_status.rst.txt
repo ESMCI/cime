@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.cs\_status
+===============
+
+.. automodule:: CIME.cs_status
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    cs_status
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

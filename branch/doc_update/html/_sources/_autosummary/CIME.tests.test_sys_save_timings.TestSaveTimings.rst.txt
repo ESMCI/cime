@@ -1,0 +1,88 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_save\_timings.TestSaveTimings
+===================================================
+
+.. currentmodule:: CIME.tests.test_sys_save_timings
+
+.. autoclass:: TestSaveTimings
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestSaveTimings.__init__
+                    ~TestSaveTimings.addClassCleanup
+                    ~TestSaveTimings.addCleanup
+                    ~TestSaveTimings.addTypeEqualityFunc
+                    ~TestSaveTimings.assertAlmostEqual
+                    ~TestSaveTimings.assertCountEqual
+                    ~TestSaveTimings.assertDictEqual
+                    ~TestSaveTimings.assertEqual
+                    ~TestSaveTimings.assertFalse
+                    ~TestSaveTimings.assertGreater
+                    ~TestSaveTimings.assertGreaterEqual
+                    ~TestSaveTimings.assertIn
+                    ~TestSaveTimings.assertIs
+                    ~TestSaveTimings.assertIsInstance
+                    ~TestSaveTimings.assertIsNone
+                    ~TestSaveTimings.assertIsNot
+                    ~TestSaveTimings.assertIsNotNone
+                    ~TestSaveTimings.assertLess
+                    ~TestSaveTimings.assertLessEqual
+                    ~TestSaveTimings.assertListEqual
+                    ~TestSaveTimings.assertLogs
+                    ~TestSaveTimings.assertMultiLineEqual
+                    ~TestSaveTimings.assertNoLogs
+                    ~TestSaveTimings.assertNotAlmostEqual
+                    ~TestSaveTimings.assertNotEqual
+                    ~TestSaveTimings.assertNotIn
+                    ~TestSaveTimings.assertNotIsInstance
+                    ~TestSaveTimings.assertNotRegex
+                    ~TestSaveTimings.assertRaises
+                    ~TestSaveTimings.assertRaisesRegex
+                    ~TestSaveTimings.assertRegex
+                    ~TestSaveTimings.assertSequenceEqual
+                    ~TestSaveTimings.assertSetEqual
+                    ~TestSaveTimings.assertTrue
+                    ~TestSaveTimings.assertTupleEqual
+                    ~TestSaveTimings.assertWarns
+                    ~TestSaveTimings.assertWarnsRegex
+                    ~TestSaveTimings.assert_dashboard_has_build
+                    ~TestSaveTimings.assert_test_status
+                    ~TestSaveTimings.countTestCases
+                    ~TestSaveTimings.debug
+                    ~TestSaveTimings.defaultTestResult
+                    ~TestSaveTimings.doClassCleanups
+                    ~TestSaveTimings.doCleanups
+                    ~TestSaveTimings.enterClassContext
+                    ~TestSaveTimings.enterContext
+                    ~TestSaveTimings.fail
+                    ~TestSaveTimings.get_casedir
+                    ~TestSaveTimings.id
+                    ~TestSaveTimings.kill_python_subprocesses
+                    ~TestSaveTimings.kill_subprocesses
+                    ~TestSaveTimings.run
+                    ~TestSaveTimings.run_cmd_assert_result
+                    ~TestSaveTimings.setUp
+                    ~TestSaveTimings.setUpClass
+                    ~TestSaveTimings.setup_proxy
+                    ~TestSaveTimings.shortDescription
+                    ~TestSaveTimings.simple_test
+                    ~TestSaveTimings.skipTest
+                    ~TestSaveTimings.subTest
+                    ~TestSaveTimings.tearDown
+                    ~TestSaveTimings.tearDownClass
+                    ~TestSaveTimings.test_save_timings
+                    ~TestSaveTimings.test_save_timings_manual
+                    ~TestSaveTimings.test_success_recording
+                    ~TestSaveTimings.verify_perms
+        
+    

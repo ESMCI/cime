@@ -1,0 +1,80 @@
+..
+  class.rst
+
+CIME.tests.custom\_assertions\_test\_status.CustomAssertionsTestStatus
+======================================================================
+
+.. currentmodule:: CIME.tests.custom_assertions_test_status
+
+.. autoclass:: CustomAssertionsTestStatus
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~CustomAssertionsTestStatus.__init__
+                    ~CustomAssertionsTestStatus.addClassCleanup
+                    ~CustomAssertionsTestStatus.addCleanup
+                    ~CustomAssertionsTestStatus.addTypeEqualityFunc
+                    ~CustomAssertionsTestStatus.assertAlmostEqual
+                    ~CustomAssertionsTestStatus.assertCountEqual
+                    ~CustomAssertionsTestStatus.assertDictEqual
+                    ~CustomAssertionsTestStatus.assertEqual
+                    ~CustomAssertionsTestStatus.assertFalse
+                    ~CustomAssertionsTestStatus.assertGreater
+                    ~CustomAssertionsTestStatus.assertGreaterEqual
+                    ~CustomAssertionsTestStatus.assertIn
+                    ~CustomAssertionsTestStatus.assertIs
+                    ~CustomAssertionsTestStatus.assertIsInstance
+                    ~CustomAssertionsTestStatus.assertIsNone
+                    ~CustomAssertionsTestStatus.assertIsNot
+                    ~CustomAssertionsTestStatus.assertIsNotNone
+                    ~CustomAssertionsTestStatus.assertLess
+                    ~CustomAssertionsTestStatus.assertLessEqual
+                    ~CustomAssertionsTestStatus.assertListEqual
+                    ~CustomAssertionsTestStatus.assertLogs
+                    ~CustomAssertionsTestStatus.assertMultiLineEqual
+                    ~CustomAssertionsTestStatus.assertNoLogs
+                    ~CustomAssertionsTestStatus.assertNotAlmostEqual
+                    ~CustomAssertionsTestStatus.assertNotEqual
+                    ~CustomAssertionsTestStatus.assertNotIn
+                    ~CustomAssertionsTestStatus.assertNotIsInstance
+                    ~CustomAssertionsTestStatus.assertNotRegex
+                    ~CustomAssertionsTestStatus.assertRaises
+                    ~CustomAssertionsTestStatus.assertRaisesRegex
+                    ~CustomAssertionsTestStatus.assertRegex
+                    ~CustomAssertionsTestStatus.assertSequenceEqual
+                    ~CustomAssertionsTestStatus.assertSetEqual
+                    ~CustomAssertionsTestStatus.assertTrue
+                    ~CustomAssertionsTestStatus.assertTupleEqual
+                    ~CustomAssertionsTestStatus.assertWarns
+                    ~CustomAssertionsTestStatus.assertWarnsRegex
+                    ~CustomAssertionsTestStatus.assert_core_phases
+                    ~CustomAssertionsTestStatus.assert_num_expected_unexpected_fails
+                    ~CustomAssertionsTestStatus.assert_phase_absent
+                    ~CustomAssertionsTestStatus.assert_status_of_phase
+                    ~CustomAssertionsTestStatus.countTestCases
+                    ~CustomAssertionsTestStatus.debug
+                    ~CustomAssertionsTestStatus.defaultTestResult
+                    ~CustomAssertionsTestStatus.doClassCleanups
+                    ~CustomAssertionsTestStatus.doCleanups
+                    ~CustomAssertionsTestStatus.enterClassContext
+                    ~CustomAssertionsTestStatus.enterContext
+                    ~CustomAssertionsTestStatus.fail
+                    ~CustomAssertionsTestStatus.id
+                    ~CustomAssertionsTestStatus.run
+                    ~CustomAssertionsTestStatus.setUp
+                    ~CustomAssertionsTestStatus.setUpClass
+                    ~CustomAssertionsTestStatus.shortDescription
+                    ~CustomAssertionsTestStatus.skipTest
+                    ~CustomAssertionsTestStatus.subTest
+                    ~CustomAssertionsTestStatus.tearDown
+                    ~CustomAssertionsTestStatus.tearDownClass
+        
+    

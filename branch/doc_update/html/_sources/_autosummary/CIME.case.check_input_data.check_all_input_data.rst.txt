@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.check\_input\_data.check\_all\_input\_data
+====================================================
+
+.. currentmodule:: CIME.case.check_input_data
+
+.. autofunction:: check_all_input_data

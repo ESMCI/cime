@@ -1,0 +1,38 @@
+..
+  module.rst
+
+CIME.compare\_test\_results
+===========================
+
+.. automodule:: CIME.compare_test_results
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    append_status_cprnc_log
+                    compare_history
+                    compare_namelists
+                    compare_test_results
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

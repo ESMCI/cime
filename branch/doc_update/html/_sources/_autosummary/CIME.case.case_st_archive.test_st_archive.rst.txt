@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.case\_st\_archive.test\_st\_archive
+=============================================
+
+.. currentmodule:: CIME.case.case_st_archive
+
+.. autofunction:: test_st_archive

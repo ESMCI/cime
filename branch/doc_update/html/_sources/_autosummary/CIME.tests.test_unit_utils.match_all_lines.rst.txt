@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.test\_unit\_utils.match\_all\_lines
+==============================================
+
+.. currentmodule:: CIME.tests.test_unit_utils
+
+.. autofunction:: match_all_lines

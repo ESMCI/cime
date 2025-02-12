@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.SystemTests.test\_utils.user\_nl\_utils.append\_to\_user\_nl\_files
+========================================================================
+
+.. currentmodule:: CIME.SystemTests.test_utils.user_nl_utils
+
+.. autofunction:: append_to_user_nl_files

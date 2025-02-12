@@ -1,0 +1,79 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_expected\_fails\_file.TestExpectedFailsFile
+==================================================================
+
+.. currentmodule:: CIME.tests.test_unit_expected_fails_file
+
+.. autoclass:: TestExpectedFailsFile
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestExpectedFailsFile.__init__
+                    ~TestExpectedFailsFile.addClassCleanup
+                    ~TestExpectedFailsFile.addCleanup
+                    ~TestExpectedFailsFile.addTypeEqualityFunc
+                    ~TestExpectedFailsFile.assertAlmostEqual
+                    ~TestExpectedFailsFile.assertCountEqual
+                    ~TestExpectedFailsFile.assertDictEqual
+                    ~TestExpectedFailsFile.assertEqual
+                    ~TestExpectedFailsFile.assertFalse
+                    ~TestExpectedFailsFile.assertGreater
+                    ~TestExpectedFailsFile.assertGreaterEqual
+                    ~TestExpectedFailsFile.assertIn
+                    ~TestExpectedFailsFile.assertIs
+                    ~TestExpectedFailsFile.assertIsInstance
+                    ~TestExpectedFailsFile.assertIsNone
+                    ~TestExpectedFailsFile.assertIsNot
+                    ~TestExpectedFailsFile.assertIsNotNone
+                    ~TestExpectedFailsFile.assertLess
+                    ~TestExpectedFailsFile.assertLessEqual
+                    ~TestExpectedFailsFile.assertListEqual
+                    ~TestExpectedFailsFile.assertLogs
+                    ~TestExpectedFailsFile.assertMultiLineEqual
+                    ~TestExpectedFailsFile.assertNoLogs
+                    ~TestExpectedFailsFile.assertNotAlmostEqual
+                    ~TestExpectedFailsFile.assertNotEqual
+                    ~TestExpectedFailsFile.assertNotIn
+                    ~TestExpectedFailsFile.assertNotIsInstance
+                    ~TestExpectedFailsFile.assertNotRegex
+                    ~TestExpectedFailsFile.assertRaises
+                    ~TestExpectedFailsFile.assertRaisesRegex
+                    ~TestExpectedFailsFile.assertRegex
+                    ~TestExpectedFailsFile.assertSequenceEqual
+                    ~TestExpectedFailsFile.assertSetEqual
+                    ~TestExpectedFailsFile.assertTrue
+                    ~TestExpectedFailsFile.assertTupleEqual
+                    ~TestExpectedFailsFile.assertWarns
+                    ~TestExpectedFailsFile.assertWarnsRegex
+                    ~TestExpectedFailsFile.countTestCases
+                    ~TestExpectedFailsFile.debug
+                    ~TestExpectedFailsFile.defaultTestResult
+                    ~TestExpectedFailsFile.doClassCleanups
+                    ~TestExpectedFailsFile.doCleanups
+                    ~TestExpectedFailsFile.enterClassContext
+                    ~TestExpectedFailsFile.enterContext
+                    ~TestExpectedFailsFile.fail
+                    ~TestExpectedFailsFile.id
+                    ~TestExpectedFailsFile.run
+                    ~TestExpectedFailsFile.setUp
+                    ~TestExpectedFailsFile.setUpClass
+                    ~TestExpectedFailsFile.shortDescription
+                    ~TestExpectedFailsFile.skipTest
+                    ~TestExpectedFailsFile.subTest
+                    ~TestExpectedFailsFile.tearDown
+                    ~TestExpectedFailsFile.tearDownClass
+                    ~TestExpectedFailsFile.test_basic
+                    ~TestExpectedFailsFile.test_invalid_file
+                    ~TestExpectedFailsFile.test_same_test_appears_twice
+        
+    

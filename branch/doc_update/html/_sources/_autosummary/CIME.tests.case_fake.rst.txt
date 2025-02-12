@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.case\_fake
+=====================
+
+.. automodule:: CIME.tests.case_fake
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    CaseFake
+        
+    
+
+    
+        
+    
+
+
+    

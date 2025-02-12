@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.scripts.create\_newcase
+============================
+
+.. automodule:: CIME.scripts.create_newcase
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    parse_command_line
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

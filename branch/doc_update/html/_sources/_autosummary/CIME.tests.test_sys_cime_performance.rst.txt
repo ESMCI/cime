@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_sys\_cime\_performance
+=======================================
+
+.. automodule:: CIME.tests.test_sys_cime_performance
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestCimePerformance
+        
+    
+
+    
+        
+    
+
+
+    

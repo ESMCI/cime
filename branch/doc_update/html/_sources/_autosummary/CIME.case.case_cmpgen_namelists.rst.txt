@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.case.case\_cmpgen\_namelists
+=================================
+
+.. automodule:: CIME.case.case_cmpgen_namelists
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    case_cmpgen_namelists
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

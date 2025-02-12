@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.BuildTools.configure.copy\_depends\_files
+==============================================
+
+.. currentmodule:: CIME.BuildTools.configure
+
+.. autofunction:: copy_depends_files

@@ -1,0 +1,26 @@
+..
+  module.rst
+
+CIME.data.templates
+===================
+
+.. automodule:: CIME.data.templates
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

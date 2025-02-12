@@ -1,0 +1,88 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_query\_config.TestQueryConfig
+===================================================
+
+.. currentmodule:: CIME.tests.test_sys_query_config
+
+.. autoclass:: TestQueryConfig
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestQueryConfig.__init__
+                    ~TestQueryConfig.addClassCleanup
+                    ~TestQueryConfig.addCleanup
+                    ~TestQueryConfig.addTypeEqualityFunc
+                    ~TestQueryConfig.assertAlmostEqual
+                    ~TestQueryConfig.assertCountEqual
+                    ~TestQueryConfig.assertDictEqual
+                    ~TestQueryConfig.assertEqual
+                    ~TestQueryConfig.assertFalse
+                    ~TestQueryConfig.assertGreater
+                    ~TestQueryConfig.assertGreaterEqual
+                    ~TestQueryConfig.assertIn
+                    ~TestQueryConfig.assertIs
+                    ~TestQueryConfig.assertIsInstance
+                    ~TestQueryConfig.assertIsNone
+                    ~TestQueryConfig.assertIsNot
+                    ~TestQueryConfig.assertIsNotNone
+                    ~TestQueryConfig.assertLess
+                    ~TestQueryConfig.assertLessEqual
+                    ~TestQueryConfig.assertListEqual
+                    ~TestQueryConfig.assertLogs
+                    ~TestQueryConfig.assertMultiLineEqual
+                    ~TestQueryConfig.assertNoLogs
+                    ~TestQueryConfig.assertNotAlmostEqual
+                    ~TestQueryConfig.assertNotEqual
+                    ~TestQueryConfig.assertNotIn
+                    ~TestQueryConfig.assertNotIsInstance
+                    ~TestQueryConfig.assertNotRegex
+                    ~TestQueryConfig.assertRaises
+                    ~TestQueryConfig.assertRaisesRegex
+                    ~TestQueryConfig.assertRegex
+                    ~TestQueryConfig.assertSequenceEqual
+                    ~TestQueryConfig.assertSetEqual
+                    ~TestQueryConfig.assertTrue
+                    ~TestQueryConfig.assertTupleEqual
+                    ~TestQueryConfig.assertWarns
+                    ~TestQueryConfig.assertWarnsRegex
+                    ~TestQueryConfig.assert_dashboard_has_build
+                    ~TestQueryConfig.assert_test_status
+                    ~TestQueryConfig.countTestCases
+                    ~TestQueryConfig.debug
+                    ~TestQueryConfig.defaultTestResult
+                    ~TestQueryConfig.doClassCleanups
+                    ~TestQueryConfig.doCleanups
+                    ~TestQueryConfig.enterClassContext
+                    ~TestQueryConfig.enterContext
+                    ~TestQueryConfig.fail
+                    ~TestQueryConfig.get_casedir
+                    ~TestQueryConfig.id
+                    ~TestQueryConfig.kill_python_subprocesses
+                    ~TestQueryConfig.kill_subprocesses
+                    ~TestQueryConfig.run
+                    ~TestQueryConfig.run_cmd_assert_result
+                    ~TestQueryConfig.setUp
+                    ~TestQueryConfig.setUpClass
+                    ~TestQueryConfig.setup_proxy
+                    ~TestQueryConfig.shortDescription
+                    ~TestQueryConfig.skipTest
+                    ~TestQueryConfig.subTest
+                    ~TestQueryConfig.tearDown
+                    ~TestQueryConfig.tearDownClass
+                    ~TestQueryConfig.test_query_components
+                    ~TestQueryConfig.test_query_compsets
+                    ~TestQueryConfig.test_query_grids
+                    ~TestQueryConfig.test_query_machines
+                    ~TestQueryConfig.verify_perms
+        
+    

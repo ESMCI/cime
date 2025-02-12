@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.eri.ERI
+========================
+
+.. currentmodule:: CIME.SystemTests.eri
+
+.. autoclass:: ERI
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ERI.__init__
+                    ~ERI.build
+                    ~ERI.build_indv
+                    ~ERI.build_phase
+                    ~ERI.clean_build
+                    ~ERI.compare_env_run
+                    ~ERI.run
+                    ~ERI.run_indv
+                    ~ERI.run_phase
+        
+    

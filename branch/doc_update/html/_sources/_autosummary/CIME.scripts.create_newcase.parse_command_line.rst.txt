@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.create\_newcase.parse\_command\_line
+=================================================
+
+.. currentmodule:: CIME.scripts.create_newcase
+
+.. autofunction:: parse_command_line

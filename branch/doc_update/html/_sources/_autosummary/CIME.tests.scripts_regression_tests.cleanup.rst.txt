@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.scripts\_regression\_tests.cleanup
+=============================================
+
+.. currentmodule:: CIME.tests.scripts_regression_tests
+
+.. autofunction:: cleanup

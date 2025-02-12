@@ -1,0 +1,26 @@
+..
+  module.rst
+
+CIME.data.config
+================
+
+.. automodule:: CIME.data.config
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

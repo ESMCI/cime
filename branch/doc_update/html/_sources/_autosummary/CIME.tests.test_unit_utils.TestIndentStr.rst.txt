@@ -1,0 +1,78 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_utils.TestIndentStr
+==========================================
+
+.. currentmodule:: CIME.tests.test_unit_utils
+
+.. autoclass:: TestIndentStr
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestIndentStr.__init__
+                    ~TestIndentStr.addClassCleanup
+                    ~TestIndentStr.addCleanup
+                    ~TestIndentStr.addTypeEqualityFunc
+                    ~TestIndentStr.assertAlmostEqual
+                    ~TestIndentStr.assertCountEqual
+                    ~TestIndentStr.assertDictEqual
+                    ~TestIndentStr.assertEqual
+                    ~TestIndentStr.assertFalse
+                    ~TestIndentStr.assertGreater
+                    ~TestIndentStr.assertGreaterEqual
+                    ~TestIndentStr.assertIn
+                    ~TestIndentStr.assertIs
+                    ~TestIndentStr.assertIsInstance
+                    ~TestIndentStr.assertIsNone
+                    ~TestIndentStr.assertIsNot
+                    ~TestIndentStr.assertIsNotNone
+                    ~TestIndentStr.assertLess
+                    ~TestIndentStr.assertLessEqual
+                    ~TestIndentStr.assertListEqual
+                    ~TestIndentStr.assertLogs
+                    ~TestIndentStr.assertMultiLineEqual
+                    ~TestIndentStr.assertNoLogs
+                    ~TestIndentStr.assertNotAlmostEqual
+                    ~TestIndentStr.assertNotEqual
+                    ~TestIndentStr.assertNotIn
+                    ~TestIndentStr.assertNotIsInstance
+                    ~TestIndentStr.assertNotRegex
+                    ~TestIndentStr.assertRaises
+                    ~TestIndentStr.assertRaisesRegex
+                    ~TestIndentStr.assertRegex
+                    ~TestIndentStr.assertSequenceEqual
+                    ~TestIndentStr.assertSetEqual
+                    ~TestIndentStr.assertTrue
+                    ~TestIndentStr.assertTupleEqual
+                    ~TestIndentStr.assertWarns
+                    ~TestIndentStr.assertWarnsRegex
+                    ~TestIndentStr.countTestCases
+                    ~TestIndentStr.debug
+                    ~TestIndentStr.defaultTestResult
+                    ~TestIndentStr.doClassCleanups
+                    ~TestIndentStr.doCleanups
+                    ~TestIndentStr.enterClassContext
+                    ~TestIndentStr.enterContext
+                    ~TestIndentStr.fail
+                    ~TestIndentStr.id
+                    ~TestIndentStr.run
+                    ~TestIndentStr.setUp
+                    ~TestIndentStr.setUpClass
+                    ~TestIndentStr.shortDescription
+                    ~TestIndentStr.skipTest
+                    ~TestIndentStr.subTest
+                    ~TestIndentStr.tearDown
+                    ~TestIndentStr.tearDownClass
+                    ~TestIndentStr.test_indent_string_multiline
+                    ~TestIndentStr.test_indent_string_singleline
+        
+    

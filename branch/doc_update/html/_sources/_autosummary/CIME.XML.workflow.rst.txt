@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.XML.workflow
+=================
+
+.. automodule:: CIME.XML.workflow
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    Workflow
+        
+    
+
+    
+        
+    
+
+
+    

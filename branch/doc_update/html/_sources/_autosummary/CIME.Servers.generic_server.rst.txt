@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.Servers.generic\_server
+============================
+
+.. automodule:: CIME.Servers.generic_server
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    GenericServer
+        
+    
+
+    
+        
+    
+
+
+    

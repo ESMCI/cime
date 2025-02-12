@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.SystemTests.system\_tests\_common.is\_single\_exe\_case
+============================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autofunction:: is_single_exe_case

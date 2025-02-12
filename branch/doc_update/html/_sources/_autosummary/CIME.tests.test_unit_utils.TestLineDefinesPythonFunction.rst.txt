@@ -1,0 +1,89 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_utils.TestLineDefinesPythonFunction
+==========================================================
+
+.. currentmodule:: CIME.tests.test_unit_utils
+
+.. autoclass:: TestLineDefinesPythonFunction
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestLineDefinesPythonFunction.__init__
+                    ~TestLineDefinesPythonFunction.addClassCleanup
+                    ~TestLineDefinesPythonFunction.addCleanup
+                    ~TestLineDefinesPythonFunction.addTypeEqualityFunc
+                    ~TestLineDefinesPythonFunction.assertAlmostEqual
+                    ~TestLineDefinesPythonFunction.assertCountEqual
+                    ~TestLineDefinesPythonFunction.assertDictEqual
+                    ~TestLineDefinesPythonFunction.assertEqual
+                    ~TestLineDefinesPythonFunction.assertFalse
+                    ~TestLineDefinesPythonFunction.assertGreater
+                    ~TestLineDefinesPythonFunction.assertGreaterEqual
+                    ~TestLineDefinesPythonFunction.assertIn
+                    ~TestLineDefinesPythonFunction.assertIs
+                    ~TestLineDefinesPythonFunction.assertIsInstance
+                    ~TestLineDefinesPythonFunction.assertIsNone
+                    ~TestLineDefinesPythonFunction.assertIsNot
+                    ~TestLineDefinesPythonFunction.assertIsNotNone
+                    ~TestLineDefinesPythonFunction.assertLess
+                    ~TestLineDefinesPythonFunction.assertLessEqual
+                    ~TestLineDefinesPythonFunction.assertListEqual
+                    ~TestLineDefinesPythonFunction.assertLogs
+                    ~TestLineDefinesPythonFunction.assertMultiLineEqual
+                    ~TestLineDefinesPythonFunction.assertNoLogs
+                    ~TestLineDefinesPythonFunction.assertNotAlmostEqual
+                    ~TestLineDefinesPythonFunction.assertNotEqual
+                    ~TestLineDefinesPythonFunction.assertNotIn
+                    ~TestLineDefinesPythonFunction.assertNotIsInstance
+                    ~TestLineDefinesPythonFunction.assertNotRegex
+                    ~TestLineDefinesPythonFunction.assertRaises
+                    ~TestLineDefinesPythonFunction.assertRaisesRegex
+                    ~TestLineDefinesPythonFunction.assertRegex
+                    ~TestLineDefinesPythonFunction.assertSequenceEqual
+                    ~TestLineDefinesPythonFunction.assertSetEqual
+                    ~TestLineDefinesPythonFunction.assertTrue
+                    ~TestLineDefinesPythonFunction.assertTupleEqual
+                    ~TestLineDefinesPythonFunction.assertWarns
+                    ~TestLineDefinesPythonFunction.assertWarnsRegex
+                    ~TestLineDefinesPythonFunction.countTestCases
+                    ~TestLineDefinesPythonFunction.debug
+                    ~TestLineDefinesPythonFunction.defaultTestResult
+                    ~TestLineDefinesPythonFunction.doClassCleanups
+                    ~TestLineDefinesPythonFunction.doCleanups
+                    ~TestLineDefinesPythonFunction.enterClassContext
+                    ~TestLineDefinesPythonFunction.enterContext
+                    ~TestLineDefinesPythonFunction.fail
+                    ~TestLineDefinesPythonFunction.id
+                    ~TestLineDefinesPythonFunction.run
+                    ~TestLineDefinesPythonFunction.setUp
+                    ~TestLineDefinesPythonFunction.setUpClass
+                    ~TestLineDefinesPythonFunction.shortDescription
+                    ~TestLineDefinesPythonFunction.skipTest
+                    ~TestLineDefinesPythonFunction.subTest
+                    ~TestLineDefinesPythonFunction.tearDown
+                    ~TestLineDefinesPythonFunction.tearDownClass
+                    ~TestLineDefinesPythonFunction.test_def_barfoo
+                    ~TestLineDefinesPythonFunction.test_def_foo
+                    ~TestLineDefinesPythonFunction.test_def_foo_indented
+                    ~TestLineDefinesPythonFunction.test_def_foo_no_parens
+                    ~TestLineDefinesPythonFunction.test_def_foo_space
+                    ~TestLineDefinesPythonFunction.test_def_foobar
+                    ~TestLineDefinesPythonFunction.test_import_barfoo
+                    ~TestLineDefinesPythonFunction.test_import_foo
+                    ~TestLineDefinesPythonFunction.test_import_foo_indented
+                    ~TestLineDefinesPythonFunction.test_import_foo_space
+                    ~TestLineDefinesPythonFunction.test_import_foo_then_others
+                    ~TestLineDefinesPythonFunction.test_import_foobar
+                    ~TestLineDefinesPythonFunction.test_import_others_then_foo
+        
+    

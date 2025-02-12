@@ -1,0 +1,50 @@
+..
+  module.rst
+
+CIME.wait\_for\_tests
+=====================
+
+.. automodule:: CIME.wait_for_tests
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    create_cdash_build_xml
+                    create_cdash_config_xml
+                    create_cdash_test_xml
+                    create_cdash_upload_xml
+                    create_cdash_xml
+                    create_cdash_xml_boiler
+                    create_cdash_xml_fakes
+                    get_nml_diff
+                    get_test_output
+                    get_test_phase
+                    get_test_time
+                    set_up_signal_handlers
+                    signal_handler
+                    wait_for_test
+                    wait_for_tests
+                    wait_for_tests_impl
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

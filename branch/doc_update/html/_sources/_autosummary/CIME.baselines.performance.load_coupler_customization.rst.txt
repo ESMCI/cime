@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.baselines.performance.load\_coupler\_customization
+=======================================================
+
+.. currentmodule:: CIME.baselines.performance
+
+.. autofunction:: load_coupler_customization

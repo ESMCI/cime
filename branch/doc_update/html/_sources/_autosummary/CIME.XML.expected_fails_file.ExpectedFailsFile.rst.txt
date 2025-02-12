@@ -1,0 +1,64 @@
+..
+  class.rst
+
+CIME.XML.expected\_fails\_file.ExpectedFailsFile
+================================================
+
+.. currentmodule:: CIME.XML.expected_fails_file
+
+.. autoclass:: ExpectedFailsFile
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ExpectedFailsFile.__init__
+                    ~ExpectedFailsFile.add_child
+                    ~ExpectedFailsFile.attrib
+                    ~ExpectedFailsFile.change_file
+                    ~ExpectedFailsFile.check_timestamp
+                    ~ExpectedFailsFile.copy
+                    ~ExpectedFailsFile.get
+                    ~ExpectedFailsFile.get_child
+                    ~ExpectedFailsFile.get_children
+                    ~ExpectedFailsFile.get_element_text
+                    ~ExpectedFailsFile.get_expected_fails
+                    ~ExpectedFailsFile.get_id
+                    ~ExpectedFailsFile.get_optional_child
+                    ~ExpectedFailsFile.get_raw_record
+                    ~ExpectedFailsFile.get_resolved_value
+                    ~ExpectedFailsFile.get_value
+                    ~ExpectedFailsFile.get_values
+                    ~ExpectedFailsFile.get_version
+                    ~ExpectedFailsFile.has
+                    ~ExpectedFailsFile.invalidate
+                    ~ExpectedFailsFile.lock
+                    ~ExpectedFailsFile.make_child
+                    ~ExpectedFailsFile.make_child_comment
+                    ~ExpectedFailsFile.name
+                    ~ExpectedFailsFile.pop
+                    ~ExpectedFailsFile.read
+                    ~ExpectedFailsFile.read_fd
+                    ~ExpectedFailsFile.remove_child
+                    ~ExpectedFailsFile.scan_child
+                    ~ExpectedFailsFile.scan_children
+                    ~ExpectedFailsFile.scan_optional_child
+                    ~ExpectedFailsFile.set
+                    ~ExpectedFailsFile.set_element_text
+                    ~ExpectedFailsFile.set_name
+                    ~ExpectedFailsFile.set_text
+                    ~ExpectedFailsFile.set_value
+                    ~ExpectedFailsFile.text
+                    ~ExpectedFailsFile.to_string
+                    ~ExpectedFailsFile.unlock
+                    ~ExpectedFailsFile.validate_timestamp
+                    ~ExpectedFailsFile.validate_xml_file
+                    ~ExpectedFailsFile.write
+        
+    

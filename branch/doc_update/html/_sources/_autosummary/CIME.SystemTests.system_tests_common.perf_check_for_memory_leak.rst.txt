@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.SystemTests.system\_tests\_common.perf\_check\_for\_memory\_leak
+=====================================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autofunction:: perf_check_for_memory_leak

@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_common.SystemTestsCommon
+========================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autoclass:: SystemTestsCommon
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~SystemTestsCommon.__init__
+                    ~SystemTestsCommon.build
+                    ~SystemTestsCommon.build_indv
+                    ~SystemTestsCommon.build_phase
+                    ~SystemTestsCommon.clean_build
+                    ~SystemTestsCommon.compare_env_run
+                    ~SystemTestsCommon.run
+                    ~SystemTestsCommon.run_indv
+                    ~SystemTestsCommon.run_phase
+        
+    

@@ -1,0 +1,29 @@
+..
+  class.rst
+
+CIME.tests.utils.MockMachines
+=============================
+
+.. currentmodule:: CIME.tests.utils
+
+.. autoclass:: MockMachines
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~MockMachines.__init__
+                    ~MockMachines.get_default_MPIlib
+                    ~MockMachines.get_default_compiler
+                    ~MockMachines.get_machine_name
+                    ~MockMachines.get_value
+                    ~MockMachines.is_valid_MPIlib
+                    ~MockMachines.is_valid_compiler
+        
+    

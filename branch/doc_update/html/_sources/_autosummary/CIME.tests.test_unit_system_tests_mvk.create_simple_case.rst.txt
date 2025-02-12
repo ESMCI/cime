@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.test\_unit\_system\_tests\_mvk.create\_simple\_case
+==============================================================
+
+.. currentmodule:: CIME.tests.test_unit_system_tests_mvk
+
+.. autofunction:: create_simple_case

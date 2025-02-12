@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.pea
+====================
+
+.. automodule:: CIME.SystemTests.pea
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    PEA
+        
+    
+
+    
+        
+    
+
+
+    

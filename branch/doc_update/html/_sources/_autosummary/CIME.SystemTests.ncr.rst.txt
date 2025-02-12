@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.ncr
+====================
+
+.. automodule:: CIME.SystemTests.ncr
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    NCR
+        
+    
+
+    
+        
+    
+
+
+    

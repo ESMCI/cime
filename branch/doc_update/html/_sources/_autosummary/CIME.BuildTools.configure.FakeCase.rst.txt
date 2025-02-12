@@ -1,0 +1,27 @@
+..
+  class.rst
+
+CIME.BuildTools.configure.FakeCase
+==================================
+
+.. currentmodule:: CIME.BuildTools.configure
+
+.. autoclass:: FakeCase
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~FakeCase.__init__
+                    ~FakeCase.get_build_threaded
+                    ~FakeCase.get_case_root
+                    ~FakeCase.get_value
+                    ~FakeCase.set_value
+        
+    

@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.XML.inputdata
+==================
+
+.. automodule:: CIME.XML.inputdata
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    Inputdata
+        
+    
+
+    
+        
+    
+
+
+    

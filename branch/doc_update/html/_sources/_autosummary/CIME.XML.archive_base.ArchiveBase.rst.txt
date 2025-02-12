@@ -1,0 +1,72 @@
+..
+  class.rst
+
+CIME.XML.archive\_base.ArchiveBase
+==================================
+
+.. currentmodule:: CIME.XML.archive_base
+
+.. autoclass:: ArchiveBase
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ArchiveBase.__init__
+                    ~ArchiveBase.add_child
+                    ~ArchiveBase.attrib
+                    ~ArchiveBase.change_file
+                    ~ArchiveBase.check_timestamp
+                    ~ArchiveBase.copy
+                    ~ArchiveBase.exclude_testing
+                    ~ArchiveBase.get
+                    ~ArchiveBase.get_all_hist_files
+                    ~ArchiveBase.get_child
+                    ~ArchiveBase.get_children
+                    ~ArchiveBase.get_element_text
+                    ~ArchiveBase.get_entry
+                    ~ArchiveBase.get_entry_attributes
+                    ~ArchiveBase.get_entry_value
+                    ~ArchiveBase.get_hist_file_ext_regexes
+                    ~ArchiveBase.get_hist_file_extensions
+                    ~ArchiveBase.get_id
+                    ~ArchiveBase.get_latest_hist_files
+                    ~ArchiveBase.get_optional_child
+                    ~ArchiveBase.get_raw_record
+                    ~ArchiveBase.get_resolved_value
+                    ~ArchiveBase.get_rest_file_extensions
+                    ~ArchiveBase.get_value
+                    ~ArchiveBase.get_values
+                    ~ArchiveBase.get_version
+                    ~ArchiveBase.has
+                    ~ArchiveBase.invalidate
+                    ~ArchiveBase.lock
+                    ~ArchiveBase.make_child
+                    ~ArchiveBase.make_child_comment
+                    ~ArchiveBase.name
+                    ~ArchiveBase.pop
+                    ~ArchiveBase.read
+                    ~ArchiveBase.read_fd
+                    ~ArchiveBase.remove_child
+                    ~ArchiveBase.scan_child
+                    ~ArchiveBase.scan_children
+                    ~ArchiveBase.scan_optional_child
+                    ~ArchiveBase.set
+                    ~ArchiveBase.set_element_text
+                    ~ArchiveBase.set_name
+                    ~ArchiveBase.set_text
+                    ~ArchiveBase.set_value
+                    ~ArchiveBase.text
+                    ~ArchiveBase.to_string
+                    ~ArchiveBase.unlock
+                    ~ArchiveBase.validate_timestamp
+                    ~ArchiveBase.validate_xml_file
+                    ~ArchiveBase.write
+        
+    

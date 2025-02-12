@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.test\_unit\_baselines\_performance.create\_mock\_case
+================================================================
+
+.. currentmodule:: CIME.tests.test_unit_baselines_performance
+
+.. autofunction:: create_mock_case

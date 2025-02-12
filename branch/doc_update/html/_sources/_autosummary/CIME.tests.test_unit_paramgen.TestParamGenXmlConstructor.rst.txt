@@ -1,0 +1,82 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_paramgen.TestParamGenXmlConstructor
+==========================================================
+
+.. currentmodule:: CIME.tests.test_unit_paramgen
+
+.. autoclass:: TestParamGenXmlConstructor
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestParamGenXmlConstructor.__init__
+                    ~TestParamGenXmlConstructor.addClassCleanup
+                    ~TestParamGenXmlConstructor.addCleanup
+                    ~TestParamGenXmlConstructor.addTypeEqualityFunc
+                    ~TestParamGenXmlConstructor.assertAlmostEqual
+                    ~TestParamGenXmlConstructor.assertCountEqual
+                    ~TestParamGenXmlConstructor.assertDictEqual
+                    ~TestParamGenXmlConstructor.assertEqual
+                    ~TestParamGenXmlConstructor.assertFalse
+                    ~TestParamGenXmlConstructor.assertGreater
+                    ~TestParamGenXmlConstructor.assertGreaterEqual
+                    ~TestParamGenXmlConstructor.assertIn
+                    ~TestParamGenXmlConstructor.assertIs
+                    ~TestParamGenXmlConstructor.assertIsInstance
+                    ~TestParamGenXmlConstructor.assertIsNone
+                    ~TestParamGenXmlConstructor.assertIsNot
+                    ~TestParamGenXmlConstructor.assertIsNotNone
+                    ~TestParamGenXmlConstructor.assertLess
+                    ~TestParamGenXmlConstructor.assertLessEqual
+                    ~TestParamGenXmlConstructor.assertListEqual
+                    ~TestParamGenXmlConstructor.assertLogs
+                    ~TestParamGenXmlConstructor.assertMultiLineEqual
+                    ~TestParamGenXmlConstructor.assertNoLogs
+                    ~TestParamGenXmlConstructor.assertNotAlmostEqual
+                    ~TestParamGenXmlConstructor.assertNotEqual
+                    ~TestParamGenXmlConstructor.assertNotIn
+                    ~TestParamGenXmlConstructor.assertNotIsInstance
+                    ~TestParamGenXmlConstructor.assertNotRegex
+                    ~TestParamGenXmlConstructor.assertRaises
+                    ~TestParamGenXmlConstructor.assertRaisesRegex
+                    ~TestParamGenXmlConstructor.assertRegex
+                    ~TestParamGenXmlConstructor.assertSequenceEqual
+                    ~TestParamGenXmlConstructor.assertSetEqual
+                    ~TestParamGenXmlConstructor.assertTrue
+                    ~TestParamGenXmlConstructor.assertTupleEqual
+                    ~TestParamGenXmlConstructor.assertWarns
+                    ~TestParamGenXmlConstructor.assertWarnsRegex
+                    ~TestParamGenXmlConstructor.countTestCases
+                    ~TestParamGenXmlConstructor.debug
+                    ~TestParamGenXmlConstructor.defaultTestResult
+                    ~TestParamGenXmlConstructor.doClassCleanups
+                    ~TestParamGenXmlConstructor.doCleanups
+                    ~TestParamGenXmlConstructor.enterClassContext
+                    ~TestParamGenXmlConstructor.enterContext
+                    ~TestParamGenXmlConstructor.fail
+                    ~TestParamGenXmlConstructor.id
+                    ~TestParamGenXmlConstructor.run
+                    ~TestParamGenXmlConstructor.setUp
+                    ~TestParamGenXmlConstructor.setUpClass
+                    ~TestParamGenXmlConstructor.shortDescription
+                    ~TestParamGenXmlConstructor.skipTest
+                    ~TestParamGenXmlConstructor.subTest
+                    ~TestParamGenXmlConstructor.tearDown
+                    ~TestParamGenXmlConstructor.tearDownClass
+                    ~TestParamGenXmlConstructor.test_default_var
+                    ~TestParamGenXmlConstructor.test_duplicate_entry_error
+                    ~TestParamGenXmlConstructor.test_mixed_guard
+                    ~TestParamGenXmlConstructor.test_mixed_guard_first
+                    ~TestParamGenXmlConstructor.test_no_match
+                    ~TestParamGenXmlConstructor.test_single_key_val_guard
+        
+    

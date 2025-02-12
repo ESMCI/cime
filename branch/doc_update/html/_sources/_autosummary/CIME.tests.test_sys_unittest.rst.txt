@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_sys\_unittest
+==============================
+
+.. automodule:: CIME.tests.test_sys_unittest
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestUnitTest
+        
+    
+
+    
+        
+    
+
+
+    

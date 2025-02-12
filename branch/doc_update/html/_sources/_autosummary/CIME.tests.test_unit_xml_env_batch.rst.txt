@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_xml\_env\_batch
+======================================
+
+.. automodule:: CIME.tests.test_unit_xml_env_batch
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestXMLEnvBatch
+        
+    
+
+    
+        
+    
+
+
+    

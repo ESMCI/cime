@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.baselines.performance.perf\_get\_memory\_list
+==================================================
+
+.. currentmodule:: CIME.baselines.performance
+
+.. autofunction:: perf_get_memory_list

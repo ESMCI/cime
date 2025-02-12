@@ -1,0 +1,36 @@
+..
+  module.rst
+
+CIME.code\_checker
+==================
+
+.. automodule:: CIME.code_checker
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    check_code
+                    get_all_checkable_files
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

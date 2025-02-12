@@ -1,0 +1,85 @@
+..
+  class.rst
+
+CIME.XML.component.Component
+============================
+
+.. currentmodule:: CIME.XML.component
+
+.. autoclass:: Component
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Component.__init__
+                    ~Component.add_child
+                    ~Component.add_elements_by_group
+                    ~Component.attrib
+                    ~Component.change_file
+                    ~Component.check_if_comp_var
+                    ~Component.check_timestamp
+                    ~Component.cleanupnode
+                    ~Component.compare_xml
+                    ~Component.copy
+                    ~Component.get
+                    ~Component.get_child
+                    ~Component.get_child_content
+                    ~Component.get_children
+                    ~Component.get_default_value
+                    ~Component.get_description
+                    ~Component.get_element_text
+                    ~Component.get_elements_from_child_content
+                    ~Component.get_forcing_description
+                    ~Component.get_groups
+                    ~Component.get_id
+                    ~Component.get_node_element_info
+                    ~Component.get_nodes_by_id
+                    ~Component.get_optional_child
+                    ~Component.get_raw_record
+                    ~Component.get_resolved_value
+                    ~Component.get_type_info
+                    ~Component.get_valid_model_components
+                    ~Component.get_valid_value_string
+                    ~Component.get_valid_values
+                    ~Component.get_value
+                    ~Component.get_value_match
+                    ~Component.get_values
+                    ~Component.get_version
+                    ~Component.has
+                    ~Component.invalidate
+                    ~Component.lock
+                    ~Component.make_child
+                    ~Component.make_child_comment
+                    ~Component.name
+                    ~Component.overwrite_existing_entries
+                    ~Component.pop
+                    ~Component.print_values
+                    ~Component.read
+                    ~Component.read_fd
+                    ~Component.remove_child
+                    ~Component.return_values
+                    ~Component.scan_child
+                    ~Component.scan_children
+                    ~Component.scan_optional_child
+                    ~Component.set
+                    ~Component.set_default_value
+                    ~Component.set_element_text
+                    ~Component.set_name
+                    ~Component.set_text
+                    ~Component.set_valid_values
+                    ~Component.set_value
+                    ~Component.text
+                    ~Component.to_string
+                    ~Component.unlock
+                    ~Component.validate_timestamp
+                    ~Component.validate_xml_file
+                    ~Component.write
+        
+    

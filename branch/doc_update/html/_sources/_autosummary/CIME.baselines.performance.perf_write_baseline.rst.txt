@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.baselines.performance.perf\_write\_baseline
+================================================
+
+.. currentmodule:: CIME.baselines.performance
+
+.. autofunction:: perf_write_baseline

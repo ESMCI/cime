@@ -1,0 +1,44 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_xml\_grids
+=================================
+
+.. automodule:: CIME.tests.test_unit_xml_grids
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    write_config_grids
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestXMLGrids
+        
+    
+
+    
+        
+    
+
+
+    

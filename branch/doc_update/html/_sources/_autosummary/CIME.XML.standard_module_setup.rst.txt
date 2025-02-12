@@ -1,0 +1,26 @@
+..
+  module.rst
+
+CIME.XML.standard\_module\_setup
+================================
+
+.. automodule:: CIME.XML.standard_module_setup
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

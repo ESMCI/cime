@@ -1,0 +1,32 @@
+..
+  class.rst
+
+CIME.SystemTests.mcc.MCC
+========================
+
+.. currentmodule:: CIME.SystemTests.mcc
+
+.. autoclass:: MCC
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~MCC.__init__
+                    ~MCC.build
+                    ~MCC.build_indv
+                    ~MCC.build_phase
+                    ~MCC.clean_build
+                    ~MCC.compare_env_run
+                    ~MCC.copy_case1_restarts_to_case2
+                    ~MCC.run
+                    ~MCC.run_indv
+                    ~MCC.run_phase
+        
+    

@@ -1,0 +1,41 @@
+..
+  module.rst
+
+CIME.locked\_files
+==================
+
+.. automodule:: CIME.locked_files
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    check_diff
+                    check_lockedfile
+                    check_lockedfiles
+                    diff_lockedfile
+                    is_locked
+                    lock_file
+                    unlock_file
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

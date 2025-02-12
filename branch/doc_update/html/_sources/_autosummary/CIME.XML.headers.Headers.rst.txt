@@ -1,0 +1,64 @@
+..
+  class.rst
+
+CIME.XML.headers.Headers
+========================
+
+.. currentmodule:: CIME.XML.headers
+
+.. autoclass:: Headers
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Headers.__init__
+                    ~Headers.add_child
+                    ~Headers.attrib
+                    ~Headers.change_file
+                    ~Headers.check_timestamp
+                    ~Headers.copy
+                    ~Headers.get
+                    ~Headers.get_child
+                    ~Headers.get_children
+                    ~Headers.get_element_text
+                    ~Headers.get_header_node
+                    ~Headers.get_id
+                    ~Headers.get_optional_child
+                    ~Headers.get_raw_record
+                    ~Headers.get_resolved_value
+                    ~Headers.get_value
+                    ~Headers.get_values
+                    ~Headers.get_version
+                    ~Headers.has
+                    ~Headers.invalidate
+                    ~Headers.lock
+                    ~Headers.make_child
+                    ~Headers.make_child_comment
+                    ~Headers.name
+                    ~Headers.pop
+                    ~Headers.read
+                    ~Headers.read_fd
+                    ~Headers.remove_child
+                    ~Headers.scan_child
+                    ~Headers.scan_children
+                    ~Headers.scan_optional_child
+                    ~Headers.set
+                    ~Headers.set_element_text
+                    ~Headers.set_name
+                    ~Headers.set_text
+                    ~Headers.set_value
+                    ~Headers.text
+                    ~Headers.to_string
+                    ~Headers.unlock
+                    ~Headers.validate_timestamp
+                    ~Headers.validate_xml_file
+                    ~Headers.write
+        
+    

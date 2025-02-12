@@ -1,0 +1,80 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_case\_setup.TestCaseSetup
+================================================
+
+.. currentmodule:: CIME.tests.test_unit_case_setup
+
+.. autoclass:: TestCaseSetup
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestCaseSetup.__init__
+                    ~TestCaseSetup.addClassCleanup
+                    ~TestCaseSetup.addCleanup
+                    ~TestCaseSetup.addTypeEqualityFunc
+                    ~TestCaseSetup.assertAlmostEqual
+                    ~TestCaseSetup.assertCountEqual
+                    ~TestCaseSetup.assertDictEqual
+                    ~TestCaseSetup.assertEqual
+                    ~TestCaseSetup.assertFalse
+                    ~TestCaseSetup.assertGreater
+                    ~TestCaseSetup.assertGreaterEqual
+                    ~TestCaseSetup.assertIn
+                    ~TestCaseSetup.assertIs
+                    ~TestCaseSetup.assertIsInstance
+                    ~TestCaseSetup.assertIsNone
+                    ~TestCaseSetup.assertIsNot
+                    ~TestCaseSetup.assertIsNotNone
+                    ~TestCaseSetup.assertLess
+                    ~TestCaseSetup.assertLessEqual
+                    ~TestCaseSetup.assertListEqual
+                    ~TestCaseSetup.assertLogs
+                    ~TestCaseSetup.assertMultiLineEqual
+                    ~TestCaseSetup.assertNoLogs
+                    ~TestCaseSetup.assertNotAlmostEqual
+                    ~TestCaseSetup.assertNotEqual
+                    ~TestCaseSetup.assertNotIn
+                    ~TestCaseSetup.assertNotIsInstance
+                    ~TestCaseSetup.assertNotRegex
+                    ~TestCaseSetup.assertRaises
+                    ~TestCaseSetup.assertRaisesRegex
+                    ~TestCaseSetup.assertRegex
+                    ~TestCaseSetup.assertSequenceEqual
+                    ~TestCaseSetup.assertSetEqual
+                    ~TestCaseSetup.assertTrue
+                    ~TestCaseSetup.assertTupleEqual
+                    ~TestCaseSetup.assertWarns
+                    ~TestCaseSetup.assertWarnsRegex
+                    ~TestCaseSetup.countTestCases
+                    ~TestCaseSetup.debug
+                    ~TestCaseSetup.defaultTestResult
+                    ~TestCaseSetup.doClassCleanups
+                    ~TestCaseSetup.doCleanups
+                    ~TestCaseSetup.enterClassContext
+                    ~TestCaseSetup.enterContext
+                    ~TestCaseSetup.fail
+                    ~TestCaseSetup.id
+                    ~TestCaseSetup.run
+                    ~TestCaseSetup.setUp
+                    ~TestCaseSetup.setUpClass
+                    ~TestCaseSetup.shortDescription
+                    ~TestCaseSetup.skipTest
+                    ~TestCaseSetup.subTest
+                    ~TestCaseSetup.tearDown
+                    ~TestCaseSetup.tearDownClass
+                    ~TestCaseSetup.test_create_macros
+                    ~TestCaseSetup.test_create_macros_cmake
+                    ~TestCaseSetup.test_create_macros_copy_extra
+                    ~TestCaseSetup.test_create_macros_copy_user
+        
+    

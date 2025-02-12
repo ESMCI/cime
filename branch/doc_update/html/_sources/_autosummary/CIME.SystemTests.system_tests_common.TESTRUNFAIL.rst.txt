@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_common.TESTRUNFAIL
+==================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autoclass:: TESTRUNFAIL
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TESTRUNFAIL.__init__
+                    ~TESTRUNFAIL.build
+                    ~TESTRUNFAIL.build_indv
+                    ~TESTRUNFAIL.build_phase
+                    ~TESTRUNFAIL.clean_build
+                    ~TESTRUNFAIL.compare_env_run
+                    ~TESTRUNFAIL.run
+                    ~TESTRUNFAIL.run_indv
+                    ~TESTRUNFAIL.run_phase
+        
+    

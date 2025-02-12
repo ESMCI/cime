@@ -1,0 +1,25 @@
+..
+  class.rst
+
+CIME.Servers.generic\_server.GenericServer
+==========================================
+
+.. currentmodule:: CIME.Servers.generic_server
+
+.. autoclass:: GenericServer
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~GenericServer.__init__
+                    ~GenericServer.fileexists
+                    ~GenericServer.getfile
+        
+    

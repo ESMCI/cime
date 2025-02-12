@@ -1,0 +1,48 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_utils
+============================
+
+.. automodule:: CIME.tests.test_unit_utils
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    match_all_lines
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    MockTime
+                    TestFileContainsPythonFunction
+                    TestIndentStr
+                    TestLineDefinesPythonFunction
+                    TestUtils
+        
+    
+
+    
+        
+    
+
+
+    

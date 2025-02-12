@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.query\_config.query\_machines
+==========================================
+
+.. currentmodule:: CIME.scripts.query_config
+
+.. autofunction:: query_machines

@@ -1,0 +1,32 @@
+..
+  class.rst
+
+CIME.SystemTests.ncr.NCR
+========================
+
+.. currentmodule:: CIME.SystemTests.ncr
+
+.. autoclass:: NCR
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~NCR.__init__
+                    ~NCR.build
+                    ~NCR.build_indv
+                    ~NCR.build_phase
+                    ~NCR.clean_build
+                    ~NCR.compare_env_run
+                    ~NCR.copy_case1_restarts_to_case2
+                    ~NCR.run
+                    ~NCR.run_indv
+                    ~NCR.run_phase
+        
+    

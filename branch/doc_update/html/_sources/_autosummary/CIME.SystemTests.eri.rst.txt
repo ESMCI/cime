@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.eri
+====================
+
+.. automodule:: CIME.SystemTests.eri
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    ERI
+        
+    
+
+    
+        
+    
+
+
+    

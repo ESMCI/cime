@@ -1,0 +1,84 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_case.TestCase
+====================================
+
+.. currentmodule:: CIME.tests.test_unit_case
+
+.. autoclass:: TestCase
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestCase.__init__
+                    ~TestCase.addClassCleanup
+                    ~TestCase.addCleanup
+                    ~TestCase.addTypeEqualityFunc
+                    ~TestCase.assertAlmostEqual
+                    ~TestCase.assertCountEqual
+                    ~TestCase.assertDictEqual
+                    ~TestCase.assertEqual
+                    ~TestCase.assertFalse
+                    ~TestCase.assertGreater
+                    ~TestCase.assertGreaterEqual
+                    ~TestCase.assertIn
+                    ~TestCase.assertIs
+                    ~TestCase.assertIsInstance
+                    ~TestCase.assertIsNone
+                    ~TestCase.assertIsNot
+                    ~TestCase.assertIsNotNone
+                    ~TestCase.assertLess
+                    ~TestCase.assertLessEqual
+                    ~TestCase.assertListEqual
+                    ~TestCase.assertLogs
+                    ~TestCase.assertMultiLineEqual
+                    ~TestCase.assertNoLogs
+                    ~TestCase.assertNotAlmostEqual
+                    ~TestCase.assertNotEqual
+                    ~TestCase.assertNotIn
+                    ~TestCase.assertNotIsInstance
+                    ~TestCase.assertNotRegex
+                    ~TestCase.assertRaises
+                    ~TestCase.assertRaisesRegex
+                    ~TestCase.assertRegex
+                    ~TestCase.assertSequenceEqual
+                    ~TestCase.assertSetEqual
+                    ~TestCase.assertTrue
+                    ~TestCase.assertTupleEqual
+                    ~TestCase.assertWarns
+                    ~TestCase.assertWarnsRegex
+                    ~TestCase.countTestCases
+                    ~TestCase.debug
+                    ~TestCase.defaultTestResult
+                    ~TestCase.doClassCleanups
+                    ~TestCase.doCleanups
+                    ~TestCase.enterClassContext
+                    ~TestCase.enterContext
+                    ~TestCase.fail
+                    ~TestCase.id
+                    ~TestCase.run
+                    ~TestCase.setUp
+                    ~TestCase.setUpClass
+                    ~TestCase.shortDescription
+                    ~TestCase.skipTest
+                    ~TestCase.subTest
+                    ~TestCase.tearDown
+                    ~TestCase.tearDownClass
+                    ~TestCase.test_copy
+                    ~TestCase.test_create
+                    ~TestCase.test_fix_sys_argv_quotes
+                    ~TestCase.test_fix_sys_argv_quotes_incomplete
+                    ~TestCase.test_fix_sys_argv_quotes_kv
+                    ~TestCase.test_fix_sys_argv_quotes_val
+                    ~TestCase.test_fix_sys_argv_quotes_val_quoted
+                    ~TestCase.test_new_hash
+        
+    

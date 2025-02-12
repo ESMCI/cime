@@ -1,0 +1,80 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_compare\_test\_results.TestCaseFake
+==========================================================
+
+.. currentmodule:: CIME.tests.test_unit_compare_test_results
+
+.. autoclass:: TestCaseFake
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestCaseFake.__init__
+                    ~TestCaseFake.addClassCleanup
+                    ~TestCaseFake.addCleanup
+                    ~TestCaseFake.addTypeEqualityFunc
+                    ~TestCaseFake.assertAlmostEqual
+                    ~TestCaseFake.assertCountEqual
+                    ~TestCaseFake.assertDictEqual
+                    ~TestCaseFake.assertEqual
+                    ~TestCaseFake.assertFalse
+                    ~TestCaseFake.assertGreater
+                    ~TestCaseFake.assertGreaterEqual
+                    ~TestCaseFake.assertIn
+                    ~TestCaseFake.assertIs
+                    ~TestCaseFake.assertIsInstance
+                    ~TestCaseFake.assertIsNone
+                    ~TestCaseFake.assertIsNot
+                    ~TestCaseFake.assertIsNotNone
+                    ~TestCaseFake.assertLess
+                    ~TestCaseFake.assertLessEqual
+                    ~TestCaseFake.assertListEqual
+                    ~TestCaseFake.assertLogs
+                    ~TestCaseFake.assertMultiLineEqual
+                    ~TestCaseFake.assertNoLogs
+                    ~TestCaseFake.assertNotAlmostEqual
+                    ~TestCaseFake.assertNotEqual
+                    ~TestCaseFake.assertNotIn
+                    ~TestCaseFake.assertNotIsInstance
+                    ~TestCaseFake.assertNotRegex
+                    ~TestCaseFake.assertRaises
+                    ~TestCaseFake.assertRaisesRegex
+                    ~TestCaseFake.assertRegex
+                    ~TestCaseFake.assertSequenceEqual
+                    ~TestCaseFake.assertSetEqual
+                    ~TestCaseFake.assertTrue
+                    ~TestCaseFake.assertTupleEqual
+                    ~TestCaseFake.assertWarns
+                    ~TestCaseFake.assertWarnsRegex
+                    ~TestCaseFake.countTestCases
+                    ~TestCaseFake.debug
+                    ~TestCaseFake.defaultTestResult
+                    ~TestCaseFake.doClassCleanups
+                    ~TestCaseFake.doCleanups
+                    ~TestCaseFake.enterClassContext
+                    ~TestCaseFake.enterContext
+                    ~TestCaseFake.fail
+                    ~TestCaseFake.id
+                    ~TestCaseFake.run
+                    ~TestCaseFake.setUp
+                    ~TestCaseFake.setUpClass
+                    ~TestCaseFake.shortDescription
+                    ~TestCaseFake.skipTest
+                    ~TestCaseFake.subTest
+                    ~TestCaseFake.tearDown
+                    ~TestCaseFake.tearDownClass
+                    ~TestCaseFake.test_baseline
+                    ~TestCaseFake.test_failed_early
+                    ~TestCaseFake.test_hist_only
+                    ~TestCaseFake.test_namelists_only
+        
+    

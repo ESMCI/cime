@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.erio.ERIO
+==========================
+
+.. currentmodule:: CIME.SystemTests.erio
+
+.. autoclass:: ERIO
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ERIO.__init__
+                    ~ERIO.build
+                    ~ERIO.build_indv
+                    ~ERIO.build_phase
+                    ~ERIO.clean_build
+                    ~ERIO.compare_env_run
+                    ~ERIO.run
+                    ~ERIO.run_indv
+                    ~ERIO.run_phase
+        
+    

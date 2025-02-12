@@ -1,0 +1,90 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_cs\_status.TestCsStatus
+==============================================
+
+.. currentmodule:: CIME.tests.test_unit_cs_status
+
+.. autoclass:: TestCsStatus
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestCsStatus.__init__
+                    ~TestCsStatus.addClassCleanup
+                    ~TestCsStatus.addCleanup
+                    ~TestCsStatus.addTypeEqualityFunc
+                    ~TestCsStatus.assertAlmostEqual
+                    ~TestCsStatus.assertCountEqual
+                    ~TestCsStatus.assertDictEqual
+                    ~TestCsStatus.assertEqual
+                    ~TestCsStatus.assertFalse
+                    ~TestCsStatus.assertGreater
+                    ~TestCsStatus.assertGreaterEqual
+                    ~TestCsStatus.assertIn
+                    ~TestCsStatus.assertIs
+                    ~TestCsStatus.assertIsInstance
+                    ~TestCsStatus.assertIsNone
+                    ~TestCsStatus.assertIsNot
+                    ~TestCsStatus.assertIsNotNone
+                    ~TestCsStatus.assertLess
+                    ~TestCsStatus.assertLessEqual
+                    ~TestCsStatus.assertListEqual
+                    ~TestCsStatus.assertLogs
+                    ~TestCsStatus.assertMultiLineEqual
+                    ~TestCsStatus.assertNoLogs
+                    ~TestCsStatus.assertNotAlmostEqual
+                    ~TestCsStatus.assertNotEqual
+                    ~TestCsStatus.assertNotIn
+                    ~TestCsStatus.assertNotIsInstance
+                    ~TestCsStatus.assertNotRegex
+                    ~TestCsStatus.assertRaises
+                    ~TestCsStatus.assertRaisesRegex
+                    ~TestCsStatus.assertRegex
+                    ~TestCsStatus.assertSequenceEqual
+                    ~TestCsStatus.assertSetEqual
+                    ~TestCsStatus.assertTrue
+                    ~TestCsStatus.assertTupleEqual
+                    ~TestCsStatus.assertWarns
+                    ~TestCsStatus.assertWarnsRegex
+                    ~TestCsStatus.assert_core_phases
+                    ~TestCsStatus.assert_num_expected_unexpected_fails
+                    ~TestCsStatus.assert_phase_absent
+                    ~TestCsStatus.assert_status_of_phase
+                    ~TestCsStatus.countTestCases
+                    ~TestCsStatus.create_test_dir
+                    ~TestCsStatus.create_test_status_core_passes
+                    ~TestCsStatus.debug
+                    ~TestCsStatus.defaultTestResult
+                    ~TestCsStatus.doClassCleanups
+                    ~TestCsStatus.doCleanups
+                    ~TestCsStatus.enterClassContext
+                    ~TestCsStatus.enterContext
+                    ~TestCsStatus.fail
+                    ~TestCsStatus.id
+                    ~TestCsStatus.run
+                    ~TestCsStatus.setUp
+                    ~TestCsStatus.setUpClass
+                    ~TestCsStatus.set_last_core_phase_to_fail
+                    ~TestCsStatus.set_phase_to_status
+                    ~TestCsStatus.shortDescription
+                    ~TestCsStatus.skipTest
+                    ~TestCsStatus.subTest
+                    ~TestCsStatus.tearDown
+                    ~TestCsStatus.tearDownClass
+                    ~TestCsStatus.test_count_fails
+                    ~TestCsStatus.test_expected_fails
+                    ~TestCsStatus.test_fails_only
+                    ~TestCsStatus.test_force_rebuild
+                    ~TestCsStatus.test_single_test
+                    ~TestCsStatus.test_two_tests
+        
+    

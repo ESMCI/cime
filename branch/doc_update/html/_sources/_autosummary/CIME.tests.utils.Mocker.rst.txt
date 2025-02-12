@@ -1,0 +1,27 @@
+..
+  class.rst
+
+CIME.tests.utils.Mocker
+=======================
+
+.. currentmodule:: CIME.tests.utils
+
+.. autoclass:: Mocker
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Mocker.__init__
+                    ~Mocker.assert_called
+                    ~Mocker.assert_called_with
+                    ~Mocker.patch
+                    ~Mocker.revert_mocks
+        
+    

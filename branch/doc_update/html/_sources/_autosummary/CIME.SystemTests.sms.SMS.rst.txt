@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.sms.SMS
+========================
+
+.. currentmodule:: CIME.SystemTests.sms
+
+.. autoclass:: SMS
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~SMS.__init__
+                    ~SMS.build
+                    ~SMS.build_indv
+                    ~SMS.build_phase
+                    ~SMS.clean_build
+                    ~SMS.compare_env_run
+                    ~SMS.run
+                    ~SMS.run_indv
+                    ~SMS.run_phase
+        
+    

@@ -1,0 +1,34 @@
+..
+  class.rst
+
+CIME.tests.case\_fake.CaseFake
+==============================
+
+.. currentmodule:: CIME.tests.case_fake
+
+.. autoclass:: CaseFake
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~CaseFake.__init__
+                    ~CaseFake.case_setup
+                    ~CaseFake.copy
+                    ~CaseFake.create_clone
+                    ~CaseFake.flush
+                    ~CaseFake.get_value
+                    ~CaseFake.load_env
+                    ~CaseFake.make_rundir
+                    ~CaseFake.set_exeroot
+                    ~CaseFake.set_initial_test_values
+                    ~CaseFake.set_rundir
+                    ~CaseFake.set_value
+        
+    

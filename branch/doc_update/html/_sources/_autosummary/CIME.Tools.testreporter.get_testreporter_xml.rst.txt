@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.Tools.testreporter.get\_testreporter\_xml
+==============================================
+
+.. currentmodule:: CIME.Tools.testreporter
+
+.. autofunction:: get_testreporter_xml

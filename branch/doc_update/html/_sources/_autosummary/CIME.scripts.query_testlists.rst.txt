@@ -1,0 +1,38 @@
+..
+  module.rst
+
+CIME.scripts.query\_testlists
+=============================
+
+.. automodule:: CIME.scripts.query_testlists
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    count_test_data
+                    list_test_data
+                    parse_command_line
+                    print_test_data
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

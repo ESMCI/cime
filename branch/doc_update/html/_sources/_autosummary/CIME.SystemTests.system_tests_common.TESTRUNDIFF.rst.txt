@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.system\_tests\_common.TESTRUNDIFF
+==================================================
+
+.. currentmodule:: CIME.SystemTests.system_tests_common
+
+.. autoclass:: TESTRUNDIFF
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TESTRUNDIFF.__init__
+                    ~TESTRUNDIFF.build
+                    ~TESTRUNDIFF.build_indv
+                    ~TESTRUNDIFF.build_phase
+                    ~TESTRUNDIFF.clean_build
+                    ~TESTRUNDIFF.compare_env_run
+                    ~TESTRUNDIFF.run
+                    ~TESTRUNDIFF.run_indv
+                    ~TESTRUNDIFF.run_phase
+        
+    

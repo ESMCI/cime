@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.scripts.query\_testlists.parse\_command\_line
+==================================================
+
+.. currentmodule:: CIME.scripts.query_testlists
+
+.. autofunction:: parse_command_line

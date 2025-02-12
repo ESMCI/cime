@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.base.typed\_os\_environ
+==================================
+
+.. currentmodule:: CIME.tests.base
+
+.. autofunction:: typed_os_environ

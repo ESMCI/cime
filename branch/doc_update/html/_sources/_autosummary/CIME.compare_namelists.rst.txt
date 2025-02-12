@@ -1,0 +1,36 @@
+..
+  module.rst
+
+CIME.compare\_namelists
+=======================
+
+.. automodule:: CIME.compare_namelists
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    compare_namelist_files
+                    is_namelist_file
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

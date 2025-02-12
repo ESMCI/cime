@@ -1,0 +1,31 @@
+..
+  class.rst
+
+CIME.SystemTests.pfs.PFS
+========================
+
+.. currentmodule:: CIME.SystemTests.pfs
+
+.. autoclass:: PFS
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~PFS.__init__
+                    ~PFS.build
+                    ~PFS.build_indv
+                    ~PFS.build_phase
+                    ~PFS.clean_build
+                    ~PFS.compare_env_run
+                    ~PFS.run
+                    ~PFS.run_indv
+                    ~PFS.run_phase
+        
+    

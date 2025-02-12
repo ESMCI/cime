@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.case.case\_run
+===================
+
+.. automodule:: CIME.case.case_run
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    case_run
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

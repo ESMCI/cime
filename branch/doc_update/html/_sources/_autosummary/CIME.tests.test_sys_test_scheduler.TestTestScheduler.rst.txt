@@ -1,0 +1,95 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_test\_scheduler.TestTestScheduler
+=======================================================
+
+.. currentmodule:: CIME.tests.test_sys_test_scheduler
+
+.. autoclass:: TestTestScheduler
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestTestScheduler.__init__
+                    ~TestTestScheduler.addClassCleanup
+                    ~TestTestScheduler.addCleanup
+                    ~TestTestScheduler.addTypeEqualityFunc
+                    ~TestTestScheduler.assertAlmostEqual
+                    ~TestTestScheduler.assertCountEqual
+                    ~TestTestScheduler.assertDictEqual
+                    ~TestTestScheduler.assertEqual
+                    ~TestTestScheduler.assertFalse
+                    ~TestTestScheduler.assertGreater
+                    ~TestTestScheduler.assertGreaterEqual
+                    ~TestTestScheduler.assertIn
+                    ~TestTestScheduler.assertIs
+                    ~TestTestScheduler.assertIsInstance
+                    ~TestTestScheduler.assertIsNone
+                    ~TestTestScheduler.assertIsNot
+                    ~TestTestScheduler.assertIsNotNone
+                    ~TestTestScheduler.assertLess
+                    ~TestTestScheduler.assertLessEqual
+                    ~TestTestScheduler.assertListEqual
+                    ~TestTestScheduler.assertLogs
+                    ~TestTestScheduler.assertMultiLineEqual
+                    ~TestTestScheduler.assertNoLogs
+                    ~TestTestScheduler.assertNotAlmostEqual
+                    ~TestTestScheduler.assertNotEqual
+                    ~TestTestScheduler.assertNotIn
+                    ~TestTestScheduler.assertNotIsInstance
+                    ~TestTestScheduler.assertNotRegex
+                    ~TestTestScheduler.assertRaises
+                    ~TestTestScheduler.assertRaisesRegex
+                    ~TestTestScheduler.assertRegex
+                    ~TestTestScheduler.assertSequenceEqual
+                    ~TestTestScheduler.assertSetEqual
+                    ~TestTestScheduler.assertTrue
+                    ~TestTestScheduler.assertTupleEqual
+                    ~TestTestScheduler.assertWarns
+                    ~TestTestScheduler.assertWarnsRegex
+                    ~TestTestScheduler.assert_dashboard_has_build
+                    ~TestTestScheduler.assert_test_status
+                    ~TestTestScheduler.countTestCases
+                    ~TestTestScheduler.debug
+                    ~TestTestScheduler.defaultTestResult
+                    ~TestTestScheduler.doClassCleanups
+                    ~TestTestScheduler.doCleanups
+                    ~TestTestScheduler.enterClassContext
+                    ~TestTestScheduler.enterContext
+                    ~TestTestScheduler.fail
+                    ~TestTestScheduler.get_casedir
+                    ~TestTestScheduler.get_default_tests
+                    ~TestTestScheduler.id
+                    ~TestTestScheduler.kill_python_subprocesses
+                    ~TestTestScheduler.kill_subprocesses
+                    ~TestTestScheduler.run
+                    ~TestTestScheduler.run_cmd_assert_result
+                    ~TestTestScheduler.setUp
+                    ~TestTestScheduler.setUpClass
+                    ~TestTestScheduler.setup_proxy
+                    ~TestTestScheduler.shortDescription
+                    ~TestTestScheduler.skipTest
+                    ~TestTestScheduler.subTest
+                    ~TestTestScheduler.tearDown
+                    ~TestTestScheduler.tearDownClass
+                    ~TestTestScheduler.test_a_phases
+                    ~TestTestScheduler.test_b_full
+                    ~TestTestScheduler.test_c_use_existing
+                    ~TestTestScheduler.test_chksum
+                    ~TestTestScheduler.test_d_retry
+                    ~TestTestScheduler.test_e_test_inferred_compiler
+                    ~TestTestScheduler.test_force_rebuild
+                    ~TestTestScheduler.test_testmods
+                    ~TestTestScheduler.test_testmods_malformed
+                    ~TestTestScheduler.test_testmods_missing
+                    ~TestTestScheduler.verify_perms
+        
+    

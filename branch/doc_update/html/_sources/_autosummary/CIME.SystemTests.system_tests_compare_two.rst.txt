@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.system\_tests\_compare\_two
+============================================
+
+.. automodule:: CIME.SystemTests.system_tests_compare_two
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    SystemTestsCompareTwo
+        
+    
+
+    
+        
+    
+
+
+    

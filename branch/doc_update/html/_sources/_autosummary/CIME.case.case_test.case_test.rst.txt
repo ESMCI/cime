@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.case\_test.case\_test
+===============================
+
+.. currentmodule:: CIME.case.case_test
+
+.. autofunction:: case_test

@@ -1,0 +1,32 @@
+..
+  class.rst
+
+CIME.SystemTests.erri.ERRI
+==========================
+
+.. currentmodule:: CIME.SystemTests.erri
+
+.. autoclass:: ERRI
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ERRI.__init__
+                    ~ERRI.build
+                    ~ERRI.build_indv
+                    ~ERRI.build_phase
+                    ~ERRI.clean_build
+                    ~ERRI.compare_env_run
+                    ~ERRI.copy_case1_restarts_to_case2
+                    ~ERRI.run
+                    ~ERRI.run_indv
+                    ~ERRI.run_phase
+        
+    

@@ -1,0 +1,36 @@
+..
+  module.rst
+
+CIME.XML.namelist\_definition
+=============================
+
+.. automodule:: CIME.XML.namelist_definition
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    CaseInsensitiveDict
+                    NamelistDefinition
+        
+    
+
+    
+        
+    
+
+
+    

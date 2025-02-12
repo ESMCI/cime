@@ -1,0 +1,45 @@
+..
+  module.rst
+
+CIME.tests.test\_unit\_locked\_files
+====================================
+
+.. automodule:: CIME.tests.test_unit_locked_files
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    create_batch_system
+                    create_fake_env
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    TestLockedFiles
+        
+    
+
+    
+        
+    
+
+
+    

@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.test\_mods
+===========================
+
+.. automodule:: CIME.SystemTests.test_mods
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    find_test_mods
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

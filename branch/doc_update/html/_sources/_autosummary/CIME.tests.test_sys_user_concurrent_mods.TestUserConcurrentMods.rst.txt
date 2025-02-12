@@ -1,0 +1,85 @@
+..
+  class.rst
+
+CIME.tests.test\_sys\_user\_concurrent\_mods.TestUserConcurrentMods
+===================================================================
+
+.. currentmodule:: CIME.tests.test_sys_user_concurrent_mods
+
+.. autoclass:: TestUserConcurrentMods
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestUserConcurrentMods.__init__
+                    ~TestUserConcurrentMods.addClassCleanup
+                    ~TestUserConcurrentMods.addCleanup
+                    ~TestUserConcurrentMods.addTypeEqualityFunc
+                    ~TestUserConcurrentMods.assertAlmostEqual
+                    ~TestUserConcurrentMods.assertCountEqual
+                    ~TestUserConcurrentMods.assertDictEqual
+                    ~TestUserConcurrentMods.assertEqual
+                    ~TestUserConcurrentMods.assertFalse
+                    ~TestUserConcurrentMods.assertGreater
+                    ~TestUserConcurrentMods.assertGreaterEqual
+                    ~TestUserConcurrentMods.assertIn
+                    ~TestUserConcurrentMods.assertIs
+                    ~TestUserConcurrentMods.assertIsInstance
+                    ~TestUserConcurrentMods.assertIsNone
+                    ~TestUserConcurrentMods.assertIsNot
+                    ~TestUserConcurrentMods.assertIsNotNone
+                    ~TestUserConcurrentMods.assertLess
+                    ~TestUserConcurrentMods.assertLessEqual
+                    ~TestUserConcurrentMods.assertListEqual
+                    ~TestUserConcurrentMods.assertLogs
+                    ~TestUserConcurrentMods.assertMultiLineEqual
+                    ~TestUserConcurrentMods.assertNoLogs
+                    ~TestUserConcurrentMods.assertNotAlmostEqual
+                    ~TestUserConcurrentMods.assertNotEqual
+                    ~TestUserConcurrentMods.assertNotIn
+                    ~TestUserConcurrentMods.assertNotIsInstance
+                    ~TestUserConcurrentMods.assertNotRegex
+                    ~TestUserConcurrentMods.assertRaises
+                    ~TestUserConcurrentMods.assertRaisesRegex
+                    ~TestUserConcurrentMods.assertRegex
+                    ~TestUserConcurrentMods.assertSequenceEqual
+                    ~TestUserConcurrentMods.assertSetEqual
+                    ~TestUserConcurrentMods.assertTrue
+                    ~TestUserConcurrentMods.assertTupleEqual
+                    ~TestUserConcurrentMods.assertWarns
+                    ~TestUserConcurrentMods.assertWarnsRegex
+                    ~TestUserConcurrentMods.assert_dashboard_has_build
+                    ~TestUserConcurrentMods.assert_test_status
+                    ~TestUserConcurrentMods.countTestCases
+                    ~TestUserConcurrentMods.debug
+                    ~TestUserConcurrentMods.defaultTestResult
+                    ~TestUserConcurrentMods.doClassCleanups
+                    ~TestUserConcurrentMods.doCleanups
+                    ~TestUserConcurrentMods.enterClassContext
+                    ~TestUserConcurrentMods.enterContext
+                    ~TestUserConcurrentMods.fail
+                    ~TestUserConcurrentMods.get_casedir
+                    ~TestUserConcurrentMods.id
+                    ~TestUserConcurrentMods.kill_python_subprocesses
+                    ~TestUserConcurrentMods.kill_subprocesses
+                    ~TestUserConcurrentMods.run
+                    ~TestUserConcurrentMods.run_cmd_assert_result
+                    ~TestUserConcurrentMods.setUp
+                    ~TestUserConcurrentMods.setUpClass
+                    ~TestUserConcurrentMods.setup_proxy
+                    ~TestUserConcurrentMods.shortDescription
+                    ~TestUserConcurrentMods.skipTest
+                    ~TestUserConcurrentMods.subTest
+                    ~TestUserConcurrentMods.tearDown
+                    ~TestUserConcurrentMods.tearDownClass
+                    ~TestUserConcurrentMods.test_user_concurrent_mods
+                    ~TestUserConcurrentMods.verify_perms
+        
+    

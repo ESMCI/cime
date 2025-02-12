@@ -1,0 +1,90 @@
+..
+  class.rst
+
+CIME.tests.test\_unit\_utils.TestUtils
+======================================
+
+.. currentmodule:: CIME.tests.test_unit_utils
+
+.. autoclass:: TestUtils
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestUtils.__init__
+                    ~TestUtils.addClassCleanup
+                    ~TestUtils.addCleanup
+                    ~TestUtils.addTypeEqualityFunc
+                    ~TestUtils.assertAlmostEqual
+                    ~TestUtils.assertCountEqual
+                    ~TestUtils.assertDictEqual
+                    ~TestUtils.assertEqual
+                    ~TestUtils.assertFalse
+                    ~TestUtils.assertGreater
+                    ~TestUtils.assertGreaterEqual
+                    ~TestUtils.assertIn
+                    ~TestUtils.assertIs
+                    ~TestUtils.assertIsInstance
+                    ~TestUtils.assertIsNone
+                    ~TestUtils.assertIsNot
+                    ~TestUtils.assertIsNotNone
+                    ~TestUtils.assertLess
+                    ~TestUtils.assertLessEqual
+                    ~TestUtils.assertListEqual
+                    ~TestUtils.assertLogs
+                    ~TestUtils.assertMatchAllLines
+                    ~TestUtils.assertMultiLineEqual
+                    ~TestUtils.assertNoLogs
+                    ~TestUtils.assertNotAlmostEqual
+                    ~TestUtils.assertNotEqual
+                    ~TestUtils.assertNotIn
+                    ~TestUtils.assertNotIsInstance
+                    ~TestUtils.assertNotRegex
+                    ~TestUtils.assertRaises
+                    ~TestUtils.assertRaisesRegex
+                    ~TestUtils.assertRegex
+                    ~TestUtils.assertSequenceEqual
+                    ~TestUtils.assertSetEqual
+                    ~TestUtils.assertTrue
+                    ~TestUtils.assertTupleEqual
+                    ~TestUtils.assertWarns
+                    ~TestUtils.assertWarnsRegex
+                    ~TestUtils.countTestCases
+                    ~TestUtils.debug
+                    ~TestUtils.defaultTestResult
+                    ~TestUtils.doClassCleanups
+                    ~TestUtils.doCleanups
+                    ~TestUtils.enterClassContext
+                    ~TestUtils.enterContext
+                    ~TestUtils.fail
+                    ~TestUtils.id
+                    ~TestUtils.run
+                    ~TestUtils.setUp
+                    ~TestUtils.setUpClass
+                    ~TestUtils.shortDescription
+                    ~TestUtils.skipTest
+                    ~TestUtils.subTest
+                    ~TestUtils.tearDown
+                    ~TestUtils.tearDownClass
+                    ~TestUtils.test_copy_globs
+                    ~TestUtils.test_import_and_run_sub_or_cmd
+                    ~TestUtils.test_import_and_run_sub_or_cmd_cime_py
+                    ~TestUtils.test_import_and_run_sub_or_cmd_import
+                    ~TestUtils.test_import_and_run_sub_or_cmd_run
+                    ~TestUtils.test_import_from_file
+                    ~TestUtils.test_run_and_log_case_status
+                    ~TestUtils.test_run_and_log_case_status_case_submit_error_on_batch
+                    ~TestUtils.test_run_and_log_case_status_case_submit_no_batch
+                    ~TestUtils.test_run_and_log_case_status_case_submit_on_batch
+                    ~TestUtils.test_run_and_log_case_status_custom_msg
+                    ~TestUtils.test_run_and_log_case_status_custom_msg_error_on_batch
+                    ~TestUtils.test_run_and_log_case_status_error
+        
+    

@@ -1,0 +1,66 @@
+..
+  class.rst
+
+CIME.XML.testspec.TestSpec
+==========================
+
+.. currentmodule:: CIME.XML.testspec
+
+.. autoclass:: TestSpec
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestSpec.__init__
+                    ~TestSpec.add_child
+                    ~TestSpec.add_test
+                    ~TestSpec.attrib
+                    ~TestSpec.change_file
+                    ~TestSpec.check_timestamp
+                    ~TestSpec.copy
+                    ~TestSpec.get
+                    ~TestSpec.get_child
+                    ~TestSpec.get_children
+                    ~TestSpec.get_element_text
+                    ~TestSpec.get_id
+                    ~TestSpec.get_optional_child
+                    ~TestSpec.get_raw_record
+                    ~TestSpec.get_resolved_value
+                    ~TestSpec.get_value
+                    ~TestSpec.get_values
+                    ~TestSpec.get_version
+                    ~TestSpec.has
+                    ~TestSpec.invalidate
+                    ~TestSpec.lock
+                    ~TestSpec.make_child
+                    ~TestSpec.make_child_comment
+                    ~TestSpec.name
+                    ~TestSpec.pop
+                    ~TestSpec.read
+                    ~TestSpec.read_fd
+                    ~TestSpec.remove_child
+                    ~TestSpec.scan_child
+                    ~TestSpec.scan_children
+                    ~TestSpec.scan_optional_child
+                    ~TestSpec.set
+                    ~TestSpec.set_element_text
+                    ~TestSpec.set_header
+                    ~TestSpec.set_name
+                    ~TestSpec.set_text
+                    ~TestSpec.set_value
+                    ~TestSpec.text
+                    ~TestSpec.to_string
+                    ~TestSpec.unlock
+                    ~TestSpec.update_test_status
+                    ~TestSpec.validate_timestamp
+                    ~TestSpec.validate_xml_file
+                    ~TestSpec.write
+        
+    

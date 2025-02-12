@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.tests.test\_unit\_system\_tests.create\_mock\_case
+=======================================================
+
+.. currentmodule:: CIME.tests.test_unit_system_tests
+
+.. autofunction:: create_mock_case

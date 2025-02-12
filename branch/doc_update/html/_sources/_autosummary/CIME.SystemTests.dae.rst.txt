@@ -1,0 +1,35 @@
+..
+  module.rst
+
+CIME.SystemTests.dae
+====================
+
+.. automodule:: CIME.SystemTests.dae
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Classes
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/class.rst
+                
+                    DAE
+        
+    
+
+    
+        
+    
+
+
+    

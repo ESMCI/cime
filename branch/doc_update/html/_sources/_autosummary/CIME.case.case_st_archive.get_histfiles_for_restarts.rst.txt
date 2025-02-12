@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.case.case\_st\_archive.get\_histfiles\_for\_restarts
+=========================================================
+
+.. currentmodule:: CIME.case.case_st_archive
+
+.. autofunction:: get_histfiles_for_restarts

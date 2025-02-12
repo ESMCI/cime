@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.baselines.performance.perf\_get\_throughput
+================================================
+
+.. currentmodule:: CIME.baselines.performance
+
+.. autofunction:: perf_get_throughput
