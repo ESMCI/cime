@@ -982,7 +982,7 @@ class Case(object):
         self.set_lookup_value("TESTS_MODS_DIR", tests_mods_dir)
         self.set_lookup_value("USER_MODS_DIR", user_mods_dir)
 
-    def _check_compset_validity(self):
+    def _check_compset_validity(self, compset_alias):
         # dictionary mapping component classes (keys) to component names (values)
         comp_names = {}
 
@@ -991,7 +991,7 @@ class Case(object):
                 continue
             comp_names[comp] = self.get_value("COMP_{}".format(comp))
 
-        compset_validity_checker = CompsetValidityChecker(comp_names)
+        compset_validity_checker = CompsetValidityChecker(comp_names, compset_alias)
         compset_validity_checker.check_compset_validity()
 
     def get_compset_components(self):
@@ -1369,7 +1369,7 @@ class Case(object):
         # check validity
         # --------------------------------------------
 
-        self._check_compset_validity()
+        self._check_compset_validity(compset_alias)
 
         # --------------------------------------------
         # machine

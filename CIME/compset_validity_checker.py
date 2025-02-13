@@ -7,11 +7,12 @@ class CompsetValidityChecker(object):
     determine if this is a valid compset.
     """
 
-    def __init__(self, comp_names):
+    def __init__(self, comp_names, compset_alias):
         """
         Args:
             comp_names: Dictionary mapping component classes (keys; must be uppercase) to
                         component names (values). (Should include all component classes, but *not* CPL.)
+            compset_alias: String giving the compset alias, or None if there is no compset alias
         """
         # Check inputs
         #
@@ -38,9 +39,17 @@ class CompsetValidityChecker(object):
         # convenient way to access the list of component classes
         self._comp_classes = self._comp_names.keys()
 
+        self._compset_alias = compset_alias
+        if self._compset_alias:
+            self._compset_char = self._compset_alias[0].upper()
+        else:
+            self._compset_char = None
+
     def check_compset_validity(self):
         self._standard_validity_checks()
         self._model_specific_validity_checks()
+        if self._compset_alias:
+            self._alias_validity_checks()
 
     def _standard_validity_checks(self):
         self._check_x_comps()
@@ -125,6 +134,129 @@ class CompsetValidityChecker(object):
                 "MOM6 cannot be coupled with a data wave component",
             )
 
+    def _alias_validity_checks(self):
+        """
+        Check that the compset definition agrees with the compset alias
+
+        Should only be called if self._compset_alias is non-empty
+        """
+        # TODO: This should call a function implemented in the customize area for the
+        # given model. The entire body of this function would then be moved into that
+        # externally-defined function. That function will accept this 'self' object as an
+        # argument and can make calls to this object to implement its checks.
+
+        # See
+        # https://escomp.github.io/CESM/versions/master/html/cesm_configurations.html#cesm2-component-sets
+        # for compset definitions. (However, the ROF conditions here are modified somewhat
+        # from that, specifying the ROF conditions that actually seem important: that we
+        # should have a non-stub ROF when we have an active ocean; this needs to be DROF
+        # if we don't have an active land.)
+
+        if self._compset_char == "A":
+            self.check_compset_char_condition(
+                not any(self.is_active_comp(comp) for comp in self._comp_classes)
+            )
+
+        elif self._compset_char == "B":
+            self.check_compset_char_condition(
+                self.is_active_comp("ATM")
+                and self.is_active_comp("OCN")
+                and self.is_active_comp("ICE")
+                and self.is_active_comp("LND")
+                and not self.is_stub_comp("ROF")
+            )
+
+        elif self._compset_char == "C":
+            self.check_compset_char_condition(
+                self.is_active_comp("OCN")
+                and self.is_data_comp("ATM")
+                and self.is_data_comp("ICE")
+                and self.is_stub_comp("LND")
+                and self.is_data_comp("ROF")
+            )
+
+        elif self._compset_char == "D":
+            self.check_compset_char_condition(
+                self.is_active_comp("ICE")
+                and self.is_data_comp("ATM")
+                and self.is_data_comp("OCN")
+                and self.is_stub_comp("LND")
+            )
+
+        elif self._compset_char == "E":
+            self.check_compset_char_condition(
+                self.is_active_comp("ATM")
+                and self.is_active_comp("LND")
+                and self.is_active_comp("ICE")
+                and self.is_data_comp("OCN")
+            )
+
+        # F compsets are inconsistent due to simpler model configurations, so we just
+        # check what we can
+        elif self._compset_char == "F":
+            self.check_compset_char_condition(
+                self.is_active_comp("ATM") and not self.is_active_comp("OCN")
+            )
+
+        elif self._compset_char == "G":
+            self.check_compset_char_condition(
+                self.is_active_comp("OCN")
+                and self.is_active_comp("ICE")
+                and self.is_data_comp("ATM")
+                and self.is_stub_comp("LND")
+                and self.is_data_comp("ROF")
+            )
+
+        elif self._compset_char == "I":
+            self.check_compset_char_condition(
+                self.is_active_comp("LND")
+                and self.is_data_comp("ATM")
+                and self.is_stub_comp("OCN")
+                and self.is_stub_comp("ICE")
+            )
+
+        # Skipping the currently-unused J compsets
+
+        elif self._compset_char == "P":
+            self.check_compset_char_condition(
+                self.is_active_comp("ATM")
+                and all(
+                    self.is_stub_comp(comp)
+                    for comp in self._comp_classes
+                    if comp != "ATM"
+                )
+            )
+
+        elif self._compset_char == "Q":
+            self.check_compset_char_condition(
+                self.is_active_comp("ATM")
+                and self.is_data_comp("OCN")
+                and self.is_stub_comp("ICE")
+                and self.is_stub_comp("LND")
+            )
+
+        elif self._compset_char == "S":
+            self.check_compset_char_condition(
+                all(self.is_stub_comp(comp) for comp in self._comp_classes)
+            )
+
+        elif self._compset_char == "T":
+            self.check_compset_char_condition(
+                self.is_active_comp("GLC")
+                and self.is_data_comp("LND")
+                and self.is_stub_comp("ATM")
+                and self.is_stub_comp("OCN")
+                and self.is_stub_comp("ICE")
+            )
+
+        elif self._compset_char == "X":
+            self.check_compset_char_condition(
+                all(
+                    (self.is_x_comp(comp) or self.is_stub_comp(comp))
+                    for comp in self._comp_classes
+                )
+            )
+
     def check_condition(self, condition, msg):
         """
         Check the given condition (Boolean); if False, abort with the given message.
@@ -132,6 +264,16 @@ class CompsetValidityChecker(object):
         This wraps CIME's expect function. Its main purpose is to prepend the message with a consistent note.
         """
         expect(condition, f"Invalid compset: {msg}")
+
+    def check_compset_char_condition(self, condition):
+        """
+        Check the given condition (Boolean) relating to the first character of a compset
+        alias; if False, abort with an informative message.
+        """
+        expect(
+            condition,
+            f"Compset long name does not match expectations for {self._compset_char} compsets",
+        )
 
     def comp_name(self, comp_class):
         """
