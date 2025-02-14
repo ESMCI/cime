@@ -485,29 +485,41 @@ class Machines(GenericXML):
         self.custom_settings[vid] = value
 
     def print_values(self):
-        # write out machines
-        machines = self.get_children("machine")
-        logger.info("Machines")
-        for machine in machines:
-            name = self.get(machine, "MACH")
-            desc = self.get_child("DESC", root=machine)
-            os_ = self.get_child("OS", root=machine)
-            compilers = self.get_child("COMPILERS", root=machine)
-            max_tasks_per_node = self.get_child("MAX_TASKS_PER_NODE", root=machine)
-            max_mpitasks_per_node = self.get_child(
-                "MAX_MPITASKS_PER_NODE", root=machine
-            )
-            max_gpus_per_node = self.get_child("MAX_GPUS_PER_NODE", root=machine)
+        """Print machine values
 
-            print("  {} : {} ".format(name, self.text(desc)))
-            print("      os             ", self.text(os_))
-            print("      compilers      ", self.text(compilers))
-            if max_mpitasks_per_node is not None:
-                print("      pes/node       ", self.text(max_mpitasks_per_node))
-            if max_tasks_per_node is not None:
-                print("      max_tasks/node ", self.text(max_tasks_per_node))
-            if max_gpus_per_node is not None:
-                print("      max_gpus/node ", self.text(max_gpus_per_node))
+        Will print values for all machines unless `set_machine` has been called.
+        """
+        current = self.probe_machine_name(False)
+
+        if self.machine_node is None:
+            for machine in self.get_children("machine"):
+                self._print_machine_values(machine, current)
+        else:
+            self._print_machine_values(self.machine_node, current)
+
+    def _print_machine_values(self, machine, current=None):
+        name = self.get(machine, "MACH")
+        if current is not None and current == name:
+            name = f"{name} (current)"
+        desc = self.text(self.get_child("DESC", root=machine))
+        os_ = self.text(self.get_child("OS", root=machine))
+        compilers = self.text(self.get_child("COMPILERS", root=machine))
+        mpilibs=self.text(self.get_child("MPILIBS", root=machine))
+        max_tasks_per_node = self.text(self.get_child("MAX_TASKS_PER_NODE", root=machine))
+        max_mpitasks_per_node = self.text(self.get_child(
+            "MAX_MPITASKS_PER_NODE", root=machine
+        ))
+        max_gpus_per_node = self.get_optional_child("MAX_GPUS_PER_NODE", root=machine)
+        max_gpus_per_node_text = self.text(max_gpus_per_node) if max_gpus_per_node else 0
+
+        print("  {} : {} ".format(name, desc))
+        print("      os             ", os_)
+        print("      compilers      ", compilers)
+        print("      mpilibs        ", mpilibs)
+        print("      pes/node       ", max_mpitasks_per_node)
+        print("      max_tasks/node ", max_tasks_per_node)
+        print("      max_gpus/node  ", max_gpus_per_node_text)
+        print("")
 
     def return_values(self):
         """return a dictionary of machine info
