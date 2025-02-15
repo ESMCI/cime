@@ -1,6 +1,7 @@
 """
 Interface to the config_machines.xml file.  This class inherits from GenericXML.py
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
@@ -484,7 +485,7 @@ class Machines(GenericXML):
         # A temporary cache only
         self.custom_settings[vid] = value
 
-    def print_values(self):
+    def print_values(self, compiler=None):
         """Print machine values
 
         Will print values for all machines unless `set_machine` has been called.
@@ -495,22 +496,29 @@ class Machines(GenericXML):
             for machine in self.get_children("machine"):
                 self._print_machine_values(machine, current)
         else:
-            self._print_machine_values(self.machine_node, current)
+            self._print_machine_values(self.machine_node, current, compiler)
 
-    def _print_machine_values(self, machine, current=None):
+    def _print_machine_values(self, machine, current=None, compiler=None):
         name = self.get(machine, "MACH")
         if current is not None and current == name:
             name = f"{name} (current)"
         desc = self.text(self.get_child("DESC", root=machine))
         os_ = self.text(self.get_child("OS", root=machine))
         compilers = self.text(self.get_child("COMPILERS", root=machine))
-        mpilibs=self.text(self.get_child("MPILIBS", root=machine))
-        max_tasks_per_node = self.text(self.get_child("MAX_TASKS_PER_NODE", root=machine))
-        max_mpitasks_per_node = self.text(self.get_child(
-            "MAX_MPITASKS_PER_NODE", root=machine
-        ))
+        mpilibs = self.text(self.get_child("MPILIBS", root=machine))
+        max_tasks_per_node = self.text(
+            self.get_child("MAX_TASKS_PER_NODE", root=machine)
+        )
+        max_mpitasks_per_node = self.text(
+            self.get_child("MAX_MPITASKS_PER_NODE", root=machine)
+        )
         max_gpus_per_node = self.get_optional_child("MAX_GPUS_PER_NODE", root=machine)
-        max_gpus_per_node_text = self.text(max_gpus_per_node) if max_gpus_per_node else 0
+        max_gpus_per_node_text = (
+            self.text(max_gpus_per_node) if max_gpus_per_node else 0
+        )
+
+        if compiler is not None:
+            name = f"{name} ({compiler})"
 
         print("  {} : {} ".format(name, desc))
         print("      os             ", os_)
@@ -520,6 +528,90 @@ class Machines(GenericXML):
         print("      max_tasks/node ", max_tasks_per_node)
         print("      max_gpus/node  ", max_gpus_per_node_text)
         print("")
+
+        if compiler is not None:
+            print("    Module commands:")
+            for command in self._module_commands(machine, compiler):
+                print(f"      {command}")
+            print("")
+
+            print("    Environment variables:")
+            for requirement, variables in self._environment_variables(
+                machine, compiler
+            ).items():
+                if requirement == "":
+                    for x, y in variables["values"].items():
+                        print(f"      {x}: {y}")
+                else:
+                    print(f"      (with {requirement}) :")
+                    for x, y in variables["values"].items():
+                        print(f"        {x}: {y}")
+
+    def _environment_variables(self, root, compiler):
+        matches = {}
+
+        for x in self.get_children("environment_variables", root=root):
+            compiler_attr = self.get(x, "compiler")
+
+            if compiler_attr is None:
+                required = x.attrib
+                self._update_environment_variables_matches(x, required, matches)
+            elif re.match(compiler_attr, compiler):
+                required = x.attrib
+                required.pop("compiler")
+                self._update_environment_variables_matches(x, required, matches)
+
+        return matches
+
+    def _update_environment_variables_matches(self, root, required, matches):
+        key = " ".join([f"{x}={y}" for x, y in required.items()])
+        values = {
+            self.get(x, "name"): self._get_resolved_environment_variable(x.text)
+            for x in self.get_children("env", root=root)
+        }
+
+        if key in matches:
+            matches[key]["values"].update(values)
+        else:
+            matches[key] = {
+                "requirements": required,
+                "values": values,
+            }
+
+    def _get_resolved_environment_variable(self, text):
+        try:
+            value = self.get_resolved_value(text, allow_unresolved_envvars=True)
+        except Exception as e:
+            return f"Failed to resovle {text!r} with: {e!s}"
+
+        if value == text and "$" in text:
+            value = f"Failed to resolve {text!r}"
+
+        return value
+
+    def _module_commands(self, root, compiler):
+        commands = [
+            f"{y.attrib['name']}" if y.text is None else f"{y.attrib['name']} {y.text}"
+            for x in self._modules(root, compiler)
+            for y in self.get_children("command", root=x)
+        ]
+
+        return commands
+
+    def _modules(self, root, compiler):
+        matched_modules = []
+
+        for m in self.get_children(
+            "modules", root=self.get_child("module_system", root=root)
+        ):
+            compiler_attr = m.attrib.get("compiler", None)
+
+            if compiler_attr is None:
+                matched_modules.append(m)
+            elif re.match(compiler_attr, compiler):
+                matched_modules.append(m)
+
+        return matched_modules
 
     def return_values(self):
         """return a dictionary of machine info

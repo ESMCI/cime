@@ -96,6 +96,11 @@ def parse_command_line(description):
         help="Query machines for model. If not value is passed, all machines will be printed.",
     )
 
+    config_group.add_argument(
+        "--compiler",
+        help="Prints compiler details when combined with --machines",
+    )
+
     output_group = parser.add_argument_group("Output options")
 
     output_group.add_argument(
@@ -132,6 +137,13 @@ def parse_command_line(description):
     # make sure at least one argument has been passed
     if not any([kwargs[x] for x in ["grids", "compsets", "components", "machines"]]):
         parser.print_help(sys.stderr)
+
+    if kwargs["compiler"] is not None and (
+        kwargs["machines"] is None or kwargs["machines"] == "all"
+    ):
+        raise Exception(
+            "The --compiler argument must be used with --machines and a specific machine selected"
+        )
 
     kwargs["files"] = files[kwargs["driver"]]
 
@@ -313,7 +325,7 @@ def _query_component_settings(component, files, xml=False, all_components=False,
         component.print_values()
 
 
-def query_machines(files, machines, xml, **_):
+def query_machines(files, machines, xml, compiler, **_):
     config_file = files.get_value("MACHINES_SPEC_FILE")
     utils.expect(
         os.path.isfile(config_file),
@@ -334,11 +346,13 @@ def query_machines(files, machines, xml, **_):
                 )
             )
     else:
-        print_machine_values(xml_machines, machines)
+        print_machine_values(xml_machines, compiler, machines)
 
 
 def print_machine_values(
-    machine, machine_name="all"
+    machine,
+    compiler,
+    machine_name="all",
 ):  # pylint: disable=arguments-differ
     """Prints machine values
 
@@ -358,7 +372,8 @@ def print_machine_values(
 
     for name in machine_names:
         machine.set_machine(name)
-        machine.print_values()
+        machine.print_values(compiler)
+
 
 if __name__ == "__main__":
     _main_func(__doc__)
