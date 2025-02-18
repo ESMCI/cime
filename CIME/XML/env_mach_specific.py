@@ -6,7 +6,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.env_base import EnvBase
 from CIME import utils
 from CIME.utils import transform_vars, get_cime_root
-import string, resource
+import string, resource, platform
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
@@ -151,6 +151,10 @@ class EnvMachSpecific(EnvBase):
     def _get_resources_for_case(self, case):
         resource_nodes = self.get_children("resource_limits")
         if resource_nodes is not None:
+            expect(
+                platform.system() != "Darwin",
+                "Mac OS does not support setting resource limits",
+            )
             nodes = self._compute_resource_actions(resource_nodes, case)
             for name, val in nodes:
                 attr = getattr(resource, name)
