@@ -512,7 +512,7 @@ class TestCimeCase(base.BaseTestCase):
         # Frontier has 56 MAX_MPITASKS_PER_NODE so 5600 should require 100 nodes
         # which should land us in 6 hour queue
         test_name = "SMS_P5600.f19_g16_rx1.A"
-        machine, compiler = "frontier", "gnu"
+        machine, compiler = "frontier", "craygnu"
         casedir = self._create_test(
             [
                 "--no-setup",
