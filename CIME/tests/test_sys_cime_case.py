@@ -530,7 +530,7 @@ class TestCimeCase(base.BaseTestCase):
             "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
-        self.assertEqual(result, "06:00:00")
+        self.assertEqual(result, "12:00:00")
 
         result = self.run_cmd_assert_result(
             "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
