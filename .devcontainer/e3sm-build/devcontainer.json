@@ -1,0 +1,25 @@
+{
+    "containerEnv": {
+        "CIME_MODEL": "e3sm",
+        "CIME_MACHINE": "docker",
+        "SKIP_CIME_UPDATE": "true",
+        "SKIP_MODEL_SETUP": "true"
+    },
+    "build": {
+        "dockerfile": "../../docker/Dockerfile",
+        "target": "base"
+    },
+    "workspaceFolder": "/src/cime",
+    "workspaceMount": "source=${localWorkspaceFolder}/..,target=/src,type=bind",
+    "postAttachCommand": "/entrypoint.sh bash",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "charliermarsh.ruff"
+            ]
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {}
+    }
+}
