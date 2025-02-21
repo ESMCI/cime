@@ -142,7 +142,7 @@ def parse_command_line(description):
         kwargs["machines"] is None or kwargs["machines"] == "all"
     ):
         raise Exception(
-            "The --compiler argument must be used with --machines and a specific machine selected"
+            "The --compiler argument must be used when specifying a machine with --machines <name>"
         )
 
     kwargs["files"] = files[kwargs["driver"]]
