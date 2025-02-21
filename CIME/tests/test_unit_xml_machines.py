@@ -242,20 +242,33 @@ class TestUnitXMLMachines(unittest.TestCase):
     def test_get_resolved_environment_variable(self):
         self.machine.set_machine("multi-compiler")
 
-        assert os.environ["HOME"] == self.machine._get_resolved_environment_variable("$ENV{HOME}")
+        assert os.environ["HOME"] == self.machine._get_resolved_environment_variable(
+            "$ENV{HOME}"
+        )
         assert "" == self.machine._get_resolved_environment_variable("")
-        
+
         error = "Failed to resolve '$SHELL{./xmlquery MODEL}' with: ERROR: Command: './xmlquery MODEL' failed with error '/bin/sh: 1: ./xmlquery: not found' from dir '/src/cime'"
-        assert error == self.machine._get_resolved_environment_variable("$SHELL{./xmlquery MODEL}")
+        assert error == self.machine._get_resolved_environment_variable(
+            "$SHELL{./xmlquery MODEL}"
+        )
 
     def test_filter_children_by_compiler(self):
         self.machine.set_machine("multi-compiler")
 
         module_system_node = self.machine.get_child("module_system")
-        def command_formatter(x):
-            return f"{x.attrib['name']}" if x.text is None else f"{x.attrib['name']} {x.text}"
 
-        nodes = list(self.machine._filter_children_by_compiler("modules", "command", "intel", command_formatter, module_system_node))
+        def command_formatter(x):
+            return (
+                f"{x.attrib['name']}"
+                if x.text is None
+                else f"{x.attrib['name']} {x.text}"
+            )
+
+        nodes = list(
+            self.machine._filter_children_by_compiler(
+                "modules", "command", "intel", command_formatter, module_system_node
+            )
+        )
 
         assert len(nodes) == 4
         assert nodes[0] == ("", ["purge", "load ubuntupe/2.7.15"])
@@ -263,7 +276,11 @@ class TestUnitXMLMachines(unittest.TestCase):
         assert nodes[2] == ("", ["load PrgEnv-intel/8.3.3"])
         assert nodes[3] == ("", ["load ubuntu-mpich/8.1.16"])
 
-        nodes = list(self.machine._filter_children_by_compiler("modules", "command", "gnugpu", command_formatter, module_system_node))
+        nodes = list(
+            self.machine._filter_children_by_compiler(
+                "modules", "command", "gnugpu", command_formatter, module_system_node
+            )
+        )
 
         assert len(nodes) == 6
         assert nodes[0] == ("", ["purge", "load ubuntupe/2.7.15"])
