@@ -8,9 +8,32 @@ from CIME.XML.files import Files
 from CIME.utils import convert_to_unknown_type, get_cime_config
 
 import socket
+from functools import reduce
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def match_value_by_attribute_regex(element, attribute_name, value):
+    """Checks element contains attribute whose pattern matches a value.
+
+    If the element does not have the attribute it's considered a match.
+
+    Args:
+        element (CIME.XML.generic_xml._Element): XML element to check attributes.
+        attribute_name (str): Name of attribute with regex value.
+        value (str): Value that is matched against attributes regex value.
+
+    Returns:
+        bool: True if attribute regex matches the target value otherwise False.
+    """
+    attribute_value = element.attrib.get(attribute_name, None)
+
+    return (
+        True
+        if attribute_value is None or re.match(attribute_value, value) is not None
+        else False
+    )
 
 
 class Machines(GenericXML):
@@ -540,43 +563,31 @@ class Machines(GenericXML):
                 machine, compiler
             ).items():
                 if requirement == "":
-                    for x, y in variables["values"].items():
+                    for x, y in variables.items():
                         print(f"      {x}: {y}")
                 else:
                     print(f"      (with {requirement}) :")
-                    for x, y in variables["values"].items():
+                    for x, y in variables.items():
                         print(f"        {x}: {y}")
 
     def _environment_variables(self, root, compiler):
-        matches = {}
+        def key_from_attr(attr):
+            attr.pop("compiler", None)
+            return " ".join([f"{x}={y!r}" for x, y in attr.items()])
 
-        for x in self.get_children("environment_variables", root=root):
-            compiler_attr = self.get(x, "compiler")
-
-            if compiler_attr is None:
-                required = x.attrib
-                self._update_environment_variables_matches(x, required, matches)
-            elif re.match(compiler_attr, compiler):
-                required = x.attrib
-                required.pop("compiler")
-                self._update_environment_variables_matches(x, required, matches)
-
-        return matches
-
-    def _update_environment_variables_matches(self, root, required, matches):
-        key = " ".join([f"{x}={y}" for x, y in required.items()])
-        values = {
-            self.get(x, "name"): self._get_resolved_environment_variable(x.text)
-            for x in self.get_children("env", root=root)
-        }
-
-        if key in matches:
-            matches[key]["values"].update(values)
-        else:
-            matches[key] = {
-                "requirements": required,
-                "values": values,
+        matches = [
+            {
+                f"{key_from_attr(x.attrib)}": {
+                    y.attrib["name"]: self._get_resolved_environment_variable(y.text)
+                    for y in self.get_children("env", root=x)
+                }
             }
+            for x in self._get_children_filter_attribute_regex(
+                "environment_variables", "compiler", compiler, root
+            )
+        ]
+
+        return reduce(lambda x, y: {**x, **y}, matches)
 
     def _get_resolved_environment_variable(self, text):
         try:
@@ -590,28 +601,24 @@ class Machines(GenericXML):
         return value
 
     def _module_commands(self, root, compiler):
+        module_system_element = self.get_child("module_system", root=root)
+
         commands = [
             f"{y.attrib['name']}" if y.text is None else f"{y.attrib['name']} {y.text}"
-            for x in self._modules(root, compiler)
+            for x in self._get_children_filter_attribute_regex(
+                "modules", "compiler", compiler, root=module_system_element
+            )
             for y in self.get_children("command", root=x)
         ]
 
         return commands
 
-    def _modules(self, root, compiler):
-        matched_modules = []
-
-        for m in self.get_children(
-            "modules", root=self.get_child("module_system", root=root)
-        ):
-            compiler_attr = m.attrib.get("compiler", None)
-
-            if compiler_attr is None:
-                matched_modules.append(m)
-            elif re.match(compiler_attr, compiler):
-                matched_modules.append(m)
-
-        return matched_modules
+    def _get_children_filter_attribute_regex(self, name, attribute_name, value, root):
+        return [
+            x
+            for x in self.get_children(name, root=root)
+            if match_value_by_attribute_regex(x, attribute_name, value)
+        ]
 
     def return_values(self):
         """return a dictionary of machine info
