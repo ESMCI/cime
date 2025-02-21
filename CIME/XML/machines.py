@@ -5,7 +5,7 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import expect, convert_to_unknown_type, get_cime_config
+from CIME.utils import CIMEError, expect, convert_to_unknown_type, get_cime_config
 
 import re
 import logging
@@ -531,7 +531,13 @@ class Machines(GenericXML):
             name = f"{name} (current)"
         desc = self.text(self.get_child("DESC", root=machine))
         os_ = self.text(self.get_child("OS", root=machine))
+
         compilers = self.text(self.get_child("COMPILERS", root=machine))
+        if compiler is not None and compiler not in compilers.split(","):
+            raise CIMEError(
+                f"Compiler {compiler!r} is not a valid choice from ({compilers})"
+            )
+
         mpilibs_nodes = self._get_children_filter_attribute_regex(
             "MPILIBS", "compiler", compiler, root=machine
         )
