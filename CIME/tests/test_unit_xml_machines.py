@@ -1,5 +1,6 @@
 import io
 import os
+import re
 import unittest
 from contextlib import redirect_stdout
 
@@ -247,10 +248,12 @@ class TestUnitXMLMachines(unittest.TestCase):
         )
         assert "" == self.machine._get_resolved_environment_variable("")
 
-        error = "Failed to resolve '$SHELL{./xmlquery MODEL}' with: ERROR: Command: './xmlquery MODEL' failed with error '/bin/sh: 1: ./xmlquery: not found' from dir '/src/cime'"
-        assert error == self.machine._get_resolved_environment_variable(
+        pattern = r"Failed to resolve '\$SHELL{\./xmlquery MODEL}' with: ERROR: Command: '\./xmlquery MODEL' failed with error '/bin/sh: 1: \./xmlquery: not found' from dir '.*/cime'"
+        output = self.machine._get_resolved_environment_variable(
             "$SHELL{./xmlquery MODEL}"
         )
+
+        assert re.match(pattern, output) is not None
 
     def test_filter_children_by_compiler(self):
         self.machine.set_machine("multi-compiler")
