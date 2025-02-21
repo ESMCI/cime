@@ -631,7 +631,7 @@ class Machines(GenericXML):
         try:
             value = self.get_resolved_value(text, allow_unresolved_envvars=True)
         except Exception as e:
-            return f"Failed to resovle {text!r} with: {e!s}"
+            return f"Failed to resolve {text!r} with: {e!s}"
 
         if value == text and "$" in text:
             value = f"Failed to resolve {text!r}"
