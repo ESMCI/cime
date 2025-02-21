@@ -5,10 +5,12 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import convert_to_unknown_type, get_cime_config
+from CIME.utils import expect, convert_to_unknown_type, get_cime_config
 
+import re
+import logging
 import socket
-from functools import reduce
+from functools import partial
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -31,7 +33,9 @@ def match_value_by_attribute_regex(element, attribute_name, value):
 
     return (
         True
-        if attribute_value is None or re.match(attribute_value, value) is not None
+        if value is None
+        or attribute_value is None
+        or re.match(attribute_value, value) is not None
         else False
     )
 
@@ -528,7 +532,11 @@ class Machines(GenericXML):
         desc = self.text(self.get_child("DESC", root=machine))
         os_ = self.text(self.get_child("OS", root=machine))
         compilers = self.text(self.get_child("COMPILERS", root=machine))
-        mpilibs = self.text(self.get_child("MPILIBS", root=machine))
+        mpilibs_nodes = self._get_children_filter_attribute_regex(
+            "MPILIBS", "compiler", compiler, root=machine
+        )
+        mpilibs = set([y for x in mpilibs_nodes for y in self.text(x).split(",")])
+
         max_tasks_per_node = self.text(
             self.get_child("MAX_TASKS_PER_NODE", root=machine)
         )
@@ -546,50 +554,74 @@ class Machines(GenericXML):
         print("  {} : {} ".format(name, desc))
         print("      os             ", os_)
         print("      compilers      ", compilers)
-        print("      mpilibs        ", mpilibs)
+        print("      mpilibs        ", ",".join(mpilibs))
         print("      pes/node       ", max_mpitasks_per_node)
         print("      max_tasks/node ", max_tasks_per_node)
         print("      max_gpus/node  ", max_gpus_per_node_text)
         print("")
 
         if compiler is not None:
+            module_system_node = self.get_child("module_system", root=machine)
+
+            def command_formatter(node):
+                if node.text is None:
+                    return f"{node.attrib['name']}"
+                else:
+                    return f"{node.attrib['name']} {node.text}"
+
             print("    Module commands:")
-            for command in self._module_commands(machine, compiler):
-                print(f"      {command}")
+            for requirements, commands in self._filter_children_by_compiler(
+                "modules", "command", compiler, command_formatter, module_system_node
+            ):
+                indent = "" if requirements == "" else "  "
+                if requirements != "":
+                    print(f"      (with {requirements})")
+                for x in commands:
+                    print(f"      {indent}{x}")
             print("")
 
+            def env_formatter(node, machines=None):
+                return f"{node.attrib['name']}: {machines._get_resolved_environment_variable(node.text)}"
+
             print("    Environment variables:")
-            for requirement, variables in self._environment_variables(
-                machine, compiler
-            ).items():
-                if requirement == "":
-                    for x, y in variables.items():
-                        print(f"      {x}: {y}")
-                else:
-                    print(f"      (with {requirement}) :")
-                    for x, y in variables.items():
-                        print(f"        {x}: {y}")
+            for requirements, variables in self._filter_children_by_compiler(
+                "environment_variables",
+                "env",
+                compiler,
+                partial(env_formatter, machines=self),
+                machine,
+            ):
+                indent = "" if requirements == "" else "  "
+                if requirements != "":
+                    print(f"      (with {requirements})")
+                for x in variables:
+                    print(f"      {indent}{x}")
 
-    def _environment_variables(self, root, compiler):
-        def key_from_attr(attr):
-            attr.pop("compiler", None)
-            return " ".join([f"{x}={y!r}" for x, y in attr.items()])
+    def _filter_children_by_compiler(self, parent, child, compiler, formatter, root):
+        nodes = self._get_children_filter_attribute_regex(
+            parent, "compiler", compiler, root=root
+        )
 
-        matches = [
-            {
-                f"{key_from_attr(x.attrib)}": {
-                    y.attrib["name"]: self._get_resolved_environment_variable(y.text)
-                    for y in self.get_children("env", root=x)
-                }
-            }
-            for x in self._get_children_filter_attribute_regex(
-                "environment_variables", "compiler", compiler, root
-            )
+        for x in nodes:
+            attrib = {**x.attrib}
+            attrib.pop("compiler", None)
+
+            requirements = " ".join([f"{y}={z!r}" for y, z in attrib.items()])
+            values = [formatter(y) for y in self.get_children(child, root=x)]
+
+            yield requirements, values
+
+    def _get_children_filter_attribute_regex(self, name, attribute_name, value, root):
+        return [
+            x
+            for x in self.get_children(name, root=root)
+            if match_value_by_attribute_regex(x, attribute_name, value)
         ]
 
-        return reduce(lambda x, y: {**x, **y}, matches)
-
     def _get_resolved_environment_variable(self, text):
+        if text is None:
+            return ""
+
         try:
             value = self.get_resolved_value(text, allow_unresolved_envvars=True)
         except Exception as e:
@@ -599,26 +631,6 @@ class Machines(GenericXML):
             value = f"Failed to resolve {text!r}"
 
         return value
-
-    def _module_commands(self, root, compiler):
-        module_system_element = self.get_child("module_system", root=root)
-
-        commands = [
-            f"{y.attrib['name']}" if y.text is None else f"{y.attrib['name']} {y.text}"
-            for x in self._get_children_filter_attribute_regex(
-                "modules", "compiler", compiler, root=module_system_element
-            )
-            for y in self.get_children("command", root=x)
-        ]
-
-        return commands
-
-    def _get_children_filter_attribute_regex(self, name, attribute_name, value, root):
-        return [
-            x
-            for x in self.get_children(name, root=root)
-            if match_value_by_attribute_regex(x, attribute_name, value)
-        ]
 
     def return_values(self):
         """return a dictionary of machine info
