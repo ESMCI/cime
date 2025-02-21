@@ -513,9 +513,10 @@ class Machines(GenericXML):
         self.custom_settings[vid] = value
 
     def print_values(self, compiler=None):
-        """Print machine values
+        """Prints machine values.
 
-        Will print values for all machines unless `set_machine` has been called.
+        Args:
+            compiler (str, optional): Name of the compiler to print extra details for. Defaults to None.
         """
         current = self.probe_machine_name(False)
 
@@ -526,6 +527,16 @@ class Machines(GenericXML):
             self._print_machine_values(self.machine_node, current, compiler)
 
     def _print_machine_values(self, machine, current=None, compiler=None):
+        """Prints a machines details.
+
+        Args:
+            machine (CIME.XML.machines.Machine): Machine object.
+            current (str, optional): Name of the current machine. Defaults to None.
+            compiler (str, optional): If not None, then modules and environment variables matching compiler are printed. Defaults to None.
+
+        Raises:
+            CIMEError: If `compiler` is not valid.
+        """
         name = self.get(machine, "MACH")
         if current is not None and current == name:
             name = f"{name} (current)"
@@ -604,6 +615,22 @@ class Machines(GenericXML):
                     print(f"      {indent}{x}")
 
     def _filter_children_by_compiler(self, parent, child, compiler, formatter, root):
+        """Filters parent nodes and returns requirements and children of filtered nodes.
+
+        Example of a yielded values:
+
+        "mpilib=openmpi DEBUG=true", ["HOME: /home/dev", "NETCDF_C_PATH: ../netcdf"]
+
+        Args:
+            parent (str): Name of the nodes to filter.
+            child (str): Name of the children nodes from filtered parent nodes.
+            compiler (str): Name of the compiler that will be matched against the regex.
+            formatter (function): Function to format the child nodes from the parents that match.
+            root (CIME.XML.generic_xml._Element): Root node to filter parent nodes from.
+
+        Yields:
+            str, list: Requirements for parent node and list of formated child nodes.
+        """
         nodes = self._get_children_filter_attribute_regex(
             parent, "compiler", compiler, root=root
         )
@@ -618,6 +645,19 @@ class Machines(GenericXML):
             yield requirements, values
 
     def _get_children_filter_attribute_regex(self, name, attribute_name, value, root):
+        """Filter children nodes using regex.
+
+        Uses regex from attribute of children nodes to match a value.
+
+        Args:
+            name (str): Name of the children nodes.
+            attribute_name (str): Name of the attribute on the child nodes to build regex from.
+            value (str): Value that is matched using regex from attribute.
+            root (CIME.XML.generic_xml._Element): Root node to query children nodes from.
+
+        Returns:
+            list: List of children whose regex attribute matches the value.
+        """
         return [
             x
             for x in self.get_children(name, root=root)
@@ -625,6 +665,14 @@ class Machines(GenericXML):
         ]
 
     def _get_resolved_environment_variable(self, text):
+        """Attempts to resolve machines environment variable.
+
+        Args:
+            text (str): Environment variable value.
+
+        Returns:
+            str: Resolved value or error message.
+        """
         if text is None:
             return ""
 
