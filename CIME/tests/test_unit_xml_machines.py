@@ -1,3 +1,4 @@
+from contextlib import redirect_stdout
 import unittest
 import io
 
@@ -147,6 +148,33 @@ class TestUnitXMLMachines(unittest.TestCase):
         self.machine.read_fd(io.StringIO(MACHINE_TEST_XML))
 
         self.machine.set_machine("default")
+
+    def test_print_values(self):
+        with io.StringIO() as buffer, redirect_stdout(buffer):
+            self.machine.print_values()
+
+            output = buffer.getvalue()
+
+        assert "ubuntu" in output
+        assert "gnu,intel" in output
+        assert "mpi-serial" in output
+        assert "unload ubuntupe" not in output
+
+    def test_print_values_details(self):
+        with io.StringIO() as buffer, redirect_stdout(buffer):
+            self.machine.print_values("intel")
+
+            output = buffer.getvalue()
+
+        assert "ubuntu" in output
+        assert "gnu,intel" in output
+        assert "mpi-serial" in output
+        assert "unload ubuntupe" in output
+        assert "unload PrgEnv-ubuntu" not in output
+        assert "load ubuntu-mpich/8.1.16" in output
+        assert "(with BUILD_THREADED='TRUE')" in output
+        assert "PERL5LIB: /usr/lib/perl5/5.26.2" in output
+        assert "OMP_PLACES: cores" not in output
 
     def test_has_batch_system(self):
         assert self.machine.has_batch_system()
