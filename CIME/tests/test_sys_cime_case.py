@@ -512,7 +512,7 @@ class TestCimeCase(base.BaseTestCase):
         # Frontier has 56 MAX_MPITASKS_PER_NODE so 5600 should require 100 nodes
         # which should land us in 6 hour queue
         test_name = "SMS_P5600.f19_g16_rx1.A"
-        machine, compiler = "frontier", "gnu"
+        machine, compiler = "frontier", "craygnu-hipcc"
         casedir = self._create_test(
             [
                 "--no-setup",
@@ -530,7 +530,7 @@ class TestCimeCase(base.BaseTestCase):
             "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
-        self.assertEqual(result, "06:00:00")
+        self.assertEqual(result, "12:00:00")
 
         result = self.run_cmd_assert_result(
             "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
