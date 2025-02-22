@@ -521,7 +521,9 @@ def _case_setup_impl(
 
 
 ###############################################################################
-def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
+def case_setup(
+    self, clean=False, test_mode=False, reset=False, keep=None, disable_git=False
+):
     ###############################################################################
     caseroot, casebaseid = self.get_value("CASEROOT"), self.get_value("CASEBASEID")
     phase = "setup.clean" if clean else "case.setup"
@@ -565,7 +567,8 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             caseroot=caseroot,
             is_batch=is_batch,
         )
-        self._create_case_repo(caseroot)
+        if not disable_git and not reset:
+            self._create_case_repo(caseroot)
 
 
 def _create_case_repo(self, caseroot):
