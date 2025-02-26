@@ -43,7 +43,7 @@ def find_test_mods(comp_interface, test_mods):
                 f"Invalid testmod, format should be `${{component}}-${{testmod}}`, got {test_mod!r}"
             )
 
-        logger.info(
+        logger.debug(
             "Searching for testmod {!r} for component {!r}".format(mod_path, component)
         )
 
@@ -65,7 +65,7 @@ def find_test_mods(comp_interface, test_mods):
             if os.path.exists(candidate_path):
                 test_mod_path = candidate_path
 
-                logger.info(
+                logger.debug(
                     "Found testmod {!r} for component {!r} in {!r}".format(
                         mod_path, component, test_mod_path
                     )

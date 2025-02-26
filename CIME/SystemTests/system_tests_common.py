@@ -158,6 +158,11 @@ class SystemTestsCommon(object):
             if ncpl and minncpl < ncpl:
                 minncpl = ncpl
 
+        comp_interface = self._case.get_value("COMP_INTERFACE")
+        # mct doesn't care about maxncpl so set it to minncpl
+        if comp_interface == "mct":
+            maxncpl = minncpl
+
         ncpl_base_period = self._case.get_value("NCPL_BASE_PERIOD")
         if ncpl_base_period == "hour":
             coupling_secs = 3600 / maxncpl
@@ -187,6 +192,7 @@ class SystemTestsCommon(object):
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
         stop_n = int(stop_n * factor // coupling_secs)
+
         rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))

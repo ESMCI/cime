@@ -105,7 +105,7 @@ class ERI(SystemTestsCommon):
 
         ninst = self._case.get_value("NINST")
         drvrest = "rpointer.cpl"
-        if ninst > 1:
+        if ninst is not None and ninst > 1:
             drvrest += "_0001"
         drvrest += self._rest_time
         self._set_drv_restart_pointer(drvrest)
@@ -288,7 +288,7 @@ class ERI(SystemTestsCommon):
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", hist_n)
         drvrest = "rpointer.cpl"
-        if ninst > 1:
+        if ninst is not None and ninst > 1:
             drvrest += "_0001"
         drvrest += self._rest_time
 

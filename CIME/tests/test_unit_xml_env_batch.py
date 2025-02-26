@@ -127,6 +127,59 @@ XML_DIFF = b"""<?xml version="1.0"?>
 </file>"""
 
 
+XML_CHECK = b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="nersc_slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,pbspro,lsf,slurm,cobalt,cobalt_theta,slurm_single_node,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="TRUE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system MACH="pm-gpu" type="nersc_slurm">
+    <directives>
+      <directive> --constraint=gpu</directive>
+    </directives>
+    <directives COMPSET="!.*MMF.*" compiler="gnugpu">
+      <directive> --gpus-per-node=4</directive>
+      <directive> --gpu-bind=none</directive>
+    </directives>
+    <directives COMPSET=".*MMF.*" compiler="gnugpu">
+      <directive> --gpus-per-task=1</directive>
+      <directive> --gpu-bind=map_gpu:0,1,2,3</directive>
+    </directives>
+    <directives compiler="nvidiagpu">
+      <directive> --gpus-per-node=4</directive>
+      <directive> --gpu-bind=none</directive>
+    </directives>
+    <directives compiler="gnu">
+      <directive> -G 0</directive>
+    </directives>
+    <directives compiler="nvidia">
+      <directive> -G 0</directive>
+    </directives>
+    <queues>
+      <queue default="true" nodemax="1792" walltimemax="00:45:00">regular</queue>
+      <queue nodemax="1792" strict="true" walltimemax="00:45:00">preempt</queue>
+      <queue nodemax="1792" strict="true" walltimemax="00:45:00">shared</queue>
+      <queue nodemax="1792" strict="true" walltimemax="00:45:00">overrun</queue>
+      <queue nodemax="4" strict="true" walltimemax="00:15:00">debug</queue>
+    </queues>
+  </batch_system>
+</file>"""
+
+
 def _open_temp_file(stack, data):
     tfile = stack.enter_context(tempfile.NamedTemporaryFile())
 
@@ -174,6 +227,21 @@ class TestXMLEnvBatch(unittest.TestCase):
         }
 
         assert diff2 == expected_diff2
+
+    def test_compare_xml_same(self):
+        with ExitStack() as stack:
+            file1 = _open_temp_file(stack, XML_CHECK)
+            batch1 = EnvBatch(infile=file1.name)
+
+            file2 = _open_temp_file(stack, XML_CHECK)
+            batch2 = EnvBatch(infile=file2.name)
+
+            diff = batch1.compare_xml(batch2)
+            diff2 = batch2.compare_xml(batch1)
+
+        expected_diff = {}
+        assert diff == expected_diff, f"{diff}"
+        assert diff2 == expected_diff, f"{diff2}"
 
     @mock.patch("CIME.XML.env_batch.EnvBatch._submit_single_job")
     def test_submit_jobs(self, _submit_single_job):

@@ -208,6 +208,7 @@ def bless_test_results(
     pes_file=None,
     bless_tests=None,
     no_skip_pass=False,
+    lock_baselines=False,
     new_test_root=None,
     new_test_id=None,
     exclude=None,
@@ -441,6 +442,21 @@ def bless_test_results(
 
                     if not success:
                         broken_blesses.append((test_name, reason))
+
+                if lock_baselines:
+                    baseline_full_dir = os.path.join(
+                        baseline_root_resolved,
+                        baseline_name_resolved,
+                        case.get_value("CASEBASEID"),
+                    )
+                    stat, out, _ = run_cmd(
+                        f"chmod -R g-w {baseline_full_dir}", combine_output=True
+                    )
+                    if stat != 0:
+                        msg = (
+                            f"Failed to lock baselines for {baseline_full_dir}:\n{out}"
+                        )
+                        logger.warning(msg)
 
     # Emit a warning if items in bless_tests did not match anything
     if bless_tests:

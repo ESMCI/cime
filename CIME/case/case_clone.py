@@ -54,9 +54,9 @@ def create_clone(
     if os.path.isdir(os.path.join(newcase_cimeroot, "share")) and get_model() == "cesm":
         srcroot = newcase_cimeroot
     else:
-        srcroot = self.get_value("SRCROOT")
-        if not srcroot:
-            srcroot = os.path.join(newcase_cimeroot, "..")
+        srcroot = os.path.join(newcase_cimeroot, "..")
+        if not os.path.isdir(srcroot):
+            srcroot = self.get_value("SRCROOT")
 
     newcase = self.copy(newcasename, newcaseroot, newsrcroot=srcroot)
     with newcase:
