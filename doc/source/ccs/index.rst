@@ -51,7 +51,7 @@ Component Types
 
    active
        Solve a complex set of equations to describe the model's behavior. Also called *prognostic* or *full* models.
-       These can be full General Circulation Models. Multiple active models might be available (for example POP and MPAS-ocean to represent the global ocean) but only one ocean or atmosphere model at a time can be used in a component set.
+       These can be full General Circulation Models. Multiple active models might be available (for example MOM and MPAS-ocean to represent the global ocean) but only one ocean or atmosphere model at a time can be used in a component set.
 
    data
        For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
@@ -98,7 +98,6 @@ Compset alias
     H    Active ocean and sea ice, data atmosphere, stub lnd, river and glc 
     I    Active land and river model, data atmosphere, stub ocn, sea-ice, glc
     IG   Active land, river and ice-sheet, data atmosphere, stub ocn, sea-ice
-    S    All stub models (for testing only)
     X    All x-compsets (2D sine waves for each component except stub glc; for testing only)
     ===  ========================================================================================
 
@@ -112,8 +111,8 @@ Grid set
 Machine and Compilers
 :::::::::::::::::::::
    The *machine* is the computer you are using to run CIME to build and run the climate model. It could be a workstation
-   or a national supercomputer. The exact name of  *machine* is typically the UNIX hostname but it could be any string.  A machine
-   may have one more more versions of Fortran, C and C++ *compilers* that are needed to compile the model's source code.
+   or a supercomputer. The exact name of  *machine* is typically the UNIX hostname but it could be any string.  A machine
+   may have one or more versions of Fortran, C and C++ *compilers* that are needed to compile the model's source code.
 
 Case
 ::::
@@ -131,7 +130,7 @@ Out-of-the-box
 CCS and your environment
 `````````````````````````
 Before using any CCS commands, set the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
-**<model>** with the appropriate text. Current possibilities are "e3sm" or "cesm."
+**<model>** with the appropriate text. Current possibilities are "e3sm", "cesm", or "ufs".
 ::
 
     export CIME_MODEL=<model>
