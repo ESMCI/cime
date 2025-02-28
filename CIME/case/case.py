@@ -1582,9 +1582,10 @@ class Case(object):
 
         workflow = Workflow(files=files)
 
-        env_postprocessing = self.get_env("postprocessing")
         postprocessing = Postprocessing(files=files)
-        env_postprocessing.add_elements_by_group(srcobj=postprocessing)
+        if postprocessing._file_exists:
+            env_postprocessing = self.get_env("postprocessing")
+            env_postprocessing.add_elements_by_group(srcobj=postprocessing)
 
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 

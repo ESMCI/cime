@@ -19,6 +19,9 @@ class Postprocessing(EntryID):
             files = Files()
         if infile is None:
             infile = files.get_value("POSTPROCESSING_SPEC_FILE")
+        self._file_exists = os.path.isfile(infile)
+        if not self._file_exists:
+            return
         expect(infile, "No postprocessing file defined in {}".format(files.filename))
 
         schema = files.get_schema("POSTPROCESSING_SPEC_FILE")
@@ -27,6 +30,8 @@ class Postprocessing(EntryID):
 
         # Append the contents of $HOME/.cime/config_postprocessing.xml if it exists
         # This could cause problems if node matchs are repeated when only one is expected
-        infile = os.path.join(os.environ.get("HOME"), ".cime", "config_postprocessing.xml")
+        infile = os.path.join(
+            os.environ.get("HOME"), ".cime", "config_postprocessing.xml"
+        )
         if os.path.exists(infile):
             EntryID.read(self, infile)
