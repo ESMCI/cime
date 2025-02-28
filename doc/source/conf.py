@@ -72,7 +72,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "CIME"
-copyright = "2017, U.S. National Science Foundation and U.S. Department of Energy"
+copyright = "2025, U.S. National Science Foundation and U.S. Department of Energy"
 author = "Staff of the NSF/CESM and DOE/E3SM projects"
 
 # The version info for the project you're documenting, acts as replacement for
