@@ -130,26 +130,3 @@ You can also clean an individual component as shown here, where "compname" is th
 ::
 
     case.build --clean compname
-
-.. _inputdata:
-
-Input Data
-----------
-All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the XML variable ``$DIN_LOC_ROOT`` to be populated with input data.
-
-Input data is provided by various servers configured in the model's CIME configuration. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system's input data area as specified by ``$DIN_LOC_ROOT``.
-
-Input data can occupy significant space on a system, so users should share a common ``$DIN_LOC_ROOT`` directory on each system if possible.
-
-The build process handles input data as follows:
-
-* The **buildnml** scripts in the various component ``cime_config`` directories create listings of required component input data sets in the ``Buildconf/$component.input_data_list`` files.
-* ``check_input_data``, which is called by ``case.build``, checks for the presence of the required input data files in the root directory ``$DIN_LOC_ROOT``.
-* If all required data sets are found on the local disk, the build can proceed.
-* If any of the required input data sets are not found locally, the files that are missing are listed. At this point, you must obtain the required data from the input data server with ``check_input_data`` as shown here:
-
-    ::
-
-        check_input_data --download
-
-The **env_run.xml** variables ``$DIN_LOC_ROOT`` and ``$DIN_LOC_ROOT_CLMFORC`` determine where you should expect input data to reside on a local disk.
