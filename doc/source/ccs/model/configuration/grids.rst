@@ -15,14 +15,13 @@ This is an example entry for ``config_files.xml``.
 
 .. code-block:: xml
 
-   <entry id="GRIDS_SPEC_FILE">
-     <type>char</type>
-     <default_value>$CIMEROOT/cime_config/$MODEL/config_grids.xml</default_value>
-     <group>case_last</group>
-     <file>env_case.xml</file>
-     <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
-     <schema>$CIMEROOT/cime_config/xml_schemas/config_grids_v2.xsd</schema>
-   </entry>
+  <entry id="GRIDS_SPEC_FILE">
+    <type>char</type>
+    <default_value>$SRCROOT/cime_config/config_grids.xml</default_value>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
+  </entry>
 
 Definition
 ----------
