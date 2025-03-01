@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Creating a Case" href="create-a-case.html" />
+    <link rel="next" title="User Config" href="user-config.html" />
     <link rel="prev" title="CIME documentation" href="../index.html" /> 
 </head>
 
@@ -50,17 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Case Control System (CCS)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -69,6 +69,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
 
@@ -101,20 +102,26 @@
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#prerequisites" id="id1">Prerequisites</a></p></li>
-<li><p><a class="reference internal" href="#key-terms-and-concepts" id="id2">Key Terms and concepts</a></p>
+<li><p><a class="reference internal" href="#quick-start" id="id2">Quick start</a></p></li>
+<li><p><a class="reference internal" href="#what-is-a-case" id="id3">What is a Case?</a></p>
 <ul>
-<li><p><a class="reference internal" href="#components" id="id3">Components</a></p></li>
-<li><p><a class="reference internal" href="#component-types" id="id4">Component Types</a></p></li>
-<li><p><a class="reference internal" href="#component-set-compset" id="id5">Component set (compset)</a></p></li>
-<li><p><a class="reference internal" href="#compset-alias" id="id6">Compset alias</a></p></li>
-<li><p><a class="reference internal" href="#grid-set" id="id7">Grid set</a></p></li>
-<li><p><a class="reference internal" href="#machine-and-compilers" id="id8">Machine and Compilers</a></p></li>
-<li><p><a class="reference internal" href="#case" id="id9">Case</a></p></li>
-<li><p><a class="reference internal" href="#out-of-the-box" id="id10">Out-of-the-box</a></p></li>
+<li><p><a class="reference internal" href="#component-set-compset" id="id4">Component set (compset)</a></p>
+<ul>
+<li><p><a class="reference internal" href="#compset-alias" id="id5">Compset alias</a></p></li>
+<li><p><a class="reference internal" href="#components" id="id6">Components</a></p>
+<ul>
+<li><p><a class="reference internal" href="#component-types" id="id7">Component Types</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#ccs-and-your-environment" id="id11">CCS and your environment</a></p></li>
-<li><p><a class="reference internal" href="#quick-start" id="id12">Quick start</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#model-grid" id="id8">Model grid</a></p></li>
+<li><p><a class="reference internal" href="#machine" id="id9">Machine</a></p></li>
+<li><p><a class="reference internal" href="#compiler" id="id10">Compiler</a></p></li>
+<li><p><a class="reference internal" href="#customizations" id="id11">Customizations</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#setting-up-your-environment-for-ccs" id="id12">Setting up your environment for CCS</a></p></li>
 <li><p><a class="reference internal" href="#discovering-available-pre-defined-compsets" id="id13">Discovering available pre-defined compsets</a></p></li>
 </ul>
 </nav>
@@ -128,82 +135,52 @@
 <li><p>Python interpreter &gt;= 3.8</p></li>
 </ul>
 </section>
-<section id="key-terms-and-concepts">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Key Terms and concepts</a><a class="headerlink" href="#key-terms-and-concepts" title="Link to this heading"></a></h2>
-<p>The following key terms and concepts are ingrained in the CCS and used frequently in this documentation.
-See the <a class="reference internal" href="../glossary.html#glossary"><span class="std std-ref">Glossary</span></a> for a more complete list of terms.</p>
-<section id="components">
-<h3><a class="toc-backref" href="#id3" role="doc-backlink">Components</a><a class="headerlink" href="#components" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>In CIME, a coupled earth system model is made up of <em>components</em> that interact through a coupler and are all controlled by a driver.</p>
-<p>In the current version of CIME, there are 7 physical components allowed.</p>
-<ul class="simple">
-<li><p>atmosphere (atm)</p></li>
-<li><p>ocean (ocn)</p></li>
-<li><p>sea-ice (ice)</p></li>
-<li><p>land surface (lnd)</p></li>
-<li><p>river (rof)</p></li>
-<li><p>ice sheet (glc)</p></li>
-<li><p>ocean waves (wav)</p></li>
-</ul>
+<section id="quick-start">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Quick start</a><a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<p>You’ll need to have cloned the target model’s repository into <code class="docutils literal notranslate"><span class="pre">$SRCROOT</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>“GLC” originally meant “glacier model” and is now an ice-sheet model but the GLC letters have stuck.</p>
-</div>
-<p>Components are also referred to as <em>models</em>. The choice of 7 is partly historical and partly determined by the physics of the
-Earth System: these 7 components occupy physically distinct domains in the Earth System and/or require different numerical grids for solving.</p>
-<p>There are a few additional components that are not related to the Earth System. The <em>coupler</em> facilitates the interaction of component models. The <em>external processing system</em> and <em>integrated assessment component</em> are both optional and interact with component models outside of the <em>coupler</em>.</p>
-<ul class="simple">
-<li><p>coupler (cpl)</p></li>
-<li><p>external processing system (esp)</p></li>
-<li><p>integrated assessment component (iac)</p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="component-types">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Component Types</a><a class="headerlink" href="#component-types" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>For each of the 7 physical components (models), there can be three different implementations in a CIME-driven coupled model.</p>
-<dl class="simple">
-<dt>active</dt><dd><p>Solve a complex set of equations to describe the model’s behavior. Also called <em>prognostic</em> or <em>full</em> models.
-These can be full General Circulation Models. Multiple active models might be available (for example POP and MPAS-ocean to represent the global ocean) but only one ocean or atmosphere model at a time can be used in a component set.</p>
-</dd>
-<dt>data</dt><dd><p>For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
-version that sends and receives the same variables to and from other models, but with the values read from files rather
-than computed from the equations. The values received are ignored. These active-model substitutes are called <em>data models</em>.</p>
-</dd>
-<dt>stub</dt><dd><p>For some configurations, no data model is needed and one instead uses a <em>stub</em> version that simply occupies the
-required place in the driver and does not send or receive any data.  For example, if you are setting up an aqua-planet case
-you would only need a stub for the land model.</p>
-</dd>
-</dl>
-</div></blockquote>
-</section>
-<section id="component-set-compset">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">Component set (compset)</a><a class="headerlink" href="#component-set-compset" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>The particular combination of active, data and stub versions of the 7 components is referred to
-as a <em>component set</em> or  <em>compset</em>.  The Case Control System allows one to define
-several possible compsets and configure and run them on supported platforms.
-Here is an example of a component set <em>longname</em> from E3SM for a fully coupled active case:</p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">SOI_EAM</span><span class="o">%</span><span class="n">CMIP6_ELM</span><span class="o">%</span><span class="n">CNPRDCTCBCTOP_MPASSI_MPASO_MOSART_SGLC_SWAV</span>
+<p>Check if your machine is supported by the model.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cime/scripts/query_config<span class="w"> </span>--machines
 </pre></div>
 </div>
-</div></blockquote>
-</div></blockquote>
+</div>
+<p>The following example will create a directory <code class="docutils literal notranslate"><span class="pre">mycase</span></code> using the <code class="docutils literal notranslate"><span class="pre">X</span></code> compset and <code class="docutils literal notranslate"><span class="pre">f19_g16</span></code> grid. The machine is auto-detected from the hostname.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span> <span class="n">name</span><span class="o">&gt;</span>
+<span class="o">./</span><span class="n">cime</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
+<span class="n">cd</span> <span class="n">mycase</span>
+<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
+<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+</pre></div>
+</div>
+<p>Check the status of the case with the following command: <code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">CaseStatus</span></code>.</p>
 </section>
+<section id="what-is-a-case">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">What is a Case?</a><a class="headerlink" href="#what-is-a-case" title="Link to this heading"></a></h2>
+<p>A case is an instance of a global climate model simulation. It is defined by several key elements:
+a component set, a model grid, a machine, a compiler, and any additional customizations. Each case
+represents a unique configuration and setup for running climate simulations, allowing researchers
+to explore various scenarios and configurations.</p>
+<p>The following sections will delve into these key components in more detail.</p>
+<section id="component-set-compset">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Component set (compset)</a><a class="headerlink" href="#component-set-compset" title="Link to this heading"></a></h3>
+<p>The particular combination of active, data, and stub versions of the 7 components is referred to
+as a <em>component set</em> or  <em>compset</em>. The Case Control System allows one to define
+several possible compsets and configure and run them on supported platforms.
+Here is an example of a component set <em>longname</em> from E3SM for a fully coupled active case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">SOI_EAM</span><span class="o">%</span><span class="n">CMIP6_ELM</span><span class="o">%</span><span class="n">CNPRDCTCBCTOP_MPASSI_MPASO_MOSART_SGLC_SWAV</span>
+</pre></div>
+</div>
 <section id="compset-alias">
-<h3><a class="toc-backref" href="#id6" role="doc-backlink">Compset alias</a><a class="headerlink" href="#compset-alias" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>Typing a compset longname like the above can be exhausting so the CCS allows defining a shorter <em>compset alias</em>
-which is a short string that substitutes for the longname. In E3SM, the above longname can be reffered to as “WCYCL1850”.</p>
-</div></blockquote>
+<h4><a class="toc-backref" href="#id5" role="doc-backlink">Compset alias</a><a class="headerlink" href="#compset-alias" title="Link to this heading"></a></h4>
+<p>Typing a compset longname like the above can be exhausting so the CCS allows defining a shorter <em>compset alias</em>
+which is a short string that substitutes for the longname. In E3SM, the above longname can be referred to as “WCYCL1850”.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <blockquote>
 <div><p>Long ago, CESM established a convention for the first letter in a compset alias based
-on the combination of active, data and stub components.
+on the combination of active, data, and stub components.
 If you see mention of “B-case” or “F-case”, it comes from these conventions.
 They pre-date the introduction of a wave model as an option.</p>
 </div></blockquote>
@@ -239,55 +216,82 @@ They pre-date the introduction of a wave model as an option.</p>
 <tr class="row-even"><td><p>IG</p></td>
 <td><p>Active land, river and ice-sheet, data atmosphere, stub ocn, sea-ice</p></td>
 </tr>
-<tr class="row-odd"><td><p>S</p></td>
-<td><p>All stub models (for testing only)</p></td>
-</tr>
-<tr class="row-even"><td><p>X</p></td>
+<tr class="row-odd"><td><p>X</p></td>
 <td><p>All x-compsets (2D sine waves for each component except stub glc; for testing only)</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
-<section id="grid-set">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">Grid set</a><a class="headerlink" href="#grid-set" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
+<section id="components">
+<h4><a class="toc-backref" href="#id6" role="doc-backlink">Components</a><a class="headerlink" href="#components" title="Link to this heading"></a></h4>
+<p>In CIME, a coupled earth system model is made up of <em>components</em> that interact through a coupler and are all controlled by a driver.</p>
+<p>In the current version of CIME, there are 7 physical components allowed.</p>
+<ul class="simple">
+<li><p>atmosphere (atm)</p></li>
+<li><p>ocean (ocn)</p></li>
+<li><p>sea-ice (ice)</p></li>
+<li><p>land surface (lnd)</p></li>
+<li><p>river (rof)</p></li>
+<li><p>ice sheet (glc)</p></li>
+<li><p>ocean waves (wav)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>“GLC” originally meant “glacier model” and is now an ice-sheet model but the GLC letters have stuck.</p>
+</div>
+<p>Components are also referred to as <em>models</em>. The choice of 7 is partly historical and partly determined by the physics of the
+Earth System: these 7 components occupy physically distinct domains in the Earth System and/or require different numerical grids for solving.</p>
+<p>There are a few additional components that are not related to the Earth System. The <em>coupler</em> facilitates the interaction of component models. The <em>external processing system</em> and <em>integrated assessment component</em> are both optional and interact with component models outside of the <em>coupler</em>.</p>
+<ul class="simple">
+<li><p>coupler (cpl)</p></li>
+<li><p>external processing system (esp)</p></li>
+<li><p>integrated assessment component (iac)</p></li>
+</ul>
+<section id="component-types">
+<h5><a class="toc-backref" href="#id7" role="doc-backlink">Component Types</a><a class="headerlink" href="#component-types" title="Link to this heading"></a></h5>
+<p>For each of the 7 physical components (models), there can be three different implementations in a CIME-driven coupled model.</p>
+<dl class="simple">
+<dt>active</dt><dd><p>Solve a complex set of equations to describe the model’s behavior. Also called <em>prognostic</em> or <em>full</em> models.
+These can be full General Circulation Models. Multiple active models might be available (for example MOM and MPAS-ocean to represent the global ocean) but only one ocean or atmosphere model at a time can be used in a component set.</p>
+</dd>
+<dt>data</dt><dd><p>For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
+version that sends and receives the same variables to and from other models, but with the values read from files rather
+than computed from the equations. The values received are ignored. These active-model substitutes are called <em>data models</em>.</p>
+</dd>
+<dt>stub</dt><dd><p>For some configurations, no data model is needed and one instead uses a <em>stub</em> version that simply occupies the
+required place in the driver and does not send or receive any data. For example, if you are setting up an aqua-planet case
+you would only need a stub for the land model.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="model-grid">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Model grid</a><a class="headerlink" href="#model-grid" title="Link to this heading"></a></h3>
+<p>Each active model must solve its equations on a numerical grid. CIME allows models within the system to have
 different grids. The resulting set of all numerical grids is called the <em>grid set</em> or usually just the <em>grid</em>. Like
-the compset longnamme, the CCS allows one to define an alias to represent a grid set.  This alias is also referred to
+the compset longname, the CCS allows one to define an alias to represent a grid set. This alias is also referred to
 as the <em>grid</em> or sometimes the <em>resolution</em>.</p>
-</div></blockquote>
 </section>
-<section id="machine-and-compilers">
-<h3><a class="toc-backref" href="#id8" role="doc-backlink">Machine and Compilers</a><a class="headerlink" href="#machine-and-compilers" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>The <em>machine</em> is the computer you are using to run CIME to build and run the climate model. It could be a workstation
-or a national supercomputer. The exact name of  <em>machine</em> is typically the UNIX hostname but it could be any string.  A machine
-may have one more more versions of Fortran, C and C++ <em>compilers</em> that are needed to compile the model’s source code.</p>
-</div></blockquote>
+<section id="machine">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Machine</a><a class="headerlink" href="#machine" title="Link to this heading"></a></h3>
+<p>The <em>machine</em> is the computer you are using to run CIME to build and run the climate model. It could be a workstation or a supercomputer. The exact name of  <em>machine</em> is typically the UNIX hostname but it could be any string.</p>
 </section>
-<section id="case">
-<h3><a class="toc-backref" href="#id9" role="doc-backlink">Case</a><a class="headerlink" href="#case" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>To build and execute a CIME-enabled climate model, you have to make choices of compset, model grid,
-machine and compiler. The collection of these choices, and any additional
-customizations you may make, is called the <em>case</em>.</p>
-</div></blockquote>
+<section id="compiler">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Compiler</a><a class="headerlink" href="#compiler" title="Link to this heading"></a></h3>
+<p>A machine may have one or more versions of Fortran, C, and C++ <em>compilers</em> that are needed to compile the model’s source code.</p>
 </section>
-<section id="out-of-the-box">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Out-of-the-box</a><a class="headerlink" href="#out-of-the-box" title="Link to this heading"></a></h3>
-<blockquote>
-<div><p>Any case that can be defined by the coupled model’s CIME configuration files and built with only basic commands in the
-CIME Case Control System is an “out-of-the-box” case.  Since CIME and its configuration files are kept with
-the model source code and version-controlled together, its possible to match supported out-of-the-box cases with specific
-versions of the model source code, promoting reproducibility and provenance.  An out-of-the-box case is also called a <em>base case</em>.</p>
-</div></blockquote>
+<section id="customizations">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Customizations</a><a class="headerlink" href="#customizations" title="Link to this heading"></a></h3>
+<p>The CCS allows for a number of customizations to be made to a case.</p>
 </section>
 </section>
-<section id="ccs-and-your-environment">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink">CCS and your environment</a><a class="headerlink" href="#ccs-and-your-environment" title="Link to this heading"></a></h2>
-<p>Before using any CCS commands, set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
-<strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm” or “cesm.”</p>
+<section id="setting-up-your-environment-for-ccs">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Setting up your environment for CCS</a><a class="headerlink" href="#setting-up-your-environment-for-ccs" title="Link to this heading"></a></h2>
+<p>After you’ve cloned the model repository, you’ll need to set up your environment to use the CCS.</p>
+<p>First you’ll need to let CIME know which model configuration to use by setting the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
+<strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm”, “cesm”, or “ufs”.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span><span class="o">&gt;</span>
 </pre></div>
 </div>
@@ -296,33 +300,16 @@ For variables that can be set in more than one way, the order of precedence is:<
 <ul class="simple">
 <li><p>variable appears in a command line argument to a CIME command</p></li>
 <li><p>variable is set as an environment variable</p></li>
-<li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="model/cime-customize.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="model/customize-cime.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
 <li><p>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</p></li>
 </ul>
-</section>
-<section id="quick-start">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Quick start</a><a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
-<p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands. (This assumes that CIME has been ported to your current machine).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
-<span class="n">cd</span> <span class="n">mycase</span>
-<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
-<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
-<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
-</pre></div>
-</div>
-<p>The output from each command is explained in the following sections.</p>
-<p>After you submit the case, you can follow the progress of your run by monitoring the <strong>CaseStatus</strong> file.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tail</span> <span class="n">CaseStatus</span>
-</pre></div>
-</div>
-<p>Repeat the command until you see the message <code class="docutils literal notranslate"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
 </section>
 <section id="discovering-available-pre-defined-compsets">
 <h2><a class="toc-backref" href="#id13" role="doc-backlink">Discovering available pre-defined compsets</a><a class="headerlink" href="#discovering-available-pre-defined-compsets" title="Link to this heading"></a></h2>
 <p>Your CIME-driven model likely has many compset and gridset aliases defined for cases that are widely used by the
 model developers.</p>
-<p>Use the utility <code class="docutils literal notranslate"><span class="pre">query_config</span></code> to see which out-of-the-box compsets, components, grids and machines are available for your model.</p>
-<p>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text</p>
+<p>Use the utility <code class="docutils literal notranslate"><span class="pre">query_config</span></code> to see which out-of-the-box compsets, components, grids, and machines are available for your model.</p>
+<p>To see lists of available compsets, components, grids, and machines, look at the <strong>help</strong> text</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
@@ -387,13 +374,13 @@ model developers.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="CIME documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="create-a-case.html" class="btn btn-neutral float-right" title="Creating a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user-config.html" class="btn btn-neutral float-right" title="User Config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

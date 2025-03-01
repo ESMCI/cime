@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Component Root Directory" href="comp-root-dir.html" />
-    <link rel="prev" title="Compilers" href="compilers.html" /> 
+    <link rel="prev" title="Cmake Macros" href="cmake-macros-dir.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,16 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model Configuration</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">Configuration</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="entry-id.html">Entry ID</a></li>
 <li class="toctree-l4"><a class="reference internal" href="archive.html">Archive</a></li>
@@ -67,7 +68,6 @@
 <li class="toctree-l4"><a class="reference internal" href="build-lib.html">Buildlib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">Case File Headers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">Cmake Macros</a></li>
-<li class="toctree-l4"><a class="reference internal" href="compilers.html">Compilers</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Compsets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">Component Root Directory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="component.html">Component</a></li>
@@ -87,12 +87,11 @@
 <li class="toctree-l4"><a class="reference internal" href="workflow.html">Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting-cime.html">Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../support-a-new-machine.html">Support a new machine</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../unit_testing.html">Fortran Unit Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cime-customize.html">CIME config and hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../customize-cime.html">Customize CIME</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../system_testing.html">System Testing</a></li>
@@ -101,6 +100,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -119,7 +119,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Model</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Model Configuration</a></li>
           <li class="breadcrumb-item"><a href="index.html">Configuration</a></li>
       <li class="breadcrumb-item active">Compsets</li>
       <li class="wy-breadcrumbs-aside">
@@ -136,11 +136,8 @@
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#entry" id="id2">Entry</a></p></li>
-<li><p><a class="reference internal" href="#definition" id="id3">Definition</a></p>
-<ul>
+<li><p><a class="reference internal" href="#definition" id="id3">Definition</a></p></li>
 <li><p><a class="reference internal" href="#schema" id="id4">Schema</a></p></li>
-</ul>
-</li>
 <li><p><a class="reference internal" href="#compset-longname" id="id5">Compset longname</a></p></li>
 <li><p><a class="reference internal" href="#creating-new-compsets" id="id6">Creating New Compsets</a></p></li>
 </ul>
@@ -153,21 +150,25 @@
 <p>This is an example entry for <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
 <p>There should be a <code class="docutils literal notranslate"><span class="pre">value</span></code> for each component supported by the model.</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;COMPSETS_SPEC_FILE&quot;</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
-<span class="w">    </span><span class="nt">&lt;default_value&gt;</span>unset<span class="nt">&lt;/default_value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;values&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;allactive&quot;</span><span class="nt">&gt;</span>$SRCROOT/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;drv&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$CIMEROOT/src/drivers/mct/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;cam&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$SRCROOT/components/cam/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;cism&quot;</span><span class="w">     </span><span class="nt">&gt;</span>$SRCROOT/components/cism/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;clm&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$SRCROOT/components/clm/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;cice&quot;</span><span class="w">     </span><span class="nt">&gt;</span>$SRCROOT/components/cice/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;pop&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$SRCROOT/components/pop/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/values&gt;</span>
-<span class="w">    </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
-<span class="w">    </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
-<span class="w">    </span><span class="nt">&lt;desc&gt;</span>file<span class="w"> </span>containing<span class="w"> </span>specification<span class="w"> </span>of<span class="w"> </span>all<span class="w"> </span>compsets<span class="w"> </span>for<span class="w"> </span>primary<span class="w"> </span>component<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
-<span class="w">    </span><span class="nt">&lt;schema&gt;</span>$CIMEROOT/config/xml_schemas/config_compsets.xsd<span class="nt">&lt;/schema&gt;</span>
+<span class="w">  </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
+<span class="w">  </span><span class="nt">&lt;default_value&gt;</span>unset<span class="nt">&lt;/default_value&gt;</span>
+<span class="w">  </span><span class="nt">&lt;values&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;allactive&quot;</span><span class="nt">&gt;</span>$SRCROOT/cime_config/allactive/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;drv&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_CPL/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;eam&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;scream&quot;</span><span class="w">   </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;elm&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;cice&quot;</span><span class="w">     </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mpaso&quot;</span><span class="w">    </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mali&quot;</span><span class="w">     </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mpassi&quot;</span><span class="w">   </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mosart&quot;</span><span class="w">   </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ROF/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;ww3&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_WAV/cime_config/config_compsets.xml<span class="nt">&lt;/value&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/values&gt;</span>
+<span class="w">  </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
+<span class="w">  </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
+<span class="w">  </span><span class="nt">&lt;desc&gt;</span>file<span class="w"> </span>containing<span class="w"> </span>specification<span class="w"> </span>of<span class="w"> </span>all<span class="w"> </span>compsets<span class="w"> </span>for<span class="w"> </span>primary<span class="w"> </span>component<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
+<span class="w">  </span><span class="nt">&lt;schema&gt;</span>$CIMEROOT/CIME/data/config/xml_schemas/config_compsets.xsd<span class="nt">&lt;/schema&gt;</span>
 <span class="nt">&lt;/entry&gt;</span>
 </pre></div>
 </div>
@@ -180,8 +181,9 @@ In a compset where all components are prognostic, the primary component will be 
 </section>
 <section id="definition">
 <h2><a class="toc-backref" href="#id3" role="doc-backlink">Definition</a><a class="headerlink" href="#definition" title="Link to this heading"></a></h2>
+</section>
 <section id="schema">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Schema</a><a class="headerlink" href="#schema" title="Link to this heading"></a></h3>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Schema</a><a class="headerlink" href="#schema" title="Link to this heading"></a></h2>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_compsets.xsd compsets on 2025-02-06 --&gt;</span>
 
 <span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
@@ -217,7 +219,6 @@ In a compset where all components are prognostic, the primary component will be 
 <span class="w">    </span><span class="nt">&lt;/entries&gt;</span>
 </pre></div>
 </div>
-</section>
 </section>
 <section id="compset-longname">
 <span id="defining-compsets"></span><h2><a class="toc-backref" href="#id5" role="doc-backlink">Compset longname</a><a class="headerlink" href="#compset-longname" title="Link to this heading"></a></h2>
@@ -260,10 +261,13 @@ We provide a few examples below that outline this process for a few simple cases
 <p>Say you want to add a new mode, <code class="docutils literal notranslate"><span class="pre">FOO</span></code>,  to the data ocean model, <code class="docutils literal notranslate"><span class="pre">DOCN</span></code>. Lets call this mode, <code class="docutils literal notranslate"><span class="pre">FOO</span></code>.
 This would imply when parsing the compset longname, CIME would need to be able to recognize the string <code class="docutils literal notranslate"><span class="pre">_DOCN%FOO_</span></code>.
 To enable this, you will need to do the following:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">$DOCNROOT</span></code> is depenedent on the model.</p>
+</div>
 <ol class="arabic">
-<li><p>edit <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
-<ul>
-<li><p>add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;description</span> <span class="pre">modifier</span> <span class="pre">block=&quot;1&quot;&gt;</span></code> block as shown below</p>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">$DOCNROOT/cime_config/config_component.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).
+* add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;description</span> <span class="pre">modifier_mode=&quot;1&quot;&gt;</span></code> block as shown below</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">description</span> <span class="n">modifier_mode</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="o">&gt;</span>
    <span class="o">&lt;</span><span class="n">desc</span> <span class="n">ocn</span><span class="o">=</span><span class="s2">&quot;DOCN...[</span><span class="si">%F</span><span class="s2">OO]&quot;</span><span class="o">&gt;</span><span class="n">DOCN</span> <span class="o">&lt;/</span><span class="n">desc</span><span class="o">&gt;</span>
    <span class="o">...</span>
@@ -272,7 +276,7 @@ To enable this, you will need to do the following:</p>
 <span class="o">&lt;/</span><span class="n">description</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-</li>
+<ul>
 <li><p>add an entry to the <code class="docutils literal notranslate"><span class="pre">&lt;entry</span> <span class="pre">id=&quot;DOCN_MODE&quot;&gt;</span></code> block as shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;DOCN_MODE&quot;</span><span class="o">&gt;</span>
    <span class="o">....</span>
@@ -287,7 +291,7 @@ To enable this, you will need to do the following:</p>
 <li><p>modify any of the other xml entries that need a new dependence on <code class="docutils literal notranslate"><span class="pre">FOO</span></code></p></li>
 </ul>
 </li>
-<li><p>edit <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/src/components/data_comps/docn/cime_config/namelist_definition_docn.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
+<li><p>edit <code class="docutils literal notranslate"><span class="pre">$DOCNROOT/cime_config/namelist_definition_docn.xml</span></code> (see the <code class="docutils literal notranslate"><span class="pre">FOO</span></code> additions below).</p>
 <ul>
 <li><p>add an entry to the <code class="docutils literal notranslate"><span class="pre">datamode</span></code> block as shown below.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;datamode&quot;</span><span class="o">&gt;</span>
@@ -309,14 +313,14 @@ To enable this, you will need to do the following:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="compilers.html" class="btn btn-neutral float-left" title="Compilers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cmake-macros-dir.html" class="btn btn-neutral float-left" title="Cmake Macros" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="comp-root-dir.html" class="btn btn-neutral float-right" title="Component Root Directory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

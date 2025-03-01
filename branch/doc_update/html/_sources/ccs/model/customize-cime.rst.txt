@@ -1,6 +1,6 @@
 .. _customizing-cime:
 
-CIME config and hooks
+Customize CIME
 =====================
 
 .. contents::

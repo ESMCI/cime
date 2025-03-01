@@ -1,48 +1,49 @@
-.. _cloning-a-case:
+.. _ccs_cloning_a_case:
 
 Cloning a Case
 ==============
+
+.. contents::
+    :local:
 
 If you have access to a run that you want to clone, the
 ``create_clone`` command will create a new case and run ``case.setup``
 while preserving local modifications to the case.
 
-Here is a simple example:
+To clone a case, you can use the following command, replacing ``<case>`` with the new case directory and ``<clone>`` with the directory of the case you want to clone.
 
-::
+.. code-block:: bash
 
-     cd $CIMEROOT/scripts
-     create_clone --case $CASEROOT --clone $CLONEROOT
-     cd $CASEROOT
-     case.build
-     case.submit
+    ./scripts/create_clone --case <case> --clone <clone>
+
+Now the new cloned case can be built and submitted.
+
+.. code-block:: bash
+
+    cd <case>
+    ./case.build
+    ./case.submit
 
 The ``create_clone`` script preserves any local namelist modifications
 made in the **user_nl_xxxx** files as well as any source code
 modifications in the **SourceMods/** directory tree. Otherwise, your **$CASEROOT** directory
-directory will appear as if ``create_newcase`` had just been run.
+will appear as if ``create_newcase`` had just been run.
 
 .. danger::
 
-    Do not change anything in the **env_case.xml** file.
+    Do not change anything in the ``env_case.xml`` file.
 
-See the **help** text for more usage information.
-
-::
-
-    create_clone --help
-
-The ``create_clone``  has several useful optional arguments. To point to
+The ``create_clone`` has several useful optional arguments. To point to
 the executable of the original case you are cloning from.
 
 ::
 
-     create_clone --case $CASEROOT --clone $CLONEROOT --keepexe
+     ./scripts/create_clone --case <case> --clone <clone> --keepexe
      cd $CASEROOT
-     case.submit
+     ./case.submit
 
 If the ``--keepexe`` optional argument is used, then no SourceMods
-will be permitted in the cloned directory.  A link will be made when
+will be permitted in the cloned directory. A link will be made when
 the cloned case is created pointing the cloned SourceMods/ directory
 to the original case SourceMods directory.
 
@@ -51,17 +52,17 @@ to the original case SourceMods directory.
     No changes should be made to ``env_build.xml`` or ``env_mach_pes.xml`` in the cloned directory.
 
 The ``create_clone`` also permits you to invoke the ``shell_commands``
- and ``user_nl_xxx`` files in a user_mods directory by calling:
+and ``user_nl_xxx`` files in a user_mods directory by calling:
 
 ::
 
-    create_clone --case $CASEROOT --clone $CLONEROOT --user-mods-dir USER_MODS_DIR [--keepexe]
+    ./scripts/create_clone --case <case> --clone <clone> --user-mods-dir USER_MODS_DIR [--keepexe]
 
 Note that an optional ``--keepexe`` flag can also be used in this case.
 
 .. warning:: 
 
-    If there is a ``shell_commands`` file, it should not have any changes to xml variables in either ``env_build.xml`` or ``env_mach_pes.xml``.
+    If there is a ``shell_commands`` file, it should not have any changes to XML variables in either ``env_build.xml`` or ``env_mach_pes.xml``.
 
 Another approach to duplicating a case is to use the information in
 the case's **README.case** and **CaseStatus** files to create a new

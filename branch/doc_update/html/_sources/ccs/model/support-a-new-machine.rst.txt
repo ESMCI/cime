@@ -1,7 +1,6 @@
 .. _porting:
 
-==============================================
-Porting and validating CIME on a new platform
+Support a new machine
 ==============================================
 
 One of the first steps for many users is getting CIME-based models running on their local machine.

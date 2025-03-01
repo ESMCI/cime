@@ -49,7 +49,7 @@ Definition
 This is the contents of ``config_pes.xml``.
 
 Schema
-```````
+------
 
 .. code-block:: xml
 

@@ -56,6 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
@@ -152,7 +153,7 @@
 <h1>CIME.namelist.Namelist<a class="headerlink" href="#cime-namelist-namelist" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="CIME.namelist.Namelist">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.namelist.</span></span><span class="sig-name descname"><span class="pre">Namelist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/namelist.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.namelist.Namelist" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.namelist.</span></span><span class="sig-name descname"><span class="pre">Namelist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/namelist.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.namelist.Namelist" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class representing a Fortran namelist.</p>
 <p>Public methods:
@@ -244,7 +245,7 @@ write</p>
 <p>This function is similar to <cite>get_variable_value</cite>, except that it does
 not require a <cite>group_name</cite>, and it requires that the <cite>variable_name</cite> be
 unique across all groups.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>  
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Namelist.get_value: Variable {} is present in multiple groups: ...</span>
@@ -414,7 +415,7 @@ the <cite>groups</cite> argument specifies a subset of all groups to write out.<
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

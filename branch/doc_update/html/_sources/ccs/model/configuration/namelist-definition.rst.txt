@@ -48,7 +48,7 @@ Definition
 This is the contents of ``namelist_definition.xml``.
 
 Schema
-```````
+------
 
 .. code-block:: xml
 

@@ -1,20 +1,18 @@
 .. _model_config:
 
-Model
-=====
+Model Configuration
+===================
 
 .. contents::
     :local:
 
-The folowing sections will cover:
-
-* Configuring a Model
+This section covers configuring a model for CIME, adding new machine support, unit testing a model and customizing CIME.
 
 .. toctree::
     :maxdepth: 2
     :hidden:
 
     configuration/index
-    porting-cime
+    support-a-new-machine
     unit_testing
-    cime-customize
+    customize-cime

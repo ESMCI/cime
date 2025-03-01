@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Setting up a Case" href="setting-up-a-case.html" />
-    <link rel="prev" title="Case Control System (CCS)" href="index.html" /> 
+    <link rel="prev" title="User Config" href="user-config.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,17 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -69,6 +69,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
 
@@ -101,39 +102,112 @@
 <span id="ccs-create-newcase"></span><h1>Creating a Case<a class="headerlink" href="#creating-a-case" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#calling-create-newcase" id="id1">Calling <strong>create_newcase</strong></a></p></li>
-<li><p><a class="reference internal" href="#output-from-create-newcase" id="id2">Output from <strong>create_newcase</strong></a></p>
+<li><p><a class="reference internal" href="#exploring-configuration-options" id="id1">Exploring Configuration Options</a></p>
 <ul>
-<li><p><a class="reference internal" href="#user-scripts" id="id3">User Scripts</a></p></li>
-<li><p><a class="reference internal" href="#xml-files" id="id4">XML Files</a></p></li>
-<li><p><a class="reference internal" href="#user-source-mods-directory" id="id5">User Source Mods Directory</a></p></li>
-<li><p><a class="reference internal" href="#provenance" id="id6">Provenance</a></p></li>
-<li><p><a class="reference internal" href="#non-modifiable-work-directories" id="id7">Non-modifiable work directories</a></p></li>
+<li><p><a class="reference internal" href="#machines" id="id2">Machines</a></p></li>
+<li><p><a class="reference internal" href="#compsets" id="id3">Compsets</a></p>
+<ul>
+<li><p><a class="reference internal" href="#components" id="id4">Components</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#locked-files-in-your-case-directory" id="id8">Locked files in your case directory</a></p></li>
-<li><p><a class="reference internal" href="#user-mods" id="id9">User Mods</a></p></li>
+<li><p><a class="reference internal" href="#model-grids" id="id5">Model grids</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#user-mods" id="id6">User Mods</a></p></li>
+<li><p><a class="reference internal" href="#creating-a-new-case" id="id7">Creating a new Case</a></p></li>
+<li><p><a class="reference internal" href="#case-directory-contents" id="id8">Case Directory Contents</a></p>
+<ul>
+<li><p><a class="reference internal" href="#user-scripts" id="id9">User Scripts</a></p></li>
+<li><p><a class="reference internal" href="#xml-files" id="id10">XML Files</a></p></li>
+<li><p><a class="reference internal" href="#user-source-mods-directory" id="id11">User Source Mods Directory</a></p></li>
+<li><p><a class="reference internal" href="#provenance" id="id12">Provenance</a></p></li>
+<li><p><a class="reference internal" href="#non-modifiable-work-directories" id="id13">Non-modifiable work directories</a></p></li>
+<li><p><a class="reference internal" href="#locked-files" id="id14">Locked files</a></p></li>
+</ul>
+</li>
 </ul>
 </nav>
-<p>This section will provide details on creating a case using CCS. In order to follow along you will need to ensure the machine
-you’re on is currently supported by your model.</p>
-<p>You can use <cite>query_config</cite> to check if your machine is supported.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">query_config</span> <span class="o">--</span><span class="n">machines</span>
+<section id="exploring-configuration-options">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Exploring Configuration Options</a><a class="headerlink" href="#exploring-configuration-options" title="Link to this heading"></a></h2>
+<p>Before creating the case, you’ll need to see if your machine is supported and then find which compset and model grid to use. The <code class="docutils literal notranslate"><span class="pre">query_config</span></code> tool can be used to explore a model’s supported machines, compsets, components, and model grids.</p>
+<section id="machines">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Machines</a><a class="headerlink" href="#machines" title="Link to this heading"></a></h3>
+<p>The following command will print all machines supported by the model.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--machines
 </pre></div>
 </div>
-<p>If you do not find your current machine in the output you will need to <a class="reference internal" href="model/porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your machine.</p>
-<section id="calling-create-newcase">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Calling <strong>create_newcase</strong></a><a class="headerlink" href="#calling-create-newcase" title="Link to this heading"></a></h2>
-<p>The first step in creating a CIME-based experiment is to use <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code>.</p>
-<p>Review the <strong>help</strong> text for all the available options.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
+<p>If you know the name of the machine and would like to see the details, you can use the following command and replace <strong>&lt;machine&gt;</strong> with the name of the machine.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--machines<span class="w"> </span>&lt;machine&gt;
 </pre></div>
 </div>
-<p>There are only three required arguments for the <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> command.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">CASENAME</span> <span class="o">--</span><span class="n">compset</span> <span class="n">COMPSET</span> <span class="o">--</span><span class="n">res</span> <span class="n">GRID</span>
+</section>
+<section id="compsets">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Compsets</a><a class="headerlink" href="#compsets" title="Link to this heading"></a></h3>
+<p>This command will print a model’s supported compsets and aliases.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--compsets
 </pre></div>
 </div>
-<p>Creating a CIME experiment or <em>case</em> requires, at a minimum, specifying a compset (COMPSET) and a model grid (GRID) and a case directory (CASENAME).</p>
+<p>To view a specific compset, use the following. Replace <strong>&lt;compset&gt;</strong> with the name of the compset.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--compsets<span class="w"> </span>&lt;compset&gt;
+</pre></div>
+</div>
+<section id="components">
+<h4><a class="toc-backref" href="#id4" role="doc-backlink">Components</a><a class="headerlink" href="#components" title="Link to this heading"></a></h4>
+<p>The following will print out all configuration variables for all supported components.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--component
+</pre></div>
+</div>
+<p>To print variables for a specific component, use the following. Replace <strong>&lt;component&gt;</strong> with the name of the component.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--component<span class="w"> </span>&lt;component&gt;
+</pre></div>
+</div>
+</section>
+</section>
+<section id="model-grids">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Model grids</a><a class="headerlink" href="#model-grids" title="Link to this heading"></a></h3>
+<p>The following will print out all model grids supported by the model.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--grids
+</pre></div>
+</div>
+</section>
+</section>
+<section id="user-mods">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">User Mods</a><a class="headerlink" href="#user-mods" title="Link to this heading"></a></h2>
+<p>A user can customize a case by providing <strong>user mods</strong> when creating a new case. The <strong>user mods</strong> provide a few ways to customize a case.</p>
+<ul class="simple">
+<li><p>Namelist files</p></li>
+<li><p>Source code modifications</p></li>
+<li><p>Shell commands (can call <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code>)</p></li>
+</ul>
+<p>This can be useful when a user wants to carry out a series of experiments based on a common set of changes to the namelists, source code, and/or case XML settings.</p>
+<p>Here’s a toy <strong>user mod</strong> to demonstrate.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">./</span><span class="n">usermod</span>
+<span class="n">echo</span> <span class="s2">&quot;nlmaps_verbosity = 1&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">./</span><span class="n">usermod</span><span class="o">/</span><span class="n">user_nl_cpl</span>
+<span class="n">echo</span> <span class="s2">&quot;./xmlchange NTASKS=80&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">./</span><span class="n">usermod</span><span class="o">/</span><span class="n">shell_commands</span>
+<span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">S</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span> <span class="o">--</span><span class="n">case</span> <span class="o">./</span><span class="n">case01</span> <span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">mods</span><span class="o">-</span><span class="nb">dir</span> <span class="o">./</span><span class="n">usermod</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It is important to note that the file containing the <strong>xmlchange</strong>
+commands must be named <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> in order for it to be recognized
+and run upon case creation.</p>
+</div>
+<p>The structure of the component directories does not need to be the
+same as in the component source code. As an example, should the user
+want to modify the <code class="docutils literal notranslate"><span class="pre">src/dynamics/eul/dyncomp.F90</span></code> file within the
+CAM source code, the modified file should be put into the directory
+<code class="docutils literal notranslate"><span class="pre">SourceMods/src.cam</span></code> directly. There is no need to mimic the source
+code structure, such as <code class="docutils literal notranslate"><span class="pre">SourceMods/src.cam/dynamics/eul</span></code>.</p>
+</section>
+<section id="creating-a-new-case">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Creating a new Case</a><a class="headerlink" href="#creating-a-new-case" title="Link to this heading"></a></h2>
+<p>The first step in creating a CIME case is to call <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code>.
+This script is used to create a new case directory and populate it with the necessary files to build and run the model.</p>
+<p>The following command demonstrates the three required options for creating a new case: the case name, compset, and model grid.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">compset</span> <span class="o">&lt;</span><span class="n">compset</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">res</span> <span class="o">&lt;</span><span class="n">model</span> <span class="n">grid</span><span class="o">&gt;</span>
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">--case</span></code> argument must be a string and may not contain any of the following special characters</p>
@@ -141,67 +215,13 @@ you’re on is currently supported by your model.</p>
 </pre></div>
 </div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">--case</span></code> argument is used to define the name of your case, a very important piece of
-metadata that will be used in filenames, internal metadata and directory paths. The
-<code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is a directory create_newcase will create with the same name as the
-<code class="docutils literal notranslate"><span class="pre">CASENAME</span></code>. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is simply a name (not a path), <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created in
-the directory where you execute create_newcase. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is a relative or absolute
-path, <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created there, and the name of the case will be the last component
-of the path.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--case</span></code> argument defines the name of your case, which is used in filenames, internal metadata, and directory paths. The <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is a directory that <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> will create with the same name as the <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code>. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is simply a name (not a path), <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created in the directory where you execute <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code>. If <code class="docutils literal notranslate"><span class="pre">CASENAME</span></code> is a relative or absolute path, <code class="docutils literal notranslate"><span class="pre">CASEROOT</span></code> is created there, and the name of the case will be the last component of the path.</p>
 </section>
-<section id="output-from-create-newcase">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Output from <strong>create_newcase</strong></a><a class="headerlink" href="#output-from-create-newcase" title="Link to this heading"></a></h2>
-<p>Suppose <strong>create_newcase</strong> was called as follows.</p>
-<p>This command should be ran from <code class="docutils literal notranslate"><span class="pre">$CIMEROOT</span></code> which is the root directory of your CIME repository.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="o">~/</span><span class="n">cime</span><span class="o">/</span><span class="n">example1</span> <span class="o">--</span><span class="n">compset</span> <span class="n">S</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
-</pre></div>
-</div>
-<p>In the example, the command creates a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> directory: <code class="docutils literal notranslate"><span class="pre">~/cime/example1</span></code>.
-If that directory already exists, a warning is printed and the command aborts.</p>
-<p>In the argument to <code class="docutils literal notranslate"><span class="pre">--case</span></code>, the case name is taken from the string after the last slash
-— so here the case name is <code class="docutils literal notranslate"><span class="pre">example1</span></code>.</p>
-<p>The output from the command may look like the following, which includes lots of useful information.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Compset</span> <span class="n">longname</span> <span class="ow">is</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP</span>
-<span class="n">Compset</span> <span class="n">specification</span> <span class="n">file</span> <span class="ow">is</span> <span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">work</span><span class="o">/</span><span class="n">E3SM</span><span class="o">/</span><span class="n">driver</span><span class="o">-</span><span class="n">mct</span><span class="o">/</span><span class="n">cime_config</span><span class="o">/</span><span class="n">config_compsets</span><span class="o">.</span><span class="n">xml</span>
-<span class="n">Automatically</span> <span class="n">adding</span> <span class="n">SIAC</span> <span class="n">to</span> <span class="n">compset</span>
-<span class="n">Compset</span> <span class="n">forcing</span> <span class="ow">is</span>
-<span class="n">Com</span> <span class="n">forcing</span> <span class="ow">is</span> <span class="n">present</span> <span class="n">day</span><span class="p">:</span>
-<span class="n">ATM</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">atm</span> <span class="n">component</span>
-<span class="n">LND</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">land</span> <span class="n">component</span>
-<span class="n">ICE</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">ice</span> <span class="n">component</span>
-<span class="n">OCN</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">ocn</span> <span class="n">component</span>
-<span class="n">ROF</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">river</span> <span class="n">component</span>
-<span class="n">GLC</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">glacier</span> <span class="p">(</span><span class="n">land</span> <span class="n">ice</span><span class="p">)</span> <span class="n">component</span>
-<span class="n">WAV</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">wave</span> <span class="n">component</span>
-<span class="n">IAC</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">iac</span> <span class="n">component</span>
-<span class="n">ESP</span> <span class="n">component</span> <span class="ow">is</span> <span class="n">Stub</span> <span class="n">external</span> <span class="n">system</span> <span class="n">processing</span> <span class="p">(</span><span class="n">ESP</span><span class="p">)</span> <span class="n">component</span>
-<span class="n">Pes</span>     <span class="n">specification</span> <span class="n">file</span> <span class="ow">is</span> <span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">work</span><span class="o">/</span><span class="n">E3SM</span><span class="o">/</span><span class="n">driver</span><span class="o">-</span><span class="n">mct</span><span class="o">/</span><span class="n">cime_config</span><span class="o">/</span><span class="n">config_pes</span><span class="o">.</span><span class="n">xml</span>
-<span class="n">WARNING</span><span class="p">:</span> <span class="n">User</span><span class="o">-</span><span class="n">selected</span> <span class="n">machine</span> <span class="s1">&#39;docker&#39;</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">match</span> <span class="n">probed</span> <span class="n">machine</span> <span class="s1">&#39;ghci-snl-cpu&#39;</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">compset_match</span> <span class="ow">is</span> <span class="n">SATM</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">grid</span>          <span class="ow">is</span> <span class="n">a</span><span class="o">%</span><span class="n">null_l</span><span class="o">%</span><span class="n">null_oi</span><span class="o">%</span><span class="n">null_r</span><span class="o">%</span><span class="n">null_g</span><span class="o">%</span><span class="n">null_w</span><span class="o">%</span><span class="n">null_z</span><span class="o">%</span><span class="n">null_m</span><span class="o">%</span><span class="n">gx1v6</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">compset</span>       <span class="ow">is</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SIAC_SESP</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">tasks</span>       <span class="ow">is</span> <span class="p">{</span><span class="s1">&#39;NTASKS_ATM&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_LND&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_ROF&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_ICE&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_OCN&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_GLC&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_WAV&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NTASKS_CPL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">threads</span>     <span class="ow">is</span> <span class="p">{}</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">rootpe</span>      <span class="ow">is</span> <span class="p">{}</span>
-<span class="n">Pes</span> <span class="n">setting</span><span class="p">:</span> <span class="n">pstrid</span>      <span class="ow">is</span> <span class="p">{}</span>
-<span class="n">Pes</span> <span class="n">other</span> <span class="n">settings</span><span class="p">:</span> <span class="p">{}</span>
-<span class="n">Pes</span> <span class="n">other</span> <span class="n">settings</span> <span class="n">append</span><span class="p">:</span> <span class="p">{}</span>
-<span class="n">Pes</span> <span class="n">comments</span><span class="p">:</span> <span class="n">driver</span><span class="o">-</span><span class="n">mct</span><span class="p">:</span> <span class="nb">any</span> <span class="n">grid</span><span class="p">,</span> <span class="nb">any</span> <span class="n">mach</span><span class="p">,</span> <span class="n">compset</span> <span class="n">SATM</span><span class="p">,</span> <span class="nb">any</span> <span class="n">pesize</span>
-<span class="n">setting</span> <span class="n">additional</span> <span class="n">fields</span> <span class="kn">from</span><span class="w"> </span><span class="nn">config_pes</span><span class="p">:</span> <span class="p">{},</span> <span class="n">append</span> <span class="p">{}</span>
- <span class="n">Compset</span> <span class="ow">is</span><span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SIAC_SESP</span>
- <span class="n">Grid</span> <span class="ow">is</span><span class="p">:</span> <span class="n">a</span><span class="o">%</span><span class="n">null_l</span><span class="o">%</span><span class="n">null_oi</span><span class="o">%</span><span class="n">null_r</span><span class="o">%</span><span class="n">null_g</span><span class="o">%</span><span class="n">null_w</span><span class="o">%</span><span class="n">null_z</span><span class="o">%</span><span class="n">null_m</span><span class="o">%</span><span class="n">gx1v6</span>
- <span class="n">Components</span> <span class="ow">in</span> <span class="n">compset</span> <span class="n">are</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;satm&#39;</span><span class="p">,</span> <span class="s1">&#39;slnd&#39;</span><span class="p">,</span> <span class="s1">&#39;sice&#39;</span><span class="p">,</span> <span class="s1">&#39;socn&#39;</span><span class="p">,</span> <span class="s1">&#39;srof&#39;</span><span class="p">,</span> <span class="s1">&#39;sglc&#39;</span><span class="p">,</span> <span class="s1">&#39;swav&#39;</span><span class="p">,</span> <span class="s1">&#39;siac&#39;</span><span class="p">,</span> <span class="s1">&#39;sesp&#39;</span><span class="p">]</span>
-<span class="n">Using</span> <span class="n">project</span> <span class="kn">from</span><span class="w"> </span><span class="nn">config_machines.xml</span><span class="p">:</span> <span class="n">CIME</span>
-<span class="n">No</span> <span class="n">charge_account</span> <span class="n">info</span> <span class="n">available</span><span class="p">,</span> <span class="n">using</span> <span class="n">value</span> <span class="kn">from</span><span class="w"> </span><span class="nn">PROJECT</span>
-<span class="n">e3sm</span> <span class="n">model</span> <span class="n">version</span> <span class="n">found</span><span class="p">:</span> <span class="n">fa90280312</span>
-<span class="n">Batch_system_type</span> <span class="ow">is</span> <span class="n">none</span>
- <span class="n">Creating</span> <span class="n">Case</span> <span class="n">directory</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">cime</span><span class="o">/</span><span class="n">example1</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> command installs files in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> that will build and run the model. Scripts to optionally archive the case on the target platform are provided as well.</p>
-<p>Running <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> provides the following scripts, files, and directories in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
+<section id="case-directory-contents">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Case Directory Contents</a><a class="headerlink" href="#case-directory-contents" title="Link to this heading"></a></h2>
+<p>The following sections will describe the contents of the case directory.</p>
 <section id="user-scripts">
-<h3><a class="toc-backref" href="#id3" role="doc-backlink">User Scripts</a><a class="headerlink" href="#user-scripts" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">User Scripts</a><a class="headerlink" href="#user-scripts" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Script</p></th>
@@ -213,19 +233,19 @@ If that directory already exists, a warning is printed and the command aborts.</
 <td><p>Script to build component and utility libraries and model executable.</p></td>
 </tr>
 <tr class="row-odd"><td><p>case.cmpgen_namelists</p></td>
-<td><p>Script to perform namelist baseline operations (compare, generate, or both).”</p></td>
+<td><p>Script to perform namelist baseline operations (compare, generate, or both).</p></td>
 </tr>
 <tr class="row-even"><td><p>case.qstatus</p></td>
 <td><p>Script to query the queue on any queue system.</p></td>
 </tr>
 <tr class="row-odd"><td><p>case.setup</p></td>
-<td><p>Script used to set up the case (create the case.run script, Macros file and user_nl_xxx files).</p></td>
+<td><p>Script used to set up the case (create the case.run script, Macros file, and user_nl_xxx files).</p></td>
 </tr>
 <tr class="row-even"><td><p>case.submit</p></td>
-<td><p>Script to submit the case to run using the machine’s batch queueing system.</p></td>
+<td><p>Script to submit the case to run using the machine’s batch queuing system.</p></td>
 </tr>
 <tr class="row-odd"><td><p>check_case</p></td>
-<td><p>Script to verify case is set up correctly.</p></td>
+<td><p>Script to verify the case is set up correctly.</p></td>
 </tr>
 <tr class="row-even"><td><p>check_input_data</p></td>
 <td><p>Script for checking for various input data sets and moving them into place.</p></td>
@@ -237,19 +257,19 @@ If that directory already exists, a warning is printed and the command aborts.</
 <td><p>Script for users to see their component namelists in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model.</p></td>
 </tr>
 <tr class="row-odd"><td><p>preview_run</p></td>
-<td><p>Script for users to see batch submit and mpirun command.”</p></td>
+<td><p>Script for users to see batch submit and mpirun commands.</p></td>
 </tr>
 <tr class="row-even"><td><p>xmlchange</p></td>
-<td><p>Script to modify values in the xml files.</p></td>
+<td><p>Script to modify values in the XML files.</p></td>
 </tr>
 <tr class="row-odd"><td><p>xmlquery</p></td>
-<td><p>Script to query values in the xml files.</p></td>
+<td><p>Script to query values in the XML files.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="xml-files">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">XML Files</a><a class="headerlink" href="#xml-files" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">XML Files</a><a class="headerlink" href="#xml-files" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>File</p></th>
@@ -267,10 +287,10 @@ If that directory already exists, a warning is printed and the command aborts.</
 <td><p>Sets model build settings. This includes component resolutions and component compile-time configuration options. You must run the case.build command after changing this file.</p></td>
 </tr>
 <tr class="row-odd"><td><p>env_case.xml</p></td>
-<td><p>Parameters set by create_newcase</p></td>
+<td><p>Parameters set by create_newcase.</p></td>
 </tr>
 <tr class="row-even"><td><p>env_mach_pes.xml</p></td>
-<td><p>Sets component machine-specific processor layout (see changing pe layout ). The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="model/configuration/pes.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).</p></td>
+<td><p>Sets component machine-specific processor layout (see changing pe layout). The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="model/configuration/pes.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).</p></td>
 </tr>
 <tr class="row-odd"><td><p>env_mach_specific.xml</p></td>
 <td><p>Sets a number of machine-specific environment variables for building and/or running. You <strong>CANNOT</strong> use <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> to modify variables in this file.</p></td>
@@ -279,13 +299,13 @@ If that directory already exists, a warning is printed and the command aborts.</
 <td><p>Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics, and short-term and long-term archiving. This file can be edited at any time before a job starts.</p></td>
 </tr>
 <tr class="row-odd"><td><p>env_workflow.xml</p></td>
-<td><p>Sets paramateres for the runtime workflow.</p></td>
+<td><p>Sets parameters for the runtime workflow.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="user-source-mods-directory">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">User Source Mods Directory</a><a class="headerlink" href="#user-source-mods-directory" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">User Source Mods Directory</a><a class="headerlink" href="#user-source-mods-directory" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Directory</p></th>
@@ -294,13 +314,13 @@ If that directory already exists, a warning is printed and the command aborts.</
 </thead>
 <tbody>
 <tr class="row-even"><td><p>SourceMods</p></td>
-<td><p>Top-level directory containing subdirectories for each compset component where you can place modified source code for that component. You may also place modified buildnml and buildlib scripts here.”</p></td>
+<td><p>Top-level directory containing subdirectories for each compset component where you can place modified source code for that component. You may also place modified buildnml and buildlib scripts here.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="provenance">
-<h3><a class="toc-backref" href="#id6" role="doc-backlink">Provenance</a><a class="headerlink" href="#provenance" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Provenance</a><a class="headerlink" href="#provenance" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>File</p></th>
@@ -318,7 +338,7 @@ If that directory already exists, a warning is printed and the command aborts.</
 </table>
 </section>
 <section id="non-modifiable-work-directories">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">Non-modifiable work directories</a><a class="headerlink" href="#non-modifiable-work-directories" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Non-modifiable work directories</a><a class="headerlink" href="#non-modifiable-work-directories" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Directory</p></th>
@@ -330,18 +350,17 @@ If that directory already exists, a warning is printed and the command aborts.</
 <td><p>Work directory containing scripts to generate component namelists and component and utility libraries (PIO or MCT, for example). You should never have to edit the contents of this directory.</p></td>
 </tr>
 <tr class="row-odd"><td><p>LockedFiles</p></td>
-<td><p>Work directory that holds copies of files that should not be changed. Certain xml files are <em>locked</em> after their variables have been used by should no longer be changed (see below).</p></td>
+<td><p>Work directory that holds copies of files that should not be changed. Certain XML files are <em>locked</em> after their variables have been used and should no longer be changed (see below).</p></td>
 </tr>
 <tr class="row-even"><td><p>Tools</p></td>
-<td><p>Work directory containing support utility scripts. You should never need to edit the contents of this directory.”</p></td>
+<td><p>Work directory containing support utility scripts. You should never need to edit the contents of this directory.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-</section>
-<section id="locked-files-in-your-case-directory">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Locked files in your case directory</a><a class="headerlink" href="#locked-files-in-your-case-directory" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be
+<section id="locked-files">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Locked files</a><a class="headerlink" href="#locked-files" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> XML files are organized so that variables can be
 locked at certain points after they have been resolved (used) in other
 parts of the scripts system.</p>
 <p>CIME does this by <em>locking</em> a file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/LockedFiles</span></code> and
@@ -359,34 +378,6 @@ you call <code class="docutils literal notranslate"><span class="pre">case.setup
 <p>There are some exceptions in the <strong>env_batch.xml</strong> file.</p>
 </div>
 </section>
-<section id="user-mods">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">User Mods</a><a class="headerlink" href="#user-mods" title="Link to this heading"></a></h2>
-<p>A user can customize a case by providing a <strong>user mods</strong> when creating a new case. The <strong>user mods</strong> provides a few ways to customize a case.</p>
-<ul class="simple">
-<li><p>Namelist files</p></li>
-<li><p>Source code modifications</p></li>
-<li><p>Shell commands (can call <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code>)</p></li>
-</ul>
-<p>This can be useful when a user wants to carry out a series of experiments based on a common set of changes to the namelists, source code and/or case xml settings.</p>
-<p>Here’s a toy <strong>user mod</strong> to demonstrate.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">./</span><span class="n">usermod</span>
-<span class="n">echo</span> <span class="s2">&quot;nlmaps_verbosity = 1&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">./</span><span class="n">usermod</span><span class="o">/</span><span class="n">user_nl_cpl</span>
-<span class="n">echo</span> <span class="s2">&quot;./xmlchange NTASKS=80&quot;</span> <span class="o">&gt;&gt;</span> <span class="o">./</span><span class="n">usermod</span><span class="o">/</span><span class="n">shell_commands</span>
-<span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">S</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span> <span class="o">--</span><span class="n">case</span> <span class="o">./</span><span class="n">case01</span> <span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">mods</span><span class="o">-</span><span class="nb">dir</span> <span class="o">./</span><span class="n">usermod</span>
-</pre></div>
-</div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>It is important to note that the file containing the <strong>xmlchange</strong>
-commands must be named <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> in order for it to be recognised
-and run upon case creation.</p>
-</div>
-<p>The structure of the component directories do not need to be the
-same as in the component source code. As an example, should the user
-want to modify the <code class="docutils literal notranslate"><span class="pre">src/dynamics/eul/dyncomp.F90</span></code> file within the
-CAM source code, the modified file should be put into the directory
-<code class="docutils literal notranslate"><span class="pre">SourceMods/src.cam</span></code> directly. There is no need to mimic the source
-code structure, such as <code class="docutils literal notranslate"><span class="pre">SourceMods/src.cam/dynamics/eul</span></code>.</p>
 </section>
 </section>
 
@@ -394,14 +385,14 @@ code structure, such as <code class="docutils literal notranslate"><span class="
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Case Control System (CCS)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="user-config.html" class="btn btn-neutral float-left" title="User Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="setting-up-a-case.html" class="btn btn-neutral float-right" title="Setting up a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

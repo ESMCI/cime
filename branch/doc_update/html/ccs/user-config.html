@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Config &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Creating a Case" href="create-a-case.html" />
+    <link rel="prev" title="Case Control System (CCS)" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">User Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Case Control System (CCS)</a></li>
+      <li class="breadcrumb-item active">User Config</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ccs/user-config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-config">
+<span id="ccs-user-config"></span><h1>User Config<a class="headerlink" href="#user-config" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#configuration" id="id3">Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#main" id="id4">Main</a></p></li>
+<li><p><a class="reference internal" href="#create-test" id="id5">Create Test</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#machine" id="id6">Machine</a></p></li>
+<li><p><a class="reference internal" href="#cmake-macros" id="id7">CMake macros</a></p></li>
+<li><p><a class="reference internal" href="#batch-system" id="id8">Batch System</a></p></li>
+</ul>
+</nav>
+<p>CIME provides a mechanism for users to customize their CCS environment by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code> directory. This directory can contain a number of files that will be used to customize the CCS environment. The following sections describe the files that can be placed in the <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code> directory.</p>
+<section id="configuration">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>The user can set defaults by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> file. This file must follow the Python config format.</p>
+<section id="main">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Main</a><a class="headerlink" href="#main" title="Link to this heading"></a></h3>
+<p>Variables can be defined in the <strong>[main]</strong> section of the config file.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[main]</span>
+<span class="na">CIME_MODEL</span><span class="o">=</span><span class="s">&lt;model&gt;</span>
+<span class="na">PROJECT</span><span class="o">=</span><span class="s">&lt;project&gt;</span>
+<span class="na">MAIL_TYPE</span><span class="o">=</span><span class="s">&lt;mail_type&gt;</span>
+<span class="na">SRCROOT</span><span class="o">=</span><span class="s">&lt;srcroot&gt;</span>
+</pre></div>
+</div>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Main Variables</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cime_model</p></td>
+<td><p>Name of the model to be used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>project</p></td>
+<td><p>The project identifier.</p></td>
+</tr>
+<tr class="row-even"><td><p>charge_account</p></td>
+<td><p>The account to be charged.</p></td>
+</tr>
+<tr class="row-odd"><td><p>srcroot</p></td>
+<td><p>The root directory of the model source code.</p></td>
+</tr>
+<tr class="row-even"><td><p>mail_type</p></td>
+<td><p>The type of mail notifications (e.g., fail, all).</p></td>
+</tr>
+<tr class="row-odd"><td><p>mail_user</p></td>
+<td><p>The user to receive mail notifications.</p></td>
+</tr>
+<tr class="row-even"><td><p>machine</p></td>
+<td><p>The machine to be used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>mpilib</p></td>
+<td><p>The MPI library to be used.</p></td>
+</tr>
+<tr class="row-even"><td><p>compiler</p></td>
+<td><p>The compiler to be used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>input_dir</p></td>
+<td><p>The directory for input files.</p></td>
+</tr>
+<tr class="row-even"><td><p>cime_driver</p></td>
+<td><p>The model driver to use.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="create-test">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Create Test</a><a class="headerlink" href="#create-test" title="Link to this heading"></a></h3>
+<p>The following example shows setting defaults for the <strong>create_test</strong> script.</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[create_test]</span>
+<span class="na">MAIL_TYPE</span><span class="o">=</span><span class="s">fail</span>
+</pre></div>
+</div>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Create Test Variables</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>mail_type</p></td>
+<td><p>The type of mail notifications (e.g., fail, all).</p></td>
+</tr>
+<tr class="row-odd"><td><p>mail_user</p></td>
+<td><p>The user to receive mail notifications.</p></td>
+</tr>
+<tr class="row-even"><td><p>save_timing</p></td>
+<td><p>Save timing information.</p></td>
+</tr>
+<tr class="row-odd"><td><p>single_submit</p></td>
+<td><p>Submit all jobs as a single job.</p></td>
+</tr>
+<tr class="row-even"><td><p>test_root</p></td>
+<td><p>The root directory for tests.</p></td>
+</tr>
+<tr class="row-odd"><td><p>output_root</p></td>
+<td><p>The root directory for output.</p></td>
+</tr>
+<tr class="row-even"><td><p>baseline_root</p></td>
+<td><p>The root directory for baselines.</p></td>
+</tr>
+<tr class="row-odd"><td><p>clean</p></td>
+<td><p>Clean before running tests.</p></td>
+</tr>
+<tr class="row-even"><td><p>machine</p></td>
+<td><p>The machine to be used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>mpilib</p></td>
+<td><p>The MPI library to be used.</p></td>
+</tr>
+<tr class="row-even"><td><p>compiler</p></td>
+<td><p>The compiler to be used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>parallel_jobs</p></td>
+<td><p>The number of parallel jobs to run.</p></td>
+</tr>
+<tr class="row-even"><td><p>proc_pool</p></td>
+<td><p>The pool of processors to use.</p></td>
+</tr>
+<tr class="row-odd"><td><p>walltime</p></td>
+<td><p>The wall time for the job.</p></td>
+</tr>
+<tr class="row-even"><td><p>job_queue</p></td>
+<td><p>The job queue to use.</p></td>
+</tr>
+<tr class="row-odd"><td><p>allow_baseline_overwrite</p></td>
+<td><p>Allow overwriting of baselines.</p></td>
+</tr>
+<tr class="row-even"><td><p>skip_tests_with_existing_baselines</p></td>
+<td><p>Skip tests with existing baselines.</p></td>
+</tr>
+<tr class="row-odd"><td><p>wait</p></td>
+<td><p>Wait for jobs to complete.</p></td>
+</tr>
+<tr class="row-even"><td><p>force_procs</p></td>
+<td><p>Force the number of processors.</p></td>
+</tr>
+<tr class="row-odd"><td><p>force_threads</p></td>
+<td><p>Force the number of threads.</p></td>
+</tr>
+<tr class="row-even"><td><p>input_dir</p></td>
+<td><p>The directory for input files.</p></td>
+</tr>
+<tr class="row-odd"><td><p>pesfile</p></td>
+<td><p>The file specifying processor layout.</p></td>
+</tr>
+<tr class="row-even"><td><p>retry</p></td>
+<td><p>The number of retries for failed tests.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="machine">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Machine</a><a class="headerlink" href="#machine" title="Link to this heading"></a></h2>
+<p>The user can define their own machine configuration by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config_machines.xml</span></code> file. See the <a class="reference internal" href="model/configuration/machine.html#model-config-machines-def"><span class="std std-ref">config_machines.xml</span></a> section for more information.</p>
+<p>These additional machine entries will be appended to the entries provided by the model.</p>
+</section>
+<section id="cmake-macros">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">CMake macros</a><a class="headerlink" href="#cmake-macros" title="Link to this heading"></a></h2>
+<p>The user can define their own cmake macros by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/cmake_macros</span></code> directory. See the <a class="reference internal" href="model/configuration/cmake-macros-dir.html#model-config-cmake-macros-dir-def"><span class="std std-ref">cmake_macros</span></a> section for more information.</p>
+</section>
+<section id="batch-system">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Batch System</a><a class="headerlink" href="#batch-system" title="Link to this heading"></a></h2>
+<p>The user can define their own batch system configuration by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config_batch.xml</span></code> file. See the <a class="reference internal" href="model/configuration/batch.html#model-config-batch-def"><span class="std std-ref">config_batch.xml</span></a> section for more information.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Case Control System (CCS)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="create-a-case.html" class="btn btn-neutral float-right" title="Creating a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

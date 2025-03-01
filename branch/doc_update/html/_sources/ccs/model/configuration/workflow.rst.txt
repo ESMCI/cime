@@ -30,7 +30,7 @@ Definition
 This is the contents of ``config_workflow.xml``.
 
 Schema
-```````
+------
 
 .. code-block:: xml
 

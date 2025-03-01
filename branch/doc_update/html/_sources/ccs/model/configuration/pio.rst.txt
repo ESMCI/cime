@@ -24,7 +24,7 @@ This is an example entry for ``config_files.xml``.
     </entry>
 
 Definition
--------
+----------
 
 This is the general format of the contents from ``config_pio.xml``.
 

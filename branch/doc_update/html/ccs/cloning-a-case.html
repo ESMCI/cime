@@ -50,17 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -69,6 +69,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
 
@@ -98,56 +99,52 @@
            <div itemprop="articleBody">
              
   <section id="cloning-a-case">
-<span id="id1"></span><h1>Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Link to this heading"></a></h1>
+<span id="ccs-cloning-a-case"></span><h1>Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Link to this heading"></a></h1>
 <p>If you have access to a run that you want to clone, the
 <code class="docutils literal notranslate"><span class="pre">create_clone</span></code> command will create a new case and run <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>
 while preserving local modifications to the case.</p>
-<p>Here is a simple example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>cd $CIMEROOT/scripts
-create_clone --case $CASEROOT --clone $CLONEROOT
-cd $CASEROOT
-case.build
-case.submit
+<p>To clone a case, you can use the following command, replacing <code class="docutils literal notranslate"><span class="pre">&lt;case&gt;</span></code> with the new case directory and <code class="docutils literal notranslate"><span class="pre">&lt;clone&gt;</span></code> with the directory of the case you want to clone.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_clone<span class="w"> </span>--case<span class="w"> </span>&lt;<span class="k">case</span>&gt;<span class="w"> </span>--clone<span class="w"> </span>&lt;clone&gt;
+</pre></div>
+</div>
+<p>Now the new cloned case can be built and submitted.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;<span class="k">case</span>&gt;
+./case.build
+./case.submit
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_clone</span></code> script preserves any local namelist modifications
 made in the <strong>user_nl_xxxx</strong> files as well as any source code
 modifications in the <strong>SourceMods/</strong> directory tree. Otherwise, your <strong>$CASEROOT</strong> directory
-directory will appear as if <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> had just been run.</p>
+will appear as if <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> had just been run.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
-<p>Do not change anything in the <strong>env_case.xml</strong> file.</p>
+<p>Do not change anything in the <code class="docutils literal notranslate"><span class="pre">env_case.xml</span></code> file.</p>
 </div>
-<p>See the <strong>help</strong> text for more usage information.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">create_clone</span></code>  has several useful optional arguments. To point to
+<p>The <code class="docutils literal notranslate"><span class="pre">create_clone</span></code> has several useful optional arguments. To point to
 the executable of the original case you are cloning from.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>create_clone --case $CASEROOT --clone $CLONEROOT --keepexe
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./scripts/create_clone --case &lt;case&gt; --clone &lt;clone&gt; --keepexe
 cd $CASEROOT
-case.submit
+./case.submit
 </pre></div>
 </div>
 <p>If the <code class="docutils literal notranslate"><span class="pre">--keepexe</span></code> optional argument is used, then no SourceMods
-will be permitted in the cloned directory.  A link will be made when
+will be permitted in the cloned directory. A link will be made when
 the cloned case is created pointing the cloned SourceMods/ directory
 to the original case SourceMods directory.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>No changes should be made to <code class="docutils literal notranslate"><span class="pre">env_build.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">env_mach_pes.xml</span></code> in the cloned directory.</p>
 </div>
-<dl class="simple">
-<dt>The <code class="docutils literal notranslate"><span class="pre">create_clone</span></code> also permits you to invoke the <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code></dt><dd><p>and <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> files in a user_mods directory by calling:</p>
-</dd>
-</dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>create_clone --case $CASEROOT --clone $CLONEROOT --user-mods-dir USER_MODS_DIR [--keepexe]
+<p>The <code class="docutils literal notranslate"><span class="pre">create_clone</span></code> also permits you to invoke the <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code>
+and <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> files in a user_mods directory by calling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_clone</span> <span class="o">--</span><span class="n">case</span> <span class="o">&lt;</span><span class="n">case</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">clone</span> <span class="o">&lt;</span><span class="n">clone</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">user</span><span class="o">-</span><span class="n">mods</span><span class="o">-</span><span class="nb">dir</span> <span class="n">USER_MODS_DIR</span> <span class="p">[</span><span class="o">--</span><span class="n">keepexe</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Note that an optional <code class="docutils literal notranslate"><span class="pre">--keepexe</span></code> flag can also be used in this case.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>If there is a <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> file, it should not have any changes to xml variables in either <code class="docutils literal notranslate"><span class="pre">env_build.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">env_mach_pes.xml</span></code>.</p>
+<p>If there is a <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> file, it should not have any changes to XML variables in either <code class="docutils literal notranslate"><span class="pre">env_build.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">env_mach_pes.xml</span></code>.</p>
 </div>
 <p>Another approach to duplicating a case is to use the information in
 the case’s <strong>README.case</strong> and <strong>CaseStatus</strong> files to create a new
@@ -169,7 +166,7 @@ changes manually.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

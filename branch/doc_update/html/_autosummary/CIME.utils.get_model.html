@@ -56,6 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
@@ -241,12 +242,12 @@
 <dd><p>Get the currently configured model value
 The CIME_MODEL env variable may or may not be set</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CIME_MODEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;garbage&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_model</span><span class="p">()</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_model</span><span class="p">()</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: model garbage not recognized</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;CIME_MODEL&quot;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">set_model</span><span class="p">(</span><span class="s1">&#39;rocky&#39;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">set_model</span><span class="p">(</span><span class="s1">&#39;rocky&#39;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: model rocky not recognized</span>
@@ -271,7 +272,7 @@ The CIME_MODEL env variable may or may not be set</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

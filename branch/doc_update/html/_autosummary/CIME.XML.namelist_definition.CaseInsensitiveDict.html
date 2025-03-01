@@ -56,6 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
@@ -172,7 +173,7 @@
 <h1>CIME.XML.namelist_definition.CaseInsensitiveDict<a class="headerlink" href="#cime-xml-namelist-definition-caseinsensitivedict" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="CIME.XML.namelist_definition.CaseInsensitiveDict">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.XML.namelist_definition.</span></span><span class="sig-name descname"><span class="pre">CaseInsensitiveDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/namelist_definition.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.XML.namelist_definition.</span></span><span class="sig-name descname"><span class="pre">CaseInsensitiveDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/namelist_definition.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Basic case insensitive dict with strings only keys.
 From <a class="reference external" href="https://stackoverflow.com/a/27890005">https://stackoverflow.com/a/27890005</a></p>
@@ -202,7 +203,7 @@ From <a class="reference external" href="https://stackoverflow.com/a/27890005">h
 <td><p>Return a set-like object providing a view on the dict's keys.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.pop" title="CIME.XML.namelist_definition.CaseInsensitiveDict.pop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pop</span></code></a></p></td>
-<td><p>If the key is not found, return the default if given; otherwise, raise a KeyError.</p></td>
+<td><p>D.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.popitem" title="CIME.XML.namelist_definition.CaseInsensitiveDict.popitem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popitem</span></code></a></p></td>
 <td><p>Remove and return a (key, value) pair as a 2-tuple.</p></td>
@@ -211,7 +212,7 @@ From <a class="reference external" href="https://stackoverflow.com/a/27890005">h
 <td><p>Insert key with a value of default if key is not in the dictionary.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.update" title="CIME.XML.namelist_definition.CaseInsensitiveDict.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a></p></td>
-<td><p>If E is present and has a .keys() method, then does:  for k in E.keys(): D[k] = E[k] If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v In either case, this is followed by: for k in F:  D[k] = F[k]</p></td>
+<td><p>D.update([E, ]**F) -&gt; None.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.values" title="CIME.XML.namelist_definition.CaseInsensitiveDict.values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">values</span></code></a></p></td>
 <td><p>Return an object providing a view on the dict's values.</p></td>
@@ -233,7 +234,7 @@ From <a class="reference external" href="https://stackoverflow.com/a/27890005">h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.namelist_definition.CaseInsensitiveDict.fromkeys">
-<span class="sig-name descname"><span class="pre">fromkeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/namelist_definition.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.fromkeys" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromkeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/namelist_definition.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.fromkeys" title="Link to this definition"></a></dt>
 <dd><p>Create a new dictionary with keys from iterable and values set to value.</p>
 </dd></dl>
 
@@ -272,7 +273,7 @@ Raises KeyError if the dict is empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CIME.XML.namelist_definition.CaseInsensitiveDict.setdefault">
-<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/namelist_definition.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.setdefault" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/XML/namelist_definition.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.XML.namelist_definition.CaseInsensitiveDict.setdefault" title="Link to this definition"></a></dt>
 <dd><p>Insert key with a value of default if key is not in the dictionary.</p>
 <p>Return the value for key if key is in the dictionary, else default.</p>
 </dd></dl>
@@ -306,7 +307,7 @@ In either case, this is followed by: for k in F:  D[k] = F[k]</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

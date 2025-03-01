@@ -56,6 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="CIME.html">CIME</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CIME.BuildTools.html">CIME.BuildTools</a></li>
@@ -184,21 +185,21 @@ arguments:
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;Fortune&quot;</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: &#39;bacon&#39; is not a valid literal for any Fortran type.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">)</span>
 <span class="go">1.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: &#39;bacon&#39; is not a valid literal of type &#39;logical&#39;.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;booga&quot;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;booga&quot;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Invalid Fortran type for a namelist: &#39;booga&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;2*1&quot;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;2*1&quot;</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Cannot use repetition syntax in literal_to_python_value</span>
@@ -226,7 +227,7 @@ arguments:
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

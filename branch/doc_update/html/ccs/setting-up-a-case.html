@@ -50,17 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -69,6 +69,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
 </ul>
 
@@ -98,18 +99,63 @@
            <div itemprop="articleBody">
              
   <section id="setting-up-a-case">
-<h1>Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Link to this heading"></a></h1>
-<p>After creating a case, some aspects of the case are fixed (any variables in env_case.xml). Changing the pe-layout
-(see <a class="reference internal" href="model/configuration/pes.html#defining-pes"><span class="std std-ref">Changing Pes</span></a>) or some aspects of the batch system you may be using must be modified before running
-<strong>case.setup</strong>.</p>
-<section id="calling-case-setup">
-<h2>Calling <strong>case.setup</strong><a class="headerlink" href="#calling-case-setup" title="Link to this heading"></a></h2>
-<p>After creating a case or changing aspects of a case, such as the pe-layout, call the <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> command from <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.
-This creates the following additional files and directories in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
+<span id="ccs-setting-up-a-case"></span><h1>Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#configuration" id="id1">Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#reviewing" id="id2">Reviewing</a></p></li>
+<li><p><a class="reference internal" href="#modifying" id="id3">Modifying</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#setting-up-the-case" id="id4">Setting up the Case</a></p>
+<ul>
+<li><p><a class="reference internal" href="#generated-files" id="id5">Generated files</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="configuration">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>After creating a case, some aspects of the configuration are fixed (any variables in <code class="docutils literal notranslate"><span class="pre">env_case.xml</span></code>). But many can be changed before calling <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, which generates the files required to build and run the case. CIME provides <code class="docutils literal notranslate"><span class="pre">xmlquery</span></code> to view and <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> to modify the variables used in this process.</p>
+<section id="reviewing">
+<span id="ccs-xmlquery"></span><h3><a class="toc-backref" href="#id2" role="doc-backlink">Reviewing</a><a class="headerlink" href="#reviewing" title="Link to this heading"></a></h3>
+<p>CIME provides the <code class="docutils literal notranslate"><span class="pre">xmlquery</span></code> command to view the configuration of a case. The configuration is a collection of variables stored in XML files. These variables are grouped together when defined in the model’s configuration.</p>
+<p>The following will list all of the current configuration.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlquery<span class="w"> </span>--listall
+</pre></div>
+</div>
+<p>To view a specific group, replace <code class="docutils literal notranslate"><span class="pre">&lt;group&gt;</span></code> with the desired group name.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlquery<span class="w"> </span>--subgroup<span class="w"> </span>&lt;group&gt;<span class="w"> </span>--listall
+</pre></div>
+</div>
+</section>
+<section id="modifying">
+<span id="ccs-xmlchange"></span><h3><a class="toc-backref" href="#id3" role="doc-backlink">Modifying</a><a class="headerlink" href="#modifying" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> command is used to modify the configuration of a case. The following will change the value of a variable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span>&lt;variable&gt;<span class="o">=</span>&lt;value&gt;
+</pre></div>
+</div>
+<p>Some variables can exist in multiple groups. To change a variable in a specific group, use the <code class="docutils literal notranslate"><span class="pre">--subgroup</span></code> option.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span><span class="nv">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="m">0</span>:30<span class="w"> </span>--subgroup<span class="w"> </span><span class="k">case</span>.run
+</pre></div>
+</div>
+</section>
+</section>
+<section id="setting-up-the-case">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Setting up the Case</a><a class="headerlink" href="#setting-up-the-case" title="Link to this heading"></a></h2>
+<p>Once all the configuration is done, it’s time to call <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> from <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>. This will generate the files required to build and run the case.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> is called after <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, the changes will not be reflected in the generated files. To update the files, call <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--reset</span></code>.</p>
+</div>
+<section id="generated-files">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Generated files</a><a class="headerlink" href="#generated-files" title="Link to this heading"></a></h3>
+<p>The following files and directories are generated in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p>.case.run</p></td>
-<td><p>A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed.  The directive values are generated using the contents of <strong>env_mach_pes.xml</strong>. Running <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> will remove this file.  This file should not be edited directly and instead controlled through XML variables in <strong>env_batch.xml</strong>. It should also <em>never</em> be run directly.</p></td>
+<td><p>A (hidden) file with the commands that will be used to run the model (such as “mpirun”) and any batch directives needed. The directive values are generated using the contents of <strong>env_mach_pes.xml</strong>. Running <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> will remove this file. This file should not be edited directly and instead controlled through XML variables in <strong>env_batch.xml</strong>. It should also <em>never</em> be run directly.</p></td>
 </tr>
 <tr class="row-even"><td><p>.env_mach_specific.*</p></td>
 <td><p>Files summarizing the <strong>module load</strong> commands and environment variables that are set when the scripts in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> are called. These files are not used by the case but can be useful for debugging <strong>module load</strong> and environment settings.</p></td>
@@ -121,25 +167,26 @@ This creates the following additional files and directories in <code class="docu
 <td><p>File containing a list of operations done in the current case.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Depends.*</p></td>
-<td><p>Lists of source code files that needs special build options.</p></td>
+<td><p>Lists of source code files that need special build options.</p></td>
 </tr>
 <tr class="row-even"><td><p>Macros.cmake</p></td>
-<td><p>File containing machine-specific makefile directives for your target platform/compiler. This file is created if it does not already exist. The user can modify the file to change certain aspects of the build, such as compiler flags. Running <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--clean</span></code>  will not remove the file once it has been created. However. if you remove or rename the Macros.make file, running <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> recreates it.</p></td>
+<td><p>File containing machine-specific makefile directives for your target platform/compiler. This file is created if it does not already exist. The user can modify the file to change certain aspects of the build, such as compiler flags. Running <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will not remove the file once it has been created. However, if you remove or rename the Macros.make file, running <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> recreates it.</p></td>
 </tr>
 <tr class="row-odd"><td><p>case.st_archive</p></td>
-<td><p>Script to perform short term archiving to disk for your case output. Note that this script is run automatically by the normal CIME workflow.</p></td>
+<td><p>Script to perform short-term archiving to disk for your case output. Note that this script is run automatically by the normal CIME workflow.</p></td>
 </tr>
 <tr class="row-even"><td><p>cmake_macros/</p></td>
-<td><p>Directory containing any cmake macros required for the machine/compiler combination.</p></td>
+<td><p>Directory containing any CMake macros required for the machine/compiler combination.</p></td>
 </tr>
 <tr class="row-odd"><td><p>user_nl_xxx[_NNNN]</p></td>
-<td><p>Files where all user modifications to component namelists are made. <strong>xxx</strong> is any one of the set of components targeted for the case. For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See <a class="reference internal" href="multi-instance.html#multi-instance"><span class="std std-ref">multiple instances</span></a>) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will <em>not remove</em> any user_nl files. Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only new user_nl files to be added to <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></td>
+<td><p>Files where all user modifications to component namelists are made. <strong>xxx</strong> is any one of the set of components targeted for the case. For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm, or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See <a class="reference internal" href="multi-instance.html#multi-instance"><span class="std std-ref">multiple instances</span></a>) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will <em>not remove</em> any user_nl files. Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only new user_nl files to be added to <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p>software_environment.txt</p></td>
 <td><p>This file records some aspects of the computing system on which the case is built, such as the shell environment.</p></td>
 </tr>
 </tbody>
 </table>
+</section>
 </section>
 </section>
 
@@ -154,7 +201,7 @@ This creates the following additional files and directories in <code class="docu
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Porting and validating CIME on a new platform &mdash; CIME master documentation</title>
+  <title>Support a new machine &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -50,23 +50,23 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">Model</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Model Configuration</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="configuration/index.html">Configuration</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Support a new machine</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_testing.html">Fortran Unit Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cime-customize.html">CIME config and hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="customize-cime.html">Customize CIME</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../multi-instance.html">Multi-instance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../system_testing.html">System Testing</a></li>
@@ -75,6 +75,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 </ul>
 
@@ -93,10 +94,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Case Control System (CCS)</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Model</a></li>
-      <li class="breadcrumb-item active">Porting and validating CIME on a new platform</li>
+          <li class="breadcrumb-item"><a href="index.html">Model Configuration</a></li>
+      <li class="breadcrumb-item active">Support a new machine</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/ccs/model/porting-cime.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/ccs/model/support-a-new-machine.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -104,8 +105,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="porting-and-validating-cime-on-a-new-platform">
-<span id="porting"></span><h1>Porting and validating CIME on a new platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Link to this heading"></a></h1>
+  <section id="support-a-new-machine">
+<span id="porting"></span><h1>Support a new machine<a class="headerlink" href="#support-a-new-machine" title="Link to this heading"></a></h1>
 <p>One of the first steps for many users is getting CIME-based models running on their local machine.
 This section describes that process.</p>
 <section id="required-libraries-packages">
@@ -173,7 +174,7 @@ Please see the instructions in the file to create the directory structure and us
 <p>Porting CIME involves several steps. The first step is to define your machine. You can do this in one of two ways:</p>
 <ol class="arabic">
 <li><p>You can edit <strong>$CIMEROOT/config/$model/machines/config_machines.xml</strong> and add an appropriate section for your machine.</p></li>
-<li><p>You can use your <strong>$HOME/.cime</strong> directory (see <a class="reference internal" href="cime-customize.html#customizing-cime"><span class="std std-ref">CIME config and hooks</span></a>).
+<li><p>You can use your <strong>$HOME/.cime</strong> directory (see <a class="reference internal" href="customize-cime.html#customizing-cime"><span class="std std-ref">Customize CIME</span></a>).
 In particular, you can create a <strong>$HOME/.cime/config_machines.xml</strong> file with the definition for your machine.
 A template to create this definition is provided in <strong>$CIMEROOT/config/xml_schemas/config_machines_template.xml</strong>. More details are provided in the template file.
 In addition, if you have a batch system, you will also need to add a <strong>config_batch.xml</strong> file to your <strong>$HOME/.cime</strong> directory.
@@ -192,7 +193,7 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 <ul>
 <li><p>Create a <strong>$HOME/.cime</strong> directory and create a <strong>config_machines.xml</strong> file in that directory.</p>
 <p>This file contains all the information you must set in order to configure a new machine to be CIME-compliant.</p>
-<p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <a class="reference internal" href="configuration/machine.html#machinefile"><span class="std std-ref">the config_machines.xml file</span></a>.</p>
+<p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <span class="xref std std-ref">the config_machines.xml file</span>.</p>
 <p>Check to ensure that your <strong>config_machines.xml</strong> file conforms to the CIME schema definition by doing the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 </pre></div>
@@ -286,7 +287,7 @@ intermittently, such as at the end of the month.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

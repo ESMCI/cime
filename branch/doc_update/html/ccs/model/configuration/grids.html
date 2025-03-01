@@ -50,16 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model Configuration</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">Configuration</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="entry-id.html">Entry ID</a></li>
 <li class="toctree-l4"><a class="reference internal" href="archive.html">Archive</a></li>
@@ -67,7 +68,6 @@
 <li class="toctree-l4"><a class="reference internal" href="build-lib.html">Buildlib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">Case File Headers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">Cmake Macros</a></li>
-<li class="toctree-l4"><a class="reference internal" href="compilers.html">Compilers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="compsets.html">Compsets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">Component Root Directory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="component.html">Component</a></li>
@@ -87,12 +87,11 @@
 <li class="toctree-l4"><a class="reference internal" href="workflow.html">Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting-cime.html">Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../support-a-new-machine.html">Support a new machine</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../unit_testing.html">Fortran Unit Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cime-customize.html">CIME config and hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../customize-cime.html">Customize CIME</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../system_testing.html">System Testing</a></li>
@@ -101,6 +100,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -119,7 +119,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Model</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Model Configuration</a></li>
           <li class="breadcrumb-item"><a href="index.html">Configuration</a></li>
       <li class="breadcrumb-item active">Grids</li>
       <li class="wy-breadcrumbs-aside">
@@ -136,14 +136,11 @@
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#entry" id="id1">Entry</a></p></li>
-<li><p><a class="reference internal" href="#definition" id="id2">Definition</a></p>
-<ul>
+<li><p><a class="reference internal" href="#definition" id="id2">Definition</a></p></li>
 <li><p><a class="reference internal" href="#schema" id="id3">Schema</a></p>
 <ul>
 <li><p><a class="reference internal" href="#version-2-2" id="id4">Version 2.2</a></p></li>
 <li><p><a class="reference internal" href="#version-2-0" id="id5">Version 2.0</a></p></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#grid-longname" id="id6">Grid longname</a></p></li>
@@ -156,21 +153,21 @@
 <p>This is an example entry for <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;GRIDS_SPEC_FILE&quot;</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
-<span class="w">  </span><span class="nt">&lt;default_value&gt;</span>$CIMEROOT/cime_config/$MODEL/config_grids.xml<span class="nt">&lt;/default_value&gt;</span>
+<span class="w">  </span><span class="nt">&lt;default_value&gt;</span>$SRCROOT/cime_config/config_grids.xml<span class="nt">&lt;/default_value&gt;</span>
 <span class="w">  </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
 <span class="w">  </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
 <span class="w">  </span><span class="nt">&lt;desc&gt;</span>file<span class="w"> </span>containing<span class="w"> </span>specification<span class="w"> </span>of<span class="w"> </span>all<span class="w"> </span>supported<span class="w"> </span>model<span class="w"> </span>grids,<span class="w"> </span>domains<span class="w"> </span>and<span class="w"> </span>mapping<span class="w"> </span>files<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
-<span class="w">  </span><span class="nt">&lt;schema&gt;</span>$CIMEROOT/cime_config/xml_schemas/config_grids_v2.xsd<span class="nt">&lt;/schema&gt;</span>
 <span class="nt">&lt;/entry&gt;</span>
 </pre></div>
 </div>
 </section>
 <section id="definition">
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">Definition</a><a class="headerlink" href="#definition" title="Link to this heading"></a></h2>
+</section>
 <section id="schema">
-<h3><a class="toc-backref" href="#id3" role="doc-backlink">Schema</a><a class="headerlink" href="#schema" title="Link to this heading"></a></h3>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Schema</a><a class="headerlink" href="#schema" title="Link to this heading"></a></h2>
 <section id="version-2-2">
-<h4><a class="toc-backref" href="#id4" role="doc-backlink">Version 2.2</a><a class="headerlink" href="#version-2-2" title="Link to this heading"></a></h4>
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Version 2.2</a><a class="headerlink" href="#version-2-2" title="Link to this heading"></a></h3>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_grids_v2.2.xsd grid_data on 2025-02-11 --&gt;</span>
 
 <span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
@@ -247,7 +244,7 @@
 </div>
 </section>
 <section id="version-2-0">
-<h4><a class="toc-backref" href="#id5" role="doc-backlink">Version 2.0</a><a class="headerlink" href="#version-2-0" title="Link to this heading"></a></h4>
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Version 2.0</a><a class="headerlink" href="#version-2-0" title="Link to this heading"></a></h3>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_grids_v2.xsd grid_data on 2025-02-11 --&gt;</span>
 
 <span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
@@ -318,7 +315,6 @@
 <span class="nt">&lt;/grid_data&gt;</span>
 </pre></div>
 </div>
-</section>
 </section>
 </section>
 <section id="grid-longname">
@@ -519,7 +515,7 @@ You will need to:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

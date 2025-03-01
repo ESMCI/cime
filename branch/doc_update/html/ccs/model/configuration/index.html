@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Entry ID" href="entry-id.html" />
-    <link rel="prev" title="Model" href="../index.html" /> 
+    <link rel="prev" title="Model Configuration" href="../index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,16 +50,17 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../create-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cloning-a-case.html">Cloning a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cime-config.html">CIME user config directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model Configuration</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Configuration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="entry-id.html">Entry ID</a></li>
 <li class="toctree-l4"><a class="reference internal" href="archive.html">Archive</a></li>
@@ -67,7 +68,6 @@
 <li class="toctree-l4"><a class="reference internal" href="build-lib.html">Buildlib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">Case File Headers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">Cmake Macros</a></li>
-<li class="toctree-l4"><a class="reference internal" href="compilers.html">Compilers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="compsets.html">Compsets</a></li>
 <li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">Component Root Directory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="component.html">Component</a></li>
@@ -87,12 +87,11 @@
 <li class="toctree-l4"><a class="reference internal" href="workflow.html">Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../porting-cime.html">Porting and validating CIME on a new platform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../support-a-new-machine.html">Support a new machine</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../unit_testing.html">Fortran Unit Testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cime-customize.html">CIME config and hooks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../customize-cime.html">Customize CIME</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../system_testing.html">System Testing</a></li>
@@ -101,6 +100,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
 </ul>
 
@@ -119,7 +119,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Model</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Model Configuration</a></li>
       <li class="breadcrumb-item active">Configuration</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../_sources/ccs/model/configuration/index.rst.txt" rel="nofollow"> View page source</a>
@@ -184,7 +184,6 @@
 <li><p><a class="reference internal" href="build-lib.html#model-config-build-lib"><span class="std std-ref">BUILD_LIB_FILE</span></a></p></li>
 <li><p><a class="reference internal" href="casefile-headers.html#model-config-casefile-headers"><span class="std std-ref">CASEFILE_HEADERS</span></a></p></li>
 <li><p><a class="reference internal" href="cmake-macros-dir.html#model-config-cmake-macros-dir"><span class="std std-ref">CMAKE_MACROS_DIR</span></a></p></li>
-<li><p><a class="reference internal" href="compilers.html#model-config-compilers"><span class="std std-ref">COMPILERS_SPEC_FILE</span></a></p></li>
 <li><p><a class="reference internal" href="compsets.html#model-config-compsets"><span class="std std-ref">COMPSETS_SPEC_FILE</span></a></p></li>
 <li><p><a class="reference internal" href="comp-root-dir.html#model-config-comp-root-dir"><span class="std std-ref">COMP_ROOT_DIR_*</span></a></p></li>
 <li><p><a class="reference internal" href="component.html#model-config-component"><span class="std std-ref">CONFIG_*_FILE</span></a></p></li>
@@ -213,14 +212,14 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="Model" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Model Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="entry-id.html" class="btn btn-neutral float-right" title="Entry ID" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
