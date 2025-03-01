@@ -26,7 +26,7 @@ Definition
 ----------
 
 Schema
-``````        
+------        
 
 .. code-block:: xml
 

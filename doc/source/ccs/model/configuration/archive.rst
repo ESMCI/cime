@@ -21,7 +21,7 @@ If the ``component`` attribute is provided then it will only apply the archive c
         <type>char</type>
         <values>
             <value>$SRCROOT/cime_config/config_archive.xml</value>
-            <value component="drv"      >$COMP_ROOT_DIR_CPL/cime_config/config_archive.xml</value>
+            <value component="drv">$COMP_ROOT_DIR_CPL/cime_config/config_archive.xml</value>
             <!-- data model components -->
             <value component="drof">$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
             <value component="datm">$COMP_ROOT_DIR_ATM/cime_config/config_archive.xml</value>
@@ -43,7 +43,7 @@ Definition
 The following describes the contents of a components ``config_archive.xml`` file.
 
 Schema
-``````
+------
 
 .. code-block:: xml
 

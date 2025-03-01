@@ -27,7 +27,7 @@ Definition
 ----------
 
 Schema
-```````
+------
 
 Version 2.2
 :::::::::::::
@@ -183,7 +183,6 @@ Version 2.0
 
 Grid longname
 -------------
-
 CIME model grids generally are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids uses only atmosphere, land, and ocean/ice grid specifications.
 
 A model grid longname has the form::

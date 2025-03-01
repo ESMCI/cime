@@ -10,30 +10,11 @@ Provides CIME with the paths to the root directories for each supported componen
 
 Entry
 -----
+This is an example entry for ``config_files.xml``. 
 
-This is an example entry for ``config_files.xml``.
-
-For each component a model supports, CIME expects to find a variable entry in the form of ``COMP_ROOT_DIR_<component>``.
-
-Where ``<component>`` is replaced by one of the following.
-
-* CPL
-* ATM
-* LND
-* ROF
-* ICE
-* OCN
-* WAV
-* GLC
-* IAC
-* ESP
+Here the atmospheric model (``COMP_ROOT_DIR_ATM``) provides a few different components.
 
 Each of these ``value`` entries will provide the root directory for the component.
-
-Example
--------
-
-In this example the atmospheric model (``COMP_ROOT_DIR_ATM``) provides a few different components.
 
 .. code-block:: xml
 
@@ -52,3 +33,18 @@ In this example the atmospheric model (``COMP_ROOT_DIR_ATM``) provides a few dif
         <desc>Root directory of the case atmospheric component  </desc>
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_compsets.xsd</schema>
     </entry>
+
+For each component a model supports, CIME expects to find a variable entry in the form of ``COMP_ROOT_DIR_<component>``.
+
+Where ``<component>`` is replaced by one of the following.
+
+* CPL
+* ATM
+* LND
+* ROF
+* ICE
+* OCN
+* WAV
+* GLC
+* IAC
+* ESP

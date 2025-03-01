@@ -28,9 +28,11 @@ If the ``component`` attribute is provided then it will only apply to ``SystemTe
         <desc>file containing system test descriptions </desc>
     </entry>
 
-Example
--------
+Definition
+----------
 
+Schema
+------
 This is an example of the default configuration for the ``ERI`` system test.
 
 .. code-block:: xml

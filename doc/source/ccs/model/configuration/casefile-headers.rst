@@ -33,7 +33,7 @@ Definition
     It's best to use the ``config_headers.xml`` in the CIME repository has CIME expects certain ``env_*.xml`` files to be present in a case.
 
 Schema
-```````
+------
 
 .. code-block:: xml
     :tab-width: 4
