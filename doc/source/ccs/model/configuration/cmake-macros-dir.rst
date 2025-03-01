@@ -43,8 +43,7 @@ The cmake macro files will be loaded using this hiearchy with more specific file
 
 Required Files
 ``````````````
-
-These files will be copied two the ``caseroot`` directory and used to load the appropriate macro files for the machine.
+These files will be copied to the ``CASEROOT/cmake_macros`` directory and used to load the appropriate macro files for the machine.
 
 CMakeLists.txt
 ::::::::::::::
