@@ -15,4 +15,4 @@ This section covers configuring a model for CIME, adding new machine support, un
     configuration/index
     support-a-new-machine
     unit_testing
-    cime-customize
+    customize-cime
