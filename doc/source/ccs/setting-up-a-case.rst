@@ -46,6 +46,10 @@ Setting up the Case
 -------------------
 Once all the configuration is done, it's time to call ``case.setup`` from ``$CASEROOT``. This will generate the files required to build and run the case.
 
+.. warning::
+    
+    If ``xmlchange`` is called after ``case.setup``, the changes will not be reflected in the generated files. To update the files, call ``case.setup --reset``.
+
 Generated files
 ```````````````
 The following files and directories are generated in ``$CASEROOT``:
