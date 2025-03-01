@@ -1,0 +1,6 @@
+{
+    "image": "ghcr.io/esmci/cime:latest",
+    "mounts": [
+        "source=${localWorkspaceFolder}/../,target=/src,type=bind"
+    ]
+}
