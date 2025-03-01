@@ -58,7 +58,6 @@ These variables should be defined in models ``config_files.xml`` to provide CIME
 * :ref:`BUILD_LIB_FILE<model_config_build_lib>`
 * :ref:`CASEFILE_HEADERS<model_config_casefile_headers>`
 * :ref:`CMAKE_MACROS_DIR<model_config_cmake_macros_dir>`
-* :ref:`COMPILERS_SPEC_FILE<model_config_compilers>`
 * :ref:`COMPSETS_SPEC_FILE<model_config_compsets>`
 * :ref:`COMP_ROOT_DIR_*<model_config_comp_root_dir>`
 * :ref:`CONFIG_*_FILE<model_config_component>`
@@ -87,7 +86,6 @@ These variables should be defined in models ``config_files.xml`` to provide CIME
    build-lib.rst
    casefile-headers.rst
    cmake-macros-dir.rst
-   compilers.rst
    compsets.rst
    comp-root-dir.rst
    component.rst

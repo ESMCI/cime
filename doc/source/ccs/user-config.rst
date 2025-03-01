@@ -123,12 +123,6 @@ CMake macros
 ------------
 The user can define their own cmake macros by creating a ``$HOME/.cime/cmake_macros`` directory. See the :ref:`cmake_macros<model_config_cmake_macros_dir_def>` section for more information.
 
-Compilers
----------
-.. warning::
-
-  The creation of ``config_compilers.xml`` is **DEPRECATED**. Use the cmake_macros directory instead.
-
 Batch System
 ------------
 The user can define their own batch system configuration by creating a ``$HOME/.cime/config_batch.xml`` file. See the :ref:`config_batch.xml<model_config_batch_def>` section for more information.
