@@ -33,6 +33,10 @@ The following describes the contents of a models ``config_batch.xml`` file.
 Schema
 ```````
 
+.. warning::
+
+    Under ``submit_args`` the ``arg`` element is deprecated in favor of ``argument``.
+
 .. code-block:: xml
 
     <!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_batch.xsd config_batch on 2025-02-06 -->
