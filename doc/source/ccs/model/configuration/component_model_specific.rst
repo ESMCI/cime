@@ -44,15 +44,17 @@ Every model component also contains a **config_component.xml** file that has two
 CIME first parses the following nodes to identify appropriate **config_component.xml** files for the driver. There are two such files; one is model-independent and the other is model-specific.
 ::
 
-   <entry id="CONFIG_CPL_FILE">
+    <entry id="CONFIG_CPL_FILE">
       ...
-      <default_value>$CIMEROOT/driver_cpl/cime_config/config_component.xml</default_value>
-      ..
-      </entry>
+      <value>$COMP_ROOT_DIR_CPL/cime_config/config_component.xml</value>
+      ...
+    </entry>
 
-     <entry id="CONFIG_CPL_FILE_MODEL_SPECIFIC">
-        <default_value>$CIMEROOT/driver_cpl/cime_config/config_component_$MODEL.xml</default_value>
-     </entry>
+    <entry id="CONFIG_CPL_FILE_MODEL_SPECIFIC">
+      ...
+      <value>$SRCROOT/driver-$COMP_INTERFACE/cime_config/config_component_$MODEL.xml</value>
+      ...
+    </entry>
 
 CIME then parses each of the nodes listed below, using using the value of the *component* attribute to determine which xml files to use for the requested compset longname.
 ::
