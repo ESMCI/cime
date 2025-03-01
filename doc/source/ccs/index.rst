@@ -251,6 +251,6 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     cloning-a-case.rst
     cime-change-namelist.rst
     timers.rst
+    multi-instance
     troubleshooting.rst
     model/index.rst
-    multi-instance
