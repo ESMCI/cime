@@ -16,4 +16,3 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
    :numbered:
 
    ect.rst
-   load-balancing-tool.rst
