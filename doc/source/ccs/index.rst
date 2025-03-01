@@ -243,13 +243,13 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     :maxdepth: 2
     :hidden:
 
+    user-config
     create-a-case.rst
     setting-up-a-case.rst
     building-a-case.rst
     running-a-case.rst
     cloning-a-case.rst
     cime-change-namelist.rst
-    cime-config.rst
     timers.rst
     troubleshooting.rst
     model/index.rst

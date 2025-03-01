@@ -26,7 +26,7 @@ This is an example entry for ``config_files.xml``.
 
 You can supplement what is in the MACHINES_SPEC_FILE by adding a config_machines.xml file to your CIME config directory.
 
-.. _machinefile:
+.. _model_config_machines_def:
 
 config_machines.xml - machine specific file
 --------------------------------------------

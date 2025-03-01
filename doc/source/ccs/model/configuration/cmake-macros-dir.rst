@@ -23,6 +23,7 @@ This is an example entry for ``config_files.xml``.
         <desc>Directory containing cmake macros (for documentation only - DO NOT EDIT)</desc>
     </entry>
 
+.. _model_config_cmake_macros_dir_def:
 Configuration
 -------------
 

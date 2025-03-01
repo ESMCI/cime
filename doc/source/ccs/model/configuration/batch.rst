@@ -24,6 +24,7 @@ This is an example entry for ``config_files.xml``.
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_batch.xsd</schema>
     </entry>
 
+.. _model_config_batch_def:
 Definition
 -------------
 
