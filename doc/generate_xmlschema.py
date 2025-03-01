@@ -16,7 +16,7 @@ def generate_xml_from_schema(root, depth=1):
 
     min_occur, max_occur = root.occurs
     max_occur = "Unlimited" if max_occur is None else max_occur
-    lines.append(f"{prefix}<!-- Occurences min: {min_occur} max: {max_occur}-->")
+    lines.append(f"{prefix}<!-- Occurrences min: {min_occur} max: {max_occur}-->")
 
     if root.type is None:
         return lines
