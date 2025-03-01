@@ -21,23 +21,27 @@ There should be a ``value`` for each component supported by the model.
 
 .. code-block:: xml
 
-    <entry id="COMPSETS_SPEC_FILE">
-        <type>char</type>
-        <default_value>unset</default_value>
-        <values>
-            <value component="allactive">$SRCROOT/cime_config/config_compsets.xml</value>
-            <value component="drv"      >$CIMEROOT/src/drivers/mct/cime_config/config_compsets.xml</value>
-            <value component="cam"      >$SRCROOT/components/cam/cime_config/config_compsets.xml</value>
-            <value component="cism"     >$SRCROOT/components/cism/cime_config/config_compsets.xml</value>
-            <value component="clm"      >$SRCROOT/components/clm/cime_config/config_compsets.xml</value>
-            <value component="cice"     >$SRCROOT/components/cice/cime_config/config_compsets.xml</value>
-            <value component="pop"      >$SRCROOT/components/pop/cime_config/config_compsets.xml</value>
-        </values>
-        <group>case_last</group>
-        <file>env_case.xml</file>
-        <desc>file containing specification of all compsets for primary component (for documentation only - DO NOT EDIT)</desc>
-        <schema>$CIMEROOT/config/xml_schemas/config_compsets.xsd</schema>
-    </entry>
+  <entry id="COMPSETS_SPEC_FILE">
+    <type>char</type>
+    <default_value>unset</default_value>
+    <values>
+      <value component="allactive">$SRCROOT/cime_config/allactive/config_compsets.xml</value>
+      <value component="drv"      >$COMP_ROOT_DIR_CPL/cime_config/config_compsets.xml</value>
+      <value component="eam"      >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
+      <value component="scream"   >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
+      <value component="elm"      >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
+      <value component="cice"     >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
+      <value component="mpaso"    >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
+      <value component="mali"     >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
+      <value component="mpassi"   >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
+      <value component="mosart"   >$COMP_ROOT_DIR_ROF/cime_config/config_compsets.xml</value>
+      <value component="ww3"      >$COMP_ROOT_DIR_WAV/cime_config/config_compsets.xml</value>
+    </values>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc>file containing specification of all compsets for primary component (for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_compsets.xsd</schema>
+  </entry>
 
 
 Every file listed in ``COMPSETS_SPEC_FILE`` will be searched to compile possible compsets to call ``create_newcase`` with.
@@ -138,14 +142,16 @@ To create a new compset, you will at a minimum have to:
 It is important to point out, that you will need expertise in the target component(s) you are trying to modify in order to add new compset functionality for that particular component.
 We provide a few examples below that outline this process for a few simple cases.
 
-
 Say you want to add a new mode, ``FOO``,  to the data ocean model, ``DOCN``. Lets call this mode, ``FOO``.
 This would imply when parsing the compset longname, CIME would need to be able to recognize the string ``_DOCN%FOO_``.
 To enable this, you will need to do the following:
 
-1. edit ``$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml`` (see the ``FOO`` additions below).
+.. note::
 
-   * add an entry to the ``<description modifier block="1">`` block as shown below ::
+    The ``$DOCNROOT`` is depenedent on the model.
+
+1. Edit ``$DOCNROOT/cime_config/config_component.xml`` (see the ``FOO`` additions below).
+   * add an entry to the ``<description modifier_mode="1">`` block as shown below ::
 
        <description modifier_mode="1">
           <desc ocn="DOCN...[%FOO]">DOCN </desc>
@@ -166,7 +172,7 @@ To enable this, you will need to do the following:
 
    * modify any of the other xml entries that need a new dependence on ``FOO``
 
-2. edit ``$CIMEROOT/src/components/data_comps/docn/cime_config/namelist_definition_docn.xml`` (see the ``FOO`` additions below).
+2. edit ``$DOCNROOT/cime_config/namelist_definition_docn.xml`` (see the ``FOO`` additions below).
 
    * add an entry to the ``datamode`` block as shown below. ::
 
