@@ -153,7 +153,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Cache inputdata
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /storage/inputdata
           key: inputdata-2
