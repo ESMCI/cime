@@ -435,7 +435,7 @@ class Case(object):
             # do not flush if caseroot wasnt created
             return
 
-        if not os.path.isfile(self.get_value('POSTPROCESSING_SPEC_FILE')):
+        if not os.path.isfile(self.get_value("POSTPROCESSING_SPEC_FILE")):
             # Remove env_postprocessing.xml from self._files
             self._files = [
                 file
