@@ -437,7 +437,12 @@ class Case(object):
             # do not flush if caseroot wasnt created
             return
 
-        if not os.path.isfile(self.get_value("POSTPROCESSING_SPEC_FILE")):
+        _postprocessing_spec_file = self.get_value("POSTPROCESSING_SPEC_FILE")
+        if _postprocessing_spec_file is not None:
+            have_postprocessing = os.path.isfile(_postprocessing_spec_file)
+        else:
+            have_postprocessing = False
+        if not have_postprocessing:
             # Remove env_postprocessing.xml from self._files
             self._files = [
                 file
