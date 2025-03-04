@@ -435,6 +435,14 @@ class Case(object):
             # do not flush if caseroot wasnt created
             return
 
+        if not os.path.isfile(self.get_value('POSTPROCESSING_SPEC_FILE')):
+            # Remove env_postprocessing.xml from self._files
+            self._files = [
+                file
+                for file in self._files
+                if file.get_id() != "env_postprocessing.xml"
+            ]
+
         for env_file in self._files:
             env_file.write(force_write=flushall)
 
@@ -1586,13 +1594,6 @@ class Case(object):
         if postprocessing._file_exists:
             env_postprocessing = self.get_env("postprocessing")
             env_postprocessing.add_elements_by_group(srcobj=postprocessing)
-        else:
-            # if env_postprocessing does not exist, remove from self._files
-            self._files = [
-                file
-                for file in self._files
-                if file.get_id() != "env_postprocessing.xml"
-            ]
 
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
