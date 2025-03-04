@@ -111,6 +111,7 @@ class Case(object):
                 case_root
             ),
         )
+        self._existing_case = os.path.isdir(case_root)
 
         self._caseroot = case_root
         logger.debug("Initializing Case.")
@@ -358,9 +359,10 @@ class Case(object):
         self._env_entryid_files.append(
             EnvWorkflow(self._caseroot, read_only=self._force_read_only)
         )
-        self._env_entryid_files.append(
-            EnvPostprocessing(self._caseroot, read_only=self._force_read_only)
-        )
+        if not self._existing_case or os.path.isfile("env_postprocessing.xml"):
+            self._env_entryid_files.append(
+                EnvPostprocessing(self._caseroot, read_only=self._force_read_only)
+            )
 
         if os.path.isfile(os.path.join(self._caseroot, "env_test.xml")):
             self._env_entryid_files.append(
@@ -1591,7 +1593,7 @@ class Case(object):
         workflow = Workflow(files=files)
 
         postprocessing = Postprocessing(files=files)
-        if postprocessing._file_exists:
+        if postprocessing.file_exists:
             env_postprocessing = self.get_env("postprocessing")
             env_postprocessing.add_elements_by_group(srcobj=postprocessing)
 

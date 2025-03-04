@@ -19,8 +19,8 @@ class Postprocessing(EntryID):
             files = Files()
         if infile is None:
             infile = files.get_value("POSTPROCESSING_SPEC_FILE")
-        self._file_exists = os.path.isfile(infile)
-        if not self._file_exists:
+        self.file_exists = os.path.isfile(infile)
+        if not self.file_exists:
             return
         expect(infile, "No postprocessing file defined in {}".format(files.filename))
 
