@@ -20,7 +20,7 @@ def check_minimum_python_version(major, minor):
         + str(major)
         + ", minor version "
         + str(minor)
-        + " is required, you have "
+        + " is required to run CIME. You have "
         + str(sys.version_info[0])
         + "."
         + str(sys.version_info[1])
