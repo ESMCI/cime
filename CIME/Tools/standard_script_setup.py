@@ -20,7 +20,7 @@ def check_minimum_python_version(major, minor):
         + str(major)
         + ", minor version "
         + str(minor)
-        + " is required, you have "
+        + " is required to run CIME. You have "
         + str(sys.version_info[0])
         + "."
         + str(sys.version_info[1])
@@ -30,7 +30,7 @@ def check_minimum_python_version(major, minor):
     ), msg
 
 
-check_minimum_python_version(3, 6)
+check_minimum_python_version(3, 8)
 
 real_file_dir = os.path.dirname(os.path.realpath(__file__))
 cimeroot = os.path.abspath(os.path.join(real_file_dir, "..", ".."))
