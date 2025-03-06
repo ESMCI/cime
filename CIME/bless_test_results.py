@@ -513,7 +513,9 @@ def is_hist_bless_needed(
                 if phase_result is TEST_FAIL_STATUS:
                     only_failed_generate = False
                     break
-        if not only_failed_generate:
+        if only_failed_generate:
+            needed = True
+        else:
             broken_blesses.append((test_name, "test did not pass"))
             logger.warning(
                 "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
