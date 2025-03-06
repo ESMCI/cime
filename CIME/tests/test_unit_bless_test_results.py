@@ -960,9 +960,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
     def test_is_bless_needed_overall_fail(self):
         ts = mock.MagicMock()
-        ts.get_status.side_effect = [
-            "PASS", "FAIL"
-        ] + ["PASS"] * (len(ALL_PHASES) - 1)
+        ts.get_status.side_effect = ["PASS", "FAIL"] + ["PASS"] * (len(ALL_PHASES) - 1)
 
         broken_blesses = []
 
