@@ -489,6 +489,18 @@ def is_hist_bless_needed(
 
     run_result = ts.get_status(RUN_PHASE)
 
+    # Sometimes a test might fail only during the generate phase; e.g., if the user doesn't have
+    # write permissions in the baseline directory. We still want to bless those tests.
+    if ts.get_status(GENERATE_PHASE) == TEST_FAIL_STATUS:
+        only_failed_generate = True
+        for p in ALL_PHASES:
+            if p == GENERATE_PHASE:
+                continue
+            phase_result = ts.get_status(p)
+            if phase_result is TEST_FAIL_STATUS:
+                only_failed_generate = False
+                break
+
     if run_result is None:
         broken_blesses.append((test_name, "no run phase"))
         logger.warning("Test '{}' did not make it to run phase".format(test_name))
@@ -501,7 +513,7 @@ def is_hist_bless_needed(
             )
         )
         needed = False
-    elif overall_result == TEST_FAIL_STATUS:
+    elif overall_result == TEST_FAIL_STATUS and not only_failed_generate:
         broken_blesses.append((test_name, "test did not pass"))
         logger.warning(
             "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
