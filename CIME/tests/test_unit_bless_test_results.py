@@ -12,6 +12,7 @@ from CIME.bless_test_results import (
     bless_namelists,
     is_hist_bless_needed,
 )
+from CIME.test_status import ALL_PHASES
 
 
 class TestUnitBlessTestResults(unittest.TestCase):
@@ -960,8 +961,8 @@ class TestUnitBlessTestResults(unittest.TestCase):
     def test_is_bless_needed_overall_fail(self):
         ts = mock.MagicMock()
         ts.get_status.side_effect = [
-            "PASS",
-        ]
+            "PASS", "FAIL"
+        ] + ["PASS"] * (len(ALL_PHASES) - 1)
 
         broken_blesses = []
 
