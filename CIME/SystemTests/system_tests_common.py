@@ -201,7 +201,7 @@ class SystemTestsCommon(object):
         if not startdate:
             startdate = self._case.get_value("RUN_STARTDATE")
         if "-" in startdate:
-            startdatetime = datetime.fromisoformat(startdate) + timedelta(
+            startdatetime = datetime.strptime(startdate, "%Y-%m-%d") + timedelta(
                 seconds=int(starttime)
             )
         else:
