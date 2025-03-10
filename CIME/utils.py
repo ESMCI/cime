@@ -1439,8 +1439,11 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
     except OSError:
         # Some systems get weird OSErrors when using shutil copy, try an
         # old-fashioned cp as a last resort
-        cppath = shutil.which("cp")
-        run_cmd_no_fail(f"{cppath} -f {src_path} {tgt_path}")
+        cp_path = shutil.which("cp")
+        # cp is not in PATH, we must give up and raise the original err
+        if cp_path is None:
+            raise
+        run_cmd_no_fail(f"{cp_path} -f {src_path} {tgt_path}")
 
     # If src file was executable, then the tgt file should be too
     st = os.stat(tgt_path)
