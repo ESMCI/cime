@@ -520,6 +520,13 @@ ice_shortwave.o : ice_shortwave.F90
 endif
 endif
 
+ifeq ($(COMP_NAME),mpaso)
+  ifeq ($(strip $(COMPILER)),nvhpc)
+  # mpas ocean files need gpuflags
+    FFLAGS +=$(GPUFLAGS)
+  endif
+endif
+
 ifeq ($(COMP_NAME),cam)
   # These RRTMG files take an extraordinarily long time to compile with optimization.
   # Until mods are made to read the data from files, just remove optimization from
