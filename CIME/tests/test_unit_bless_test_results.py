@@ -12,7 +12,7 @@ from CIME.bless_test_results import (
     bless_namelists,
     is_hist_bless_needed,
 )
-from CIME.test_status import ALL_PHASES
+from CIME.test_status import ALL_PHASES, GENERATE_PHASE
 
 
 class TestUnitBlessTestResults(unittest.TestCase):
@@ -975,6 +975,27 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert not needed
         assert broken_blesses == [("SMS.f19_g16.A", "test did not pass")]
+
+    def test_is_bless_needed_generate_fail(self):
+        ts = mock.MagicMock()
+
+        # First two get_status() calls in is_hist_bless_needed()
+        side_effect = [
+            "PASS",  # Check of RUN_PHASE at top of function
+            "FAIL",  # Check of GENERATE_PHASE
+        ]
+        # Checks in `for p in ALL_PHASES` loop
+        side_effect += ["PASS" for p in ALL_PHASES if p != GENERATE_PHASE]
+        # Save
+        ts.get_status.side_effect = side_effect
+
+        broken_blesses = []
+
+        needed = is_hist_bless_needed(
+            "SMS.f19_g16.A", ts, broken_blesses, "FAIL", False, "RUN"
+        )
+
+        assert needed
 
     def test_is_bless_needed_baseline_fail(self):
         ts = mock.MagicMock()
