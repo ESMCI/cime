@@ -504,6 +504,7 @@ def is_hist_bless_needed(
     elif overall_result == TEST_FAIL_STATUS:
         # Sometimes a test might fail only during the generate phase; e.g., if the user doesn't have
         # write permissions in the baseline directory. We still want to bless those tests.
+        only_failed_generate = False
         if ts.get_status(GENERATE_PHASE) == TEST_FAIL_STATUS:
             only_failed_generate = True
             for p in ALL_PHASES:
