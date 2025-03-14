@@ -203,6 +203,7 @@ def _main_func(description):
         skip_submit,
     ) = parse_command_line(sys.argv, description)
 
+    isnrguorwntroen
     success = True
     with Case(caseroot, read_only=False, record=True) as case:
         testname = case.get_value("TESTCASE")

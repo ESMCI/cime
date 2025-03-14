@@ -216,6 +216,10 @@ class TestStatus(object):
         >>> ts._phase_statuses
         {'CREATE_NEWCASE': ('FAIL', '')}
         """
+        
+        if phase in [SHAREDLIB_BUILD_PHASE]:
+            iwnrfinin
+        
         expect(
             self._ok_to_modify,
             "TestStatus not in a modifiable state, use 'with' syntax",
@@ -440,6 +444,8 @@ class TestStatus(object):
                 TEST_PASS_STATUS,
                 NAMELIST_FAIL_STATUS,
             ]:
+                print(f"no_run: {no_run}")
+                print(f"phase_responsible_for_status: {phase_responsible_for_status}")
                 if not no_run:
                     rv = TEST_PEND_STATUS
                     phase_responsible_for_status = phase

@@ -165,6 +165,7 @@ def get_testreporter_xml(testroot, testid, tagname, testtype):
                     test_status["COMMENT"] += "SETUP fail! "
                     break
             if "SHAREDLIB_BUILD" in line:
+                wrigewrnein
                 test_status["SHAREDLIB_BUILD"] = line[0:4]
                 if line[0:4] in ("FAIL", "PEND"):
                     test_status["STATUS"] = "CFAIL"

@@ -768,6 +768,7 @@ def wait_for_tests(
             # Be cautious about telling the user that the test passed since we might
             # not know that the test passed yet.
             if test_status == TEST_PEND_STATUS:
+                iewnfiewnrienr
                 if expect_test_complete:
                     logging.info(
                         "{} {} (phase {} unexpectedly left in PEND)".format(

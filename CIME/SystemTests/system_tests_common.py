@@ -326,6 +326,7 @@ class SystemTestsCommon(object):
         controls the build phase. build_phase is the extension point
         that subclasses should use.
         """
+        wingowenroein
         success = True
         self._ninja = ninja
         self._dry_run = dry_run
@@ -339,7 +340,9 @@ class SystemTestsCommon(object):
         ]:
             if phase_bool:
                 self._resetup_case(phase_name)
+                ewneireinr
                 with self._test_status:
+                    ERERIENIN
                     self._test_status.set_status(phase_name, TEST_PEND_STATUS)
 
                 start_time = time.time()

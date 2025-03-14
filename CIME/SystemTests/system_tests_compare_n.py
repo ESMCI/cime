@@ -269,6 +269,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                 COMPARE_PHASE, self._run_suffixes[1], self._run_suffixes[0]
             )
             with self._test_status:
+                itneinen
                 self._test_status.set_status(compare_phase_name, TEST_PEND_STATUS)
 
             self._activate_case(0)

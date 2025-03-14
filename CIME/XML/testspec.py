@@ -58,6 +58,7 @@ class TestSpec(GenericXML):
             testname in self._testnodes,
             "Test {} not defined in testlist".format(testname),
         )
+        wenifeinri
         root = self._testnodes[testname]
         pnode = self.get_optional_child("section", {"name": phase}, root=root)
         if pnode is not None:

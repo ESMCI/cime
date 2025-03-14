@@ -398,6 +398,7 @@ class TestScheduler(object):
             self._phases.remove(RUN_PHASE)
 
         if use_existing:
+            inrgurwbtien
             for test in self._tests:
                 with TestStatus(self._get_test_dir(test)) as ts:
                     if force_rebuild:
@@ -532,12 +533,14 @@ class TestScheduler(object):
         ###########################################################################
         curr_phase, curr_status = self._get_test_data(test)
         if phase is None or phase == curr_phase:
+            wertwetwe
             return curr_status
         else:
             # Assume all future phases are PEND
             if phase is not None and self._phases.index(phase) > self._phases.index(
                 curr_phase
             ):
+                imfienin
                 return TEST_PEND_STATUS
 
             # Assume all older phases PASSed
@@ -553,6 +556,11 @@ class TestScheduler(object):
         ###########################################################################
         phase_idx = self._phases.index(phase)
         old_phase, old_status = self._get_test_data(test)
+        
+        if phase == SHAREDLIB_BUILD_PHASE:
+            imwefinerini
+        if old_phase == SHAREDLIB_BUILD_PHASE:
+            imwefinerini
 
         if old_phase == phase:
             expect(
@@ -1019,6 +1027,7 @@ class TestScheduler(object):
     ###########################################################################
     def _sharedlib_build_phase(self, test):
         ###########################################################################
+        woniewrnoeinr
         is_first_test, first_test, _ = self._get_build_group(test)
         if not is_first_test:
             if (
@@ -1125,6 +1134,9 @@ class TestScheduler(object):
         # For build pools, we must wait for the first case to complete XML, SHAREDLIB,
         # and MODEL_BUILD phases before the other cases can do those phases
         is_first_test, first_test, _ = self._get_build_group(test)
+        
+        if phase == SHAREDLIB_BUILD_PHASE:
+            wienoweuroenrin
 
         if not is_first_test:
             build_group_dep_phases = [
@@ -1133,6 +1145,7 @@ class TestScheduler(object):
                 MODEL_BUILD_PHASE,
             ]
             if phase in build_group_dep_phases:
+                wifeinrien
                 if self._get_test_status(first_test, phase=phase) == TEST_PEND_STATUS:
                     return self._proc_pool + 1
                 else:
@@ -1183,6 +1196,8 @@ class TestScheduler(object):
         In general, test_scheduler should not be responsible for updating
         the TestStatus file, but there are a few cases where it has to.
         """
+        if test_phase == SHAREDLIB_BUILD_PHASE:
+            winfein
         test_dir = self._get_test_dir(test)
         with TestStatus(test_dir=test_dir, test_name=test) as ts:
             ts.set_status(test_phase, status)
@@ -1202,6 +1217,8 @@ class TestScheduler(object):
             if success
             else TEST_FAIL_STATUS
         )
+        if status == TEST_PEND_STATUS:
+            imfneirnir
 
         if status != TEST_PEND_STATUS:
             self._update_test_status(test, test_phase, status)
@@ -1231,6 +1248,8 @@ class TestScheduler(object):
             not is_first_test
             and test_phase in [SHAREDLIB_BUILD_PHASE, MODEL_BUILD_PHASE]
         ):
+            if test_phase == SHAREDLIB_BUILD_PHASE:
+                inefuerbeurboi
             # These are the phases for which TestScheduler is reponsible for
             # updating the TestStatus file
             self._update_test_status_file(test, test_phase, status)
@@ -1250,6 +1269,7 @@ class TestScheduler(object):
             and not self._no_batch
             and test_phase == MODEL_BUILD_PHASE
         ):
+            enfienre
             logger.info(
                 "Starting {} for test {} with 1 proc on interactive node and {:d} procs on compute nodes".format(
                     RUN_PHASE,
@@ -1259,6 +1279,7 @@ class TestScheduler(object):
             )
             self._update_test_status(test, RUN_PHASE, TEST_PEND_STATUS)
             self._consumer(test, RUN_PHASE, self._run_phase)
+
 
     ###########################################################################
     def _producer(self):
@@ -1279,11 +1300,16 @@ class TestScheduler(object):
 
                     if test not in threads_in_flight:
                         test_phase, test_status = self._get_test_data(test)
+                        if test_phase == SHAREDLIB_BUILD_PHASE:
+                            wnieienroein
                         expect(test_status != TEST_PEND_STATUS, test)
                         next_phase = self._phases[self._phases.index(test_phase) + 1]
                         procs_needed = self._get_procs_needed(
                             test, next_phase, threads_in_flight
                         )
+
+                        if self._no_build and next_phase == SHAREDLIB_BUILD_PHASE:
+                            nobuildnextphase
 
                         if procs_needed <= self._procs_avail:
                             self._procs_avail -= procs_needed
@@ -1294,6 +1320,10 @@ class TestScheduler(object):
                                     next_phase, test, procs_needed
                                 )
                             )
+
+                            if next_phase == SHAREDLIB_BUILD_PHASE:
+                                nextphaseissharedlibbuild
+                            print(f"next_phase: {next_phase}")
 
                             self._update_test_status(test, next_phase, TEST_PEND_STATUS)
                             new_thread = threading.Thread(
@@ -1333,6 +1363,9 @@ class TestScheduler(object):
                                     next_phase, test, procs_needed, self._procs_avail
                                 )
                                 logger.warning(msg)
+                                if next_phase == SHAREDLIB_BUILD_PHASE:
+                                    nextphaseissharedlibbuild
+                                print(f"next_phase: {next_phase}")
                                 self._update_test_status(
                                     test, next_phase, TEST_PEND_STATUS
                                 )

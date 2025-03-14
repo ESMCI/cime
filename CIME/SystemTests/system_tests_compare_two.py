@@ -288,6 +288,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # Add a PENDing compare phase so that we'll notice if the second part of compare two
             # doesn't run.
             with self._test_status:
+                oenirnein
                 self._test_status.set_status(compare_phase_name, TEST_PEND_STATUS)
 
             self._activate_case1()

@@ -60,7 +60,8 @@ def cs_status(
 
         if force_rebuild:
             with ts:
-                ts.set_status(SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS)
+                ini4nri3rnin
+                ts.set_status(SHAREDLIB_BUILD_PHASE, "wrnigintein")
 
         test_id = os.path.basename(test_dir).split(".")[-1]
         if summary:
