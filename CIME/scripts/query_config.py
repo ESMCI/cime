@@ -141,9 +141,14 @@ def parse_command_line(description):
     if kwargs["compiler"] is not None and (
         kwargs["machines"] is None or kwargs["machines"] == "all"
     ):
-        raise Exception(
+        parser.print_help(sys.stderr)
+
+        print("")
+        print(
             "The --compiler argument must be used when specifying a machine with --machines <name>"
         )
+
+        sys.exit(1)
 
     kwargs["files"] = files[kwargs["driver"]]
 
