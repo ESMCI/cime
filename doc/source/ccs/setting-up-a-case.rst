@@ -11,7 +11,7 @@ Configuration
 After creating a case, some aspects of the configuration are fixed (any variables in ``env_case.xml``). But many can be changed before calling ``case.setup``, which generates the files required to build and run the case. CIME provides ``xmlquery`` to view and ``xmlchange`` to modify the variables used in this process.
 
 .. _ccs_xmlquery:
-Reviewing
+Querying
 `````````
 CIME provides the ``xmlquery`` command to view the configuration of a case. The configuration is a collection of variables stored in XML files. These variables are grouped together when defined in the model's configuration.
 
