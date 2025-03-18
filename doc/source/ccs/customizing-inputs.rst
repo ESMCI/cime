@@ -76,8 +76,7 @@ compset and resolution in this example are for a CESM fully-coupled case but the
 
    ::
 
-        cd $CIME/scripts
-        ./create_newcase --case ~/EXAMPLE_CASE --compset B1850 --res f09_g17
+        ./scripts/create_newcase --case ~/EXAMPLE_CASE --compset B1850 --res f09_g17
 
 2. Check the pe-layout by running **./pelayout**. Make sure it is suitable for your machine.
    If it is not use ``xmlchange`` or  ``pelayout`` to modify your pe-layout.
@@ -133,8 +132,7 @@ A branch or hybrid run uses initialization data from a previous run. Here is an 
 
    ::
 
-        cd $CIMEROOT/scripts
-        create_newcase --case ~/NEW_CASE --compset B1850 --res f09_g17
+        ./scripts/create_newcase --case ~/NEW_CASE --compset B1850 --res f09_g17
         cd ~/NEW_CASE
 
 

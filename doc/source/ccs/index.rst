@@ -22,14 +22,14 @@ You'll need to have cloned the target model's repository into ``$SRCROOT``.
 
   .. code-block:: bash
 
-    ./cime/scripts/query_config --machines
+    ./scripts/query_config --machines
 
 The following example will create a directory ``mycase`` using the ``X`` compset and ``f19_g16`` grid. The machine is auto-detected from the hostname.
 
 ::
 
   export CIME_MODEL=<model name>
-  ./cime/scripts/create_newcase --case mycase --compset X --res f19_g16
+  ./scripts/create_newcase --case mycase --compset X --res f19_g16
   cd mycase
   ./case.setup
   ./case.build
@@ -253,5 +253,5 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     customizing-inputs
     timers
     multi-instance
-    troubleshooting
     model/index
+    troubleshooting

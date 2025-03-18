@@ -117,16 +117,16 @@ Run this to clean all of the model components (except for support libraries such
 
 ::
 
-    case.build --clean
+    ./case.build --clean
 
 Run this to clean everything associated with the build:
 
 ::
 
-    case.build --clean-all
+    ./case.build --clean-all
 
 You can also clean an individual component as shown here, where "compname" is the name of the component you want to clean (for example, atm, clm, pio, and so on).
 
 ::
 
-    case.build --clean compname
+    ./case.build --clean compname

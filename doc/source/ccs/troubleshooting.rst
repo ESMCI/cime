@@ -12,7 +12,7 @@ If ``create_newcase`` fails on a relatively generic error, first check to make s
 
 ::
 
-     create_newcase --help
+     ./scripts/create_newcase --help
 
 Troubleshooting problems in cime scripts
 ----------------------------------------
