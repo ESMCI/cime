@@ -1,8 +1,0 @@
-{
-    "image": "ghcr.io/esmci/cime:latest",
-    "forwardPorts": [8000],
-    "mounts": [
-        "source=${localWorkspaceFolder}/../,target=/src,type=bind"
-    ],
-    "postStartCommand": "pip install -r doc/requirements.txt; pip install sphinx-autobuild; cd doc/source; sphinx-autobuild --ignore '**/__pycache__' . ../build/html",
-}
