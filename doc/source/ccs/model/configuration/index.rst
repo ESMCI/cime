@@ -1,6 +1,6 @@
 .. _model_configuration:
 
-Configuration
+XML
 =============
 
 .. contents::
