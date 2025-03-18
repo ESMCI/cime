@@ -244,13 +244,13 @@ For more details on how CIME determines the output for query_config, see :ref:`C
     :hidden:
 
     user-config
-    create-a-case.rst
-    setting-up-a-case.rst
-    building-a-case.rst
-    running-a-case.rst
-    cloning-a-case.rst
-    cime-change-namelist.rst
-    timers.rst
+    creating-a-case
+    setting-up-a-case
+    building-a-case
+    running-a-case
+    cloning-a-case
+    customizing-inputs
+    timers
     multi-instance
-    troubleshooting.rst
-    model/index.rst
+    troubleshooting
+    model/index

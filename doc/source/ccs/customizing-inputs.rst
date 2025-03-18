@@ -1,6 +1,6 @@
 .. _namelist-gen:
 
-Customizing your input variables
+Customizing Inputs
 ================================
 
 .. contents::
