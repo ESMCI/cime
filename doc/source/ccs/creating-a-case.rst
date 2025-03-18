@@ -6,60 +6,7 @@ Creating a Case
 .. contents::
    :local:
 
-Exploring Configuration Options
--------------------------------
-Before creating the case, you'll need to see if your machine is supported and then find which compset and model grid to use. The ``query_config`` tool can be used to explore a model's supported machines, compsets, components, and model grids.
-
-Machines
-````````
-The following command will print all machines supported by the model.
-
-.. code-block:: bash
-
-    ./scripts/query_config --machines
-
-If you know the name of the machine and would like to see the details, you can use the following command and replace **<machine>** with the name of the machine.
-
-.. code-block:: bash
-
-    ./scripts/query_config --machines <machine>
-
-Compsets
-````````
-This command will print a model's supported compsets and aliases.
-
-.. code-block:: bash    
-
-    ./scripts/query_config --compsets
-
-To view a specific compset, use the following. Replace **<compset>** with the name of the compset.
-
-.. code-block:: bash
-
-    ./scripts/query_config --compsets <compset>
-
-Components
-::::::::::
-The following will print out all configuration variables for all supported components.
-
-.. code-block:: bash
-
-    ./scripts/query_config --component
-
-To print variables for a specific component, use the following. Replace **<component>** with the name of the component.
-
-.. code-block:: bash
-
-    ./scripts/query_config --component <component>
-
-Model grids
-```````````
-The following will print out all model grids supported by the model.
-
-.. code-block:: bash
-
-    ./scripts/query_config --grids
-
+Before creating a case, you may want to create a user mod to customize the new case. If not, you can skip to the section on creating a new case.
 
 User Mods
 ---------
