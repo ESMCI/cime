@@ -496,6 +496,7 @@ def cprnc(
         cpr_stat, out, _ = run_cmd(
             "{} -m {} {}".format(cprnc_exe, file1, file2), combine_output=True
         )
+        output_filename = None
     else:
         # Remove existing output file if it exists
         if os.path.exists(output_filename):
