@@ -50,6 +50,26 @@ Once all the configuration is done, it's time to call ``case.setup`` from ``$CAS
     
     If ``xmlchange`` is called after ``case.setup``, the changes will not be reflected in the generated files. To update the files, call ``case.setup --reset``.
 
+Tracking changes with Git
+`````````````````````````
+When you set up a case, a new Git repository will be created within the ``$CASEROOT`` directory if a recent version of Git is installed. The repository will have a branch named after the case.
+
+.. warning::
+    
+    If you are using a version of Git older than 2.28, the repository will not be created automatically. In this case, you can create a repository manually and push the case to it.
+
+Each time you run ``case.setup``, ``case.build``, ``case.submit``, or ``xmlchange``, a new commit is created. This allows you to track changes to the case over time.
+
+If you set the ``CASE_GIT_REPOSITORY`` variable to a valid Git repository URL, the case will be pushed to that repository. 
+
+.. code-block:: bash
+
+    ./xmlchange CASE_GIT_REPOSITORY=<repository>
+
+.. note::
+
+    To disable this feature, call ``case.setup --disable-git``.
+
 Generated files
 ```````````````
 The following files and directories are generated in ``$CASEROOT``:

@@ -6,13 +6,14 @@ Batch
 .. contents::
     :local:
 
-Provides CIME with a model's batch system configuration for supported machines.
-
 Entry
 -----
+The following is an example entry for ``BATCH_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+This varaible only requires a single value.
 
+Example
+:::::::
 .. code-block:: xml
 
     <entry id="BATCH_SPEC_FILE">
@@ -24,10 +25,9 @@ This is an example entry for ``config_files.xml``.
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_batch.xsd</schema>
     </entry>
 
-.. _model_config_batch_def:
-Definition
--------------
-The following describes the contents of a model's ``config_batch.xml`` file.
+Contents
+--------
+The following describes the contents of the ``config_batch.xml`` file.
 
 The **config_batch.xml** schema is defined in **$CIMEROOT/config/xml_schemas/config_batch.xsd**.
 
@@ -52,8 +52,8 @@ By default, the CIME workflow consists of two jobs (**case.run**, **case.st_arch
 
 In addition, there is a **case.test** job that is used by the CIME system test workflow.
 
-Schema
-------
+Schema Definition
+-----------------
 
 .. warning::
 

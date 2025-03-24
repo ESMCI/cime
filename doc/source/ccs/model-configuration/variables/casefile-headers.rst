@@ -6,12 +6,11 @@ Case File Headers
 .. contents::
     :local:
 
-Provides CIME with all the ``env_*`` files that should be created and stored in a case.
-
 Entry
 -----
+The following is an example entry for ``CASEFILE_HEADERS`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Only a single value is required.
 
 .. code-block:: xml
     :tab-width: 4
@@ -25,15 +24,15 @@ This is an example entry for ``config_files.xml``.
     </entry>
 
 
-Definition
--------------
+Contents
+--------
 
 .. warning::
 
     It's best to use the ``config_headers.xml`` in the CIME repository has CIME expects certain ``env_*.xml`` files to be present in a case.
 
-Schema
-------
+Schema Definition
+-----------------
 
 .. code-block:: xml
     :tab-width: 4

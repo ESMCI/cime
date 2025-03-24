@@ -6,12 +6,11 @@ Cmake Macros
 .. contents::
     :local:
 
-Provides CIME with the root directory to find a model's cmake macros for supported machines.
-
 Entry
 -----
+The following is an example for ``CMAKE_MACROS_DIR`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+This variable is used to set the directory where the cmake macros are located. This is a required variable for the build system.
 
 .. code-block:: xml
 

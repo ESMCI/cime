@@ -6,10 +6,9 @@ Component Model Specific
 .. contents::
     :local:
 
-Provides CIME with model specific component settings.
-
 Entry
 -----
+The following is an example entry for ``CONFIG_CPL_FILE_MODEL_SPECIFIC`` in ``config_files.xml``.
 
 This is an example entry for ``config_files.xml``.
 
@@ -27,12 +26,8 @@ This is an example entry for ``config_files.xml``.
         <schema version="3.0">$CIMEROOT/CIME/data/config/xml_schemas/entry_id_version3.xsd</schema>
     </entry>
 
-
-.. _defining-component-specific-compset-settings:
-
-Component specific settings in a compset
------------------------------------------
-
+Content
+-------
 Every model component also contains a **config_component.xml** file that has two functions:
 
 1. Specifying the component-specific definitions of what can appear after the ``%`` in the compset longname, (for example, ``DOM`` in ``DOCN%DOM``).

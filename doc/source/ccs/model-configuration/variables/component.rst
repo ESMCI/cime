@@ -6,14 +6,11 @@ Component
 .. contents::
   :local:
 
-A single component in the smallest unit within a model. Multiple components make up a compset.
-
 Entry
 -----
-
-This is an example entry for ``config_files.xml``.
-
-There should be an entry for each component supported by the model, e.g. CONFIG_ATM_FILE, CONFIG_CPL_FILE, CONFIG_LND_FILE, etc.
+The following is an example entry for ``CONFIG_<component>_FILE`` in ``config_files.xml``.
+The ``<component>`` is replaced by the name of the component.
+There will be multiple ``entry`` elements, one for each component supported by the model.
 
 .. code-block:: xml
 
@@ -29,8 +26,8 @@ There should be an entry for each component supported by the model, e.g. CONFIG_
         <schema version="3.0">$CIMEROOT/CIME/data/config/xml_schemas/entry_id_version3.xsd</schema>
     </entry>
 
-Definition
-----------
+Schema Definition
+-----------------
 
 The configuration is stored in ``config_component.xml`` under the components ``cime_config`` directory e.g. ``mosart/cime_config/config_component.xml``.
 This file will store multiple variables for the component defined using :ref:`*entry*<model_config_entry_id>` elements.

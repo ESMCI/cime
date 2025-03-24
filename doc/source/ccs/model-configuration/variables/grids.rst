@@ -6,12 +6,15 @@ Grids
 .. contents::
    :local:
 
+Overview
+--------
 CIME looks at the xml node ``GRIDS_SPEC_FILE`` in  **$CIMEROOT/config/$models/config_files.xml** file to identify supported out-of-the-box model grids for the target model.
 
 Entry
 -----
+The following is an example entry for ``GRIDS_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Only a single value is required.
 
 .. code-block:: xml
 
@@ -23,14 +26,14 @@ This is an example entry for ``config_files.xml``.
     <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
   </entry>
 
-Definition
+Contents
 ----------
 
-Schema
-------
+Schema Definition
+:::::::::::::::::
 
 Version 2.2
-:::::::::::::
+```````````
 
 .. code-block:: xml
 
@@ -108,7 +111,7 @@ Version 2.2
     </grid_data>
 
 Version 2.0
-::::::::::::
+```````````
 
 .. code-block:: xml
 

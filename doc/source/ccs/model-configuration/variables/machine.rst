@@ -6,12 +6,15 @@ Machines
 .. contents::
   :local:
 
+Overview
+--------
 CIME looks at the XML node ``MACHINE_SPEC_FILE`` in the **config_files.xml** file to identify supported out-of-the-box machines for the target model. The node has the following contents:
 
 Entry
 -----
+The following is an entry for ``MACHINES_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Only a single value is required.
 
 .. code-block:: xml
 
@@ -28,11 +31,14 @@ You can supplement what is in the MACHINES_SPEC_FILE by adding a config_machines
 
 .. _model_config_machines_def:
 
-Definition
-----------
+Contents
+--------
+
+Schema Definition
+`````````````````
 
 Version 3
-`````````
+:::::::::
 The following is an example of a version 3.0 ``config_machines.xml`` file. Version 3.0 breaks machine definitions into separate directories.
 
 .. code-block:: xml

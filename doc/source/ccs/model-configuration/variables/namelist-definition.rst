@@ -6,12 +6,15 @@ Namelist Definition
 .. contents::
     :local:
 
+Overview
+--------
 Provides CIME with the possible namelist options for a component.
 
 Entry
 -----
+The following is an example entry for ``NAMELIST_DEFINITION_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Each ``value`` corresponds to a specific component.
 
 .. code-block:: xml
 
@@ -42,13 +45,11 @@ This is an example entry for ``config_files.xml``.
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/entry_id_namelist.xsd</schema>
     </entry>
 
-Definition
+Contents
 ----------
 
-This is the contents of ``namelist_definition.xml``.
-
-Schema
-------
+Schema Definition
+:::::::::::::::::
 
 .. code-block:: xml
 

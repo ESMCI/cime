@@ -6,12 +6,13 @@ SystemTests
 .. contents::
     :local:
 
+Overview
+--------
 Provides CIME with the root directories to discover ``SystemTests``.
 
 Entry
 -----
-
-This is an example entry for ``config_files.xml``.
+The following is an example entry for ``SYSTEM_TESTS_DIR`` in ``config_files.xml``.
 
 This provides the location for :ref:`SystemTests<system_tests>` for all components.
 

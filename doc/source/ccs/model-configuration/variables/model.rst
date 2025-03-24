@@ -6,12 +6,11 @@ Model
 .. contents::
     :local:
 
-Defines the name of the model for CIME.
-
 Entry
 -----
+The following is an example entry for ``MODEL`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Only a single value is required.
 
 .. code-block:: xml
     

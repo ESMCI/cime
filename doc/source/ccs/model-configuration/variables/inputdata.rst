@@ -8,8 +8,9 @@ Inputdata
 
 Entry
 -----
+The following is an example entry for ``INPUTDATA_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Only a single value is required.
 
 .. code-block:: xml
 
@@ -22,11 +23,11 @@ This is an example entry for ``config_files.xml``.
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_inputdata.xsd</schema>
     </entry>    
 
-Definition
-----------
+Contents
+--------
 
-Schema
-------        
+Schema Definition
+-----------------        
 
 .. code-block:: xml
 

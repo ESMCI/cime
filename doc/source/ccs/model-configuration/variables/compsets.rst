@@ -6,6 +6,8 @@ Compsets
 .. contents::
    :local:
 
+Overview
+--------
 A compset is defined by multiple components, that are targeted to their model development needs.
 
 Each component supports a set of compset longnames that are used in testing and supported in out of the box configurations.
@@ -14,10 +16,8 @@ To determined valid compset names CIME will look in ``config_files.xml`` for ``C
 
 Entry
 -----
-
-This is an example entry for ``config_files.xml``.
-
-There should be a ``value`` for each component supported by the model.
+The following is an example for ``COMPSETS_SPEC_FILE`` in ``config_files.xml``.
+Each ``value`` corresponds to the compsets provided by each component.
 
 .. code-block:: xml
 

@@ -10,8 +10,9 @@ Each library will need to provide a ``buildlib`` to configure and build the libr
 
 Entry
 -----
+The following is an exmple entry for ``BUILD_LIB_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Each ``value`` corresponds to a library that can be built. The ``lib`` attribute is the name of the library and the ``value`` is the path to the buildlib script.
 
 .. code-block:: xml
 
@@ -32,9 +33,8 @@ This is an example entry for ``config_files.xml``.
         <desc> path to buildlib script for the given library </desc>
     </entry>
 
-Implementation
+Build library
 --------------
-
 Implementing a ``buildlib`` for a component is as simple as creating a python file and defining a single function; *buildlib*.
 
 Below are the arguments for the ``buildlib`` function.

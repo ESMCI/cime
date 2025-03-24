@@ -6,15 +6,14 @@ Archive
 .. contents::
     :local:
 
-Provides CIME with the models archiving configuration.
-
 Entry
 -----
+The following is an example entry for ``ARCHIVE_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Each ``value`` corresponds with the archive configuration for a specific component.
 
-If the ``component`` attribute is provided then it will only apply the archive configuration to that component.
-
+Example
+:::::::
 .. code-block:: xml
 
     <entry id="ARCHIVE_SPEC_FILE">
@@ -37,13 +36,13 @@ If the ``component`` attribute is provided then it will only apply the archive c
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_archive.xsd</schema>
     </entry>
 
-Definition
-----------
+Contents
+--------
+The following describes the contents of the ``config_archive.xml`` file.
 
-The following describes the contents of a components ``config_archive.xml`` file.
-
-Schema
-------
+Schema Definition
+:::::::::::::::::
+Below is the schema definition for the ``config_archive.xml`` file.
 
 .. code-block:: xml
 

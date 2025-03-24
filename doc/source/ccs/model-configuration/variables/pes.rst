@@ -6,6 +6,8 @@ Pes
 .. contents::
   :local:
 
+Overview
+--------
 Once a compset and resolution for a case has been defined, CIME
 provides ways to define the processor layout the case will use.
 
@@ -18,8 +20,9 @@ processors and controls the sequencing and hardware partitioning.
 
 Entry
 -----
+The following is an example entry for ``PES_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Multiple ``value`` elements allowed, each corresponds with a specific component.
 
 .. code-block:: xml
 
@@ -43,13 +46,11 @@ This is an example entry for ``config_files.xml``.
         <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_pes.xsd</schema>
     </entry>
 
-Definition
+Contents
 ----------
 
-This is the contents of ``config_pes.xml``.
-
-Schema
-------
+Schema Definition
+:::::::::::::::::
 
 .. code-block:: xml
 

@@ -6,12 +6,15 @@ Pio
 .. contents::
     :local:
 
+Overview
+--------
 Provides CIME with the models PIO configuration.
 
 Entry
 -----
+The following is an example entry for ``PIO_SPEC_FILE`` in ``config_files.xml``.
 
-This is an example entry for ``config_files.xml``.
+Only a single value is required.
 
 .. code-block:: xml
 
@@ -23,10 +26,11 @@ This is an example entry for ``config_files.xml``.
         <desc>file containing specification of pio settings for target model possible machine, compiler, mpilib, compset and/or grid attributes (for documentation only - DO NOT EDIT)</desc>
     </entry>
 
-Definition
+Contents
 ----------
 
-This is the general format of the contents from ``config_pio.xml``.
+Schema Definition
+`````````````````
 
 .. code-block:: xml
 
