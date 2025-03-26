@@ -659,8 +659,8 @@ ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl
 ifdef USE_KOKKOS
   CAM_TARGET ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_TARGET --value)
   ifeq ($(filter $(CAM_TARGET),theta-l theta-l_kokkos),$(CAM_TARGET)) 
-    ULIBS += -L$(INSTALL_SHAREDPATH)/lib64 -lkokkoscontainers  -lkokkoscore -lkokkossimd
-endif
+    ULIBS += -L$(INSTALL_SHAREDPATH)/lib64 -lkokkoscontainers -lkokkoscore -lkokkossimd
+  endif
 endif
 
 #------------------------------------------------------------------------------
