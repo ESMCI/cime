@@ -29,9 +29,7 @@ System Testing
 CIME provides tooling to run system testing on an Earth System Model. Each test type is defined to exercise a specific behavior
 of the model. The tooling provides the ability to create and compare baselines as well as reporting the results of testing.
 
-*NOTE*
-------
-CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
+.. note:: CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
 
 .. toctree::
     :maxdepth: 1

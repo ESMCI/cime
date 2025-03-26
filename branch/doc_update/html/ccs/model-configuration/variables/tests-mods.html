@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Mods &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Test List" href="tests-spec.html" />
+    <link rel="prev" title="SystemTests" href="system-tests.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../creating-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../running-a-case.html">Running a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cloning-a-case.html">Cloning a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../timers.html">Timers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../multi-instance.html">Multi-instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model Configuration</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../config-files.html">Config Files</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Variables</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="archive.html">Archive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch.html">Batch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build-lib.html">Buildlib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">Case File Headers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">Cmake Macros</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compsets.html">Compsets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">Component Root Directory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component_model_specific.html">Component Model Specific</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests.html">Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grids.html">Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inputdata.html">Inputdata</a></li>
+<li class="toctree-l4"><a class="reference internal" href="machine.html">Machines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="model.html">Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namelist-definition.html">Namelist Definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pes.html">Pes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pio.html">Pio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="system-tests.html">SystemTests</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Test Mods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-spec.html">Test List</a></li>
+<li class="toctree-l4"><a class="reference internal" href="user-mods.html">User Mods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="workflow.html">Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../support-a-new-machine.html">Support a new machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fortran-unit-testing.html">Fortran Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../customize-cime.html">Customize CIME</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Model Configuration</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Variables</a></li>
+      <li class="breadcrumb-item active">Test Mods</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/ccs/model-configuration/variables/tests-mods.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="test-mods">
+<span id="model-config-tests-mods"></span><h1>Test Mods<a class="headerlink" href="#test-mods" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#entry" id="id1">Entry</a></p></li>
+</ul>
+</nav>
+<p>Provides CIME with the root directories to discover <code class="docutils literal notranslate"><span class="pre">TestMods</span></code>.</p>
+<section id="entry">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Entry</a><a class="headerlink" href="#entry" title="Link to this heading"></a></h2>
+<p>This is an example entry for <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">component</span></code> attribute is provided then those <code class="docutils literal notranslate"><span class="pre">TestMods</span></code> are only available for that component if present in the <code class="docutils literal notranslate"><span class="pre">compset</span></code>.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;TESTS_MODS_DIR&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
+<span class="w">    </span><span class="nt">&lt;default_value&gt;</span>unset<span class="nt">&lt;/default_value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;values&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;allactive&quot;</span><span class="nt">&gt;</span>$SRCROOT/cime_config/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;drv&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_CPL/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;eam&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;elm&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_LND/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;cice&quot;</span><span class="w">     </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mosart&quot;</span><span class="w">   </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;scream&quot;</span><span class="w">   </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;eamxx&quot;</span><span class="w">    </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ATM/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mpaso&quot;</span><span class="w">    </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mpassi&quot;</span><span class="w">   </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;ww3&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_WAV/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;mali&quot;</span><span class="w">      </span><span class="nt">&gt;</span>$COMP_ROOT_DIR_GLC/cime_config/testdefs/testmods_dirs<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/values&gt;</span>
+<span class="w">    </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
+<span class="w">    </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
+<span class="w">    </span><span class="nt">&lt;desc&gt;</span>directory<span class="w"> </span>containing<span class="w"> </span>test<span class="w"> </span>modifications<span class="w"> </span>for<span class="w"> </span>primary<span class="w"> </span>component<span class="w"> </span>tests<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
+<span class="nt">&lt;/entry&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="system-tests.html" class="btn btn-neutral float-left" title="SystemTests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tests-spec.html" class="btn btn-neutral float-right" title="Test List" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

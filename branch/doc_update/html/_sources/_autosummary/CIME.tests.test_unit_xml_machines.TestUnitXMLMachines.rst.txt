@@ -72,8 +72,12 @@ CIME.tests.test\_unit\_xml\_machines.TestUnitXMLMachines
                     ~TestUnitXMLMachines.subTest
                     ~TestUnitXMLMachines.tearDown
                     ~TestUnitXMLMachines.tearDownClass
+                    ~TestUnitXMLMachines.test_filter_children_by_compiler
+                    ~TestUnitXMLMachines.test_get_resolved_environment_variable
                     ~TestUnitXMLMachines.test_has_batch_system
                     ~TestUnitXMLMachines.test_is_valid_MPIlib
                     ~TestUnitXMLMachines.test_is_valid_compiler
+                    ~TestUnitXMLMachines.test_print_values
+                    ~TestUnitXMLMachines.test_print_values_details
         
     

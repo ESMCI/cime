@@ -107,6 +107,7 @@ CIME.tests.test\_unit\_bless\_test\_results.TestUnitBlessTestResults
                     ~TestUnitBlessTestResults.test_exclude
                     ~TestUnitBlessTestResults.test_is_bless_needed
                     ~TestUnitBlessTestResults.test_is_bless_needed_baseline_fail
+                    ~TestUnitBlessTestResults.test_is_bless_needed_generate_fail
                     ~TestUnitBlessTestResults.test_is_bless_needed_no_run_phase
                     ~TestUnitBlessTestResults.test_is_bless_needed_no_skip_fail
                     ~TestUnitBlessTestResults.test_is_bless_needed_overall_fail

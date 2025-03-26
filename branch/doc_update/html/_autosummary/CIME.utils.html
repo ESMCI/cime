@@ -114,6 +114,7 @@
 <li class="toctree-l4"><a class="reference internal" href="CIME.utils.convert_to_unknown_type.html">CIME.utils.convert_to_unknown_type</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.utils.copy_globs.html">CIME.utils.copy_globs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.utils.copy_local_macros_to_dir.html">CIME.utils.copy_local_macros_to_dir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="CIME.utils.copy_over_file.html">CIME.utils.copy_over_file</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.utils.copyifnewer.html">CIME.utils.copyifnewer</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.utils.deprecate_action.html">CIME.utils.deprecate_action</a></li>
 <li class="toctree-l4"><a class="reference internal" href="CIME.utils.does_file_have_string.html">CIME.utils.does_file_have_string</a></li>
@@ -285,241 +286,244 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 <tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.copy_local_macros_to_dir.html#CIME.utils.copy_local_macros_to_dir" title="CIME.utils.copy_local_macros_to_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_local_macros_to_dir</span></code></a></p></td>
 <td><p>Copy any local macros files to the path given by 'destination'.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.copyifnewer.html#CIME.utils.copyifnewer" title="CIME.utils.copyifnewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyifnewer</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.copy_over_file.html#CIME.utils.copy_over_file" title="CIME.utils.copy_over_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_over_file</span></code></a></p></td>
+<td><p>Copy a file over a file that already exists</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.copyifnewer.html#CIME.utils.copyifnewer" title="CIME.utils.copyifnewer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyifnewer</span></code></a></p></td>
 <td><p>if dest does not exist or is older than src copy src to dest</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.deprecate_action.html#CIME.utils.deprecate_action" title="CIME.utils.deprecate_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deprecate_action</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.deprecate_action.html#CIME.utils.deprecate_action" title="CIME.utils.deprecate_action"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deprecate_action</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.does_file_have_string.html#CIME.utils.does_file_have_string" title="CIME.utils.does_file_have_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">does_file_have_string</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.does_file_have_string.html#CIME.utils.does_file_have_string" title="CIME.utils.does_file_have_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">does_file_have_string</span></code></a></p></td>
 <td><p>Does the text string appear in the filepath file</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.expect.html#CIME.utils.expect" title="CIME.utils.expect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expect</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.expect.html#CIME.utils.expect" title="CIME.utils.expect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expect</span></code></a></p></td>
 <td><p>Similar to assert except doesn't generate an ugly stacktrace.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.file_contains_python_function.html#CIME.utils.file_contains_python_function" title="CIME.utils.file_contains_python_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_contains_python_function</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.file_contains_python_function.html#CIME.utils.file_contains_python_function" title="CIME.utils.file_contains_python_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">file_contains_python_function</span></code></a></p></td>
 <td><p>Checks whether the given file contains a top-level definition of the function 'funcname'</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.filter_unicode.html#CIME.utils.filter_unicode" title="CIME.utils.filter_unicode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_unicode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.filter_unicode.html#CIME.utils.filter_unicode" title="CIME.utils.filter_unicode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_unicode</span></code></a></p></td>
 <td><p>Sometimes unicode chars can cause problems</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.find_files.html#CIME.utils.find_files" title="CIME.utils.find_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_files</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.find_files.html#CIME.utils.find_files" title="CIME.utils.find_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_files</span></code></a></p></td>
 <td><p>recursively find all files matching a pattern</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.find_proc_id.html#CIME.utils.find_proc_id" title="CIME.utils.find_proc_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_proc_id</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.find_proc_id.html#CIME.utils.find_proc_id" title="CIME.utils.find_proc_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_proc_id</span></code></a></p></td>
 <td><p>Children implies recursive.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.find_system_test.html#CIME.utils.find_system_test" title="CIME.utils.find_system_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_system_test</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.find_system_test.html#CIME.utils.find_system_test" title="CIME.utils.find_system_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_system_test</span></code></a></p></td>
 <td><p>Find and import the test matching testname Look through the paths set in config_files.xml variable SYSTEM_TESTS_DIR for components used in this case to find a test matching testname.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.fixup_sys_path.html#CIME.utils.fixup_sys_path" title="CIME.utils.fixup_sys_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixup_sys_path</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.fixup_sys_path.html#CIME.utils.fixup_sys_path" title="CIME.utils.fixup_sys_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixup_sys_path</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.format_time.html#CIME.utils.format_time" title="CIME.utils.format_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_time</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.format_time.html#CIME.utils.format_time" title="CIME.utils.format_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_time</span></code></a></p></td>
 <td><p>Converts the string input_time from input_format to time_format Valid format specifiers are &quot;%H&quot;, &quot;%M&quot;, and &quot;%S&quot; % signs must be followed by an H, M, or S and then a separator Separators can be any string without digits or a % sign Each specifier can occur more than once in the input_format, but only the first occurence will be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_all_cime_models.html#CIME.utils.get_all_cime_models" title="CIME.utils.get_all_cime_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_cime_models</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_all_cime_models.html#CIME.utils.get_all_cime_models" title="CIME.utils.get_all_cime_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_cime_models</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_batch_script_for_job.html#CIME.utils.get_batch_script_for_job" title="CIME.utils.get_batch_script_for_job"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_batch_script_for_job</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_batch_script_for_job.html#CIME.utils.get_batch_script_for_job" title="CIME.utils.get_batch_script_for_job"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_batch_script_for_job</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_charge_account.html#CIME.utils.get_charge_account" title="CIME.utils.get_charge_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_charge_account</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_charge_account.html#CIME.utils.get_charge_account" title="CIME.utils.get_charge_account"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_charge_account</span></code></a></p></td>
 <td><p>Hierarchy for choosing CHARGE_ACCOUNT: 1.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_cime_config.html#CIME.utils.get_cime_config" title="CIME.utils.get_cime_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cime_config</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_cime_config.html#CIME.utils.get_cime_config" title="CIME.utils.get_cime_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cime_config</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_cime_default_driver.html#CIME.utils.get_cime_default_driver" title="CIME.utils.get_cime_default_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cime_default_driver</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_cime_default_driver.html#CIME.utils.get_cime_default_driver" title="CIME.utils.get_cime_default_driver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cime_default_driver</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_cime_root.html#CIME.utils.get_cime_root" title="CIME.utils.get_cime_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cime_root</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_cime_root.html#CIME.utils.get_cime_root" title="CIME.utils.get_cime_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cime_root</span></code></a></p></td>
 <td><p>Return the absolute path to the root of CIME that contains this script</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_config_path.html#CIME.utils.get_config_path" title="CIME.utils.get_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config_path</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_config_path.html#CIME.utils.get_config_path" title="CIME.utils.get_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config_path</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_current_branch.html#CIME.utils.get_current_branch" title="CIME.utils.get_current_branch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_branch</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_current_branch.html#CIME.utils.get_current_branch" title="CIME.utils.get_current_branch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_branch</span></code></a></p></td>
 <td><p>Return the name of the current branch for a repository</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_current_commit.html#CIME.utils.get_current_commit" title="CIME.utils.get_current_commit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_commit</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_current_commit.html#CIME.utils.get_current_commit" title="CIME.utils.get_current_commit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_commit</span></code></a></p></td>
 <td><p>Return the sha1 of the current HEAD commit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_current_submodule_status.html#CIME.utils.get_current_submodule_status" title="CIME.utils.get_current_submodule_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_submodule_status</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_current_submodule_status.html#CIME.utils.get_current_submodule_status" title="CIME.utils.get_current_submodule_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_submodule_status</span></code></a></p></td>
 <td><p>Return the sha1s of the current currently checked out commit for each submodule, along with the submodule path and the output of git describe for the SHA-1.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_full_test_name.html#CIME.utils.get_full_test_name" title="CIME.utils.get_full_test_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_full_test_name</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_full_test_name.html#CIME.utils.get_full_test_name" title="CIME.utils.get_full_test_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_full_test_name</span></code></a></p></td>
 <td><p>Given a partial CIME test name, return in form TESTCASE.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS] Use the additional args to fill out the name if needed</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_htmlroot.html#CIME.utils.get_htmlroot" title="CIME.utils.get_htmlroot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_htmlroot</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_htmlroot.html#CIME.utils.get_htmlroot" title="CIME.utils.get_htmlroot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_htmlroot</span></code></a></p></td>
 <td><p>Get location for test HTML output</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_lids.html#CIME.utils.get_lids" title="CIME.utils.get_lids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_lids</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_lids.html#CIME.utils.get_lids" title="CIME.utils.get_lids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_lids</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_logging_options.html#CIME.utils.get_logging_options" title="CIME.utils.get_logging_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logging_options</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_logging_options.html#CIME.utils.get_logging_options" title="CIME.utils.get_logging_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logging_options</span></code></a></p></td>
 <td><p>Use to pass same logging options as was used for current executable to subprocesses.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_model.html#CIME.utils.get_model" title="CIME.utils.get_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_model.html#CIME.utils.get_model" title="CIME.utils.get_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model</span></code></a></p></td>
 <td><p>Get the currently configured model value The CIME_MODEL env variable may or may not be set</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_model_config_location_within_cime.html#CIME.utils.get_model_config_location_within_cime" title="CIME.utils.get_model_config_location_within_cime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_config_location_within_cime</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_model_config_location_within_cime.html#CIME.utils.get_model_config_location_within_cime" title="CIME.utils.get_model_config_location_within_cime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_config_location_within_cime</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_model_config_root.html#CIME.utils.get_model_config_root" title="CIME.utils.get_model_config_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_config_root</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_model_config_root.html#CIME.utils.get_model_config_root" title="CIME.utils.get_model_config_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_config_root</span></code></a></p></td>
 <td><p>Get absolute path to model config area&quot;</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_project.html#CIME.utils.get_project" title="CIME.utils.get_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_project</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_project.html#CIME.utils.get_project" title="CIME.utils.get_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_project</span></code></a></p></td>
 <td><p>Hierarchy for choosing PROJECT: 0.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_python_libs_location_within_cime.html#CIME.utils.get_python_libs_location_within_cime" title="CIME.utils.get_python_libs_location_within_cime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_python_libs_location_within_cime</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_python_libs_location_within_cime.html#CIME.utils.get_python_libs_location_within_cime" title="CIME.utils.get_python_libs_location_within_cime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_python_libs_location_within_cime</span></code></a></p></td>
 <td><p>From within CIME, return subdirectory of python libraries</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_schema_path.html#CIME.utils.get_schema_path" title="CIME.utils.get_schema_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_schema_path</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_schema_path.html#CIME.utils.get_schema_path" title="CIME.utils.get_schema_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_schema_path</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_scripts_root.html#CIME.utils.get_scripts_root" title="CIME.utils.get_scripts_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_scripts_root</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_scripts_root.html#CIME.utils.get_scripts_root" title="CIME.utils.get_scripts_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_scripts_root</span></code></a></p></td>
 <td><p>Get absolute path to scripts</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_src_root.html#CIME.utils.get_src_root" title="CIME.utils.get_src_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_src_root</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_src_root.html#CIME.utils.get_src_root" title="CIME.utils.get_src_root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_src_root</span></code></a></p></td>
 <td><p>Return the absolute path to the root of SRCROOT.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_template_path.html#CIME.utils.get_template_path" title="CIME.utils.get_template_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_template_path</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_template_path.html#CIME.utils.get_template_path" title="CIME.utils.get_template_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_template_path</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_time_in_seconds.html#CIME.utils.get_time_in_seconds" title="CIME.utils.get_time_in_seconds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_time_in_seconds</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_time_in_seconds.html#CIME.utils.get_time_in_seconds" title="CIME.utils.get_time_in_seconds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_time_in_seconds</span></code></a></p></td>
 <td><p>Convert a time from 'unit' to seconds</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_timestamp.html#CIME.utils.get_timestamp" title="CIME.utils.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_timestamp.html#CIME.utils.get_timestamp" title="CIME.utils.get_timestamp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timestamp</span></code></a></p></td>
 <td><p>Get a string representing the current UTC time in format: YYYYMMDD_HHMMSS</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_tools_path.html#CIME.utils.get_tools_path" title="CIME.utils.get_tools_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tools_path</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_tools_path.html#CIME.utils.get_tools_path" title="CIME.utils.get_tools_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_tools_path</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_umask.html#CIME.utils.get_umask" title="CIME.utils.get_umask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_umask</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_umask.html#CIME.utils.get_umask" title="CIME.utils.get_umask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_umask</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.get_urlroot.html#CIME.utils.get_urlroot" title="CIME.utils.get_urlroot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_urlroot</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.get_urlroot.html#CIME.utils.get_urlroot" title="CIME.utils.get_urlroot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_urlroot</span></code></a></p></td>
 <td><p>Get URL to htmlroot</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.gunzip_existing_file.html#CIME.utils.gunzip_existing_file" title="CIME.utils.gunzip_existing_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gunzip_existing_file</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.gunzip_existing_file.html#CIME.utils.gunzip_existing_file" title="CIME.utils.gunzip_existing_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gunzip_existing_file</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.gzip_existing_file.html#CIME.utils.gzip_existing_file" title="CIME.utils.gzip_existing_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gzip_existing_file</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.gzip_existing_file.html#CIME.utils.gzip_existing_file" title="CIME.utils.gzip_existing_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gzip_existing_file</span></code></a></p></td>
 <td><p>Gzips an existing file, removes the unzipped version, returns path to zip file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.id_generator.html#CIME.utils.id_generator" title="CIME.utils.id_generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_generator</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.id_generator.html#CIME.utils.id_generator" title="CIME.utils.id_generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id_generator</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.import_and_run_sub_or_cmd.html#CIME.utils.import_and_run_sub_or_cmd" title="CIME.utils.import_and_run_sub_or_cmd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_and_run_sub_or_cmd</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.import_and_run_sub_or_cmd.html#CIME.utils.import_and_run_sub_or_cmd" title="CIME.utils.import_and_run_sub_or_cmd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_and_run_sub_or_cmd</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.import_from_file.html#CIME.utils.import_from_file" title="CIME.utils.import_from_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_from_file</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.import_from_file.html#CIME.utils.import_from_file" title="CIME.utils.import_from_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_from_file</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.indent_string.html#CIME.utils.indent_string" title="CIME.utils.indent_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indent_string</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.indent_string.html#CIME.utils.indent_string" title="CIME.utils.indent_string"><code class="xref py py-obj docutils literal notranslate"><span class="pre">indent_string</span></code></a></p></td>
 <td><p>Indents the given string by a given number of spaces</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.is_comp_standalone.html#CIME.utils.is_comp_standalone" title="CIME.utils.is_comp_standalone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_comp_standalone</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.is_comp_standalone.html#CIME.utils.is_comp_standalone" title="CIME.utils.is_comp_standalone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_comp_standalone</span></code></a></p></td>
 <td><p>Test if the case is a single component standalone such as FKESSLER</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.is_last_process_complete.html#CIME.utils.is_last_process_complete" title="CIME.utils.is_last_process_complete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_last_process_complete</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.is_last_process_complete.html#CIME.utils.is_last_process_complete" title="CIME.utils.is_last_process_complete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_last_process_complete</span></code></a></p></td>
 <td><p>Search the filepath in reverse order looking for expect_text before finding fail_text.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.is_python_executable.html#CIME.utils.is_python_executable" title="CIME.utils.is_python_executable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_python_executable</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.is_python_executable.html#CIME.utils.is_python_executable" title="CIME.utils.is_python_executable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_python_executable</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.ls_sorted_by_mtime.html#CIME.utils.ls_sorted_by_mtime" title="CIME.utils.ls_sorted_by_mtime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_sorted_by_mtime</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.ls_sorted_by_mtime.html#CIME.utils.ls_sorted_by_mtime" title="CIME.utils.ls_sorted_by_mtime"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ls_sorted_by_mtime</span></code></a></p></td>
 <td><p>return list of path sorted by timestamp oldest first</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.match_any.html#CIME.utils.match_any" title="CIME.utils.match_any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match_any</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.match_any.html#CIME.utils.match_any" title="CIME.utils.match_any"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match_any</span></code></a></p></td>
 <td><p>Return true if item matches any regex in re_counts' keys.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.model_log.html#CIME.utils.model_log" title="CIME.utils.model_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_log</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.model_log.html#CIME.utils.model_log" title="CIME.utils.model_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_log</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.new_lid.html#CIME.utils.new_lid" title="CIME.utils.new_lid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_lid</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.new_lid.html#CIME.utils.new_lid" title="CIME.utils.new_lid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_lid</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.normalize_case_id.html#CIME.utils.normalize_case_id" title="CIME.utils.normalize_case_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_case_id</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.normalize_case_id.html#CIME.utils.normalize_case_id" title="CIME.utils.normalize_case_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_case_id</span></code></a></p></td>
 <td><p>Given a case_id, return it in form TESTCASE.GRID.COMPSET.PLATFORM</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.parse_args_and_handle_standard_logging_options.html#CIME.utils.parse_args_and_handle_standard_logging_options" title="CIME.utils.parse_args_and_handle_standard_logging_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_args_and_handle_standard_logging_options</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.parse_args_and_handle_standard_logging_options.html#CIME.utils.parse_args_and_handle_standard_logging_options" title="CIME.utils.parse_args_and_handle_standard_logging_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_args_and_handle_standard_logging_options</span></code></a></p></td>
 <td><p>Guide to logging in CIME.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.parse_test_name.html#CIME.utils.parse_test_name" title="CIME.utils.parse_test_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_test_name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.parse_test_name.html#CIME.utils.parse_test_name" title="CIME.utils.parse_test_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_test_name</span></code></a></p></td>
 <td><p>Given a CIME test name TESTCASE[_CASEOPTS].GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]], return each component of the testname with machine and compiler split.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.redirect_logger.html#CIME.utils.redirect_logger" title="CIME.utils.redirect_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_logger</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.redirect_logger.html#CIME.utils.redirect_logger" title="CIME.utils.redirect_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_logger</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.redirect_stderr.html#CIME.utils.redirect_stderr" title="CIME.utils.redirect_stderr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_stderr</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.redirect_stderr.html#CIME.utils.redirect_stderr" title="CIME.utils.redirect_stderr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_stderr</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.redirect_stdout.html#CIME.utils.redirect_stdout" title="CIME.utils.redirect_stdout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_stdout</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.redirect_stdout.html#CIME.utils.redirect_stdout" title="CIME.utils.redirect_stdout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_stdout</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.redirect_stdout_stderr.html#CIME.utils.redirect_stdout_stderr" title="CIME.utils.redirect_stdout_stderr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_stdout_stderr</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.redirect_stdout_stderr.html#CIME.utils.redirect_stdout_stderr" title="CIME.utils.redirect_stdout_stderr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redirect_stdout_stderr</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.reset_cime_config.html#CIME.utils.reset_cime_config" title="CIME.utils.reset_cime_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_cime_config</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.reset_cime_config.html#CIME.utils.reset_cime_config" title="CIME.utils.reset_cime_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_cime_config</span></code></a></p></td>
 <td><p>Useful to keep unit tests from interfering with each other</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.resolve_mail_type_args.html#CIME.utils.resolve_mail_type_args" title="CIME.utils.resolve_mail_type_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_mail_type_args</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.resolve_mail_type_args.html#CIME.utils.resolve_mail_type_args" title="CIME.utils.resolve_mail_type_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_mail_type_args</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.run_bld_cmd_ensure_logging.html#CIME.utils.run_bld_cmd_ensure_logging" title="CIME.utils.run_bld_cmd_ensure_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bld_cmd_ensure_logging</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.run_bld_cmd_ensure_logging.html#CIME.utils.run_bld_cmd_ensure_logging" title="CIME.utils.run_bld_cmd_ensure_logging"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_bld_cmd_ensure_logging</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.run_cmd.html#CIME.utils.run_cmd" title="CIME.utils.run_cmd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_cmd</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.run_cmd.html#CIME.utils.run_cmd" title="CIME.utils.run_cmd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_cmd</span></code></a></p></td>
 <td><p>Wrapper around subprocess to make it much more convenient to run shell commands</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.run_cmd_no_fail.html#CIME.utils.run_cmd_no_fail" title="CIME.utils.run_cmd_no_fail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_cmd_no_fail</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.run_cmd_no_fail.html#CIME.utils.run_cmd_no_fail" title="CIME.utils.run_cmd_no_fail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_cmd_no_fail</span></code></a></p></td>
 <td><p>Wrapper around subprocess to make it much more convenient to run shell commands.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.run_sub_or_cmd.html#CIME.utils.run_sub_or_cmd" title="CIME.utils.run_sub_or_cmd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_sub_or_cmd</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.run_sub_or_cmd.html#CIME.utils.run_sub_or_cmd" title="CIME.utils.run_sub_or_cmd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_sub_or_cmd</span></code></a></p></td>
 <td><p>This code will try to import and run each cmd as a subroutine if that fails it will run it as a program in a seperate shell</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.safe_copy.html#CIME.utils.safe_copy" title="CIME.utils.safe_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_copy</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.safe_copy.html#CIME.utils.safe_copy" title="CIME.utils.safe_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_copy</span></code></a></p></td>
 <td><p>A flexbile and safe copy routine.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.safe_recursive_copy.html#CIME.utils.safe_recursive_copy" title="CIME.utils.safe_recursive_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_recursive_copy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.safe_recursive_copy.html#CIME.utils.safe_recursive_copy" title="CIME.utils.safe_recursive_copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_recursive_copy</span></code></a></p></td>
 <td><p>Copies a set of files from one dir to another.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.set_logger_indent.html#CIME.utils.set_logger_indent" title="CIME.utils.set_logger_indent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_logger_indent</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.set_logger_indent.html#CIME.utils.set_logger_indent" title="CIME.utils.set_logger_indent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_logger_indent</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.set_model.html#CIME.utils.set_model" title="CIME.utils.set_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_model</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.set_model.html#CIME.utils.set_model" title="CIME.utils.set_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_model</span></code></a></p></td>
 <td><p>Set the model to be used in this session</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.setup_standard_logging_options.html#CIME.utils.setup_standard_logging_options" title="CIME.utils.setup_standard_logging_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_standard_logging_options</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.setup_standard_logging_options.html#CIME.utils.setup_standard_logging_options" title="CIME.utils.setup_standard_logging_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_standard_logging_options</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.start_buffering_output.html#CIME.utils.start_buffering_output" title="CIME.utils.start_buffering_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_buffering_output</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.start_buffering_output.html#CIME.utils.start_buffering_output" title="CIME.utils.start_buffering_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_buffering_output</span></code></a></p></td>
 <td><p>All stdout, stderr will be buffered after this is called.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.stop_buffering_output.html#CIME.utils.stop_buffering_output" title="CIME.utils.stop_buffering_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_buffering_output</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.stop_buffering_output.html#CIME.utils.stop_buffering_output" title="CIME.utils.stop_buffering_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_buffering_output</span></code></a></p></td>
 <td><p>All stdout, stderr will not be buffered after this is called.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.string_in_list.html#CIME.utils.string_in_list" title="CIME.utils.string_in_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_in_list</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.string_in_list.html#CIME.utils.string_in_list" title="CIME.utils.string_in_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">string_in_list</span></code></a></p></td>
 <td><p>Case insensitive search for string in list returns the matching list value &gt;&gt;&gt; string_in_list(&quot;Brack&quot;,[&quot;bar&quot;, &quot;bracK&quot;, &quot;foo&quot;]) 'bracK' &gt;&gt;&gt; string_in_list(&quot;foo&quot;, [&quot;FFO&quot;, &quot;FOO&quot;, &quot;foo2&quot;, &quot;foo3&quot;]) 'FOO' &gt;&gt;&gt; string_in_list(&quot;foo&quot;, [&quot;FFO&quot;, &quot;foo2&quot;, &quot;foo3&quot;])</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.stringify_bool.html#CIME.utils.stringify_bool" title="CIME.utils.stringify_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stringify_bool</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.stringify_bool.html#CIME.utils.stringify_bool" title="CIME.utils.stringify_bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stringify_bool</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.symlink_force.html#CIME.utils.symlink_force" title="CIME.utils.symlink_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symlink_force</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.symlink_force.html#CIME.utils.symlink_force" title="CIME.utils.symlink_force"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symlink_force</span></code></a></p></td>
 <td><p>Makes a symlink from link_name to target.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.touch.html#CIME.utils.touch" title="CIME.utils.touch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">touch</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.touch.html#CIME.utils.touch" title="CIME.utils.touch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">touch</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.transform_vars.html#CIME.utils.transform_vars" title="CIME.utils.transform_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_vars</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.transform_vars.html#CIME.utils.transform_vars" title="CIME.utils.transform_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_vars</span></code></a></p></td>
 <td><p>Do the variable substitution for any variables that need transforms recursively.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.verbatim_success_msg.html#CIME.utils.verbatim_success_msg" title="CIME.utils.verbatim_success_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verbatim_success_msg</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.verbatim_success_msg.html#CIME.utils.verbatim_success_msg" title="CIME.utils.verbatim_success_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verbatim_success_msg</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.utils.wait_for_unlocked.html#CIME.utils.wait_for_unlocked" title="CIME.utils.wait_for_unlocked"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_unlocked</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.utils.wait_for_unlocked.html#CIME.utils.wait_for_unlocked" title="CIME.utils.wait_for_unlocked"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wait_for_unlocked</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>

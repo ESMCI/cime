@@ -1,0 +1,81 @@
+..
+  class.rst
+
+CIME.XML.postprocessing.Postprocessing
+======================================
+
+.. currentmodule:: CIME.XML.postprocessing
+
+.. autoclass:: Postprocessing
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Postprocessing.__init__
+                    ~Postprocessing.add_child
+                    ~Postprocessing.add_elements_by_group
+                    ~Postprocessing.attrib
+                    ~Postprocessing.change_file
+                    ~Postprocessing.check_if_comp_var
+                    ~Postprocessing.check_timestamp
+                    ~Postprocessing.cleanupnode
+                    ~Postprocessing.compare_xml
+                    ~Postprocessing.copy
+                    ~Postprocessing.get
+                    ~Postprocessing.get_child
+                    ~Postprocessing.get_child_content
+                    ~Postprocessing.get_children
+                    ~Postprocessing.get_default_value
+                    ~Postprocessing.get_description
+                    ~Postprocessing.get_element_text
+                    ~Postprocessing.get_elements_from_child_content
+                    ~Postprocessing.get_groups
+                    ~Postprocessing.get_id
+                    ~Postprocessing.get_node_element_info
+                    ~Postprocessing.get_nodes_by_id
+                    ~Postprocessing.get_optional_child
+                    ~Postprocessing.get_raw_record
+                    ~Postprocessing.get_resolved_value
+                    ~Postprocessing.get_type_info
+                    ~Postprocessing.get_valid_value_string
+                    ~Postprocessing.get_valid_values
+                    ~Postprocessing.get_value
+                    ~Postprocessing.get_value_match
+                    ~Postprocessing.get_values
+                    ~Postprocessing.get_version
+                    ~Postprocessing.has
+                    ~Postprocessing.invalidate
+                    ~Postprocessing.lock
+                    ~Postprocessing.make_child
+                    ~Postprocessing.make_child_comment
+                    ~Postprocessing.name
+                    ~Postprocessing.overwrite_existing_entries
+                    ~Postprocessing.pop
+                    ~Postprocessing.read
+                    ~Postprocessing.read_fd
+                    ~Postprocessing.remove_child
+                    ~Postprocessing.scan_child
+                    ~Postprocessing.scan_children
+                    ~Postprocessing.scan_optional_child
+                    ~Postprocessing.set
+                    ~Postprocessing.set_default_value
+                    ~Postprocessing.set_element_text
+                    ~Postprocessing.set_name
+                    ~Postprocessing.set_text
+                    ~Postprocessing.set_valid_values
+                    ~Postprocessing.set_value
+                    ~Postprocessing.text
+                    ~Postprocessing.to_string
+                    ~Postprocessing.unlock
+                    ~Postprocessing.validate_timestamp
+                    ~Postprocessing.validate_xml_file
+                    ~Postprocessing.write
+        
+    

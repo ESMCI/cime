@@ -26,8 +26,8 @@ multiple-instance code involves the following steps:
 1. Create the case.
 ::
 
-   > create_newcase --case Fmulti --compset F2000_DEV --res f19_f19_mg17
-   > cd Fmulti
+   ./scripts/create_newcase --case Fmulti --compset F2000_DEV --res f19_f19_mg17
+   cd ./Fmulti
 
 1. Assume this is the out-of-the-box pe-layout:
 ::
@@ -56,12 +56,12 @@ stub components since they do not do anything in this compset.
 To run two instances of CAM, CLM, CICE, RTM, GLC and DOCN, invoke the following :ref: `xmlchange<modifying-an-xml-file>` commands in your **$CASEROOT** directory:
 ::
 
-   > ./xmlchange NINST_ATM=2
-   > ./xmlchange NINST_LND=2
-   > ./xmlchange NINST_ICE=2
-   > ./xmlchange NINST_ROF=2
-   > ./xmlchange NINST_GLC=2
-   > ./xmlchange NINST_OCN=2
+   ./xmlchange NINST_ATM=2
+   ./xmlchange NINST_LND=2
+   ./xmlchange NINST_ICE=2
+   ./xmlchange NINST_ROF=2
+   ./xmlchange NINST_GLC=2
+   ./xmlchange NINST_OCN=2
 
 As a result, you will have two instances of CAM, CLM and CICE (prescribed), RTM, GLC, and DOCN, each running concurrently on 72 MPI tasks and all using the same driver/coupler component.   In this single driver/coupler mode the number of tasks for each component instance is NTASKS_COMPONENT/NINST_COMPONENT and the total number of tasks is the same as for the single instance case.
 
@@ -69,14 +69,14 @@ Now consider the multi driver model.
 To use this mode change
 ::
 
-   > ./xmlchange MULTI_DRIVER=TRUE
+   ./xmlchange MULTI_DRIVER=TRUE
 
 This configuration will run each component instance on the original 144 tasks but will generate two copies of the model (in the same executable) for a total of 288 tasks.
 
 3. Set up the case
 ::
 
-   > ./case.setup
+   ./case.setup
 
 A new **user_nl_xxx_NNNN** file is generated for each component instance when case.setup is called (where xxx is the component type and NNNN is the number of the component instance).
 When calling **case.setup** with the **env_mach_pes.xml** file specifically, these files are created in **$CASEROOT**:

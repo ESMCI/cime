@@ -34,6 +34,7 @@ CIME.utils
                     convert_to_unknown_type
                     copy_globs
                     copy_local_macros_to_dir
+                    copy_over_file
                     copyifnewer
                     deprecate_action
                     does_file_have_string

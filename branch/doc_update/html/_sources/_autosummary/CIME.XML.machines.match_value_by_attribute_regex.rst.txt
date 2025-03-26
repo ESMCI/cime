@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.XML.machines.match\_value\_by\_attribute\_regex
+====================================================
+
+.. currentmodule:: CIME.XML.machines
+
+.. autofunction:: match_value_by_attribute_regex

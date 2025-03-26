@@ -12,6 +12,15 @@ CIME.XML.machines
 
     
         
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    match_value_by_attribute_regex
+        
     
 
     

@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tools" href="tools/index.html" />
-    <link rel="prev" title="Customize CIME" href="ccs/model/customize-cime.html" /> 
+    <link rel="prev" title="Customize CIME" href="ccs/model-configuration/customize-cime.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -88,59 +88,228 @@
 <span id="system-tests"></span><h1>System Testing<a class="headerlink" href="#system-testing" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#testing-cases" id="id22">Testing Cases</a></p></li>
-<li><p><a class="reference internal" href="#testname-syntax" id="id23">Testname syntax</a></p></li>
-<li><p><a class="reference internal" href="#testtype" id="id24">TESTTYPE</a></p></li>
-<li><p><a class="reference internal" href="#modifiers" id="id25">MODIFIERS</a></p></li>
-<li><p><a class="reference internal" href="#group-testmods" id="id26">GROUP-TESTMODS</a></p></li>
-<li><p><a class="reference internal" href="#test-progress-and-output" id="id27">Test progress and output</a></p></li>
-<li><p><a class="reference internal" href="#running-multiple-tests-and-other-command-line-examples" id="id28">Running multiple tests and other command line examples</a></p></li>
-<li><p><a class="reference internal" href="#test-control-with-xml-files" id="id29">Test control with XML files</a></p></li>
-<li><p><a class="reference internal" href="#test-control-with-python-dictionaries" id="id30">Test control with Python dictionaries</a></p></li>
-<li><p><a class="reference internal" href="#create-test-output" id="id31">Create_test output</a></p></li>
-<li><p><a class="reference internal" href="#baselines-and-baseline-testing" id="id32">Baselines and Baseline Testing</a></p></li>
-<li><p><a class="reference internal" href="#creating-a-baseline" id="id33">Creating a baseline</a></p></li>
-<li><p><a class="reference internal" href="#comparing-a-baseline" id="id34">Comparing a baseline</a></p></li>
-<li><p><a class="reference internal" href="#managing-baselines" id="id35">Managing baselines</a></p></li>
-<li><p><a class="reference internal" href="#performance-baselines" id="id36">Performance baselines</a></p></li>
+<li><p><a class="reference internal" href="#overview" id="id9">Overview</a></p></li>
+<li><p><a class="reference internal" href="#testing-a-case" id="id10">Testing a Case</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-a-individual-tests" id="id11">Run a individual tests</a></p></li>
+<li><p><a class="reference internal" href="#run-a-test-suite" id="id12">Run a test suite</a></p>
+<ul>
+<li><p><a class="reference internal" href="#xml" id="id13">XML</a></p></li>
+<li><p><a class="reference internal" href="#python" id="id14">Python</a></p>
+<ul>
+<li><p><a class="reference internal" href="#format" id="id15">Format</a></p></li>
+<li><p><a class="reference internal" href="#example" id="id16">Example</a></p></li>
+<li><p><a class="reference internal" href="#listing-the-test-suites" id="id17">Listing the test suites</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#test-name-syntax" id="id18">Test name syntax</a></p>
+<ul>
+<li><p><a class="reference internal" href="#test-type" id="id19">Test Type</a></p></li>
+<li><p><a class="reference internal" href="#modifiers" id="id20">Modifiers</a></p></li>
+<li><p><a class="reference internal" href="#test-mods" id="id21">Test Mods</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#testing-process" id="id22">Testing Process</a></p>
+<ul>
+<li><p><a class="reference internal" href="#output" id="id23">Output</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#baselines" id="id24">Baselines</a></p>
+<ul>
+<li><p><a class="reference internal" href="#creating-a-baseline" id="id25">Creating a baseline</a></p></li>
+<li><p><a class="reference internal" href="#comparing-a-baseline" id="id26">Comparing a baseline</a></p></li>
+<li><p><a class="reference internal" href="#managing-baselines" id="id27">Managing baselines</a></p></li>
+<li><p><a class="reference internal" href="#performance-baselines" id="id28">Performance baselines</a></p></li>
+</ul>
+</li>
 </ul>
 </nav>
-<section id="testing-cases">
-<h2><a class="toc-backref" href="#id22" role="doc-backlink">Testing Cases</a><a class="headerlink" href="#testing-cases" title="Link to this heading"></a></h2>
-<p><a class="reference external" href="../Tools_user/create_test.html">create_test</a>
-is a powerful system testing capability provided by the CIME Case Control System.
-create_test can, in one command, create a case, set up, build, and run the case
-according to the test type and return a PASS or FAIL for the test result.</p>
-<p id="individual">An individual test can be run as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test $test_name
+<section id="overview">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_test`</span></code> tool is a versatile and powerful utility provided by CIME for automating the creation, setup, building, and execution of system tests. It simplifies the process of running tests by allowing users to specify test configurations through a single command. The tool supports a wide range of test types, modifiers, and options, making it highly customizable to meet various testing needs.</p>
+<p>Key features of <code class="docutils literal notranslate"><span class="pre">create_test</span></code> include:</p>
+<ul class="simple">
+<li><p>Automated creation and setup of test cases.</p></li>
+<li><p>Building and running tests with specified configurations.</p></li>
+<li><p>Support for multiple test types and modifiers.</p></li>
+<li><p>Ability to run individual tests or suites of tests.</p></li>
+<li><p>Integration with baseline comparison and performance testing.</p></li>
+<li><p>Detailed logging and status reporting for each phase of the test.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_test</span></code> tool is essential for ensuring the reliability and correctness of the model by providing a streamlined and efficient way to conduct comprehensive system tests.</p>
+</section>
+<section id="testing-a-case">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Testing a Case</a><a class="headerlink" href="#testing-a-case" title="Link to this heading"></a></h2>
+<p>To run a system test(s) CIME provides <code class="docutils literal notranslate"><span class="pre">create_test</span></code>. This tool provides much of the same functionality as <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> allowing to define a non-default compiler, queue, override the output location of the test cases, etc.</p>
+<p>CIME has functionality to create baselines fors tests, and compare future runs to track changes in answers.</p>
+<p>The tool supports running single, or multiple tests. Multiple tests can be defined by just their test names on the CLI or by providing an XML or Python file.</p>
+<section id="run-a-individual-tests">
+<span id="system-testing-individual"></span><h3><a class="toc-backref" href="#id11" role="doc-backlink">Run a individual tests</a><a class="headerlink" href="#run-a-individual-tests" title="Link to this heading"></a></h3>
+<p>The following will run a single test case.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_test<span class="w"> </span>&lt;testname&gt;
 </pre></div>
 </div>
-<p>Everything the test will do is controlled by parsing the test name.</p>
+<p>The following will run multiple test cases.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_test<span class="w"> </span>&lt;testname&gt;<span class="w"> </span>&lt;testname&gt;
+</pre></div>
+</div>
+<p>These test names could also be placed a file and run with the follow command.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_test<span class="w"> </span>-f<span class="w"> </span>&lt;filename&gt;
+</pre></div>
+</div>
 </section>
-<section id="testname-syntax">
-<h2><a class="toc-backref" href="#id23" role="doc-backlink">Testname syntax</a><a class="headerlink" href="#testname-syntax" title="Link to this heading"></a></h2>
-<p id="test-naming">Tests are defined by the following format, where anything enclosed in <code class="docutils literal notranslate"><span class="pre">[]</span></code> is optional:</p>
+<section id="run-a-test-suite">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Run a test suite</a><a class="headerlink" href="#run-a-test-suite" title="Link to this heading"></a></h3>
+<p>The following will run an entire test suite of test cases.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_test<span class="w"> </span>&lt;testsuite&gt;
+</pre></div>
+</div>
+<section id="xml">
+<h4><a class="toc-backref" href="#id13" role="doc-backlink">XML</a><a class="headerlink" href="#xml" title="Link to this heading"></a></h4>
+<p>A pre-defined suite of test can be run by passing the <code class="docutils literal notranslate"><span class="pre">--xml</span></code> argument to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>.</p>
+<p>This argument will cause CIME to load <code class="docutils literal notranslate"><span class="pre">testlist*.xml</span></code> files. As described in <a class="reference external" href="https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide">https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide</a>, to determine what pre-defined test suites are available and what tests they contain, you can run <code class="docutils literal notranslate"><span class="pre">./scripts/query_testlists</span></code>.</p>
+<p>Test suites are retrieved in create_test via 3 selection attributes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">your_category</span>   <span class="n">The</span> <span class="n">test</span> <span class="n">category</span><span class="o">.</span>
+<span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span>  <span class="n">your_machine</span>    <span class="n">The</span> <span class="n">machine</span><span class="o">.</span>
+<span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">your_compiler</span>   <span class="n">The</span> <span class="n">compiler</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">If none of these 3 are used, the default values are ‘none’.</div>
+<div class="line">If any of them are used, the default for the unused options is ‘all’.</div>
+<div class="line">Existing values of these attributes can be seen by running <code class="docutils literal notranslate"><span class="pre">query_testlists</span></code></div>
+</div>
+<p>The search for test names can be restricted to a single test list using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">testlist</span> <span class="n">your_testlist</span>
+</pre></div>
+</div>
+<p>Omitting this results in searching all testlists listed in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cime</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="p">{</span><span class="n">cesm</span><span class="p">,</span><span class="n">e3sm</span><span class="p">}</span><span class="o">/</span><span class="n">config_files</span><span class="o">.</span><span class="n">xml</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">./scripts/query_testlists</span></code> tool gathers descriptions of the tests and testlists available
+in the XML format, the components, and projects.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--xml-{compiler,machine,category,testlist}</span></code> arguments can be used
+as in create_test (above) to focus the search.
+The ‘category’ descriptor of a test can be used to run a group of associated tests at the same time.
+The available categories, with the tests they encompass, can be listed by:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">query_testlists</span> <span class="o">--</span><span class="n">define</span><span class="o">-</span><span class="n">testtypes</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--show-options</span></code> argument does the same, but displays the ‘options’ defined for the tests,
+such as queue, walltime, etc.</p>
+<p>Adding a test requires first deciding which compset will be tested
+and then finding the appropriate <code class="docutils literal notranslate"><span class="pre">testlist_$component.xml</span></code> file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>components/$component/cime_config/testdefs/
+   testlist_$component.xml
+   testmods_dirs/$component/{TESTMODS1,TESTMODS2,...}
+cime_config/
+   testlist_allactive.xml
+   testmods_dirs/allactive/{defaultio,...}
+</pre></div>
+</div>
+<p>You can optionally add testmods for that test in the testmods_dirs.
+Testlists and testmods live in different paths for cime, drv, and components.</p>
+<p>If this test will only be run as a single test, you can now create a test name
+and follow the <a class="reference internal" href="#system-testing-individual">individual</a> test instructions for create_test.</p>
+</section>
+<section id="python">
+<h4><a class="toc-backref" href="#id14" role="doc-backlink">Python</a><a class="headerlink" href="#python" title="Link to this heading"></a></h4>
+<p>A suite of tests can also be provided with a python file <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> placed in <code class="docutils literal notranslate"><span class="pre">$MODEL/cime_config</span></code>.</p>
+<p>To run a test suite called e3sm_developer:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span>
+</pre></div>
+</div>
+<p>One can exclude a specific test from a suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span> <span class="o">^</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
+</pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">./scripts/create_test</span> <span class="pre">-h</span></code> for the full list of options.</p>
+<section id="format">
+<h5><a class="toc-backref" href="#id15" role="doc-backlink">Format</a><a class="headerlink" href="#format" title="Link to this heading"></a></h5>
+<p>The following defines the format of <code class="docutils literal notranslate"><span class="pre">tests.py</span></code>. The only variable that needs to be defined is <code class="docutils literal notranslate"><span class="pre">_TESTS</span></code> which needs to be a dictionary. Each key is the name of a test suite and the value is a dictionary. See below for the description of possible values.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>inherit</p></td>
+<td><p>A tuple, list, or str of other suites.</p></td>
+</tr>
+<tr class="row-odd"><td><p>time</p></td>
+<td><p>Upper limit for test time. Format is <code class="docutils literal notranslate"><span class="pre">HH:MM:SS</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>share</p></td>
+<td><p>Should cases share a build. Value is <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>tests</p></td>
+<td><p>A tuple, list, or str of <code class="docutils literal notranslate"><span class="pre">&lt;testname&gt;</span></code>, see the format below.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The format for <code class="docutils literal notranslate"><span class="pre">&lt;testname&gt;</span></code> is <code class="docutils literal notranslate"><span class="pre">TESTTYPE.GRID.COMPSET[.TESTMOD]</span></code>. The <code class="docutils literal notranslate"><span class="pre">TESTMOD</span></code> is optional.</p>
+</section>
+<section id="example">
+<h5><a class="toc-backref" href="#id16" role="doc-backlink">Example</a><a class="headerlink" href="#example" title="Link to this heading"></a></h5>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_TESTS</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;suite_a&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;inherit&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;suite_b&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;0:45:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;share&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tests&quot;</span><span class="p">:</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="n">testname</span><span class="o">&gt;</span>
+    <span class="p">)</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;suite_b&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;02:00:00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tests&quot;</span><span class="p">:</span> <span class="p">(</span>
+      <span class="o">&lt;</span><span class="n">testname</span><span class="o">&gt;</span>
+    <span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="listing-the-test-suites">
+<h5><a class="toc-backref" href="#id17" role="doc-backlink">Listing the test suites</a><a class="headerlink" href="#listing-the-test-suites" title="Link to this heading"></a></h5>
+<p>The following tool will list the tests.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">CIME</span><span class="o">/</span><span class="n">Tools</span><span class="o">/</span><span class="n">list_e3sm_tests</span> <span class="o">-</span><span class="n">t</span> <span class="n">compsets</span> <span class="n">e3sm_developer</span>
+</pre></div>
+</div>
+<p>Will list all the compsets tested in the <code class="docutils literal notranslate"><span class="pre">e3sm_developer</span></code> test suite.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="test-name-syntax">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Test name syntax</a><a class="headerlink" href="#test-name-syntax" title="Link to this heading"></a></h2>
+<p>A test name is defined by the following format, where anything enclosed in <code class="docutils literal notranslate"><span class="pre">[]</span></code> is option.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">][</span><span class="o">.</span><span class="n">GROUP</span><span class="o">-</span><span class="n">TESTMODS</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>For example using the minimum <a class="reference internal" href="#testtype">TESTTYPE</a>, <a class="reference external" href="../users_guide/grids.html">GRID</a>, and <a class="reference external" href="../users_guide/compsets.html">COMPSET</a>:</p>
+<p>The following is a minimal example where <code class="docutils literal notranslate"><span class="pre">ERP</span></code> is the <code class="docutils literal notranslate"><span class="pre">TESTTYPE</span></code>, <code class="docutils literal notranslate"><span class="pre">ne4pg2_oQU480</span></code> is the <code class="docutils literal notranslate"><span class="pre">GRID</span></code> and <code class="docutils literal notranslate"><span class="pre">F2010</span></code> is the <code class="docutils literal notranslate"><span class="pre">COMPSET</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERP</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span>
 </pre></div>
 </div>
 <p>Below is a breakdown of the different parts of the <code class="docutils literal notranslate"><span class="pre">testname</span></code> syntax.</p>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>NAME PART</p></th>
-<th class="head"></th>
+<tr class="row-odd"><th class="head"><p>Syntax Part</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="#testtype">TESTTYPE</a></p></td>
-<td><p>The general type of test, e.g. SMS. Options are listed in the following table and config_tests.xml.</p></td>
+<tr class="row-even"><td><p>TESTTYPE</p></td>
+<td><p>The type of test e.g. SMS, ERS, etc. See <code class="docutils literal notranslate"><span class="pre">config_tests.xml</span></code> for options.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#modifiers">MODIFIERS</a></p></td>
-<td><p>Changes to the default settings for the test type.
-See the following table and test_scheduler.py.</p></td>
+<tr class="row-odd"><td><p>MODIFIER</p></td>
+<td><p>Changes to the default settings for the test type.</p></td>
 </tr>
 <tr class="row-even"><td><p>GRID</p></td>
 <td><p>The model grid, can be longname or alias.</p></td>
@@ -149,27 +318,21 @@ See the following table and test_scheduler.py.</p></td>
 <td><p>The compset, can be a longname but usually a compset alias.</p></td>
 </tr>
 <tr class="row-even"><td><p>MACHINE</p></td>
-<td><p>This is optional; if this value is not supplied, <a class="reference external" href="../Tools_user/create_test.html">create_test</a>
-will probe the underlying machine.</p></td>
+<td><p>This is optional; if this value is not supplied, <code class="docutils literal notranslate"><span class="pre">create_test</span></code> will probe the underlying machine.</p></td>
 </tr>
 <tr class="row-odd"><td><p>COMPILER</p></td>
 <td><p>If this value is not supplied, use the default compiler for MACHINE.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#group-testmods">GROUP-TESTMODS</a></p></td>
-<td><p>This is optional. This points to a directory with <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</span></code> files or a <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code>
-that can be used to make namelist and other modifications prior to running a test.</p></td>
+<tr class="row-even"><td><p>GROUP-TESTMODS</p></td>
+<td><p>This is optional. This points to a directory with testmod.</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="testtype">
-<span id="id2"></span><h2><a class="toc-backref" href="#id24" role="doc-backlink">TESTTYPE</a><a class="headerlink" href="#testtype" title="Link to this heading"></a></h2>
-<p>The test types in CIME are all system tests: they compile all the code needed in a case, they test
-functionality of the model such as restart capability, invariance with MPI task count, and short
-term archiving. At this time, they do not test for scientific correctness.</p>
+<section id="test-type">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Test Type</a><a class="headerlink" href="#test-type" title="Link to this heading"></a></h3>
+<p>The test type defines the behavior that the case will be tested against. For example a test may exercise a models ability to restart, invariance with MPI task count, or short term archiving.</p>
+<p>CIME provides some tests out of the box, but a model may add additional test types using the <code class="docutils literal notranslate"><span class="pre">SYSTEM_TEST_DIR</span></code> variable or adding them to <code class="docutils literal notranslate"><span class="pre">cime_config/SystemTests</span></code> in any component.</p>
 <p>The following test types are provided by CIME.</p>
-<p>For each component, their <code class="docutils literal notranslate"><span class="pre">cime_config/SystemTests</span></code> directory is processed to add component-specific tests.</p>
-<p>Additional test types can be provided by adding entries to <code class="docutils literal notranslate"><span class="pre">SYSTEM_TESTS_DIR</span></code>.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>TESTTYPE</p></th>
@@ -333,9 +496,6 @@ Compare base and seq.</p>
 <dt>Pause-resume test: by default a bit-for-bit test of pause-resume cycling.</dt><dd><p>Default 5 hours, five pause/resume cycles, no data modification.</p>
 </dd>
 </dl>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 </td>
 </tr>
 </tbody>
@@ -345,7 +505,7 @@ on the machine the test runs on and its default coupler and MPI library. It is p
 elements of the test through a test type modifier.</p>
 </section>
 <section id="modifiers">
-<span id="id3"></span><h2><a class="toc-backref" href="#id25" role="doc-backlink">MODIFIERS</a><a class="headerlink" href="#modifiers" title="Link to this heading"></a></h2>
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Modifiers</a><a class="headerlink" href="#modifiers" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>MODIFIERS</p></th>
@@ -402,43 +562,44 @@ For PTS_MODE, compile with mpi-serial.</p></td>
 </tbody>
 </table>
 <p>For example, this will run the ERP test with debugging turned on during compilation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test ERP_D.ne4pg2_oQU480.F2010
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="n">ERP_D</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span>
 </pre></div>
 </div>
 <p>This will run the ERP test for 3 days instead of the default 11 days:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test ERP_Ld3.ne4pg2_oQU480.F2010
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="n">ERP_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span>
 </pre></div>
 </div>
 <p>You can combine test type modifiers:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test ERP_D_Ld3.ne4pg2_oQU480.F2010
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="n">ERP_D_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span>
 </pre></div>
 </div>
 </section>
-<section id="group-testmods">
-<span id="id4"></span><h2><a class="toc-backref" href="#id26" role="doc-backlink">GROUP-TESTMODS</a><a class="headerlink" href="#group-testmods" title="Link to this heading"></a></h2>
-<p>The <a class="reference external" href="../Tools_user/create_test.html">create_test</a> command runs with out-of-the-box compsets and grid sets.
-Sometimes you may want to run a test with modifications to a namelist or other setting without creating an
-entire compset. Case Control System (CCS) provides the testmods capability for this situation.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">GROUP-TESTMODS</span></code> string is at the end of the full <span class="xref std std-ref">testname</span> (including machine and compiler).
-The form <code class="docutils literal notranslate"><span class="pre">GROUP-TESTMODS</span></code> is parsed as follows.</p>
+<section id="test-mods">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Test Mods</a><a class="headerlink" href="#test-mods" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_test</span></code> tool works with out-of-the-box compsets and grids.
+Sometimes you may want to run a test with modifications to a namelist or other setting without creating an entire compset. CIME provides the testmods capability for this situation.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">GROUP-TESTMODS</span></code> string is at the end of the full testname (including machine and compiler).</p>
+<p>The syntax for <code class="docutils literal notranslate"><span class="pre">GROUP-TESTMODS</span></code> is as follows.</p>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>PART</p></th>
+<tr class="row-odd"><th class="head"><p>Syntax part</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>GROUP</p></td>
-<td><p>Name of the directory under <code class="docutils literal notranslate"><span class="pre">TESTS_MODS_DIR</span></code> that contains <code class="docutils literal notranslate"><span class="pre">TESTMODS</span></code>.</p></td>
+<td><p>Name of the directory relative to <code class="docutils literal notranslate"><span class="pre">TESTS_MODS_DIR</span></code> that contains <code class="docutils literal notranslate"><span class="pre">TESTMODS</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>TESTMODS</p></td>
-<td><p>Any combination of <a href="#id37"><span class="problematic" id="id38">`user_nl_* &lt;USER_NL_&gt;`_</span></a>, <a href="#id15"><span class="problematic" id="id17">`shell_commands &lt;SHELL_COMMANDS_&gt;`_</span></a><a href="#id15"><span class="problematic" id="id16"> &lt;SHELL_COMMANDS_&gt;</span></a>,
-<a href="#id18"><span class="problematic" id="id20">`user_mods &lt;USER_MODS_&gt;`_</span></a><a href="#id18"><span class="problematic" id="id19"> &lt;USER_MODS_&gt;</span></a>, or <a href="#id39"><span class="problematic" id="id40">`params.py &lt;TESTYPE_MOD_&gt;`_</span></a> in a directory under the
-<code class="docutils literal notranslate"><span class="pre">GROUP</span></code> directory.</p></td>
+<td><p>Name of the directory under <code class="docutils literal notranslate"><span class="pre">GROUP</span></code> that contains any combination of <a href="#id29"><span class="problematic" id="id30">`user_nl_* &lt;USER_NL_&gt;`_</span></a>, <a href="#id2"><span class="problematic" id="id4">`shell_commands &lt;SHELL_COMMANDS_&gt;`_</span></a><a href="#id2"><span class="problematic" id="id3"> &lt;SHELL_COMMANDS_&gt;</span></a>, <a href="#id5"><span class="problematic" id="id7">`user_mods &lt;USER_MODS_&gt;`_</span></a><a href="#id5"><span class="problematic" id="id6"> &lt;USER_MODS_&gt;</span></a>, or <a href="#id31"><span class="problematic" id="id32">`params.py &lt;TESTYPE_MOD_&gt;`_</span></a>.</p></td>
 </tr>
 </tbody>
 </table>
-<p>For example, the <em>ERP</em> test for an E3SM <em>F-case</em> can be modified to use a different radiation scheme by using <code class="docutils literal notranslate"><span class="pre">eam-rrtmgp</span></code>:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A test mod can contain any combination of <code class="docutils literal notranslate"><span class="pre">user_nl_*</span></code>, <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code>, <code class="docutils literal notranslate"><span class="pre">user_mods</span></code>, or <code class="docutils literal notranslate"><span class="pre">params.py</span></code>.</p>
+</div>
+<p>For example, the <code class="docutils literal notranslate"><span class="pre">ERP</span></code> test for an E3SM <code class="docutils literal notranslate"><span class="pre">F-case</span></code> can be modified to use a different radiation scheme by using <code class="docutils literal notranslate"><span class="pre">eam-rrtmgp</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ERP_D_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span><span class="o">.</span><span class="n">pm</span><span class="o">-</span><span class="n">cpu_intel</span><span class="o">.</span><span class="n">eam</span><span class="o">-</span><span class="n">rrtmgp</span>
 </pre></div>
 </div>
@@ -455,192 +616,118 @@ directory containing the testmods would be <code class="docutils literal notrans
 <p>Do not use ‘-’ in the testmods directory name because it has a special meaning to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>.</p>
 </div>
 </section>
-<section id="test-progress-and-output">
-<h2><a class="toc-backref" href="#id27" role="doc-backlink">Test progress and output</a><a class="headerlink" href="#test-progress-and-output" title="Link to this heading"></a></h2>
-<p>Each test run by <a class="reference external" href="../Tools_user/create_test.html">create_test</a> includes the following mandatory steps:</p>
-<ul class="simple">
-<li><p>CREATE_NEWCASE: creating the case</p></li>
-<li><p>XML: XML changes to case based on test settings</p></li>
-<li><p>SETUP: setup case (case.setup)</p></li>
-<li><p>SHAREDLIB_BUILD: build sharedlibs</p></li>
-<li><p>MODEL_BUILD: build model (case.build)</p></li>
-<li><p>SUBMIT: submit test (case.submit)</p></li>
-<li><p>RUN: run test</p></li>
-</ul>
+</section>
+<section id="testing-process">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Testing Process</a><a class="headerlink" href="#testing-process" title="Link to this heading"></a></h2>
+<p>Each test run by <code class="docutils literal notranslate"><span class="pre">create_test</span></code> includes the following mandatory steps:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CREATE_NEWCASE</p></td>
+<td><p>Creates the case directory (case.create_newcase)</p></td>
+</tr>
+<tr class="row-odd"><td><p>XML</p></td>
+<td><p>XML changes to case based on test settings (xmlchange)</p></td>
+</tr>
+<tr class="row-even"><td><p>SETUP</p></td>
+<td><p>Setup case (case.setup)</p></td>
+</tr>
+<tr class="row-odd"><td><p>SHAREDLIB_BUILD</p></td>
+<td><p>Build sharedlibs (case.build)</p></td>
+</tr>
+<tr class="row-even"><td><p>MODEL_BUILD</p></td>
+<td><p>Build model (case.build)</p></td>
+</tr>
+<tr class="row-odd"><td><p>SUBMIT</p></td>
+<td><p>Submit test (case.submit)</p></td>
+</tr>
+<tr class="row-even"><td><p>RUN</p></td>
+<td><p>Run test</p></td>
+</tr>
+</tbody>
+</table>
 <p>And the following optional phases:</p>
-<ul class="simple">
-<li><p>NLCOMP: Compare case namelists against baselines</p></li>
-<li><p>THROUGHPUT: Compare throughput against baseline throughput</p></li>
-<li><p>MEMCOMP: Compare memory usage against baseline memory usage</p></li>
-<li><p>MEMLEAK: Check for memory leaks</p></li>
-<li><p>COMPARE: Used to track test-specific comparisons, for example, an ERS test would have a COMPARE_base_rest phase representing the check that the base result matched the restart result.</p></li>
-<li><p>GENERATE: Generate baseline results</p></li>
-<li><p>BASELINE: Compare results against baselines</p></li>
-</ul>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NLCOMP</p></td>
+<td><p>Compare namelists against baseline</p></td>
+</tr>
+<tr class="row-odd"><td><p>THROUGHPUT</p></td>
+<td><p>Compare throughput against baseline</p></td>
+</tr>
+<tr class="row-even"><td><p>MEMCOMP</p></td>
+<td><p>Compare memory usage against baseline</p></td>
+</tr>
+<tr class="row-odd"><td><p>MEMLEAK</p></td>
+<td><p>Check for memory leaks</p></td>
+</tr>
+<tr class="row-even"><td><p>COMPARE</p></td>
+<td><p>Used to track test-specific comparisons, for example, an ERS test would have a COMPARE_base_rest phase representing the check that the base result matched the restart result.</p></td>
+</tr>
+<tr class="row-odd"><td><p>GENERATE</p></td>
+<td><p>Generate baseline results</p></td>
+</tr>
+<tr class="row-even"><td><p>BASELINE</p></td>
+<td><p>Compare results against baselines</p></td>
+</tr>
+</tbody>
+</table>
 <p>Each phase within the test may be in one of the following states:</p>
-<ul class="simple">
-<li><p>PASS: The phase was executed successfully</p></li>
-<li><p>FAIL: We attempted to execute this phase, but it failed. If this phase is mandatory, no further progress will be made on this test. A detailed explanation of the failure should be in TestStatus.log.</p></li>
-<li><p>PEND: This phase will be run or is currently running but not complete</p></li>
-</ul>
-</section>
-<section id="running-multiple-tests-and-other-command-line-examples">
-<h2><a class="toc-backref" href="#id28" role="doc-backlink">Running multiple tests and other command line examples</a><a class="headerlink" href="#running-multiple-tests-and-other-command-line-examples" title="Link to this heading"></a></h2>
-<p>Multiple tests can be run by listing all of the test names on the command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test  $test_name  $test_name2
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PASS</p></td>
+<td><p>The phase was executed successfully</p></td>
+</tr>
+<tr class="row-odd"><td><p>FAIL</p></td>
+<td><p>We attempted to execute this phase, but it failed. If this phase is mandatory, no further progress will be made on this test. A detailed explanation of the failure should be in TestStatus.log.</p></td>
+</tr>
+<tr class="row-even"><td><p>PEND</p></td>
+<td><p>This phase will be run or is currently running but not complete</p></td>
+</tr>
+</tbody>
+</table>
+<section id="output">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Output</a><a class="headerlink" href="#output" title="Link to this heading"></a></h3>
+<p>Lets look at the output from <code class="docutils literal notranslate"><span class="pre">./scripts/create_test</span> <span class="pre">SMS.f19_f19.A</span></code>. Here you can find each phase of the test its status and the time it took to complete.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Creating<span class="w"> </span><span class="nb">test</span><span class="w"> </span>directory<span class="w"> </span>/home/jgfouca/e3sm/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
+RUNNING<span class="w"> </span>TESTS:
+<span class="w">  </span>SMS.f19_f19.A.melvin_gnu
+Starting<span class="w"> </span>CREATE_NEWCASE<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>with<span class="w"> </span><span class="m">1</span><span class="w"> </span>procs
+Finished<span class="w"> </span>CREATE_NEWCASE<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">4</span>.170537<span class="w"> </span>seconds<span class="w"> </span><span class="o">(</span>PASS<span class="o">)</span>
+Starting<span class="w"> </span>XML<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>with<span class="w"> </span><span class="m">1</span><span class="w"> </span>procs
+Finished<span class="w"> </span>XML<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">0</span>.735993<span class="w"> </span>seconds<span class="w"> </span><span class="o">(</span>PASS<span class="o">)</span>
+Starting<span class="w"> </span>SETUP<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>with<span class="w"> </span><span class="m">1</span><span class="w"> </span>procs
+Finished<span class="w"> </span>SETUP<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">11</span>.544286<span class="w"> </span>seconds<span class="w"> </span><span class="o">(</span>PASS<span class="o">)</span>
+Starting<span class="w"> </span>SHAREDLIB_BUILD<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>with<span class="w"> </span><span class="m">1</span><span class="w"> </span>procs
+Finished<span class="w"> </span>SHAREDLIB_BUILD<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">82</span>.670667<span class="w"> </span>seconds<span class="w"> </span><span class="o">(</span>PASS<span class="o">)</span>
+Starting<span class="w"> </span>MODEL_BUILD<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>with<span class="w"> </span><span class="m">4</span><span class="w"> </span>procs
+Finished<span class="w"> </span>MODEL_BUILD<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">18</span>.613263<span class="w"> </span>seconds<span class="w"> </span><span class="o">(</span>PASS<span class="o">)</span>
+Starting<span class="w"> </span>RUN<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>with<span class="w"> </span><span class="m">64</span><span class="w"> </span>procs
+Finished<span class="w"> </span>RUN<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">35</span>.068546<span class="w"> </span>seconds<span class="w"> </span><span class="o">(</span>PASS<span class="o">)</span>.<span class="w"> </span><span class="o">[</span>COMPLETED<span class="w"> </span><span class="m">1</span><span class="w"> </span>of<span class="w"> </span><span class="m">1</span><span class="o">]</span>
+At<span class="w"> </span>test-scheduler<span class="w"> </span>close,<span class="w"> </span>state<span class="w"> </span>is:
+PASS<span class="w"> </span>SMS.f19_f19.A.melvin_gnu<span class="w"> </span>RUN
+<span class="w">  </span>Case<span class="w"> </span>dir:<span class="w"> </span>/home/jgfouca/e3sm/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
+test-scheduler<span class="w"> </span>took<span class="w"> </span><span class="m">154</span>.780044079<span class="w"> </span>seconds
 </pre></div>
 </div>
-<p>or by putting the test names into a file, one name per line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CIMEROOT/scripts/create_test -f $file_of_test_names
-</pre></div>
-</div>
-<p>To run a test with a non-default compiler:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">--</span><span class="n">compiler</span> <span class="n">intel</span>
-</pre></div>
-</div>
-<p>To run a test with baseline comparisons against baseline name ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
-</pre></div>
-</div>
-<p>To run a test and update baselines with baseline name ‘master’:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
-</pre></div>
-</div>
-<p>To run a test with a non-default test-id:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">t</span> <span class="n">my_test_id</span>
-</pre></div>
-</div>
-<p>To run a test and use a non-default test-root for your case dir:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./create_test SMS.f19_f19.A -t $test_root
-</pre></div>
-</div>
-<p>To run a test and use and put case, build, and run dirs all in the same root:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>./create_test SMS.f19_f19.A --output-root $output_root
-</pre></div>
-</div>
-<p>To run a test and force it to go into a certain batch queue:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">q</span> <span class="n">myqueue</span>
-</pre></div>
-</div>
-<p>The Case Control System supports more sophisticated ways to specify a suite of tests and
-how they should be run. One approach uses XML files and the other uses Python dictionaries.</p>
-</section>
-<section id="test-control-with-xml-files">
-<h2><a class="toc-backref" href="#id29" role="doc-backlink">Test control with XML files</a><a class="headerlink" href="#test-control-with-xml-files" title="Link to this heading"></a></h2>
-<p id="query-testlists">A pre-defined suite of tests can be run using the <code class="docutils literal notranslate"><span class="pre">--xml</span></code> options to create_test,
-which harvest test names from testlist*.xml files.
-As described in <a class="reference external" href="https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide">https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide</a>,
-to determine what pre-defined test suites are available and what tests they contain,
-you can run <a class="reference internal" href="#query-testlists">query_testlists</a>.</p>
-<p>Test suites are retrieved in create_test via 3 selection attributes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">your_category</span>   <span class="n">The</span> <span class="n">test</span> <span class="n">category</span><span class="o">.</span>
-<span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span>  <span class="n">your_machine</span>    <span class="n">The</span> <span class="n">machine</span><span class="o">.</span>
-<span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">your_compiler</span>   <span class="n">The</span> <span class="n">compiler</span><span class="o">.</span>
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line">If none of these 3 are used, the default values are ‘none’.</div>
-<div class="line">If any of them are used, the default for the unused options is ‘all’.</div>
-<div class="line">Existing values of these attributes can be seen by running <a class="reference internal" href="#query-testlists">query_testlists</a>.</div>
-</div>
-<p>The search for test names can be restricted to a single test list using:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">testlist</span> <span class="n">your_testlist</span>
-</pre></div>
-</div>
-<p>Omitting this results in searching all testlists listed in:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cime</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="p">{</span><span class="n">cesm</span><span class="p">,</span><span class="n">e3sm</span><span class="p">}</span><span class="o">/</span><span class="n">config_files</span><span class="o">.</span><span class="n">xml</span>
-</pre></div>
-</div>
-<p><strong>$CIMEROOT/scripts/query_testlists</strong> gathers descriptions of the tests and testlists available
-in the XML format, the components, and projects.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">--xml-{compiler,machine,category,testlist}</span></code> arguments can be used
-as in create_test (above) to focus the search.
-The ‘category’ descriptor of a test can be used to run a group of associated tests at the same time.
-The available categories, with the tests they encompass, can be listed by:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">query_testlists</span> <span class="o">--</span><span class="n">define</span><span class="o">-</span><span class="n">testtypes</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">--show-options</span></code> argument does the same, but displays the ‘options’ defined for the tests,
-such as queue, walltime, etc.</p>
-<p>Adding a test requires first deciding which compset will be tested
-and then finding the appropriate testlist_$component.xml file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>components/$component/cime_config/testdefs/
-   testlist_$component.xml
-   testmods_dirs/$component/{TESTMODS1,TESTMODS2,...}
-cime_config/
-   testlist_allactive.xml
-   testmods_dirs/allactive/{defaultio,...}
-</pre></div>
-</div>
-<p>You can optionally add testmods for that test in the testmods_dirs.
-Testlists and testmods live in different paths for cime, drv, and components.</p>
-<p>If this test will only be run as a single test, you can now create a test name
-and follow the <a class="reference internal" href="#individual">individual</a> test instructions for create_test.</p>
-</section>
-<section id="test-control-with-python-dictionaries">
-<h2><a class="toc-backref" href="#id30" role="doc-backlink">Test control with Python dictionaries</a><a class="headerlink" href="#test-control-with-python-dictionaries" title="Link to this heading"></a></h2>
-<p id="python-dict-testing">One can also define suites of tests in a file called tests.py typically located in $MODEL/cime_config/tests.py</p>
-<p>To run a test suite called e3sm_developer:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span>
-</pre></div>
-</div>
-<p>One can exclude a specific test from a suite:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span> <span class="o">^</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
-</pre></div>
-</div>
-<p>See create_test -h for the full list of options.</p>
-<p>To add a test, open the MODEL/cime_config/tests.py file, you’ll see a Python dict at the top
-of the file called _TESTS, find the test category you want to
-change in this dict and add your testcase to the list. Note the
-comment at the top of this file indicating that you add a test with
-this format: test&gt;.&lt;grid&gt;.&lt;compset&gt;, and then there is a second
-argument for mods. Machine and compiler are added later depending on where
-create_test is invoked and its arguments.</p>
-<p>Existing tests can be listed using the cime/CIME/Tools/list_e3sm_tests script.</p>
-<p>For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">list_e3sm_tests</span> <span class="o">-</span><span class="n">t</span> <span class="n">compsets</span> <span class="n">e3sm_developer</span>
-</pre></div>
-</div>
-<p>Will list all the compsets tested in the e3sm_developer test suite.</p>
-</section>
-<section id="create-test-output">
-<h2><a class="toc-backref" href="#id31" role="doc-backlink">Create_test output</a><a class="headerlink" href="#create-test-output" title="Link to this heading"></a></h2>
-<p>Interpreting test output is pretty easy. Looking at an example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span> <span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
-
-<span class="n">Creating</span> <span class="n">test</span> <span class="n">directory</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="mf">.20170504_163152_31</span><span class="n">aahy</span>
-<span class="n">RUNNING</span> <span class="n">TESTS</span><span class="p">:</span>
-  <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span>
-<span class="n">Starting</span> <span class="n">CREATE_NEWCASE</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">1</span> <span class="n">procs</span>
-<span class="n">Finished</span> <span class="n">CREATE_NEWCASE</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">4.170537</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span>
-<span class="n">Starting</span> <span class="n">XML</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">1</span> <span class="n">procs</span>
-<span class="n">Finished</span> <span class="n">XML</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">0.735993</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span>
-<span class="n">Starting</span> <span class="n">SETUP</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">1</span> <span class="n">procs</span>
-<span class="n">Finished</span> <span class="n">SETUP</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">11.544286</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span>
-<span class="n">Starting</span> <span class="n">SHAREDLIB_BUILD</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">1</span> <span class="n">procs</span>
-<span class="n">Finished</span> <span class="n">SHAREDLIB_BUILD</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">82.670667</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span>
-<span class="n">Starting</span> <span class="n">MODEL_BUILD</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">4</span> <span class="n">procs</span>
-<span class="n">Finished</span> <span class="n">MODEL_BUILD</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">18.613263</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span>
-<span class="n">Starting</span> <span class="n">RUN</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="k">with</span> <span class="mi">64</span> <span class="n">procs</span>
-<span class="n">Finished</span> <span class="n">RUN</span> <span class="k">for</span> <span class="n">test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="ow">in</span> <span class="mf">35.068546</span> <span class="n">seconds</span> <span class="p">(</span><span class="n">PASS</span><span class="p">)</span><span class="o">.</span> <span class="p">[</span><span class="n">COMPLETED</span> <span class="mi">1</span> <span class="n">of</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">At</span> <span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">close</span><span class="p">,</span> <span class="n">state</span> <span class="ow">is</span><span class="p">:</span>
-<span class="n">PASS</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span> <span class="n">RUN</span>
-  <span class="n">Case</span> <span class="nb">dir</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jgfouca</span><span class="o">/</span><span class="n">e3sm</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">melvin_gnu</span><span class="mf">.20170504_163152_31</span><span class="n">aahy</span>
-<span class="n">test</span><span class="o">-</span><span class="n">scheduler</span> <span class="n">took</span> <span class="mf">154.780044079</span> <span class="n">seconds</span>
-</pre></div>
-</div>
-<p>You can see that <a class="reference external" href="../Tools_user/create_test.html">create_test</a> informs the user of the case directory and of the progress and duration
-of the various test phases.</p>
-<p>The $CASEDIR for the test will be created in $CIME_OUTPUT_ROOT. The name will be of the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">[</span><span class="o">.</span><span class="n">GROUP</span><span class="o">-</span><span class="n">TESTMODS</span><span class="p">]</span><span class="o">.</span><span class="n">YYYYMMDD_HHMMSS_hash</span>
-</pre></div>
-</div>
-<p>If MODIFIERS or GROUP-TESTMODS are used, those will be included in the test output directory name. The
-extra string with YYYYMMDD_HHMMSS_hash is the testid and used to distinguish multiple runs of the
-same test. That string
-can be replaced with the –test-id argument to create_test.</p>
-<p>For a test, the $CASEDIR will have $EXEROOT and $RUNDIR as subdirectories.</p>
-<p>The current state of a test is represented in the file $CASEDIR/TestStatus. Example output:</p>
+<p>The case is created in <code class="docutils literal notranslate"><span class="pre">$CASEDIR</span></code> which can be seen in the output above. The test status is stored in <code class="docutils literal notranslate"><span class="pre">$CASEDIR/TestStatus</span></code>.
+The case directory name format is <code class="docutils literal notranslate"><span class="pre">&lt;testname&gt;.&lt;test-id&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;test-id&gt;</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">YYYYMMDD_HHMMSS_hash</span></code>.
+This can be overridden with the <code class="docutils literal notranslate"><span class="pre">--test-id</span></code> argument to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>.</p>
+<p>The current state of a test is represented in the file <code class="docutils literal notranslate"><span class="pre">$CASEDIR/TestStatus</span></code>. Example output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PASS</span> <span class="n">ERP_D_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span><span class="o">.</span><span class="n">chrysalis_intel</span> <span class="n">CREATE_NEWCASE</span>
 <span class="n">PASS</span> <span class="n">ERP_D_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span><span class="o">.</span><span class="n">chrysalis_intel</span> <span class="n">XML</span>
 <span class="n">PASS</span> <span class="n">ERP_D_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span><span class="o">.</span><span class="n">chrysalis_intel</span> <span class="n">SETUP</span>
@@ -653,32 +740,26 @@ can be replaced with the –test-id argument to create_test.</p>
 <span class="n">PASS</span> <span class="n">ERP_D_Ld3</span><span class="o">.</span><span class="n">ne4pg2_oQU480</span><span class="o">.</span><span class="n">F2010</span><span class="o">.</span><span class="n">chrysalis_intel</span> <span class="n">SHORT_TERM_ARCHIVER</span>
 </pre></div>
 </div>
-<p>All other stdout output from the CIME case control system produced by running this test will
-be put in the file $CASEDIR/TestStatus.log</p>
-<p>A cs.status.$testid script will also be put in the test root. This script will allow you to see the</p>
+<p>The entire stdout output from the test will be put in the file <code class="docutils literal notranslate"><span class="pre">$CASEDIR/TestStatus.log</span></code>.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">cs.status.&lt;test-id&gt;</span></code> script will also be put in the test root. This script will allow you to see the status of the test.</p>
 </section>
-<section id="baselines-and-baseline-testing">
-<h2><a class="toc-backref" href="#id32" role="doc-backlink">Baselines and Baseline Testing</a><a class="headerlink" href="#baselines-and-baseline-testing" title="Link to this heading"></a></h2>
-<p id="baselines">A big part of testing is managing your baselines (sometimes called gold results) and doing additional tests against
-the baseline. The baseline for a test will be copy of the (history) files created in the run of the test.</p>
-<p>create_test can
-be asked to perform bit-for-bit comparisons between the files generated by the current run of the test and
-the files stored in the baseline. They must be bit-for-bit identical for the baseline test to pass.</p>
-<p>baseline testing adds an additional
-test criteria to the one that comes from the test type and is used as a way to guard against unintentionally
-changing the results from a deterministic climate model.</p>
 </section>
+<section id="baselines">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink">Baselines</a><a class="headerlink" href="#baselines" title="Link to this heading"></a></h2>
+<p>An important part of testing is creating, comparing, and managing baselines (sometimes called gold results). Baselines can be used to compare history files, namelist files, and performance metrics.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_test</span></code> tool can be asked to perform bit-for-bit comparisons between the files generated by the current run and the files stored in the baseline. They must be bit-for-bit identical for the baseline test to pass.</p>
+<p>Baseline testing adds an additional test criteria to the one that comes from the test type and is used as a way to guard against unintentionally changing the results from a deterministic climate model.</p>
 <section id="creating-a-baseline">
-<h2><a class="toc-backref" href="#id33" role="doc-backlink">Creating a baseline</a><a class="headerlink" href="#creating-a-baseline" title="Link to this heading"></a></h2>
-<p id="id8">A baseline can be generated by passing <code class="docutils literal notranslate"><span class="pre">-g</span></code> to <a class="reference external" href="../Tools_user/create_test.html">create_test</a>. There
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Creating a baseline</a><a class="headerlink" href="#creating-a-baseline" title="Link to this heading"></a></h3>
+<p>A baseline can be generated by passing <code class="docutils literal notranslate"><span class="pre">-g</span></code> to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>. There
 are additional options to control generating baselines.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">-</span><span class="n">g</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
 </section>
 <section id="comparing-a-baseline">
-<h2><a class="toc-backref" href="#id34" role="doc-backlink">Comparing a baseline</a><a class="headerlink" href="#comparing-a-baseline" title="Link to this heading"></a></h2>
-<p id="id10">Comparing the output of a test to a baseline is achieved by passing <code class="docutils literal notranslate"><span class="pre">-c</span></code> to <a class="reference external" href="../Tools_user/create_test.html">create_test</a>.:</p>
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Comparing a baseline</a><a class="headerlink" href="#comparing-a-baseline" title="Link to this heading"></a></h3>
+<p>Comparing the output of a test to a baseline is achieved by passing <code class="docutils literal notranslate"><span class="pre">-c</span></code> to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">-</span><span class="n">c</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
@@ -688,31 +769,30 @@ comparison with baselines would FAIL (answers are not bit-for-bit identical to t
 as a whole would FAIL.</p>
 </section>
 <section id="managing-baselines">
-<h2><a class="toc-backref" href="#id35" role="doc-backlink">Managing baselines</a><a class="headerlink" href="#managing-baselines" title="Link to this heading"></a></h2>
-<p id="id12">If you intended to change the answers, you need to update the baseline with new files. This is referred to
-as “blessing” the test.
-This is done with the <a class="reference external" href="../Tools_user/bless_test_results.html">bless_test_results</a> tool. The tool provides the ability to bless different features of the baseline. The currently supported features are namelist files, history files, and performance metrics. The performance metrics are separated into throughput and memory usage.</p>
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Managing baselines</a><a class="headerlink" href="#managing-baselines" title="Link to this heading"></a></h3>
+<p>If you intended to change the answers, you need to update the baseline with new files. This is referred to as “blessing” the test.
+This is done with the <code class="docutils literal notranslate"><span class="pre">./CIME/Tools/bless_test_results</span></code> tool. The tool provides the ability to bless different features of the baseline. The currently supported features are namelist files, history files, and performance metrics. The performance metrics are separated into throughput and memory usage.</p>
 <p>The following command can be used to compare a test to a baseline and bless an update to the history file.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">CIME</span><span class="o">/</span><span class="n">Tools</span><span class="o">/</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">--</span><span class="n">hist</span><span class="o">-</span><span class="n">only</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
-<p>The <cite>compare_test_results &lt;../Tools_user/compare_test_results.html&gt;_</cite> tool can be used to quickly compare tests to baselines and report any <cite>diffs</cite>.:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">./CIME/Tools/compare_test_results</span></code> tool can be used to quickly compare tests to baselines and report any <code class="docutils literal notranslate"><span class="pre">diffs</span></code>.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">CIME</span><span class="o">/</span><span class="n">Tools</span><span class="o">/</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
 </div>
 </section>
 <section id="performance-baselines">
-<h2><a class="toc-backref" href="#id36" role="doc-backlink">Performance baselines</a><a class="headerlink" href="#performance-baselines" title="Link to this heading"></a></h2>
-<p id="id13">By default performance baselines are generated by parsing the coupler log and comparing the throughput in SYPD (Simulated Years Per Day) and the memory usage high water.</p>
-<p>This can be customized by creating a python module under <code class="docutils literal notranslate"><span class="pre">$DRIVER_ROOT/cime_config/customize</span></code>. There are four hooks that can be used to customize the generation and comparison.</p>
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Performance baselines</a><a class="headerlink" href="#performance-baselines" title="Link to this heading"></a></h3>
+<p>By default performance baselines are generated by parsing the coupler log and comparing the throughput in SYPD (Simulated Years Per Day) and the memory usage high water.</p>
+<p>This can be customized by creating a python module under <code class="docutils literal notranslate"><span class="pre">$MODEL/cime_config/customize</span></code>. There are four hooks that can be used to customize the generation and comparison.</p>
 <ul class="simple">
 <li><p>perf_get_throughput</p></li>
 <li><p>perf_get_memory</p></li>
 <li><p>perf_compare_throughput_baseline</p></li>
 <li><p>perf_compare_memory_baseline</p></li>
 </ul>
-<p>The following pseudo code is an example of this customization.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># $DRIVER/cime_config/customize/perf_baseline.py</span>
+<p>The following pseudo code is an example of this customization.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># $DRIVER/cime_config/customize/perf_baseline.py</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
@@ -805,12 +885,13 @@ This is done with the <a class="reference external" href="../Tools_user/bless_te
 </div>
 </section>
 </section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ccs/model/customize-cime.html" class="btn btn-neutral float-left" title="Customize CIME" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ccs/model-configuration/customize-cime.html" class="btn btn-neutral float-left" title="Customize CIME" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="tools/index.html" class="btn btn-neutral float-right" title="Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

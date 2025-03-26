@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Building a Case" href="building-a-case.html" />
-    <link rel="prev" title="Creating a Case" href="create-a-case.html" /> 
+    <link rel="prev" title="Creating a Case" href="creating-a-case.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,16 +51,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -104,13 +105,14 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#configuration" id="id1">Configuration</a></p>
 <ul>
-<li><p><a class="reference internal" href="#reviewing" id="id2">Reviewing</a></p></li>
+<li><p><a class="reference internal" href="#querying" id="id2">Querying</a></p></li>
 <li><p><a class="reference internal" href="#modifying" id="id3">Modifying</a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#setting-up-the-case" id="id4">Setting up the Case</a></p>
 <ul>
-<li><p><a class="reference internal" href="#generated-files" id="id5">Generated files</a></p></li>
+<li><p><a class="reference internal" href="#tracking-changes-with-git" id="id5">Tracking changes with Git</a></p></li>
+<li><p><a class="reference internal" href="#generated-files" id="id6">Generated files</a></p></li>
 </ul>
 </li>
 </ul>
@@ -118,8 +120,8 @@
 <section id="configuration">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
 <p>After creating a case, some aspects of the configuration are fixed (any variables in <code class="docutils literal notranslate"><span class="pre">env_case.xml</span></code>). But many can be changed before calling <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, which generates the files required to build and run the case. CIME provides <code class="docutils literal notranslate"><span class="pre">xmlquery</span></code> to view and <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> to modify the variables used in this process.</p>
-<section id="reviewing">
-<span id="ccs-xmlquery"></span><h3><a class="toc-backref" href="#id2" role="doc-backlink">Reviewing</a><a class="headerlink" href="#reviewing" title="Link to this heading"></a></h3>
+<section id="querying">
+<span id="ccs-xmlquery"></span><h3><a class="toc-backref" href="#id2" role="doc-backlink">Querying</a><a class="headerlink" href="#querying" title="Link to this heading"></a></h3>
 <p>CIME provides the <code class="docutils literal notranslate"><span class="pre">xmlquery</span></code> command to view the configuration of a case. The configuration is a collection of variables stored in XML files. These variables are grouped together when defined in the model’s configuration.</p>
 <p>The following will list all of the current configuration.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlquery<span class="w"> </span>--listall
@@ -149,8 +151,25 @@
 <p class="admonition-title">Warning</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> is called after <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, the changes will not be reflected in the generated files. To update the files, call <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--reset</span></code>.</p>
 </div>
+<section id="tracking-changes-with-git">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Tracking changes with Git</a><a class="headerlink" href="#tracking-changes-with-git" title="Link to this heading"></a></h3>
+<p>When you set up a case, a new Git repository will be created within the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> directory if a recent version of Git is installed. The repository will have a branch named after the case.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you are using a version of Git older than 2.28, the repository will not be created automatically. In this case, you can create a repository manually and push the case to it.</p>
+</div>
+<p>Each time you run <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, <code class="docutils literal notranslate"><span class="pre">case.build</span></code>, <code class="docutils literal notranslate"><span class="pre">case.submit</span></code>, or <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code>, a new commit is created. This allows you to track changes to the case over time.</p>
+<p>If you set the <code class="docutils literal notranslate"><span class="pre">CASE_GIT_REPOSITORY</span></code> variable to a valid Git repository URL, the case will be pushed to that repository.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span><span class="nv">CASE_GIT_REPOSITORY</span><span class="o">=</span>&lt;repository&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To disable this feature, call <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--disable-git</span></code>.</p>
+</div>
+</section>
 <section id="generated-files">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">Generated files</a><a class="headerlink" href="#generated-files" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Generated files</a><a class="headerlink" href="#generated-files" title="Link to this heading"></a></h3>
 <p>The following files and directories are generated in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
 <table class="docutils align-default">
 <tbody>
@@ -194,7 +213,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="create-a-case.html" class="btn btn-neutral float-left" title="Creating a Case" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="creating-a-case.html" class="btn btn-neutral float-left" title="Creating a Case" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="building-a-case.html" class="btn btn-neutral float-right" title="Building a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

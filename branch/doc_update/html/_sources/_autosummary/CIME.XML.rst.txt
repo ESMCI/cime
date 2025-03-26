@@ -44,6 +44,7 @@ CIME.XML
                 env_case
                 env_mach_pes
                 env_mach_specific
+                env_postprocessing
                 env_run
                 env_test
                 env_workflow
@@ -57,6 +58,7 @@ CIME.XML
                 namelist_definition
                 pes
                 pio
+                postprocessing
                 standard_module_setup
                 stream
                 test_reporter

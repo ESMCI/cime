@@ -51,16 +51,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Case Control System (CCS)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -141,13 +142,13 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Check if your machine is supported by the model.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cime/scripts/query_config<span class="w"> </span>--machines
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--machines
 </pre></div>
 </div>
 </div>
 <p>The following example will create a directory <code class="docutils literal notranslate"><span class="pre">mycase</span></code> using the <code class="docutils literal notranslate"><span class="pre">X</span></code> compset and <code class="docutils literal notranslate"><span class="pre">f19_g16</span></code> grid. The machine is auto-detected from the hostname.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span> <span class="n">name</span><span class="o">&gt;</span>
-<span class="o">./</span><span class="n">cime</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
+<span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
 <span class="n">cd</span> <span class="n">mycase</span>
 <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
 <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
@@ -300,7 +301,7 @@ For variables that can be set in more than one way, the order of precedence is:<
 <ul class="simple">
 <li><p>variable appears in a command line argument to a CIME command</p></li>
 <li><p>variable is set as an environment variable</p></li>
-<li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="model/customize-cime.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
+<li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="model-configuration/customize-cime.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
 <li><p>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</p></li>
 </ul>
 </section>
@@ -363,7 +364,7 @@ model developers.</p>
   <span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
 </pre></div>
 </div>
-<p>For more details on how CIME determines the output for query_config, see <a class="reference internal" href="model/configuration/compsets.html#model-config-compsets"><span class="std std-ref">Component Sets</span></a>.</p>
+<p>For more details on how CIME determines the output for query_config, see <a class="reference internal" href="model-configuration/variables/compsets.html#model-config-compsets"><span class="std std-ref">Component Sets</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 </section>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Timers and timing &mdash; CIME master documentation</title>
+  <title>Timers &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Multi-instance" href="multi-instance.html" />
-    <link rel="prev" title="Customizing your input variables" href="cime-change-namelist.html" /> 
+    <link rel="prev" title="Customizing Inputs" href="customizing-inputs.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,16 +51,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Timers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -88,7 +89,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Case Control System (CCS)</a></li>
-      <li class="breadcrumb-item active">Timers and timing</li>
+      <li class="breadcrumb-item active">Timers</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/ccs/timers.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -98,12 +99,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="timers-and-timing">
-<span id="timers"></span><h1>Timers and timing<a class="headerlink" href="#timers-and-timing" title="Link to this heading"></a></h1>
+  <section id="timers">
+<span id="id1"></span><h1>Timers<a class="headerlink" href="#timers" title="Link to this heading"></a></h1>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
 <section id="model-timing-data">
-<span id="id1"></span><h2>Model timing data<a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2>Model timing data<a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <ol class="arabic">
 <li><p><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
@@ -264,7 +265,7 @@ year/job. In this example, set your wallclock at 12 hours and invoke
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cime-change-namelist.html" class="btn btn-neutral float-left" title="Customizing your input variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="customizing-inputs.html" class="btn btn-neutral float-left" title="Customizing Inputs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="multi-instance.html" class="btn btn-neutral float-right" title="Multi-instance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

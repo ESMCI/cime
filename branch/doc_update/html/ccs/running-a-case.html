@@ -51,16 +51,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -155,7 +156,7 @@
 <p>The build process will generate a list of required input data sets for each component in the <code class="docutils literal notranslate"><span class="pre">$CASEROOT/Buildconf</span></code> directory.</p>
 <p>When <code class="docutils literal notranslate"><span class="pre">case.submit</span></code> is invoked, all of the required data sets will be checked for locally and downloaded if missing.</p>
 <p>To check for missing data sets and download them, issue the command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">check_input_data</span> <span class="o">--</span><span class="n">download</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">check_input_data</span> <span class="o">--</span><span class="n">download</span>
 </pre></div>
 </div>
 </section>

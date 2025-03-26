@@ -51,16 +51,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -212,15 +213,15 @@ The libraries will be placed in a path below <code class="docutils literal notra
 <p>If there is any doubt, rebuild.</p>
 </div>
 <p>Run this to clean all of the model components (except for support libraries such as <strong>mct</strong> and <strong>gptl</strong>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span>
 </pre></div>
 </div>
 <p>Run this to clean everything associated with the build:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span><span class="o">-</span><span class="nb">all</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span><span class="o">-</span><span class="nb">all</span>
 </pre></div>
 </div>
 <p>You can also clean an individual component as shown here, where “compname” is the name of the component you want to clean (for example, atm, clm, pio, and so on).</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span> <span class="n">compname</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span> <span class="n">compname</span>
 </pre></div>
 </div>
 </section>

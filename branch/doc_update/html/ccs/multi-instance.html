@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
-    <link rel="prev" title="Timers and timing" href="timers.html" /> 
+    <link rel="prev" title="Timers" href="timers.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,16 +51,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="create-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cime-change-namelist.html">Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers and timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model/index.html">Model Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
@@ -118,8 +119,8 @@ directory.</p>
 <p>An F compset is used in the following example. Using the
 multiple-instance code involves the following steps:</p>
 <p>1. Create the case.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">Fmulti</span> <span class="o">--</span><span class="n">compset</span> <span class="n">F2000_DEV</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_f19_mg17</span>
-<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">Fmulti</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">Fmulti</span> <span class="o">--</span><span class="n">compset</span> <span class="n">F2000_DEV</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_f19_mg17</span>
+<span class="n">cd</span> <span class="o">./</span><span class="n">Fmulti</span>
 </pre></div>
 </div>
 <p>1. Assume this is the out-of-the-box pe-layout:</p>
@@ -144,23 +145,23 @@ will also have to run two instances of CLM, CICE, RTM and GLC.  However, we
 can run either one or two instances of DOCN, and we can ignore the
 stub components since they do not do anything in this compset.</p>
 <p>To run two instances of CAM, CLM, CICE, RTM, GLC and DOCN, invoke the following :ref: <cite>xmlchange&lt;modifying-an-xml-file&gt;</cite> commands in your <strong>$CASEROOT</strong> directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ATM</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_LND</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ICE</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ROF</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_GLC</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_OCN</span><span class="o">=</span><span class="mi">2</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ATM</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_LND</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ICE</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ROF</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_GLC</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_OCN</span><span class="o">=</span><span class="mi">2</span>
 </pre></div>
 </div>
 <p>As a result, you will have two instances of CAM, CLM and CICE (prescribed), RTM, GLC, and DOCN, each running concurrently on 72 MPI tasks and all using the same driver/coupler component.   In this single driver/coupler mode the number of tasks for each component instance is NTASKS_COMPONENT/NINST_COMPONENT and the total number of tasks is the same as for the single instance case.</p>
 <p>Now consider the multi driver model.
 To use this mode change</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">MULTI_DRIVER</span><span class="o">=</span><span class="n">TRUE</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">MULTI_DRIVER</span><span class="o">=</span><span class="n">TRUE</span>
 </pre></div>
 </div>
 <p>This configuration will run each component instance on the original 144 tasks but will generate two copies of the model (in the same executable) for a total of 288 tasks.</p>
 <p>3. Set up the case</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
 </pre></div>
 </div>
 <p>A new <strong>user_nl_xxx_NNNN</strong> file is generated for each component instance when case.setup is called (where xxx is the component type and NNNN is the number of the component instance).
@@ -192,7 +193,7 @@ To change the DOCN stream txt file instance 0002, copy <strong>docn.streams.txt.
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="timers.html" class="btn btn-neutral float-left" title="Timers and timing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="timers.html" class="btn btn-neutral float-left" title="Timers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

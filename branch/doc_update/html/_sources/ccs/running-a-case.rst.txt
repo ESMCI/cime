@@ -28,7 +28,7 @@ To check for missing data sets and download them, issue the command
 
 ::
 
-    check_input_data --download
+    ./check_input_data --download
 
 PE Layout
 ---------

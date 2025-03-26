@@ -99,17 +99,17 @@ Earth System Models, and a framework for system testing an Earth System Model.</
 <section id="model-configuration">
 <h3>Model configuration<a class="headerlink" href="#model-configuration" title="Link to this heading"></a></h3>
 <p>Every model that uses CIME will need to provide it’s own configuration.</p>
-<p>To add or update a model, review the <a class="reference internal" href="ccs/model/index.html#model-config"><span class="std std-ref">model configuration</span></a> documentation.</p>
+<p>To add or update a model, review the <a class="reference internal" href="ccs/model-configuration/index.html#model-config"><span class="std std-ref">model configuration</span></a> documentation.</p>
 </section>
 </section>
 <section id="system-testing">
 <h2>System Testing<a class="headerlink" href="#system-testing" title="Link to this heading"></a></h2>
 <p>CIME provides tooling to run system testing on an Earth System Model. Each test type is defined to exercise a specific behavior
 of the model. The tooling provides the ability to create and compare baselines as well as reporting the results of testing.</p>
-</section>
-<section id="note">
-<h2><em>NOTE</em><a class="headerlink" href="#note" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>CIME does <strong>not</strong> contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.</p>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
