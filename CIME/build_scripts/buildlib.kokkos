@@ -85,11 +85,7 @@ def buildlib(bldroot, installpath, case):
         print("no value found in env for Kokkos_ROOT. building from scratch")
 
     srcroot = case.get_value("SRCROOT")
-    cime_model = case.get_value("MODEL")
-    if cime_model == "e3sm":
-        ekat_dir = os.path.join(srcroot, "externals", "ekat")
-    else:
-        ekat_dir = os.path.join(srcroot, "libraries", "ekat")
+    ekat_dir = os.path.join(srcroot, "libraries", "ekat")
     expect(os.path.isdir(ekat_dir), "Missing ekat submodule")
     kokkos_dir = os.path.join(ekat_dir, "extern", "kokkos")
     expect(os.path.isdir(kokkos_dir), "Missing kokkos submodule in EKAT")
