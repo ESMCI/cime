@@ -194,7 +194,7 @@
              this machine, in practice the MPI tasks per node will not exceed this value -->
         <xs:element ref="MAX_CPUTASKS_PER_GPU_NODE" minOccurs="0" maxOccurs="1"/>
         <!-- MPI_GPU_WRAPPER_SCRIPT: a wrapper script that will be attached to the MPI run
-        command and map different MPI ranks to different GPUs within the same node -->
+             command and map different MPI ranks to different GPUs within the same node -->
         <xs:element ref="MPI_GPU_WRAPPER_SCRIPT" minOccurs="0" maxOccurs="1"/>
         <!-- Optional cost factor per node unit -->
         <xs:element ref="COSTPES_PER_NODE" minOccurs="0" maxOccurs="1"/>
