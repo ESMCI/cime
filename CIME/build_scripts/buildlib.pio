@@ -107,7 +107,7 @@ def buildlib(bldroot, installpath, case):
     else:
         cmake_opts = '"-D GENF90_PATH=' + srcroot + '/libraries/parallelio/scripts/ "'
 
-    stdargs = get_standard_makefile_args(case, shared_lib=True)
+    stdargs = get_standard_makefile_args(case)
 
     gmake_vars = (
         "CASEROOT={caseroot} COMP_NAME={pio_model} "
