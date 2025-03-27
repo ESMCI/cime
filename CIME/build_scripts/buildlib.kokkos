@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_command_line(args, description):
-###############################################################################
+    ###############################################################################
     parser = argparse.ArgumentParser(
         usage="""\n{0} [--debug]
 OR
@@ -47,12 +47,13 @@ OR
 
     return args.buildroot, args.installpath, args.caseroot
 
+
 ###############################################################################
 def buildlib(bldroot, installpath, case):
-###############################################################################
+    ###############################################################################
     # If we are using Albany/Trilinos, we must use the Kokkos that comes with it
     if case.get_value("USE_ALBANY") or case.get_value("USE_TRILINOS"):
-        print ("case is using Trilinos and will use its Kokkos")
+        print("case is using Trilinos and will use its Kokkos")
         return
 
     installed_kokkos_dir = os.environ.get("Kokkos_ROOT")
@@ -60,20 +61,29 @@ def buildlib(bldroot, installpath, case):
         # We are trying to use a pre-installed kokkos. Look for the relevant folders/libs,
         # and if all looks good, return. Otherwise, crap out
         kokkos_root = os.path.abspath(installed_kokkos_dir)
-        include_dir = os.path.join(kokkos_root,'include')
+        include_dir = os.path.join(kokkos_root, "include")
 
-        expect (os.path.isdir(kokkos_root),f"Non-existent kokkos install dir '{kokkos_root}'")
-        expect (os.path.isdir(include_dir),f"Missing include subfolder in kokkos install dir '{kokkos_root}'")
-        expect (os.path.isfile(os.path.join(include_dir,'Kokkos_Core.hpp')),f"Missing kokkos headers in '{include_dir}'")
+        expect(
+            os.path.isdir(kokkos_root),
+            f"Non-existent kokkos install dir '{kokkos_root}'",
+        )
+        expect(
+            os.path.isdir(include_dir),
+            f"Missing include subfolder in kokkos install dir '{kokkos_root}'",
+        )
+        expect(
+            os.path.isfile(os.path.join(include_dir, "Kokkos_Core.hpp")),
+            f"Missing kokkos headers in '{include_dir}'",
+        )
 
         # TODO: should I check for libs too? The problem is that the lib subfolder is
         # often arch dependent (e.g., $prefix/lib or $prefix/lib64)... The best thing
         # would be to run a small cmake script, that calls find_package. But E3SM's
         # cmake build system will do that soon enough, so any error will be caught there.
-        print (f"Using pre-installed Kokkos_ROOT: {kokkos_root}")
+        print(f"Using pre-installed Kokkos_ROOT: {kokkos_root}")
         return
     else:
-        print ("no value found in env for Kokkos_ROOT. building from scratch")
+        print("no value found in env for Kokkos_ROOT. building from scratch")
 
     srcroot = case.get_value("SRCROOT")
     cime_model = case.get_value("MODEL")
@@ -128,12 +138,14 @@ def buildlib(bldroot, installpath, case):
     )
     run_bld_cmd_ensure_logging("{} install".format(gmake_cmd), logger, from_dir=bldroot)
 
+
 ###############################################################################
 def _main(argv, documentation):
-###############################################################################
+    ###############################################################################
     bldroot, installpath, caseroot = parse_command_line(argv, documentation)
     with Case(caseroot, read_only=False) as case:
         buildlib(bldroot, installpath, case)
+
 
 ###############################################################################
 if __name__ == "__main__":
