@@ -125,7 +125,7 @@ _CIME_TESTS = {
             "ERI_Ln9.f09_g16.X",
             "ERIO_Ln11.f09_g16.X",
             "SEQ_Ln9.f19_g16_rx1.A",
-            "ERS.ne30_g16_rx1.A.drv-y100k",
+            "ERS.ne30_g16_rx1.A",
             "IRT_N2_Vmct_Ln9.f19_g16_rx1.A",
             "ERR_Ln9.f45_g37_rx1.A",
             "ERP_Ln9.f45_g37_rx1.A",
