@@ -37,7 +37,7 @@ def extract_from_macros(case, comp_name, extra_vars=()):
     ]
     all_vars = standard_vars + list(extra_vars)
 
-    make_args = get_standard_makefile_args(case)
+    make_args = get_standard_makefile_args(case, shared_lib=True)
     macro_dump = run_cmd(f"make -f Macros.make COMP_NAME={comp_name} {make_args} -p")[1]
 
     result = []

@@ -212,7 +212,7 @@ def generate_makefile_macro(case, caseroot):
         fd.write(all_output)
 
 
-def get_standard_makefile_args(case):
+def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
     for var in _CMD_ARGS_FOR_BUILD:
@@ -985,7 +985,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
         classic_cmd = "{} -f {} {}".format(
             gmake,
             os.path.join(casetools, "Makefile"),
-            get_standard_makefile_args(case),
+            get_standard_makefile_args(case, shared_lib=True),
         )
 
         for clean_item in things_to_clean:
