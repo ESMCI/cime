@@ -204,7 +204,6 @@ class SystemTestsCommon(object):
             starttime = self._case.get_value("START_TOD")
         if not startdate:
             startdate = self._case.get_value("RUN_STARTDATE")
-        addyr = 0
 
         if "-" in startdate:
             syr, smon, sday = startdate.split("-")
@@ -216,9 +215,8 @@ class SystemTestsCommon(object):
             smon = int(startdate) - syr * 10000 / 100
             sday = int(startdate) - syr * 10000 - smon * 100
 
-        while syr > 9999:
-            syr = syr - 9999
-            addyr = addyr + 1
+        addyr = syr // 10000
+        syr = syr % 10000
 
         startdatetime = datetime.strptime(
             f"{syr:04d}{smon:02d}{sday:02d}", "%Y%m%d"
@@ -245,9 +243,7 @@ class SystemTestsCommon(object):
                 startdatetime, restdatetime
             )
         ryr = int(restdatetime.year)
-        while addyr > 0:
-            ryr += 9999
-            addyr = addyr - 1
+        ryr += 10000 * addyr
         self._rest_time = f".{ryr:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         h = restdatetime.hour
         m = restdatetime.minute
