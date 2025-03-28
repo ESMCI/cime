@@ -22,10 +22,10 @@ class TestTestScheduler(base.BaseTestCase):
                 "cime_test_only",
                 "^TESTMEMLEAKFAIL_P1.f09_g16.X",
                 "^TESTMEMLEAKPASS_P1.f09_g16.X",
-                "^TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
-                "^TESTTESTDIFF_P1.f19_g16_rx1.A",
-                "^TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
-                "^TESTRUNFAILEXC_P1.f19_g16_rx1.A",
+                "^TESTRUNSTARCFAIL_P1.f19_g16.A",
+                "^TESTTESTDIFF_P1.f19_g16.A",
+                "^TESTBUILDFAILEXC_P1.f19_g16.A",
+                "^TESTRUNFAILEXC_P1.f19_g16.A",
             ],
             self._machine,
             self._compiler,
@@ -37,7 +37,7 @@ class TestTestScheduler(base.BaseTestCase):
             self.skipTest("Skipping chksum test. Depends on CESM settings")
 
         ts = test_scheduler.TestScheduler(
-            ["SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"],
+            ["SEQ_Ln9.f19_g16.A.perlmutter_gnu"],
             machine_name="perlmutter",
             chksum=True,
             test_root="/tests",
@@ -45,14 +45,14 @@ class TestTestScheduler(base.BaseTestCase):
 
         with mock.patch.object(ts, "_shell_cmd_for_phase") as _shell_cmd_for_phase:
             ts._run_phase(
-                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"
+                "SEQ_Ln9.f19_g16.A.perlmutter_gnu"
             )  # pylint: disable=protected-access
 
             _shell_cmd_for_phase.assert_called_with(
-                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu",
+                "SEQ_Ln9.f19_g16.A.perlmutter_gnu",
                 "./case.submit --skip-preview-namelist --chksum",
                 "RUN",
-                from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu.00:00:00",
+                from_dir="/tests/SEQ_Ln9.f19_g16.A.perlmutter_gnu.00:00:00",
             )
 
     def test_testmods(self):
@@ -70,9 +70,7 @@ class TestTestScheduler(base.BaseTestCase):
         )
 
         with mock.patch.object(ct, "_shell_cmd_for_phase"):
-            ct._create_newcase_phase(
-                "TESTRUNPASS_P1.f19_g16_rx1.A.docker_gnu.eam-rrtmgp"
-            )
+            ct._create_newcase_phase("TESTRUNPASS_P1.f19_g16.A.docker_gnu.eam-rrtmgp")
 
             create_newcase_cmd = ct._shell_cmd_for_phase.call_args.args[1]
 
@@ -94,7 +92,7 @@ class TestTestScheduler(base.BaseTestCase):
 
         with mock.patch.object(ct, "_shell_cmd_for_phase"):
             success, message = ct._create_newcase_phase(
-                "TESTRUNPASS_P1.f19_g16_rx1.A.docker_gnu.notacomponent?fun"
+                "TESTRUNPASS_P1.f19_g16.A.docker_gnu.notacomponent?fun"
             )
 
             assert not success
@@ -116,7 +114,7 @@ class TestTestScheduler(base.BaseTestCase):
 
         with mock.patch.object(ct, "_shell_cmd_for_phase"):
             success, message = ct._create_newcase_phase(
-                "TESTRUNPASS_P1.f19_g16_rx1.A.docker_gnu.notacomponent-fun"
+                "TESTRUNPASS_P1.f19_g16.A.docker_gnu.notacomponent-fun"
             )
 
             assert not success
@@ -355,9 +353,9 @@ class TestTestScheduler(base.BaseTestCase):
     def test_force_rebuild(self):
         tests = get_tests.get_full_test_names(
             [
-                "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNPASS_P1.f19_g16_rx1.A",
+                "TESTBUILDFAIL_P1.f19_g16.A",
+                "TESTRUNFAIL_P1.f19_g16.A",
+                "TESTRUNPASS_P1.f19_g16.A",
             ],
             self._machine,
             self._compiler,
@@ -409,9 +407,9 @@ class TestTestScheduler(base.BaseTestCase):
     def test_c_use_existing(self):
         tests = get_tests.get_full_test_names(
             [
-                "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNPASS_P1.f19_g16_rx1.A",
+                "TESTBUILDFAIL_P1.f19_g16.A",
+                "TESTRUNFAIL_P1.f19_g16.A",
+                "TESTRUNPASS_P1.f19_g16.A",
             ],
             self._machine,
             self._compiler,
@@ -568,9 +566,9 @@ class TestTestScheduler(base.BaseTestCase):
 
     def test_d_retry(self):
         args = [
-            "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-            "TESTRUNFAILRESET_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
+            "TESTBUILDFAIL_P1.f19_g16.A",
+            "TESTRUNFAILRESET_P1.f19_g16.A",
+            "TESTRUNPASS_P1.f19_g16.A",
             "--retry=1",
         ]
 
@@ -580,7 +578,7 @@ class TestTestScheduler(base.BaseTestCase):
         if self._config.test_mode != "e3sm" or self._machine != "docker":
             self.skipTest("Skipping create_test test. Depends on E3SM settings")
 
-        args = ["SMS.f19_g16_rx1.A.docker_gnuX", "--no-setup"]
+        args = ["SMS.f19_g16.A.docker_gnuX", "--no-setup"]
 
         case = self._create_test(args, default_baseline_area=True)
         result = self.run_cmd_assert_result(

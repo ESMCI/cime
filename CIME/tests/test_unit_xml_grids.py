@@ -57,7 +57,7 @@ TEST_CONFIG = """<grid_data version="2.0">
             <grid name="wav">null</grid>
             <mask>gx1v6</mask>
         </model_grid>
-        <model_grid alias="T31_g37_rx1" compset="_DROF">
+        <model_grid alias="T31_g37" compset="_DROF">
             <grid name="atm">T31</grid>
             <grid name="lnd">T31</grid>
             <grid name="ocnice">gx3v7</grid>
@@ -131,7 +131,7 @@ class TestXMLGrids(unittest.TestCase):
             ):
                 grids._read_config_grids("f05_g16", "DATM")
 
-            lname = grids._read_config_grids("T31_g37_rx1", "_DROF")
+            lname = grids._read_config_grids("T31_g37", "_DROF")
 
             assert lname == "a%T31_l%T31_oi%gx3v7_r%rx1_g%null_w%null_z%null_m%gx3v7"
 
