@@ -196,6 +196,7 @@ class TestScheduler(object):
         save_timing=False,
         queue=None,
         allow_baseline_overwrite=False,
+        skip_tests_with_existing_baselines=False,
         output_root=None,
         force_procs=None,
         force_threads=None,
@@ -227,6 +228,7 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
+        self._skip_tests_with_existing_baselines = skip_tests_with_existing_baselines
         self._single_exe = single_exe
         if self._single_exe:
             self._allow_pnl = True
@@ -348,6 +350,8 @@ class TestScheduler(object):
                     self._baseline_root, self._baseline_gen_name
                 )
                 existing_baselines = []
+                if skip_tests_with_existing_baselines:
+                    tests_to_skip = []
                 for test_name in test_names:
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
@@ -357,11 +361,21 @@ class TestScheduler(object):
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
                                 clear_folder(test_baseline)
+                        elif skip_tests_with_existing_baselines:
+                            tests_to_skip.append(test_name)
                 expect(
-                    allow_baseline_overwrite or len(existing_baselines) == 0,
+                    allow_baseline_overwrite
+                    or len(existing_baselines) == 0
+                    or skip_tests_with_existing_baselines,
                     "Baseline directories already exists {}\n"
-                    "Use -o to avoid this error".format(existing_baselines),
+                    "Use -o or --skip-tests-with-existing-baselines to avoid this error".format(
+                        existing_baselines
+                    ),
                 )
+                if skip_tests_with_existing_baselines:
+                    test_names = [
+                        test for test in test_names if test not in tests_to_skip
+                    ]
 
         if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
