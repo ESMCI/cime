@@ -212,7 +212,7 @@ class BaseTestCase(unittest.TestCase):
         # All stub model not supported in nuopc driver
         if self._driver == "nuopc" and "cime_developer" in extra_args:
             extra_args.append(
-                " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV ^IRT_N2_Vmct_Ln9.f19_g16_rx1.A"
+                " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV ^IRT_N2_Vmct_Ln9.f19_g16.A"
             )
 
         test_id = (

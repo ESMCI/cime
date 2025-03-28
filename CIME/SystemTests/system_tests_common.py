@@ -138,6 +138,7 @@ class SystemTestsCommon(object):
             stop_option = self._case.get_value("STOP_OPTION")
 
         self._case.set_value("REST_OPTION", stop_option)
+
         # We need to make sure the run is long enough and to set REST_N to a
         # value that makes sense for all components
         maxncpl = 10000
@@ -198,20 +199,28 @@ class SystemTestsCommon(object):
             rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+        cal = self._case.get_value("CALENDAR")
         if not starttime:
             starttime = self._case.get_value("START_TOD")
         if not startdate:
             startdate = self._case.get_value("RUN_STARTDATE")
-        if "-" in startdate:
-            startdatetime = datetime.strptime(startdate, "%Y-%m-%d") + timedelta(
-                seconds=int(starttime)
-            )
-        else:
-            startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
-                seconds=int(starttime)
-            )
 
-        cal = self._case.get_value("CALENDAR")
+        if "-" in startdate:
+            syr, smon, sday = startdate.split("-")
+            syr = int(syr)
+            smon = int(smon)
+            sday = int(sday)
+        else:
+            syr = int(startdate) / 10000
+            smon = int(startdate) - syr * 10000 / 100
+            sday = int(startdate) - syr * 10000 - smon * 100
+
+        addyr = syr // 10000
+        syr = syr % 10000
+
+        startdatetime = datetime.strptime(
+            f"{syr:04d}{smon:02d}{sday:02d}", "%Y%m%d"
+        ) + timedelta(seconds=int(starttime))
 
         if stop_option == "nsteps":
             rtd = timedelta(seconds=rest_n * factor)
@@ -233,10 +242,9 @@ class SystemTestsCommon(object):
             restdatetime = restdatetime + self._leap_year_correction(
                 startdatetime, restdatetime
             )
-
-        self._rest_time = (
-            f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
-        )
+        ryr = int(restdatetime.year)
+        ryr += 10000 * addyr
+        self._rest_time = f".{ryr:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         h = restdatetime.hour
         m = restdatetime.minute
         s = restdatetime.second

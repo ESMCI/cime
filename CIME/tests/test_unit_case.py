@@ -224,14 +224,14 @@ class TestCase(unittest.TestCase):
                     "test1",
                     self.srcroot,
                     "A",
-                    "f19_g16_rx1",
+                    "f19_g16",
                     machine_name="perlmutter",
                 )
 
                 # Check that they're all called
                 configure.assert_called_with(
                     "A",
-                    "f19_g16_rx1",
+                    "f19_g16",
                     machine_name="perlmutter",
                     project=None,
                     pecount=None,
@@ -298,14 +298,14 @@ class TestCase(unittest.TestCase):
                     "test1",
                     self.srcroot,
                     "A",
-                    "f19_g16_rx1",
+                    "f19_g16",
                     machine_name="perlmutter",
                 )
 
                 # Check that they're all called
                 configure.assert_called_with(
                     "A",
-                    "f19_g16_rx1",
+                    "f19_g16",
                     machine_name="perlmutter",
                     project=None,
                     pecount=None,

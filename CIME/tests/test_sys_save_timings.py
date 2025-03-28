@@ -21,7 +21,7 @@ class TestSaveTimings(base.BaseTestCase):
         else:
             walltime = "00:30:00"
         self._create_test(
-            ["SMS_Ln9_P1.f19_g16_rx1.A", timing_flag, "--walltime=" + walltime],
+            ["SMS_Ln9_P1.f19_g16.A", timing_flag, "--walltime=" + walltime],
             test_id=self._baseline_name,
         )
 
