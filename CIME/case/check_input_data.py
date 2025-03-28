@@ -509,7 +509,8 @@ def _check_input_data_impl(
                                 else:
                                     # Ensure that msg and warning text are together in TestStatus.log
                                     logger.warning(
-                                        msg + "\n    Cannot download file since it lives outside of the input_data_root '{}'".format(
+                                        msg
+                                        + "\n    Cannot download file since it lives outside of the input_data_root '{}'".format(
                                             input_data_root
                                         )
                                     )
