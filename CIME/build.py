@@ -211,7 +211,7 @@ def generate_makefile_macro(case, caseroot):
         )
         fd.write(all_output)
 
-
+# pylint:disable=shared_lib
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
     make_args += " SMP={} ".format(stringify_bool(case.get_build_threaded()))
