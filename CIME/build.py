@@ -211,6 +211,7 @@ def generate_makefile_macro(case, caseroot):
         )
         fd.write(all_output)
 
+
 # pylint:disable=unused-argument
 def get_standard_makefile_args(case, shared_lib=False):
     make_args = "CIME_MODEL={} ".format(case.get_value("MODEL"))
