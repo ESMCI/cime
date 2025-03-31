@@ -271,7 +271,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
             case.get_value.side_effect = (
                 str(baseline_root),
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
                 "/tmp/components/cpl",
                 0.05,
             )
@@ -293,7 +293,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -325,7 +325,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -357,7 +357,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -389,7 +389,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -426,7 +426,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -460,7 +460,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
             case.get_value.side_effect = (
                 str(baseline_root),
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
                 "/tmp/components/cpl",
                 0.05,
             )
@@ -490,7 +490,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
 
             case.get_value.side_effect = (
                 str(baseline_root),
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
                 "/tmp/components/cpl",
                 0.05,
             )
@@ -517,7 +517,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -552,7 +552,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (
@@ -587,7 +587,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
             case, _, _, baseline_root = create_mock_case(tempdir, get_latest_cpl_logs)
 
             case.get_baseline_dir.return_value = str(
-                baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
 
             case.get_value.side_effect = (

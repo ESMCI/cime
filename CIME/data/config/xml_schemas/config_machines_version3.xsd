@@ -185,7 +185,6 @@
         <xs:element ref="MEM_PER_TASK" minOccurs="0" maxOccurs="1"/>
         <!-- MAX_MEM_PER_NODE: the maximum memory to assign per machine node -->
         <xs:element ref="MAX_MEM_PER_NODE" minOccurs="0" maxOccurs="1"/>
-
         <!-- MAX_GPUS_PER_NODE: maximum number of GPUs per node on this machine-->
         <xs:element ref="MAX_GPUS_PER_NODE" minOccurs="0" maxOccurs="1"/>
         <!-- MAX_MPITASKS_PER_NODE: number of physical PES per shared node on
@@ -193,9 +192,9 @@
         <xs:element ref="MAX_MPITASKS_PER_NODE" minOccurs="1" maxOccurs="unbounded"/>
         <!-- MAX_CPUTASKS_PER_GPU_NODE: number of physical PES per GPU node on
              this machine, in practice the MPI tasks per node will not exceed this value -->
-        <xs:element ref="MAX_CPUTASKS_PER_GPU_NODE" minOccurs="0" maxOccurs="unbounded"/>
-	<!-- MPI_GPU_WRAPPER_SCRIPT: a wrapper script that will be attached to the MPI run
-	     command and map different MPI ranks to different GPUs within the same node -->
+        <xs:element ref="MAX_CPUTASKS_PER_GPU_NODE" minOccurs="0" maxOccurs="1"/>
+        <!-- MPI_GPU_WRAPPER_SCRIPT: a wrapper script that will be attached to the MPI run
+             command and map different MPI ranks to different GPUs within the same node -->
         <xs:element ref="MPI_GPU_WRAPPER_SCRIPT" minOccurs="0" maxOccurs="1"/>
         <!-- Optional cost factor per node unit -->
         <xs:element ref="COSTPES_PER_NODE" minOccurs="0" maxOccurs="1"/>
