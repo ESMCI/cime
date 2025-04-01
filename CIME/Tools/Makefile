@@ -738,6 +738,7 @@ CMAKE_ENV_VARS += CC=$(CC) \
 		  FC=$(FC) \
 		  LDFLAGS="$(LDFLAGS)"
 
+F90_LDFLAGS += $(FFLAGS)
 
 # We declare GLCMakefile to be a phony target so that cmake is
 # always rerun whenever invoking 'make GLCMakefile'; this is
