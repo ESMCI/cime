@@ -3,7 +3,10 @@
 Troubleshooting
 ===============
 
-Troubleshooting case creation
+.. contents::
+  :local:
+
+Case creation
 -----------------------------
 
 Generally, ``create_newcase`` errors are reported to the terminal and should provide some guidance about what caused them.
@@ -14,12 +17,12 @@ If ``create_newcase`` fails on a relatively generic error, first check to make s
 
      ./scripts/create_newcase --help
 
-Troubleshooting problems in cime scripts
+Problems in CIME scripts
 ----------------------------------------
 
 If any of the python-based cime scripts are dying in a mysterious way, more information can be obtained by rerunning the script with the ``--debug`` option.
 
-Troubleshooting job submission
+Job submission
 -------------------------------
 
 Most problems associated with submission or launch are site-specific.
@@ -31,7 +34,7 @@ Take these steps to check for problems:
 
 2. Make sure that ``case.submit`` uses the correct batch job tool for submitting the ``case.submit`` script. Depending on the batch environment, it might be **bsub**, **qsub** or another command. Also confirm if a redirection "<" character is required. The information for how **case.submit** submits jobs appears at the end of the standard output stream.
 
-Troubleshooting runtime problems
+Runtime problems
 ---------------------------------
 
 To see if a run completed successfully, check the last several lines of the **cpl.log** file for a string like ``SUCCESSFUL TERMINATION``. A successful job also usually copies the log files to the **$CASEROOT/logs** directory.

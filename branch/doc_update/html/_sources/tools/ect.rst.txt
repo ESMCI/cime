@@ -4,6 +4,9 @@
 CESM-ECT (CESM Ensemble Consistency Test):
 ==============================
 
+.. contents::
+       :local:
+
 CESM-ECT is a suite of tests to determine whether a new
 simulation set up (new machine, compiler, etc.) is statistically
 distinguishable from an accepted ensemble.  The verification tools in

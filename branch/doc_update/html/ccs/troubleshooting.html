@@ -50,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
@@ -101,20 +101,28 @@
              
   <section id="troubleshooting">
 <span id="id1"></span><h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
-<section id="troubleshooting-case-creation">
-<h2>Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Link to this heading"></a></h2>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#case-creation" id="id2">Case creation</a></p></li>
+<li><p><a class="reference internal" href="#problems-in-cime-scripts" id="id3">Problems in CIME scripts</a></p></li>
+<li><p><a class="reference internal" href="#job-submission" id="id4">Job submission</a></p></li>
+<li><p><a class="reference internal" href="#runtime-problems" id="id5">Runtime problems</a></p></li>
+</ul>
+</nav>
+<section id="case-creation">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Case creation</a><a class="headerlink" href="#case-creation" title="Link to this heading"></a></h2>
 <p>Generally, <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> errors are reported to the terminal and should provide some guidance about what caused them.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> fails on a relatively generic error, first check to make sure the command-line arguments match the interface’s specification. See the help text to review usage.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
 </section>
-<section id="troubleshooting-problems-in-cime-scripts">
-<h2>Troubleshooting problems in cime scripts<a class="headerlink" href="#troubleshooting-problems-in-cime-scripts" title="Link to this heading"></a></h2>
+<section id="problems-in-cime-scripts">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Problems in CIME scripts</a><a class="headerlink" href="#problems-in-cime-scripts" title="Link to this heading"></a></h2>
 <p>If any of the python-based cime scripts are dying in a mysterious way, more information can be obtained by rerunning the script with the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> option.</p>
 </section>
-<section id="troubleshooting-job-submission">
-<h2>Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Link to this heading"></a></h2>
+<section id="job-submission">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Job submission</a><a class="headerlink" href="#job-submission" title="Link to this heading"></a></h2>
 <p>Most problems associated with submission or launch are site-specific.
 The batch and run aspects of the <code class="docutils literal notranslate"><span class="pre">case.submit</span></code> script are created by parsing the variables in <strong>$CASEROOT/env_batch.xml</strong> file.</p>
 <p>Take these steps to check for problems:</p>
@@ -123,8 +131,8 @@ The batch and run aspects of the <code class="docutils literal notranslate"><spa
 <li><p>Make sure that <code class="docutils literal notranslate"><span class="pre">case.submit</span></code> uses the correct batch job tool for submitting the <code class="docutils literal notranslate"><span class="pre">case.submit</span></code> script. Depending on the batch environment, it might be <strong>bsub</strong>, <strong>qsub</strong> or another command. Also confirm if a redirection “&lt;” character is required. The information for how <strong>case.submit</strong> submits jobs appears at the end of the standard output stream.</p></li>
 </ol>
 </section>
-<section id="troubleshooting-runtime-problems">
-<h2>Troubleshooting runtime problems<a class="headerlink" href="#troubleshooting-runtime-problems" title="Link to this heading"></a></h2>
+<section id="runtime-problems">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Runtime problems</a><a class="headerlink" href="#runtime-problems" title="Link to this heading"></a></h2>
 <p>To see if a run completed successfully, check the last several lines of the <strong>cpl.log</strong> file for a string like <code class="docutils literal notranslate"><span class="pre">SUCCESSFUL</span> <span class="pre">TERMINATION</span></code>. A successful job also usually copies the log files to the <strong>$CASEROOT/logs</strong> directory.</p>
 <p>Check these things first when a job fails:</p>
 <ul class="simple">

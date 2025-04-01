@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1. CESM-ECT (CESM Ensemble Consistency Test): &mdash; CIME master documentation</title>
+  <title>CESM-ECT (CESM Ensemble Consistency Test): &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -52,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../ccs/index.html">Case Control System (CCS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../system_testing.html">System Testing</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Tools</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">1. CESM-ECT (CESM Ensemble Consistency Test):</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CESM-ECT (CESM Ensemble Consistency Test):</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../glossary.html">Glossary</a></li>
@@ -78,7 +78,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Tools</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">1. </span>CESM-ECT (CESM Ensemble Consistency Test):</li>
+      <li class="breadcrumb-item active">CESM-ECT (CESM Ensemble Consistency Test):</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/tools/ect.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -89,7 +89,13 @@
            <div itemprop="articleBody">
              
   <section id="cesm-ect-cesm-ensemble-consistency-test">
-<span id="ensemble-consistency-test"></span><h1><span class="section-number">1. </span>CESM-ECT (CESM Ensemble Consistency Test):<a class="headerlink" href="#cesm-ect-cesm-ensemble-consistency-test" title="Link to this heading"></a></h1>
+<span id="ensemble-consistency-test"></span><h1>CESM-ECT (CESM Ensemble Consistency Test):<a class="headerlink" href="#cesm-ect-cesm-ensemble-consistency-test" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#creating-or-obtaining-a-summary-file" id="id1">Creating or obtaining a summary file:</a></p></li>
+<li><p><a class="reference internal" href="#creating-test-runs" id="id2">Creating test runs:</a></p></li>
+</ul>
+</nav>
 <p>CESM-ECT is a suite of tests to determine whether a new
 simulation set up (new machine, compiler, etc.) is statistically
 distinguishable from an accepted ensemble.  The verification tools in
@@ -108,7 +114,7 @@ you can upload the (3) generated runs for comparison to our ensemble.
 Please see the webpage at <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2/verification/">http://www.cesm.ucar.edu/models/cesm2/verification/</a>
 for further instructions.</p>
 <section id="creating-or-obtaining-a-summary-file">
-<h2><span class="section-number">1.1. </span>Creating or obtaining a summary file:<a class="headerlink" href="#creating-or-obtaining-a-summary-file" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Creating or obtaining a summary file:</a><a class="headerlink" href="#creating-or-obtaining-a-summary-file" title="Link to this heading"></a></h2>
 <p>Before the test can be run, a summary file is needed of the ensemble
 runs to which the comparison will be made. Ensemble summary files
 (NetCDF) for existing tags for CAM-ECT, UF-CAM-ECT, and POP-ECT that
@@ -158,7 +164,7 @@ UF-CAM-ECT) or pyEnsSumPop.py (for POP-ECT).  For details see README_pyEnsSum.rs
 and README_pyEnsSumPop.rst with the pyCECT tools.</p>
 </section>
 <section id="creating-test-runs">
-<h2><span class="section-number">1.2. </span>Creating test runs:<a class="headerlink" href="#creating-test-runs" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Creating test runs:</a><a class="headerlink" href="#creating-test-runs" title="Link to this heading"></a></h2>
 <p>(1) Once an ensemble summary file has been created or chosen to
 use from $CESMDATAROOT/inputdata/validation, the simulation
 run(s) to be verified by ECT must be created via script ensemble.py.</p>

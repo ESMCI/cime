@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Contributing Guide" href="contributing-guide.html" />
-    <link rel="prev" title="1. CESM-ECT (CESM Ensemble Consistency Test):" href="tools/ect.html" /> 
+    <link rel="prev" title="CESM-ECT (CESM Ensemble Consistency Test):" href="tools/ect.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,9 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ccs/index.html">Case Control System (CCS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="system_testing.html">System Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools/index.html">Tools</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Glossary</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
@@ -88,10 +86,18 @@
              
   <section id="glossary">
 <span id="id1"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Link to this heading"></a></h1>
-<div class="toctree-wrapper compound">
-</div>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#general" id="id2">General</a></p></li>
+<li><p><a class="reference internal" href="#coupling" id="id3">Coupling</a></p></li>
+<li><p><a class="reference internal" href="#files-and-directories" id="id4">Files and Directories</a></p></li>
+<li><p><a class="reference internal" href="#development" id="id5">Development</a></p></li>
+<li><p><a class="reference internal" href="#testing" id="id6">Testing</a></p></li>
+<li><p><a class="reference internal" href="#miscellaneous" id="id7">Miscellaneous</a></p></li>
+</ul>
+</nav>
 <section id="general">
-<h2>General<a class="headerlink" href="#general" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">General</a><a class="headerlink" href="#general" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
 <dt id="term-active-or-prognostic-component">active or prognostic component<a class="headerlink" href="#term-active-or-prognostic-component" title="Link to this term"></a></dt><dd><p>Solves a complex set of equations to describe a sub-model’s behavior.</p>
 </dd>
@@ -117,7 +123,7 @@ any data.</p>
 </dl>
 </section>
 <section id="coupling">
-<h2>Coupling<a class="headerlink" href="#coupling" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Coupling</a><a class="headerlink" href="#coupling" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
 <dt id="term-coupler">coupler<a class="headerlink" href="#term-coupler" title="Link to this term"></a></dt><dd><p>A component of the CIME infrastructure that is run from within the driver. It can be run on a
 subset of the total processors, and carries out mapping (interpolation), merging, diagnostics, and other
@@ -137,7 +143,7 @@ level instructions, and, executes the driver time loop.</p>
 </dl>
 </section>
 <section id="files-and-directories">
-<h2>Files and Directories<a class="headerlink" href="#files-and-directories" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Files and Directories</a><a class="headerlink" href="#files-and-directories" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
 <dt id="term-archive-directory-DOUT_S_ROOT">archive directory (DOUT_S_ROOT)<a class="headerlink" href="#term-archive-directory-DOUT_S_ROOT" title="Link to this term"></a></dt><dd><p>If short term archiving is activated (DOUT_S = TRUE), the restart files and run output files
 are copied to archive directory location (DOUT_S_ROOT).</p>
@@ -171,7 +177,7 @@ in CASEROOT and can be queried and modifed using the xmlquery and xmlchange tool
 </dl>
 </section>
 <section id="development">
-<h2>Development<a class="headerlink" href="#development" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Development</a><a class="headerlink" href="#development" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
 <dt id="term-sandbox-SRCROOT">sandbox (SRCROOT)<a class="headerlink" href="#term-sandbox-SRCROOT" title="Link to this term"></a></dt><dd><p>A checked out tag on a local or a remote machine. may be edited to create a new tag. or, may
 just be used for running cases.</p>
@@ -187,7 +193,7 @@ to the source code of a component are introduced.</p>
 </dl>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Testing</a><a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
 <dt id="term-baseline">baseline<a class="headerlink" href="#term-baseline" title="Link to this term"></a></dt><dd><p>A set of test cases that is run using a tag which is complete, tested, and has no modifications
 in the source code. Used to assess the performance/accuracy of a case that is run using a sandbox.</p>
@@ -204,7 +210,7 @@ into the code base.</p>
 </dl>
 </section>
 <section id="miscellaneous">
-<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Miscellaneous</a><a class="headerlink" href="#miscellaneous" title="Link to this heading"></a></h2>
 <dl class="simple glossary">
 <dt id="term-ESP">ESP<a class="headerlink" href="#term-ESP" title="Link to this term"></a></dt><dd><p>External System Processing: handles data assimilation</p>
 </dd>
@@ -216,7 +222,7 @@ into the code base.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="tools/ect.html" class="btn btn-neutral float-left" title="1. CESM-ECT (CESM Ensemble Consistency Test):" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tools/ect.html" class="btn btn-neutral float-left" title="CESM-ECT (CESM Ensemble Consistency Test):" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="contributing-guide.html" class="btn btn-neutral float-right" title="Contributing Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

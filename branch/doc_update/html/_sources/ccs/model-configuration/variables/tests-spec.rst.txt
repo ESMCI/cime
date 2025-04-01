@@ -1,6 +1,6 @@
 .. _model_config_tests_spec:
 
-Test List
+TESTS_SPEC_FILE
 ===============
 
 .. contents::

@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Query configuration" href="query-configuration.html" />
-    <link rel="prev" title="Case Control System (CCS)" href="index.html" /> 
+    <link rel="next" title="Creating a Case" href="creating-a-case.html" />
+    <link rel="prev" title="Query configuration" href="query-configuration.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
@@ -139,34 +139,34 @@
 <tr class="row-even"><td><p>cime_model</p></td>
 <td><p>Name of the model to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>project</p></td>
+<tr class="row-odd"><td><p>PROJECT</p></td>
 <td><p>The project identifier.</p></td>
 </tr>
-<tr class="row-even"><td><p>charge_account</p></td>
+<tr class="row-even"><td><p>CHARGE_ACCOUNT</p></td>
 <td><p>The account to be charged.</p></td>
 </tr>
-<tr class="row-odd"><td><p>srcroot</p></td>
+<tr class="row-odd"><td><p>SRCROOT</p></td>
 <td><p>The root directory of the model source code.</p></td>
 </tr>
-<tr class="row-even"><td><p>mail_type</p></td>
+<tr class="row-even"><td><p>MAIL_TYPE</p></td>
 <td><p>The type of mail notifications (e.g., fail, all).</p></td>
 </tr>
-<tr class="row-odd"><td><p>mail_user</p></td>
+<tr class="row-odd"><td><p>MAIL_USER</p></td>
 <td><p>The user to receive mail notifications.</p></td>
 </tr>
-<tr class="row-even"><td><p>machine</p></td>
+<tr class="row-even"><td><p>MACHINE</p></td>
 <td><p>The machine to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>mpilib</p></td>
+<tr class="row-odd"><td><p>MPILIB</p></td>
 <td><p>The MPI library to be used.</p></td>
 </tr>
-<tr class="row-even"><td><p>compiler</p></td>
+<tr class="row-even"><td><p>COMPILER</p></td>
 <td><p>The compiler to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>input_dir</p></td>
+<tr class="row-odd"><td><p>INPUT_DIR</p></td>
 <td><p>The directory for input files.</p></td>
 </tr>
-<tr class="row-even"><td><p>cime_driver</p></td>
+<tr class="row-even"><td><p>CIME_DRIVER</p></td>
 <td><p>The model driver to use.</p></td>
 </tr>
 </tbody>
@@ -187,73 +187,73 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>mail_type</p></td>
+<tr class="row-even"><td><p>MAIL_TYPE</p></td>
 <td><p>The type of mail notifications (e.g., fail, all).</p></td>
 </tr>
-<tr class="row-odd"><td><p>mail_user</p></td>
+<tr class="row-odd"><td><p>MAIL_USER</p></td>
 <td><p>The user to receive mail notifications.</p></td>
 </tr>
-<tr class="row-even"><td><p>save_timing</p></td>
+<tr class="row-even"><td><p>SAVE_TIMING</p></td>
 <td><p>Save timing information.</p></td>
 </tr>
-<tr class="row-odd"><td><p>single_submit</p></td>
+<tr class="row-odd"><td><p>SINGLE_SUBMIT</p></td>
 <td><p>Submit all jobs as a single job.</p></td>
 </tr>
-<tr class="row-even"><td><p>test_root</p></td>
+<tr class="row-even"><td><p>TEST_ROOT</p></td>
 <td><p>The root directory for tests.</p></td>
 </tr>
-<tr class="row-odd"><td><p>output_root</p></td>
+<tr class="row-odd"><td><p>OUTPUT_ROOT</p></td>
 <td><p>The root directory for output.</p></td>
 </tr>
-<tr class="row-even"><td><p>baseline_root</p></td>
+<tr class="row-even"><td><p>BASELINE_ROOT</p></td>
 <td><p>The root directory for baselines.</p></td>
 </tr>
-<tr class="row-odd"><td><p>clean</p></td>
+<tr class="row-odd"><td><p>CLEAN</p></td>
 <td><p>Clean before running tests.</p></td>
 </tr>
-<tr class="row-even"><td><p>machine</p></td>
+<tr class="row-even"><td><p>MACHINE</p></td>
 <td><p>The machine to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>mpilib</p></td>
+<tr class="row-odd"><td><p>MPILIB</p></td>
 <td><p>The MPI library to be used.</p></td>
 </tr>
-<tr class="row-even"><td><p>compiler</p></td>
+<tr class="row-even"><td><p>COMPILER</p></td>
 <td><p>The compiler to be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>parallel_jobs</p></td>
+<tr class="row-odd"><td><p>PARALLEL_JOBS</p></td>
 <td><p>The number of parallel jobs to run.</p></td>
 </tr>
-<tr class="row-even"><td><p>proc_pool</p></td>
+<tr class="row-even"><td><p>PROC_POOL</p></td>
 <td><p>The pool of processors to use.</p></td>
 </tr>
-<tr class="row-odd"><td><p>walltime</p></td>
+<tr class="row-odd"><td><p>WALLTIME</p></td>
 <td><p>The wall time for the job.</p></td>
 </tr>
-<tr class="row-even"><td><p>job_queue</p></td>
+<tr class="row-even"><td><p>JOB_QUEUE</p></td>
 <td><p>The job queue to use.</p></td>
 </tr>
-<tr class="row-odd"><td><p>allow_baseline_overwrite</p></td>
+<tr class="row-odd"><td><p>ALLOW_BASELINE_OVERWRITE</p></td>
 <td><p>Allow overwriting of baselines.</p></td>
 </tr>
-<tr class="row-even"><td><p>skip_tests_with_existing_baselines</p></td>
+<tr class="row-even"><td><p>SKIP_TESTS_WITH_EXISTING_BASELINES</p></td>
 <td><p>Skip tests with existing baselines.</p></td>
 </tr>
-<tr class="row-odd"><td><p>wait</p></td>
+<tr class="row-odd"><td><p>WAIT</p></td>
 <td><p>Wait for jobs to complete.</p></td>
 </tr>
-<tr class="row-even"><td><p>force_procs</p></td>
+<tr class="row-even"><td><p>FORCE_PROCS</p></td>
 <td><p>Force the number of processors.</p></td>
 </tr>
-<tr class="row-odd"><td><p>force_threads</p></td>
+<tr class="row-odd"><td><p>FORCE_THREADS</p></td>
 <td><p>Force the number of threads.</p></td>
 </tr>
-<tr class="row-even"><td><p>input_dir</p></td>
+<tr class="row-even"><td><p>INPUT_DIR</p></td>
 <td><p>The directory for input files.</p></td>
 </tr>
-<tr class="row-odd"><td><p>pesfile</p></td>
+<tr class="row-odd"><td><p>PESFILE</p></td>
 <td><p>The file specifying processor layout.</p></td>
 </tr>
-<tr class="row-even"><td><p>retry</p></td>
+<tr class="row-even"><td><p>RETRY</p></td>
 <td><p>The number of retries for failed tests.</p></td>
 </tr>
 </tbody>
@@ -279,8 +279,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Case Control System (CCS)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="query-configuration.html" class="btn btn-neutral float-right" title="Query configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="query-configuration.html" class="btn btn-neutral float-left" title="Query configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="creating-a-case.html" class="btn btn-neutral float-right" title="Creating a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

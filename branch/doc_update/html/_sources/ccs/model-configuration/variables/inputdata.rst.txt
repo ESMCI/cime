@@ -1,6 +1,6 @@
 .. _model_config_inputdata:
 
-Inputdata
+INPUTDATA_SPEC_FILE
 ===================
 
 .. contents::

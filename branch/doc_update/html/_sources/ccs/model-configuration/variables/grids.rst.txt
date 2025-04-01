@@ -1,6 +1,6 @@
 .. _model_config_grids:
 
-Grids
+GRIDS_SPEC_FILE
 ===============
 
 .. contents::

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compsets &mdash; CIME master documentation</title>
+  <title>COMPSETS_SPEC_FILE &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Component Root Directory" href="comp-root-dir.html" />
-    <link rel="prev" title="Cmake Macros" href="cmake-macros-dir.html" /> 
+    <link rel="next" title="COMP_ROOT_DIR_*" href="comp-root-dir.html" />
+    <link rel="prev" title="CMAKE_MACROS_DIR" href="cmake-macros-dir.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
@@ -64,28 +64,28 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model Configuration</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../config-files.html">Config Files</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">Variables</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="archive.html">Archive</a></li>
-<li class="toctree-l4"><a class="reference internal" href="batch.html">Batch</a></li>
-<li class="toctree-l4"><a class="reference internal" href="build-lib.html">Buildlib</a></li>
-<li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">Case File Headers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">Cmake Macros</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Compsets</a></li>
-<li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">Component Root Directory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="component.html">Component</a></li>
-<li class="toctree-l4"><a class="reference internal" href="component_model_specific.html">Component Model Specific</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tests.html">Tests</a></li>
-<li class="toctree-l4"><a class="reference internal" href="grids.html">Grids</a></li>
-<li class="toctree-l4"><a class="reference internal" href="inputdata.html">Inputdata</a></li>
-<li class="toctree-l4"><a class="reference internal" href="machine.html">Machines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="model.html">Model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="namelist-definition.html">Namelist Definition</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pes.html">Pes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pio.html">Pio</a></li>
-<li class="toctree-l4"><a class="reference internal" href="system-tests.html">SystemTests</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tests-mods.html">Test Mods</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tests-spec.html">Test List</a></li>
-<li class="toctree-l4"><a class="reference internal" href="user-mods.html">User Mods</a></li>
-<li class="toctree-l4"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="archive.html">ARCHIVE_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch.html">BATCH_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build-lib.html">BUILD_LIB_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">CASEFILE_HEADERS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">CMAKE_MACROS_DIR</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">COMPSETS_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">COMP_ROOT_DIR_*</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component.html">CONFIG_*_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component_model_specific.html">CONFIG_CPL_FILE_MODEL_SPECIFIC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests.html">CONFIG_TESTS_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grids.html">GRIDS_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inputdata.html">INPUTDATA_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="machine.html">MACHINE_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="model.html">MODEL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namelist-definition.html">NAMELIST_DEFINITION_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pes.html">PES_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pio.html">PIO_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="system-tests.html">SYSTEM_TESTS_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-mods.html">TESTS_MODS_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-spec.html">TESTS_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="user-mods.html">USER_MODS_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="workflow.html">WORKFLOW_SPEC_FILE</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../support-a-new-machine.html">Support a new machine</a></li>
@@ -121,8 +121,8 @@
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
           <li class="breadcrumb-item"><a href="../index.html">Model Configuration</a></li>
-          <li class="breadcrumb-item"><a href="index.html">Variables</a></li>
-      <li class="breadcrumb-item active">Compsets</li>
+          <li class="breadcrumb-item"><a href="../config-files.html">Config Files</a></li>
+      <li class="breadcrumb-item active">COMPSETS_SPEC_FILE</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../../_sources/ccs/model-configuration/variables/compsets.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -132,8 +132,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="compsets">
-<span id="model-config-compsets"></span><h1>Compsets<a class="headerlink" href="#compsets" title="Link to this heading"></a></h1>
+  <section id="compsets-spec-file">
+<span id="model-config-compsets"></span><h1>COMPSETS_SPEC_FILE<a class="headerlink" href="#compsets-spec-file" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#overview" id="id2">Overview</a></p></li>
@@ -318,8 +318,8 @@ To enable this, you will need to do the following:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cmake-macros-dir.html" class="btn btn-neutral float-left" title="Cmake Macros" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="comp-root-dir.html" class="btn btn-neutral float-right" title="Component Root Directory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cmake-macros-dir.html" class="btn btn-neutral float-left" title="CMAKE_MACROS_DIR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="comp-root-dir.html" class="btn btn-neutral float-right" title="COMP_ROOT_DIR_*" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

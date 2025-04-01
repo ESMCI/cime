@@ -1,6 +1,6 @@
 .. _model_config_pio:
 
-Pio
+PIO_SPEC_FILE
 =============
 
 .. contents::

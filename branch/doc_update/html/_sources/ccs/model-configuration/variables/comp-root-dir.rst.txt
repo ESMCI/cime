@@ -1,6 +1,6 @@
 .. _model_config_comp_root_dir:
 
-Component Root Directory
+COMP_ROOT_DIR_*
 ========================
 
 .. contents::

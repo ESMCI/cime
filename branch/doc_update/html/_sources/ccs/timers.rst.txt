@@ -1,7 +1,10 @@
 .. _timers:
 
 Timers
-=================
+======
+
+.. contents::
+   :local:
 
 CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.

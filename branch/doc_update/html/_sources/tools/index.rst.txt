@@ -13,6 +13,5 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
 
 .. toctree::
    :maxdepth: 2
-   :numbered:
-
+   
    ect.rst

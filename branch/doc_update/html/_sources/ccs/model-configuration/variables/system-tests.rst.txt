@@ -1,6 +1,6 @@
 .. _model_config_system_tests:
 
-SystemTests
+SYSTEM_TESTS_DIR
 ================
 
 .. contents::

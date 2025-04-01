@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Creating a Case" href="creating-a-case.html" />
-    <link rel="prev" title="User Config" href="user-config.html" /> 
+    <link rel="next" title="User Config" href="user-config.html" />
+    <link rel="prev" title="Case Control System (CCS)" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
@@ -101,11 +101,32 @@
              
   <section id="query-configuration">
 <span id="ccs-query-configuration"></span><h1>Query configuration<a class="headerlink" href="#query-configuration" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#machines" id="id1">Machines</a></p></li>
+<li><p><a class="reference internal" href="#compsets" id="id2">Compsets</a></p></li>
+<li><p><a class="reference internal" href="#components" id="id3">Components</a></p></li>
+<li><p><a class="reference internal" href="#grids" id="id4">Grids</a></p></li>
+</ul>
+</nav>
 <p>Before creating a case, you may need to explore your model’s CIME configuration. This includes the supported machines, compsets, components, and grids.</p>
 <section id="machines">
-<h2>Machines<a class="headerlink" href="#machines" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Machines</a><a class="headerlink" href="#machines" title="Link to this heading"></a></h2>
 <p>To list all machines supported by the target model, use the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--machines
+</pre></div>
+</div>
+<p>Each machine listed, such as “docker”, has a description, operating system (os), compilers, and MPI libraries (mpilibs). The output also includes information about the systems resources.
+For example, the output for the “docker” machine may look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Machine</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">docker</span> <span class="p">:</span> <span class="n">Docker</span>
+    <span class="n">os</span>              <span class="n">LINUX</span>
+    <span class="n">compilers</span>       <span class="n">gnu</span><span class="p">,</span><span class="n">gnuX</span>
+    <span class="n">mpilibs</span>         <span class="n">openmpi</span>
+    <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">8</span>
+    <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">8</span>
+    <span class="n">max_gpus</span><span class="o">/</span><span class="n">node</span>   <span class="mi">0</span>
 </pre></div>
 </div>
 <p>To display the current machine configuration, use:</p>
@@ -120,9 +141,29 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--machines<span class="w"> </span>&lt;machine&gt;<span class="w"> </span>--compiler<span class="w"> </span>&lt;compiler&gt;
 </pre></div>
 </div>
+<p>For example, the output for the “docker” machine with the “gnu” compiler may look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Machine</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">docker</span> <span class="p">(</span><span class="n">gnu</span><span class="p">)</span> <span class="p">:</span> <span class="n">Docker</span>
+    <span class="n">os</span>              <span class="n">LINUX</span>
+    <span class="n">compilers</span>       <span class="n">gnu</span><span class="p">,</span><span class="n">gnuX</span>
+    <span class="n">mpilibs</span>         <span class="n">openmpi</span>
+    <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">8</span>
+    <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">8</span>
+    <span class="n">max_gpus</span><span class="o">/</span><span class="n">node</span>   <span class="mi">0</span>
+
+    <span class="n">Module</span> <span class="n">commands</span><span class="p">:</span>
+
+    <span class="n">Environment</span> <span class="n">variables</span><span class="p">:</span>
+    <span class="n">OMPI_ALLOW_RUN_AS_ROOT</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="n">OMPI_ALLOW_RUN_AS_ROOT_CONFIRM</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="n">NETCDF_C_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
+    <span class="n">NETCDF_FORTRAN_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
+</pre></div>
+</div>
 </section>
 <section id="compsets">
-<h2>Compsets<a class="headerlink" href="#compsets" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Compsets</a><a class="headerlink" href="#compsets" title="Link to this heading"></a></h2>
 <p>To list all compsets supported by the target model, use the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--compsets
 </pre></div>
@@ -133,7 +174,7 @@
 </div>
 </section>
 <section id="components">
-<h2>Components<a class="headerlink" href="#components" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Components</a><a class="headerlink" href="#components" title="Link to this heading"></a></h2>
 <p>To list all components supported by the target model, use the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--components
 </pre></div>
@@ -144,7 +185,7 @@
 </div>
 </section>
 <section id="grids">
-<h2>Grids<a class="headerlink" href="#grids" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Grids</a><a class="headerlink" href="#grids" title="Link to this heading"></a></h2>
 <p>To list all supported grids for the target model, use the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--grids
 </pre></div>
@@ -164,8 +205,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="user-config.html" class="btn btn-neutral float-left" title="User Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="creating-a-case.html" class="btn btn-neutral float-right" title="Creating a Case" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Case Control System (CCS)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="user-config.html" class="btn btn-neutral float-right" title="User Config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

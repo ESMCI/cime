@@ -50,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Case Control System (CCS)</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
@@ -101,10 +101,17 @@
              
   <section id="timers">
 <span id="id1"></span><h1>Timers<a class="headerlink" href="#timers" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#model-timing-data" id="id3">Model timing data</a></p></li>
+<li><p><a class="reference internal" href="#controlling-timers" id="id4">Controlling timers</a></p></li>
+<li><p><a class="reference internal" href="#advice-on-setting-your-wallclock-time" id="id5">Advice on setting your wallclock time</a></p></li>
+</ul>
+</nav>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
 <section id="model-timing-data">
-<span id="id2"></span><h2>Model timing data<a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Model timing data</a><a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <ol class="arabic">
 <li><p><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
@@ -205,7 +212,7 @@ month. This file will appear either in <strong>$RUNDIR</strong> or in
 <p>The xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code>, if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> (the default) will produce the timing files in the <strong>$CASEROOT/timing</strong> directory.</p>
 </section>
 <section id="controlling-timers">
-<h2>Controlling timers<a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Controlling timers</a><a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
 <p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>:</p>
@@ -231,7 +238,7 @@ add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
 </div>
 </section>
 <section id="advice-on-setting-your-wallclock-time">
-<h2>Advice on setting your wallclock time<a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Advice on setting your wallclock time</a><a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
 <dl>
 <dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>

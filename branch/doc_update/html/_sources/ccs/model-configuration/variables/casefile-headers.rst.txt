@@ -1,6 +1,6 @@
 .. _model_config_casefile_headers:
 
-Case File Headers 
+CASEFILE_HEADERS
 ================
 
 .. contents::

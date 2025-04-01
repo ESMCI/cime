@@ -26,28 +26,31 @@ Usage
 -----
 The entries in ``config_files.xml`` will describe the following variables. 
 
-* :ref:`ARCHIVE_SPEC_FILE<model_config_archive>`
-* :ref:`BATCH_SPEC_FILE<model_config_batch>`
-* :ref:`BUILD_LIB_FILE<model_config_build_lib>`
-* :ref:`CASEFILE_HEADERS<model_config_casefile_headers>`
-* :ref:`CMAKE_MACROS_DIR<model_config_cmake_macros_dir>`
-* :ref:`COMPSETS_SPEC_FILE<model_config_compsets>`
-* :ref:`COMP_ROOT_DIR_*<model_config_comp_root_dir>`
-* :ref:`CONFIG_*_FILE<model_config_component>`
-* :ref:`CONFIG_*_FILE_MODEL_SPECIFIC<model_config_component_model_specific>`
-* :ref:`CONFIG_TESTS_FILE<model_config_tests>`
-* :ref:`GRIDS_SPEC_FILE<model_config_grids>`
-* :ref:`INPUTDATA_SPEC_FILE<model_config_inputdata>`
-* :ref:`MACHINES_SPEC_FILE<model_config_machines>`
-* :ref:`MODEL<model_config_model>`
-* :ref:`NAMELIST_DEFINITION_FILE<model_config_namelist_definition>`
-* :ref:`PES_SPEC_FILE<model_config_pes>`
-* :ref:`PIO_SPEC_FILE<model_config_pio>`
-* :ref:`SYSTEM_TESTS_DIR<model_config_system_tests>`
-* :ref:`TESTS_MODS_DIR<model_config_tests_mods>`
-* :ref:`TESTS_SPEC_FILE<model_config_tests_spec>`
-* :ref:`USER_MODS_DIR<model_config_user_mods>`
-* :ref:`WORKFLOW_SPEC_FILE<model_config_workflow>`
+.. toctree::
+   :maxdepth: 1
+
+   variables/archive.rst
+   variables/batch.rst
+   variables/build-lib.rst
+   variables/casefile-headers.rst
+   variables/cmake-macros-dir.rst
+   variables/compsets.rst
+   variables/comp-root-dir.rst
+   variables/component.rst
+   variables/component_model_specific.rst
+   variables/tests.rst
+   variables/grids.rst
+   variables/inputdata.rst
+   variables/machine.rst
+   variables/model.rst
+   variables/namelist-definition.rst
+   variables/pes.rst
+   variables/pio.rst
+   variables/system-tests.rst
+   variables/tests-mods.rst
+   variables/tests-spec.rst
+   variables/user-mods.rst
+   variables/workflow.rst
 
 
 Schema Definition

@@ -1,6 +1,6 @@
 .. _model_config_tests_mods:
 
-Test Mods
+TESTS_MODS_DIR
 ==============
 
 .. contents::

@@ -1,6 +1,6 @@
 .. _model_config_workflow:
 
-Workflow
+WORKFLOW_SPEC_FILE
 ==================
 
 .. contents::

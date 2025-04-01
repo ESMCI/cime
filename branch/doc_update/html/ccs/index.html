@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="User Config" href="user-config.html" />
+    <link rel="next" title="Query configuration" href="query-configuration.html" />
     <link rel="prev" title="CIME documentation" href="../index.html" /> 
 </head>
 
@@ -50,8 +50,8 @@
               <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Case Control System (CCS)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-config.html">User Config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="creating-a-case.html">Creating a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setting-up-a-case.html">Setting up a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
@@ -123,7 +123,6 @@
 </ul>
 </li>
 <li><p><a class="reference internal" href="#setting-up-your-environment-for-ccs" id="id12">Setting up your environment for CCS</a></p></li>
-<li><p><a class="reference internal" href="#discovering-available-pre-defined-compsets" id="id13">Discovering available pre-defined compsets</a></p></li>
 </ul>
 </nav>
 <section id="prerequisites">
@@ -138,7 +137,9 @@
 </section>
 <section id="quick-start">
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">Quick start</a><a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
-<p>You’ll need to have cloned the target model’s repository into <code class="docutils literal notranslate"><span class="pre">$SRCROOT</span></code>.</p>
+<p>The first thing to do is clone the model repository into <code class="docutils literal notranslate"><span class="pre">$SRCROOT</span></code>.</p>
+<p>All examples will be run from <code class="docutils literal notranslate"><span class="pre">$CIMEROOT</span></code> which is should exist under <code class="docutils literal notranslate"><span class="pre">$SRCROOT</span></code> e.g. (<code class="docutils literal notranslate"><span class="pre">$CIMEROOT</span></code> would be <code class="docutils literal notranslate"><span class="pre">$SRCROOT/cime</span></code>).</p>
+<p>Next set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> evnironment variable for your model, e.g. <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">CIME_MODEL=e3sm</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Check if your machine is supported by the model.</p>
@@ -146,16 +147,17 @@
 </pre></div>
 </div>
 </div>
-<p>The following example will create a directory <code class="docutils literal notranslate"><span class="pre">mycase</span></code> using the <code class="docutils literal notranslate"><span class="pre">X</span></code> compset and <code class="docutils literal notranslate"><span class="pre">f19_g16</span></code> grid. The machine is auto-detected from the hostname.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span> <span class="n">name</span><span class="o">&gt;</span>
-<span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
-<span class="n">cd</span> <span class="n">mycase</span>
-<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
-<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
-<span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">submit</span>
+<p>The following command will create a directory <code class="docutils literal notranslate"><span class="pre">mycase</span></code> using the <code class="docutils literal notranslate"><span class="pre">X</span></code> compset and <code class="docutils literal notranslate"><span class="pre">f19_g16</span></code> grid. The machine will be auto-detected but it can be defined with <code class="docutils literal notranslate"><span class="pre">--machine</span> <span class="pre">&lt;name&gt;</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_newcase<span class="w"> </span>--case<span class="w"> </span>mycase<span class="w"> </span>--compset<span class="w"> </span>X<span class="w"> </span>--res<span class="w"> </span>f19_g16
 </pre></div>
 </div>
-<p>Check the status of the case with the following command: <code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">CaseStatus</span></code>.</p>
+<p>After the case is setup, change into the directory <code class="docutils literal notranslate"><span class="pre">mycase</span></code> and run the following commands to setup, build and submit the case.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./case.setup
+./case.build
+./case.submit
+</pre></div>
+</div>
+<p>After the case is submitted, the status can be checked with <code class="docutils literal notranslate"><span class="pre">cat</span> <span class="pre">./CaseStatus</span></code>.</p>
 </section>
 <section id="what-is-a-case">
 <h2><a class="toc-backref" href="#id3" role="doc-backlink">What is a Case?</a><a class="headerlink" href="#what-is-a-case" title="Link to this heading"></a></h2>
@@ -166,17 +168,17 @@ to explore various scenarios and configurations.</p>
 <p>The following sections will delve into these key components in more detail.</p>
 <section id="component-set-compset">
 <h3><a class="toc-backref" href="#id4" role="doc-backlink">Component set (compset)</a><a class="headerlink" href="#component-set-compset" title="Link to this heading"></a></h3>
-<p>The particular combination of active, data, and stub versions of the 7 components is referred to
-as a <em>component set</em> or  <em>compset</em>. The Case Control System allows one to define
-several possible compsets and configure and run them on supported platforms.
-Here is an example of a component set <em>longname</em> from E3SM for a fully coupled active case:</p>
+<p>A combination of active, data, and stub components that are linked together to form a climate model.
+The CCS allows one to define a <em>component set</em> (or <em>compset</em>) for a case. The CCS allows one to define
+several possible compsets, configure and run them on supported platforms. Here is an example of a compset
+<code class="docutils literal notranslate"><span class="pre">longname</span></code> from E3SM for a fully coupled active case:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">SOI_EAM</span><span class="o">%</span><span class="n">CMIP6_ELM</span><span class="o">%</span><span class="n">CNPRDCTCBCTOP_MPASSI_MPASO_MOSART_SGLC_SWAV</span>
 </pre></div>
 </div>
 <section id="compset-alias">
 <h4><a class="toc-backref" href="#id5" role="doc-backlink">Compset alias</a><a class="headerlink" href="#compset-alias" title="Link to this heading"></a></h4>
-<p>Typing a compset longname like the above can be exhausting so the CCS allows defining a shorter <em>compset alias</em>
-which is a short string that substitutes for the longname. In E3SM, the above longname can be referred to as “WCYCL1850”.</p>
+<p>Compset longnames can be long and complex, CCS allows one to deinfe a <code class="docutils literal notranslate"><span class="pre">compset</span> <span class="pre">alias</span></code> to represent a longname.
+The above longname can be referred to as “WCYCL1850” in E3SM.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <blockquote>
@@ -226,8 +228,8 @@ They pre-date the introduction of a wave model as an option.</p>
 </section>
 <section id="components">
 <h4><a class="toc-backref" href="#id6" role="doc-backlink">Components</a><a class="headerlink" href="#components" title="Link to this heading"></a></h4>
-<p>In CIME, a coupled earth system model is made up of <em>components</em> that interact through a coupler and are all controlled by a driver.</p>
-<p>In the current version of CIME, there are 7 physical components allowed.</p>
+<p>In the CCS a <code class="docutils literal notranslate"><span class="pre">component</span></code> is a sub-model that is coupled with other components to constitute a global climate modeling system.</p>
+<p>There are 7 domains in the Earth System that are typically represented by components in a coupled climate model. These domains are:</p>
 <ul class="simple">
 <li><p>atmosphere (atm)</p></li>
 <li><p>ocean (ocn)</p></li>
@@ -241,7 +243,7 @@ They pre-date the introduction of a wave model as an option.</p>
 <p class="admonition-title">Note</p>
 <p>“GLC” originally meant “glacier model” and is now an ice-sheet model but the GLC letters have stuck.</p>
 </div>
-<p>Components are also referred to as <em>models</em>. The choice of 7 is partly historical and partly determined by the physics of the
+<p>Components are also referred to as <code class="docutils literal notranslate"><span class="pre">sub-models</span></code>. The choice of 7 is partly historical and partly determined by the physics of the
 Earth System: these 7 components occupy physically distinct domains in the Earth System and/or require different numerical grids for solving.</p>
 <p>There are a few additional components that are not related to the Earth System. The <em>coupler</em> facilitates the interaction of component models. The <em>external processing system</em> and <em>integrated assessment component</em> are both optional and interact with component models outside of the <em>coupler</em>.</p>
 <ul class="simple">
@@ -304,67 +306,6 @@ For variables that can be set in more than one way, the order of precedence is:<
 <li><p>variable is set in <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> as explained further <a class="reference internal" href="model-configuration/customize-cime.html#customizing-cime"><span class="std std-ref">here</span></a>.</p></li>
 <li><p>variable is set in a <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml file</p></li>
 </ul>
-</section>
-<section id="discovering-available-pre-defined-compsets">
-<h2><a class="toc-backref" href="#id13" role="doc-backlink">Discovering available pre-defined compsets</a><a class="headerlink" href="#discovering-available-pre-defined-compsets" title="Link to this heading"></a></h2>
-<p>Your CIME-driven model likely has many compset and gridset aliases defined for cases that are widely used by the
-model developers.</p>
-<p>Use the utility <code class="docutils literal notranslate"><span class="pre">query_config</span></code> to see which out-of-the-box compsets, components, grids, and machines are available for your model.</p>
-<p>To see lists of available compsets, components, grids, and machines, look at the <strong>help</strong> text</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<p>To see all available component sets, try</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="nb">all</span>
-</pre></div>
-</div>
-<p>To see compset information where <strong>drv</strong> is the component name</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
-</pre></div>
-</div>
-<p>The output will be similar to this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
-  <span class="n">Compset</span> <span class="n">Short</span> <span class="n">Name</span><span class="p">:</span> <span class="n">Compset</span> <span class="n">Long</span> <span class="n">Name</span>
-  <span class="o">--------------------------------------</span>
-<span class="n">A</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV</span>
-<span class="n">ADWAV</span>                <span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_DWAV</span><span class="o">%</span><span class="n">CLIMO</span>
-<span class="n">S</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP</span>
-<span class="n">ADLND</span>                <span class="p">:</span> <span class="mi">2000</span><span class="n">_SATM_DLND</span><span class="o">%</span><span class="n">SCPL_SICE_SOCN_SROF_SGLC_SWAV</span>
-<span class="n">ADESP_TEST</span>           <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV_DESP</span><span class="o">%</span><span class="n">TEST</span>
-<span class="n">X</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV</span>
-<span class="n">ADESP</span>                <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV_DESP</span>
-<span class="n">AIAF</span>                 <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">IAF_SLND_DICE</span><span class="o">%</span><span class="n">IAF_DOCN</span><span class="o">%</span><span class="n">IAF_DROF</span><span class="o">%</span><span class="n">IAF_SGLC_SWAV</span>
-</pre></div>
-</div>
-<p>Each model component specifies its own definitions of what can appear after the <strong>%</strong>  modifier in the compset longname (for example, <strong>DOM</strong> in <strong>DOCN%DOM</strong>).</p>
-<p>To see what supported modifiers are for <strong>DOCN</strong>, run <a class="reference external" href="../Tools_user/query_config.html">query_config</a> as in this example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
-</pre></div>
-</div>
-<p>The output will be similar to this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=========================================</span>
-<span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
-<span class="o">=========================================</span>
-
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP1</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">1</span>
-   <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP10</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">10</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP2</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">2</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP3</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">3</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP4</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">4</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP5</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">5</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP6</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">6</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP7</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">7</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP8</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">8</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">AQP9</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">aquaplanet</span> <span class="n">sst</span> <span class="o">-</span> <span class="n">option</span> <span class="mi">9</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">prescribed</span> <span class="n">ocean</span> <span class="n">mode</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">IAF</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">interannual</span> <span class="n">mode</span>
-    <span class="n">_DOCN</span><span class="o">%</span><span class="n">NULL</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">null</span> <span class="n">mode</span>
-     <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOM</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
-  <span class="n">_DOCN</span><span class="o">%</span><span class="n">SOMAQP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">slab</span> <span class="n">ocean</span> <span class="n">mode</span>
-  <span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
-</pre></div>
-</div>
-<p>For more details on how CIME determines the output for query_config, see <a class="reference internal" href="model-configuration/variables/compsets.html#model-config-compsets"><span class="std std-ref">Component Sets</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -375,7 +316,7 @@ model developers.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="CIME documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="user-config.html" class="btn btn-neutral float-right" title="User Config" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="query-configuration.html" class="btn btn-neutral float-right" title="Query configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

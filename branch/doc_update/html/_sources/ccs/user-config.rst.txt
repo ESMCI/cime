@@ -31,25 +31,25 @@ Variables can be defined in the **[main]** section of the config file.
     - Description
   * - cime_model
     - Name of the model to be used.
-  * - project
+  * - PROJECT
     - The project identifier.
-  * - charge_account
+  * - CHARGE_ACCOUNT
     - The account to be charged.
-  * - srcroot
+  * - SRCROOT
     - The root directory of the model source code.
-  * - mail_type
+  * - MAIL_TYPE
     - The type of mail notifications (e.g., fail, all).
-  * - mail_user
+  * - MAIL_USER
     - The user to receive mail notifications.
-  * - machine
+  * - MACHINE
     - The machine to be used.
-  * - mpilib
+  * - MPILIB
     - The MPI library to be used.
-  * - compiler
+  * - COMPILER
     - The compiler to be used.
-  * - input_dir
+  * - INPUT_DIR
     - The directory for input files.
-  * - cime_driver
+  * - CIME_DRIVER
     - The model driver to use.
 
 Create Test
@@ -66,51 +66,51 @@ The following example shows setting defaults for the **create_test** script.
 
   * - Variable
     - Description
-  * - mail_type
+  * - MAIL_TYPE
     - The type of mail notifications (e.g., fail, all).
-  * - mail_user
+  * - MAIL_USER
     - The user to receive mail notifications.
-  * - save_timing
+  * - SAVE_TIMING
     - Save timing information.
-  * - single_submit
+  * - SINGLE_SUBMIT
     - Submit all jobs as a single job.
-  * - test_root
+  * - TEST_ROOT
     - The root directory for tests.
-  * - output_root
+  * - OUTPUT_ROOT
     - The root directory for output.
-  * - baseline_root
+  * - BASELINE_ROOT
     - The root directory for baselines.
-  * - clean
+  * - CLEAN
     - Clean before running tests.
-  * - machine
+  * - MACHINE
     - The machine to be used.
-  * - mpilib
+  * - MPILIB
     - The MPI library to be used.
-  * - compiler
+  * - COMPILER
     - The compiler to be used.
-  * - parallel_jobs
+  * - PARALLEL_JOBS
     - The number of parallel jobs to run.
-  * - proc_pool
+  * - PROC_POOL
     - The pool of processors to use.
-  * - walltime
+  * - WALLTIME
     - The wall time for the job.
-  * - job_queue
+  * - JOB_QUEUE
     - The job queue to use.
-  * - allow_baseline_overwrite
+  * - ALLOW_BASELINE_OVERWRITE
     - Allow overwriting of baselines.
-  * - skip_tests_with_existing_baselines
+  * - SKIP_TESTS_WITH_EXISTING_BASELINES
     - Skip tests with existing baselines.
-  * - wait
+  * - WAIT
     - Wait for jobs to complete.
-  * - force_procs
+  * - FORCE_PROCS
     - Force the number of processors.
-  * - force_threads
+  * - FORCE_THREADS
     - Force the number of threads.
-  * - input_dir
+  * - INPUT_DIR
     - The directory for input files.
-  * - pesfile
+  * - PESFILE
     - The file specifying processor layout.
-  * - retry
+  * - RETRY
     - The number of retries for failed tests.
 
 Machine
