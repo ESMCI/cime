@@ -1,6 +1,6 @@
 .. _model_config_component_model_specific:
 
-Component Model Specific
+CONFIG_CPL_FILE_MODEL_SPECIFIC
 ==============================
 
 .. contents::

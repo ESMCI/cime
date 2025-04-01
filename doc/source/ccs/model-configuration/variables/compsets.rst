@@ -1,6 +1,6 @@
 .. _model_config_compsets:
 
-Compsets
+COMPSETS_SPEC_FILE
 ==================
 
 .. contents::

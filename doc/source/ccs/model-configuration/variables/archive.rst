@@ -1,6 +1,6 @@
 .. _model_config_archive:
 
-Archive
+ARCHIVE_SPEC_FILE
 =================
 
 .. contents::

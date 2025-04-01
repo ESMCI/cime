@@ -1,6 +1,6 @@
 .. _model_config_cmake_macros_dir:
 
-Cmake Macros
+CMAKE_MACROS_DIR
 ================
 
 .. contents::

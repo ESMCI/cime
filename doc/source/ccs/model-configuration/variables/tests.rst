@@ -1,6 +1,6 @@
 .. _model_config_tests:
 
-Tests
+CONFIG_TESTS_FILE
 =================
 
 .. contents::

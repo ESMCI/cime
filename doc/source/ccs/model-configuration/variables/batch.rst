@@ -1,6 +1,6 @@
 .. _model_config_batch:
 
-Batch
+BATCH_SPEC_FILE
 ===============
 
 .. contents::

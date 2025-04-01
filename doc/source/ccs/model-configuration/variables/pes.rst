@@ -1,6 +1,6 @@
 .. _model_config_pes:
 
-Pes
+PES_SPEC_FILE
 =============
 
 .. contents::

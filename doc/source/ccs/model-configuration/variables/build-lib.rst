@@ -1,6 +1,6 @@
 .. _model_config_build_lib:
 
-Buildlib
+BUILD_LIB_FILE
 ==============
 
 .. contents::

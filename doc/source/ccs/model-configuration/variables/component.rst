@@ -1,6 +1,6 @@
 .. _model_config_component:
 
-Component
+CONFIG_*_FILE
 =============
 
 .. contents::

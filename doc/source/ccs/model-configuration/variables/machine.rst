@@ -1,6 +1,6 @@
 .. _model_config_machines:
 
-Machines
+MACHINE_SPEC_FILE
 ==================
 
 .. contents::

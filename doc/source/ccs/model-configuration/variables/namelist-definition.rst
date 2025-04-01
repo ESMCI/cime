@@ -1,6 +1,6 @@
 .. _model_config_namelist_definition:
 
-Namelist Definition
+NAMELIST_DEFINITION_FILE
 ========================
 
 .. contents::

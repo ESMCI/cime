@@ -1,6 +1,6 @@
 .. _model_config_user_mods:
 
-User Mods
+USER_MODS_DIR
 =============
 
 .. contents::

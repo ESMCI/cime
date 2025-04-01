@@ -1,16 +1,13 @@
 .. _glossary:
 
-########
 Glossary
-########
+========
 
-.. toctree::
-   :maxdepth: 1
-   :numbered:
+.. contents::
+   :local:
 
-*********
 General
-*********
+-------
 
 .. glossary::
 
@@ -43,9 +40,8 @@ General
       Simply occupies the required place in the climate execution sequence and does send or receive
       any data.
 
-*********
 Coupling
-*********
+--------
 
 .. glossary::
 
@@ -70,9 +66,8 @@ Coupling
    mapping
       Interpolation of fields between components.
 
-*********************
 Files and Directories
-*********************
+---------------------
 
 .. glossary::
 
@@ -117,9 +112,8 @@ Files and Directories
       include env_archive.xml, env_batch.xml, env_build.xml, env_case.xml, env_mach_pes.xml, env_mach_specific.xml, env_run.xml
       in CASEROOT and can be queried and modifed using the xmlquery and xmlchange tools.
 
-***********
 Development
-***********
+-----------
 
 .. glossary::
 
@@ -138,9 +132,8 @@ Development
    user namelist files (CASEROOT/user_nl_*)
       User modifications for a given case can be specified in these files.
 
-********
 Testing
-********
+-------
 
 .. glossary::
 
@@ -161,9 +154,8 @@ Testing
    unit testing
       A fast, self-verifying test of a small piece of code.
 
-*************
 Miscellaneous
-*************
+-------------
 
 .. glossary::
 

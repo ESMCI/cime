@@ -1,6 +1,6 @@
 .. _model_config_model:
 
-Model
+MODEL
 =====
 
 .. contents::
