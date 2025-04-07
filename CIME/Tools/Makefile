@@ -655,13 +655,12 @@ ULIBS += -L$(INSTALL_SHAREDPATH)/lib
 
 ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl
 
-# Add Kokkos header files and libraries for SE-NH dycore
-ifdef USE_KOKKOS
-  CAM_TARGET ?= $(shell $(CASEROOT)/xmlquery --caseroot $(CASEROOT) CAM_TARGET --value)
-  ifeq ($(filter $(CAM_TARGET),theta-l theta-l_kokkos),$(CAM_TARGET))
-    ULIBS += -L$(INSTALL_SHAREDPATH)/lib64 -lkokkoscontainers -lkokkoscore -lkokkossimd
-  endif
+# Include Kokkos Makefile to add necessary flags for a Makefile system
+kokkos_makefile=$(shell find $(SRCROOT) -name Makefile.kokkos) 
+ifneq ($(strip $(kokkos_makefile)),)
+  include $(kokkos_makefile)
 endif
+CXXFLAGS += $(KOKKOS_CXXFLAGS)
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
