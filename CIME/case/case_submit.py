@@ -287,7 +287,7 @@ def submit(
             functor,
             "case.submit",
             caseroot=caseroot,
-            custom_success_msg_functor=lambda x: x.split(":")[-1],
+            custom_success_msg_functor=lambda x: x,
             is_batch=is_batch,
             gitinterface=self._gitinterface,
         )
