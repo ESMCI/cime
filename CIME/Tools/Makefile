@@ -658,9 +658,10 @@ ULIBS += -lcsm_share -L$(INSTALL_SHAREDPATH)/lib $(PIOLIBNAME) -lgptl
 # Include Kokkos Makefile to add necessary flags for a Makefile system
 kokkos_makefile=$(shell find $(SRCROOT) -name Makefile.kokkos) 
 ifneq ($(strip $(kokkos_makefile)),)
+  export KOKKOS_PATH=$(dir $(kokkos_makefile))
   include $(kokkos_makefile)
+  CXXFLAGS += $(KOKKOS_CXXFLAGS)
 endif
-CXXFLAGS += $(KOKKOS_CXXFLAGS)
 
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
