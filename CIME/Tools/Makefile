@@ -660,7 +660,7 @@ kokkos_makefile=$(shell find $(SRCROOT) -name Makefile.kokkos)
 ifneq ($(strip $(kokkos_makefile)),)
   export KOKKOS_PATH=$(dir $(kokkos_makefile))
   include $(kokkos_makefile)
-  CXXFLAGS += $(KOKKOS_CXXFLAGS)
+  CXXFLAGS += $(KOKKOS_CXXFLAGS) $(KOKKOS_CPPFLAGS)
 endif
 
 #------------------------------------------------------------------------------
