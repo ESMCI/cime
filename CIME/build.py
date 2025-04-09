@@ -755,7 +755,7 @@ def _build_libraries(
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
 
-    if uses_kokkos(case):
+    if uses_kokkos(case) and comp_interface == "mct":
         libs.append("kokkos")
 
     # Build shared code of CDEPS nuopc data models
