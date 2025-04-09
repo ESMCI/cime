@@ -238,15 +238,21 @@ class EnvBatch(EnvBase):
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
         mem_per_task = case.get_value("MEM_PER_TASK")
-        mtpn = case.get_value("MAX_TASKS_PER_NODE")
+        max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
+        expect(
+            max_tasks_per_node > 0,
+            "Error MAX_TASKS_PER_NODE not set or set incorrectly",
+        )
         max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
-        if mem_per_task and total_tasks <= mtpn:
+        if mem_per_task and total_tasks <= max_tasks_per_node:
             mem_per_node = total_tasks
             if mem_per_node < mem_per_task:
                 mem_per_node = mem_per_task
             elif mem_per_node > max_mem_per_node:
                 mem_per_node = max_mem_per_node
-            overrides["mem_per_node"] = int(total_tasks / mtpn * max_mem_per_node)
+            overrides["mem_per_node"] = int(
+                total_tasks / max_tasks_per_node * max_mem_per_node
+            )
         elif max_mem_per_node:
             overrides["mem_per_node"] = max_mem_per_node
 
