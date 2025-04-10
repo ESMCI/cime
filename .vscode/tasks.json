@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build documentation",
+            "type": "shell",
+            "command": "source ${workspaceFolder}/.venv/bin/activate && sphinx-autobuild . _build/html",
+            "options": {
+                "cwd": "${workspaceFolder}/doc/source"
+            }
+        }
+    ]
+}
