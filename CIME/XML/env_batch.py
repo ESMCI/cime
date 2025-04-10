@@ -237,21 +237,19 @@ class EnvBatch(EnvBase):
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
-        try:
-            mem_per_task = case.get_value("MEM_PER_TASK")
-            max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
-            mem_per_node = total_tasks
-
-            if mem_per_node < mem_per_task:
-                mem_per_node = mem_per_task
-            elif mem_per_node > max_mem_per_node:
-                mem_per_node = max_mem_per_node
-            overrides["mem_per_node"] = mem_per_node
-        except TypeError:
-            # ignore this, the variables are not defined for this machine
-            pass
-        except Exception as error:
-            print("An exception occured:", error)
+        mem_per_task = case.get_value("MEM_PER_TASK")
+        max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
+        expect(
+            max_tasks_per_node > 0,
+            "Error MAX_TASKS_PER_NODE not set or set incorrectly",
+        )
+        max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
+        if mem_per_task and total_tasks <= max_tasks_per_node:
+            overrides["mem_per_node"] = int(
+                float(total_tasks) / float(max_tasks_per_node) * max_mem_per_node
+            )
+        elif max_mem_per_node:
+            overrides["mem_per_node"] = max_mem_per_node
 
         overrides["ngpus_per_node"] = ngpus_per_node
         overrides["mpirun"] = case.get_mpirun_cmd(job=job, overrides=overrides)
