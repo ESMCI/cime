@@ -25,9 +25,10 @@ def check_minimum_python_version(major, minor):
         + "."
         + str(sys.version_info[1])
     )
-    assert sys.version_info[0] > major or (
+    if sys.version_info[0] > major or (
         sys.version_info[0] == major and sys.version_info[1] >= minor
-    ), msg
+    ):
+        print(msg, file=sys.stderr)
 
 
 check_minimum_python_version(3, 6)
