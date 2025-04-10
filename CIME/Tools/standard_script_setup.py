@@ -18,7 +18,11 @@ def check_minimum_python_version(major, minor):
     if sys.version_info[0] < major or (
         sys.version_info[0] == major and sys.version_info[1] <= minor
     ):
-        print(f"You're running an out-of-date python version {sys.version_info.major}.{sys.version_info.minor}.\nCIME may not work as expected, consider upgrading to python > {major}.{minor}.", file=sys.stderr)
+        print(
+            f"You're running an out-of-date python version {sys.version_info.major}.{sys.version_info.minor}.\nCIME may not work as expected, consider upgrading to python > {major}.{minor}.",
+            file=sys.stderr,
+        )
+
 
 check_minimum_python_version(3, 6)
 
