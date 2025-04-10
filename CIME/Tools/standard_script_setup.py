@@ -30,7 +30,7 @@ def check_minimum_python_version(major, minor):
     ), msg
 
 
-check_minimum_python_version(3, 8)
+check_minimum_python_version(3, 6)
 
 real_file_dir = os.path.dirname(os.path.realpath(__file__))
 cimeroot = os.path.abspath(os.path.join(real_file_dir, "..", ".."))
