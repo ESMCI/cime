@@ -184,8 +184,6 @@ def _archive_rpointer_files(
                 os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
             )
             # If timestamped rpointers exist use them
-            print(f"rpointers are {rpointers}")
-
             if rpointers:
                 for rpointer in rpointers:
                     logger.info(
