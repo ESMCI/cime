@@ -172,8 +172,6 @@ def _archive_rpointer_files(
         rpointers = glob.glob(
             os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
         )
-        # Copy of all rpointer files for latest restart date
-        rpointers = glob.glob(os.path.join(rundir, "rpointer.*"))
         for rpointer in rpointers:
             safe_copy(
                 rpointer, os.path.join(archive_restdir, os.path.basename(rpointer))
@@ -186,11 +184,15 @@ def _archive_rpointer_files(
                 os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
             )
             # If timestamped rpointers exist use them
+            print(f"rpointers are {rpointers}")
+
             if rpointers:
                 for rpointer in rpointers:
-                    safe_copy(
-                        rpointer,
-                        os.path.join(archive_restdir, os.path.basename(rpointer)),
+                    logger.info(
+                        "moving interum rpointer_file {}".format(rpointer)
+                    )
+                    shutil.move(rpointer,
+                                os.path.join(archive_restdir, os.path.basename(rpointer))
                     )
             else:
                 # parse env_archive.xml to determine the rpointer files
@@ -222,17 +224,17 @@ def _archive_rpointer_files(
                                 rpointer_file = rpointer_file.replace(key, value)
                                 rpointer_content = rpointer_content.replace(key, value)
 
-                                # write out the respective files with the correct contents
-                                rpointer_file = os.path.join(
-                                    archive_restdir, rpointer_file
-                                )
-                                logger.info(
-                                    "writing rpointer_file {}".format(rpointer_file)
-                                )
-                                f = open(rpointer_file, "w")
-                                for output in rpointer_content.split(","):
-                                    f.write("{} \n".format(output))
-                                f.close()
+                            # write out the respective files with the correct contents
+                            rpointer_file = os.path.join(
+                                archive_restdir, rpointer_file
+                            )
+                            logger.info(
+                                "writing rpointer_file {}".format(rpointer_file)
+                            )
+                            f = open(rpointer_file, "w")
+                            for output in rpointer_content.split(","):
+                                f.write("{} \n".format(output))
+                            f.close()
                     else:
                         logger.info(
                             "rpointer_content unset, not creating rpointer file {}".format(
