@@ -186,11 +186,10 @@ def _archive_rpointer_files(
             # If timestamped rpointers exist use them
             if rpointers:
                 for rpointer in rpointers:
-                    logger.info(
-                        "moving interim rpointer_file {}".format(rpointer)
-                    )
-                    shutil.move(rpointer,
-                                os.path.join(archive_restdir, os.path.basename(rpointer))
+                    logger.info("moving interim rpointer_file {}".format(rpointer))
+                    shutil.move(
+                        rpointer,
+                        os.path.join(archive_restdir, os.path.basename(rpointer)),
                     )
             else:
                 # parse env_archive.xml to determine the rpointer files
@@ -223,9 +222,7 @@ def _archive_rpointer_files(
                                 rpointer_content = rpointer_content.replace(key, value)
 
                             # write out the respective files with the correct contents
-                            rpointer_file = os.path.join(
-                                archive_restdir, rpointer_file
-                            )
+                            rpointer_file = os.path.join(archive_restdir, rpointer_file)
                             logger.info(
                                 "writing rpointer_file {}".format(rpointer_file)
                             )
