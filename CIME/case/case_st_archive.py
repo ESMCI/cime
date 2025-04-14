@@ -187,7 +187,7 @@ def _archive_rpointer_files(
             if rpointers:
                 for rpointer in rpointers:
                     logger.info(
-                        "moving interum rpointer_file {}".format(rpointer)
+                        "moving interim rpointer_file {}".format(rpointer)
                     )
                     shutil.move(rpointer,
                                 os.path.join(archive_restdir, os.path.basename(rpointer))
