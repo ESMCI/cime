@@ -186,9 +186,9 @@ def _archive_rpointer_files(
         expect(not "$" in rpname, "Unrecognized expression in name {}".format(rpname))
         if datename_is_last:
             rpointers = glob.glob(rundir + "/" + rpname)
-            for rpointer in rpointers:
+            for rpfile in rpointers:
                 safe_copy(
-                    rpointer, os.path.join(archive_restdir, os.path.basename(rpointer))
+                    rpfile, os.path.join(archive_restdir, os.path.basename(rpfile))
                 )
         else:
             # Generate rpointer file(s) for interim restarts for the one datename and each
@@ -199,11 +199,11 @@ def _archive_rpointer_files(
                 )
                 # If timestamped rpointers exist use them
                 if rpointers:
-                    for rpointer in rpointers:
-                        logger.info("moving interim rpointer_file {}".format(rpointer))
+                    for rpfile in rpointers:
+                        logger.info("moving interim rpointer_file {}".format(rpfile))
                         shutil.move(
-                            rpointer,
-                            os.path.join(archive_restdir, os.path.basename(rpointer)),
+                            rpfile,
+                            os.path.join(archive_restdir, os.path.basename(rpfile)),
                         )
                 else:
 
