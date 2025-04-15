@@ -178,10 +178,10 @@ def _archive_rpointer_files(
         temp_rpointer_file = archive.text(file_node)
         content_node = archive.get_child("rpointer_content", root=rpointer)
         temp_rpointer_content = archive.text(content_node)
-        rpname = temp_rpointer_file.replace("$NINST_STRING","*")
+        rpname = temp_rpointer_file.replace("$NINST_STRING", "*")
 
         if "$DATENAME" in rpname:
-            rpname = rpname.replace("$DATENAME",_datetime_str(datename))
+            rpname = rpname.replace("$DATENAME", _datetime_str(datename))
 
         expect(not "$" in rpname, "Unrecognized expression in name {}".format(rpname))
         if datename_is_last:
@@ -207,43 +207,43 @@ def _archive_rpointer_files(
                         )
                 else:
 
-                        # put in a temporary setting for ninst_strings if they are empty
-                        # in order to have just one loop over ninst_strings below
-                        if rpointer_content != "unset":
-                            if not ninst_strings:
-                                ninst_strings = ["empty"]
+                    # put in a temporary setting for ninst_strings if they are empty
+                    # in order to have just one loop over ninst_strings below
+                    if rpointer_content != "unset":
+                        if not ninst_strings:
+                            ninst_strings = ["empty"]
 
-                            for ninst_string in ninst_strings:
-                                rpointer_file = temp_rpointer_file
-                                rpointer_content = temp_rpointer_content
-                                if ninst_string == "empty":
-                                    ninst_string = ""
-                                for key, value in [
-                                        ("$CASE", casename),
-                                        ("$DATENAME", _datetime_str(datename)),
-                                        ("$MPAS_DATENAME", _datetime_str_mpas(datename)),
-                                        ("$NINST_STRING", ninst_string),
-                                ]:
-                                    rpointer_file = rpointer_file.replace(key, value)
-                                    rpointer_content = rpointer_content.replace(key, value)
+                        for ninst_string in ninst_strings:
+                            rpointer_file = temp_rpointer_file
+                            rpointer_content = temp_rpointer_content
+                            if ninst_string == "empty":
+                                ninst_string = ""
+                            for key, value in [
+                                ("$CASE", casename),
+                                ("$DATENAME", _datetime_str(datename)),
+                                ("$MPAS_DATENAME", _datetime_str_mpas(datename)),
+                                ("$NINST_STRING", ninst_string),
+                            ]:
+                                rpointer_file = rpointer_file.replace(key, value)
+                                rpointer_content = rpointer_content.replace(key, value)
 
-                                    # write out the respective files with the correct contents
-                                    rpointer_file = os.path.join(
-                                        archive_restdir, rpointer_file
-                                    )
-                                    logger.info(
-                                        "writing rpointer_file {}".format(rpointer_file)
-                                    )
-                                    f = open(rpointer_file, "w")
-                                    for output in rpointer_content.split(","):
-                                        f.write("{} \n".format(output))
-                                    f.close()
-                        else:
-                            logger.info(
-                                "rpointer_content unset, not creating rpointer file {}".format(
-                                    rpointer_file
+                                # write out the respective files with the correct contents
+                                rpointer_file = os.path.join(
+                                    archive_restdir, rpointer_file
                                 )
+                                logger.info(
+                                    "writing rpointer_file {}".format(rpointer_file)
+                                )
+                                f = open(rpointer_file, "w")
+                                for output in rpointer_content.split(","):
+                                    f.write("{} \n".format(output))
+                                f.close()
+                    else:
+                        logger.info(
+                            "rpointer_content unset, not creating rpointer file {}".format(
+                                rpointer_file
                             )
+                        )
 
 
 ###############################################################################
