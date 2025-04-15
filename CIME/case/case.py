@@ -1014,7 +1014,7 @@ class Case(object):
             if ":" in element:
                 element = element[4:]
             # ignore the possible BGC or TEST modifier
-            if element.startswith("BGC%") or element.startswith("TEST"):
+            if element.upper().startswith("BGC%") or element.upper().startswith("TEST"):
                 continue
             else:
                 element_component = element.split("%")[0].lower()
