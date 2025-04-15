@@ -222,7 +222,9 @@ def _archive_rpointer_files(
                                 rpointer_content = rpointer_content.replace(key, value)
 
                                 # write out the respective files with the correct contents
-                                rpointer_file = os.path.join(archive_restdir, rpointer_file)
+                                rpointer_file = os.path.join(
+                                    archive_restdir, rpointer_file
+                                )
                                 logger.info(
                                     "writing rpointer_file {}".format(rpointer_file)
                                 )
