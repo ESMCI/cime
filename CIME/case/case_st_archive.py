@@ -221,15 +221,15 @@ def _archive_rpointer_files(
                                 rpointer_file = rpointer_file.replace(key, value)
                                 rpointer_content = rpointer_content.replace(key, value)
 
-                            # write out the respective files with the correct contents
-                            rpointer_file = os.path.join(archive_restdir, rpointer_file)
-                            logger.info(
-                                "writing rpointer_file {}".format(rpointer_file)
-                            )
-                            f = open(rpointer_file, "w")
-                            for output in rpointer_content.split(","):
-                                f.write("{} \n".format(output))
-                            f.close()
+                                # write out the respective files with the correct contents
+                                rpointer_file = os.path.join(archive_restdir, rpointer_file)
+                                logger.info(
+                                    "writing rpointer_file {}".format(rpointer_file)
+                                )
+                                f = open(rpointer_file, "w")
+                                for output in rpointer_content.split(","):
+                                    f.write("{} \n".format(output))
+                                f.close()
                     else:
                         logger.info(
                             "rpointer_content unset, not creating rpointer file {}".format(
