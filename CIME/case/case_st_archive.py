@@ -188,8 +188,8 @@ def _archive_rpointer_files(
             not "$" in rpointer_file,
             "Unrecognized expression in name {}".format(rpointer_file),
         )
+        rpointers = glob.glob(rundir + "/" + rpointer_file)
         if datename_is_last:
-            rpointers = glob.glob(rundir + "/" + rpointer_file)
             for rpfile in rpointers:
                 safe_copy(
                     rpfile, os.path.join(archive_restdir, os.path.basename(rpfile))
@@ -198,9 +198,6 @@ def _archive_rpointer_files(
             # Generate rpointer file(s) for interim restarts for the one datename and each
             # possible value of ninst_strings
             if save_interim_restart_files:
-                rpointers = glob.glob(
-                    os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
-                )
                 # If timestamped rpointers exist use them
                 if rpointers:
                     for rpfile in rpointers:
