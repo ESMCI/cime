@@ -178,14 +178,18 @@ def _archive_rpointer_files(
         temp_rpointer_file = archive.text(file_node)
         content_node = archive.get_child("rpointer_content", root=rpointer)
         temp_rpointer_content = archive.text(content_node)
-        rpname = temp_rpointer_file.replace("$NINST_STRING", "*")
-                                                         
-        if "$DATENAME" in rpname:
-            rpname = rpname.replace("$DATENAME", _datetime_str(datename))
+        rpointer_file = temp_rpointer_file.replace("$NINST_STRING", "*")
+        if rpointer_file == "unset":
+            continue
+        if "$DATENAME" in rpointer_file:
+            rpointer_file = rpointer_file.replace("$DATENAME", _datetime_str(datename))
 
-        expect(not "$" in rpname, "Unrecognized expression in name {}".format(rpname))
+        expect(
+            not "$" in rpointer_file,
+            "Unrecognized expression in name {}".format(rpointer_file),
+        )
         if datename_is_last:
-            rpointers = glob.glob(rundir + "/" + rpname)
+            rpointers = glob.glob(rundir + "/" + rpointer_file)
             for rpfile in rpointers:
                 safe_copy(
                     rpfile, os.path.join(archive_restdir, os.path.basename(rpfile))
@@ -210,10 +214,16 @@ def _archive_rpointer_files(
                     # put in a temporary setting for ninst_strings if they are empty
                     # in order to have just one loop over ninst_strings below
                     if ninst_strings:
-                        rpointer_content = temp_rpointer_content.replace("$NINST_STRING",ninst_strings[0])
+                        rpointer_content = temp_rpointer_content.replace(
+                            "$NINST_STRING", ninst_strings[0]
+                        )
                     else:
-                        rpointer_content = temp_rpointer_content.replace("$NINST_STRING","")
-                    rpointer_content = rpointer_content.replace("$DATENAME", _datetime_str(datename))
+                        rpointer_content = temp_rpointer_content.replace(
+                            "$NINST_STRING", ""
+                        )
+                    rpointer_content = rpointer_content.replace(
+                        "$DATENAME", _datetime_str(datename)
+                    )
                     if rpointer_content != "unset":
                         if not ninst_strings:
                             ninst_strings = ["empty"]
