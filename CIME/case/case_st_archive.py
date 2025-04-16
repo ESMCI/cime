@@ -179,7 +179,7 @@ def _archive_rpointer_files(
         content_node = archive.get_child("rpointer_content", root=rpointer)
         temp_rpointer_content = archive.text(content_node)
         rpname = temp_rpointer_file.replace("$NINST_STRING", "*")
-
+                                                         
         if "$DATENAME" in rpname:
             rpname = rpname.replace("$DATENAME", _datetime_str(datename))
 
@@ -209,6 +209,11 @@ def _archive_rpointer_files(
 
                     # put in a temporary setting for ninst_strings if they are empty
                     # in order to have just one loop over ninst_strings below
+                    if ninst_strings:
+                        rpointer_content = temp_rpointer_content.replace("$NINST_STRING",ninst_strings[0])
+                    else:
+                        rpointer_content = temp_rpointer_content.replace("$NINST_STRING","")
+                    rpointer_content = rpointer_content.replace("$DATENAME", _datetime_str(datename))
                     if rpointer_content != "unset":
                         if not ninst_strings:
                             ninst_strings = ["empty"]
