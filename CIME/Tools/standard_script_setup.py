@@ -15,19 +15,19 @@ def check_minimum_python_version(major, minor):
     >>> check_minimum_python_version(sys.version_info[0], sys.version_info[1])
     >>>
     """
-    msg = (
-        "Python "
-        + str(major)
-        + ", minor version "
-        + str(minor)
-        + " is required to run CIME. You have "
-        + str(sys.version_info[0])
-        + "."
-        + str(sys.version_info[1])
-    )
-    assert sys.version_info[0] > major or (
-        sys.version_info[0] == major and sys.version_info[1] >= minor
-    ), msg
+    if sys.version_info[0] < major or (
+        sys.version_info[0] == major and sys.version_info[1] < minor
+    ):
+        sys.stdout.write(
+            f"""
+        ##########################################################################
+        *** WARNING! Your Python version {sys.version_info.major}.{sys.version_info.minor} is outdated. ***
+        ##########################################################################
+        CIME may not function correctly and has not been tested with this version.
+        Upgrade to Python {major}.{minor} or newer to ensure compatibility.
+        ##########################################################################
+            \n"""
+        )
 
 
 check_minimum_python_version(3, 8)
