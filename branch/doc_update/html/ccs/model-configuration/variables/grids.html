@@ -174,6 +174,47 @@
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Contents</a><a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="schema-definition">
 <h3><a class="toc-backref" href="#id5" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h3>
+<p>help                    Help text.
+model_grid_defaults     Default values for component grids.
+model_grid              Defines a model grid.
+alias                   Alias for the model grid.
+compset                 Regex used to match valid compsets.
+not_compset             Regex used to ignore compsets.
+grid                    Grid value.
+compset                 Valid compset, used for <cite>model_grid_defaults</cite>.
+name                    Name of the component.
+support                 Optional support text.
+mask                    Mask for the grid.
+domain                  Grid domain definition.
+name                    Name of the domain.
+nx
+ny
+lat
+lon
+file                    Path to file containing the grid.
+grid                    Which components the file is valid for.
+lnd_mask                Land mask for the domain.
+mask                    Mask for the domain.
+ocn_mask                Ocean mask for the domain.
+mesh                    Domain mesh.
+driver                  Valid driver for domain mesh.
+mask                    Mask for domain mesh.
+desc                    Description fo domain.
+support                 Support text for domain.
+required_gridmap        Required gridmap when grid1 and grid2 are not equal.
+grid1                   Grid 1 name.
+grid2                   Grid 2 name.
+compset                 Valid compset.
+not_compset             Ignored compset.
+gridmap                 Grid map.
+atm_grid                Atmosphere grid.
+glc_grid                Ice grid.
+lnd_grid                Land grid.
+ocn_grid                Ocean grid.
+rof_grid                River grid.
+wav_grid                Wave grid.
+map                     Path to file containing the map.
+name                    Name of the grid map.</p>
 <section id="version-2-2">
 <h4><a class="toc-backref" href="#id6" role="doc-backlink">Version 2.2</a><a class="headerlink" href="#version-2-2" title="Link to this heading"></a></h4>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_grids_v2.2.xsd grid_data on 2025-02-11 --&gt;</span>
@@ -185,67 +226,67 @@
 <span class="w">    </span><span class="nt">&lt;help&gt;&lt;/help&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;grids&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;model_grid_defaults&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;model_grid_defaults&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/model_grid_defaults&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;alias&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/model_grid_defaults&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;alias&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;model_grid</span><span class="w"> </span><span class="na">alias=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;mask&gt;&lt;/mask&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/model_grid&gt;</span>
+<span class="w">        </span><span class="nt">&lt;model_grid</span><span class="w"> </span><span class="na">alias=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;mask&gt;&lt;/mask&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/model_grid&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/grids&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 3--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;domains&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;nx&gt;&lt;/nx&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ny&gt;&lt;/ny&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;lat&gt;&lt;/lat&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;lon&gt;&lt;/lon&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;grid&#39; is optional,&#39;lnd_mask&#39; is optional,&#39;mask&#39; is optional,&#39;ocn_mask&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;file</span><span class="w"> </span><span class="na">grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/file&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;driver&#39; is optional,&#39;mask&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;mesh</span><span class="w"> </span><span class="na">driver=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/mesh&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;desc&gt;&lt;/desc&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/domain&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;nx&gt;&lt;/nx&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;ny&gt;&lt;/ny&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;lat&gt;&lt;/lat&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;lon&gt;&lt;/lon&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;grid&#39; is optional,&#39;lnd_mask&#39; is optional,&#39;mask&#39; is optional,&#39;ocn_mask&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;file</span><span class="w"> </span><span class="na">grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/file&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;driver&#39; is optional,&#39;mask&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;mesh</span><span class="w"> </span><span class="na">driver=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/mesh&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;desc&gt;&lt;/desc&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/domain&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/domains&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;required_gridmaps&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;grid1&#39; is required,&#39;grid2&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;required_gridmap</span><span class="w"> </span><span class="na">grid1=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">grid2=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/required_gridmap&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;grid1&#39; is required,&#39;grid2&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;required_gridmap</span><span class="w"> </span><span class="na">grid1=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">grid2=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/required_gridmap&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/required_gridmaps&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 3--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;gridmaps&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;atm_grid&#39; is optional,&#39;glc_grid&#39; is optional,&#39;lnd_grid&#39; is optional,&#39;ocn_grid&#39; is optional,&#39;rof_grid&#39; is optional,&#39;wav_grid&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;gridmap</span><span class="w"> </span><span class="na">atm_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">glc_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">rof_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">wav_grid=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;map</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/map&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/gridmap&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;atm_grid&#39; is optional,&#39;glc_grid&#39; is optional,&#39;lnd_grid&#39; is optional,&#39;ocn_grid&#39; is optional,&#39;rof_grid&#39; is optional,&#39;wav_grid&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;gridmap</span><span class="w"> </span><span class="na">atm_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">glc_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">rof_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">wav_grid=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;map</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/map&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/gridmap&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/gridmaps&gt;</span>
 <span class="nt">&lt;/grid_data&gt;</span>
 </pre></div>
@@ -262,63 +303,63 @@
 <span class="w">    </span><span class="nt">&lt;help&gt;&lt;/help&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;grids&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;model_grid_defaults&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;model_grid_defaults&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/model_grid_defaults&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;alias&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/model_grid_defaults&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;alias&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;model_grid</span><span class="w"> </span><span class="na">alias=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;mask&gt;&lt;/mask&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/model_grid&gt;</span>
+<span class="w">        </span><span class="nt">&lt;model_grid</span><span class="w"> </span><span class="na">alias=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;name&#39; is required--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;grid</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/grid&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;mask&gt;&lt;/mask&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/model_grid&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/grids&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;domains&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;nx&gt;&lt;/nx&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;ny&gt;&lt;/ny&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;grid&#39; is optional,&#39;lnd_mask&#39; is optional,&#39;mask&#39; is optional,&#39;ocn_mask&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;file</span><span class="w"> </span><span class="na">grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/file&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;driver&#39; is optional,&#39;mask&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;mesh</span><span class="w"> </span><span class="na">driver=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/mesh&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;desc&gt;&lt;/desc&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/domain&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;domain</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;nx&gt;&lt;/nx&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;ny&gt;&lt;/ny&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;grid&#39; is optional,&#39;lnd_mask&#39; is optional,&#39;mask&#39; is optional,&#39;ocn_mask&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;file</span><span class="w"> </span><span class="na">grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/file&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;driver&#39; is optional,&#39;mask&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;mesh</span><span class="w"> </span><span class="na">driver=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">mask=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/mesh&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;desc&gt;&lt;/desc&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;support&gt;&lt;/support&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/domain&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/domains&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;required_gridmaps&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;grid1&#39; is required,&#39;grid2&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;required_gridmap</span><span class="w"> </span><span class="na">grid1=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">grid2=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/required_gridmap&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;grid1&#39; is required,&#39;grid2&#39; is required,&#39;compset&#39; is optional,&#39;not_compset&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;required_gridmap</span><span class="w"> </span><span class="na">grid1=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">grid2=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">not_compset=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/required_gridmap&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/required_gridmaps&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;gridmaps&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;atm_grid&#39; is optional,&#39;glc_grid&#39; is optional,&#39;lnd_grid&#39; is optional,&#39;ocn_grid&#39; is optional,&#39;rof_grid&#39; is optional,&#39;wav_grid&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;gridmap</span><span class="w"> </span><span class="na">atm_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">glc_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">rof_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">wav_grid=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;atm_grid&#39; is optional,&#39;glc_grid&#39; is optional,&#39;lnd_grid&#39; is optional,&#39;ocn_grid&#39; is optional,&#39;rof_grid&#39; is optional,&#39;wav_grid&#39; is optional--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;map</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/map&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/gridmap&gt;</span>
+<span class="w">        </span><span class="nt">&lt;gridmap</span><span class="w"> </span><span class="na">atm_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">glc_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">lnd_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">ocn_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">rof_grid=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">wav_grid=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;map</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/map&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/gridmap&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/gridmaps&gt;</span>
 <span class="nt">&lt;/grid_data&gt;</span>
 </pre></div>

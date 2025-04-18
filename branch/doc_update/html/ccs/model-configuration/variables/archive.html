@@ -183,6 +183,51 @@
 <section id="schema-definition">
 <h3><a class="toc-backref" href="#id5" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h3>
 <p>Below is the schema definition for the <code class="docutils literal notranslate"><span class="pre">config_archive.xml</span></code> file.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Element/Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>comp_archive_spec</p></td>
+<td><p>Component archive specification defined for either a specific compnent or class.</p></td>
+</tr>
+<tr class="row-odd"><td><p>compname</p></td>
+<td><p>Component name the specification applies.</p></td>
+</tr>
+<tr class="row-even"><td><p>compclass</p></td>
+<td><p>Component class the specification applies.</p></td>
+</tr>
+<tr class="row-odd"><td><p>exclude_testing</p></td>
+<td><p>Whether to exclude the testing archiving.</p></td>
+</tr>
+<tr class="row-even"><td><p>rest_file_extension</p></td>
+<td><p>Suffix used to match restart files.</p></td>
+</tr>
+<tr class="row-odd"><td><p>hist_file_extension</p></td>
+<td><p>Suffix used to match history files.</p></td>
+</tr>
+<tr class="row-even"><td><p>hist_file_ext_regex</p></td>
+<td><p>Regular expression used to match file extension of history files.</p></td>
+</tr>
+<tr class="row-odd"><td><p>rest_history_varname</p></td>
+<td><p>The variable name from restart files used to identify history files required for restarts.</p></td>
+</tr>
+<tr class="row-even"><td><p>rpointer_file</p></td>
+<td><p>The rpointer file to create.</p></td>
+</tr>
+<tr class="row-odd"><td><p>rpointer_content</p></td>
+<td><p>The content that is written to the rpointer file.</p></td>
+</tr>
+<tr class="row-even"><td><p>tfile</p></td>
+<td><p>A filename used to test the component archive specification.</p></td>
+</tr>
+<tr class="row-odd"><td><p>disposition</p></td>
+<td><p>The expected action to be performed on the file. Possible values copy, move, ignore.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_archive.xsd components on 2025-02-07 --&gt;</span>
 
 <span class="cm">&lt;!-- Attributes &#39;version&#39; is optional--&gt;</span>
@@ -191,27 +236,27 @@
 <span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;compname&#39; is required,&#39;compclass&#39; is required,&#39;exclude_testing&#39; is optional--&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;comp_archive_spec</span><span class="w"> </span><span class="na">compname=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">compclass=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">exclude_testing=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;rest_file_extension&gt;&lt;/rest_file_extension&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;hist_file_extension&gt;&lt;/hist_file_extension&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;hist_file_ext_regex&gt;&lt;/hist_file_ext_regex&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;rest_history_varname&gt;&lt;/rest_history_varname&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;rpointer&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;rpointer_file&gt;&lt;/rpointer_file&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rest_file_extension&gt;&lt;/rest_file_extension&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;rpointer_content&gt;&lt;/rpointer_content&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/rpointer&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;test_file_names&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;disposition&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;hist_file_extension&gt;&lt;/hist_file_extension&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;tfile</span><span class="w"> </span><span class="na">disposition=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/tfile&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/test_file_names&gt;</span>
+<span class="w">        </span><span class="nt">&lt;hist_file_ext_regex&gt;&lt;/hist_file_ext_regex&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rest_history_varname&gt;&lt;/rest_history_varname&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;rpointer&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;rpointer_file&gt;&lt;/rpointer_file&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;rpointer_content&gt;&lt;/rpointer_content&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/rpointer&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;test_file_names&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;disposition&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;tfile</span><span class="w"> </span><span class="na">disposition=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/tfile&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/test_file_names&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/comp_archive_spec&gt;</span>
 <span class="nt">&lt;/components&gt;</span>
 </pre></div>

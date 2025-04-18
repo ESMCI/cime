@@ -161,28 +161,65 @@
 </section>
 <section id="schema-definition">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Element/Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>server</p></td>
+<td><p>Describes an input data server.</p></td>
+</tr>
+<tr class="row-odd"><td><p>comment</p></td>
+<td><p>Server comment.</p></td>
+</tr>
+<tr class="row-even"><td><p>protocol</p></td>
+<td><p>Protocol used to connect to server. Possible values svn, gftp, ftp or wget.</p></td>
+</tr>
+<tr class="row-odd"><td><p>address</p></td>
+<td><p>Address for the server.</p></td>
+</tr>
+<tr class="row-even"><td><p>user</p></td>
+<td><p>Username if required to connect to the server.</p></td>
+</tr>
+<tr class="row-odd"><td><p>password</p></td>
+<td><p>Password if required to connect to the server.</p></td>
+</tr>
+<tr class="row-even"><td><p>checksum</p></td>
+<td><p>Remote path to the checksum file.</p></td>
+</tr>
+<tr class="row-odd"><td><p>inventory</p></td>
+<td><p>A CSV file containing a list of available data files and the valid date for each.
+Format should be <cite>pathtofile,YYYY-MM-DD HH:MM:SS</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p>ic_filepath</p></td>
+<td><p>Remote path for initial condition files.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_inputdata.xsd inputdata on 2025-02-06 --&gt;</span>
 
 <span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
 <span class="nt">&lt;inputdata&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;server&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;comment&gt;&lt;/comment&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;protocol&gt;&lt;/protocol&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;address&gt;&lt;/address&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;user&gt;&lt;/user&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;password&gt;&lt;/password&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;checksum&gt;&lt;/checksum&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;inventory&gt;&lt;/inventory&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;ic_filepath&gt;&lt;/ic_filepath&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;comment&gt;&lt;/comment&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;protocol&gt;&lt;/protocol&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;address&gt;&lt;/address&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;user&gt;&lt;/user&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;password&gt;&lt;/password&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;checksum&gt;&lt;/checksum&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;inventory&gt;&lt;/inventory&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;ic_filepath&gt;&lt;/ic_filepath&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/server&gt;</span>
 <span class="nt">&lt;/inputdata&gt;</span>
 </pre></div>

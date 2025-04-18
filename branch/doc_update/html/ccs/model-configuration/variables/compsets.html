@@ -138,10 +138,9 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="#overview" id="id2">Overview</a></p></li>
 <li><p><a class="reference internal" href="#entry" id="id3">Entry</a></p></li>
-<li><p><a class="reference internal" href="#definition" id="id4">Definition</a></p></li>
-<li><p><a class="reference internal" href="#schema" id="id5">Schema</a></p></li>
-<li><p><a class="reference internal" href="#compset-longname" id="id6">Compset longname</a></p></li>
-<li><p><a class="reference internal" href="#creating-new-compsets" id="id7">Creating New Compsets</a></p></li>
+<li><p><a class="reference internal" href="#schema-definition" id="id4">Schema Definition</a></p></li>
+<li><p><a class="reference internal" href="#compset-longname" id="id5">Compset longname</a></p></li>
+<li><p><a class="reference internal" href="#creating-new-compsets" id="id6">Creating New Compsets</a></p></li>
 </ul>
 </nav>
 <section id="overview">
@@ -184,11 +183,50 @@ land and cice (in prescribed mode) and a data ocean is the atmosphere component 
 is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
 In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 </section>
-<section id="definition">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Definition</a><a class="headerlink" href="#definition" title="Link to this heading"></a></h2>
-</section>
-<section id="schema">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Schema</a><a class="headerlink" href="#schema" title="Link to this heading"></a></h2>
+<section id="schema-definition">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Element/Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>help</p></td>
+<td><p>Help text.</p></td>
+</tr>
+<tr class="row-odd"><td><p>alias</p></td>
+<td><p>Alias for the compset.</p></td>
+</tr>
+<tr class="row-even"><td><p>lname</p></td>
+<td><p>Longname for the compset.</p></td>
+</tr>
+<tr class="row-odd"><td><p>science_support</p></td>
+<td><p>Whether the compset supports science.</p></td>
+</tr>
+<tr class="row-even"><td><p>entry</p></td>
+<td><p>XML variable provided by compsets.</p></td>
+</tr>
+<tr class="row-odd"><td><p>id</p></td>
+<td><p>Name of the variable.</p></td>
+</tr>
+<tr class="row-even"><td><p>values</p></td>
+<td><p>Values for the variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p>match</p></td>
+<td><p>Method used to determine which value to use.</p></td>
+</tr>
+<tr class="row-even"><td><p>value</p></td>
+<td><p>The value of the variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p>compset</p></td>
+<td><p>Specific compset that the variable is set for.</p></td>
+</tr>
+<tr class="row-even"><td><p>grid</p></td>
+<td><p>Specific grid that the variable is set for.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_compsets.xsd compsets on 2025-02-06 --&gt;</span>
 
 <span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
@@ -198,35 +236,35 @@ In a compset where all components are prognostic, the primary component will be 
 <span class="w">    </span><span class="nt">&lt;help&gt;&lt;/help&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;compset&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;alias&gt;&lt;/alias&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;lname&gt;&lt;/lname&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;None&#39; is None--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;science_support</span><span class="w"> </span><span class="na">None=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;alias&gt;&lt;/alias&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;lname&gt;&lt;/lname&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;None&#39; is None--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/science_support&gt;</span>
+<span class="w">        </span><span class="nt">&lt;science_support</span><span class="w"> </span><span class="na">None=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/science_support&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/compset&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;entries&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;id&#39; is required--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;match&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;values</span><span class="w"> </span><span class="na">match=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;grid&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;id&#39; is required--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">grid=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/value&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/values&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/entry&gt;</span>
+<span class="w">        </span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;match&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;values</span><span class="w"> </span><span class="na">match=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">                </span><span class="cm">&lt;!-- Attributes &#39;compset&#39; is optional,&#39;grid&#39; is optional--&gt;</span>
+<span class="w">                </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">                </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">compset=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">grid=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/value&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/values&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/entry&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/entries&gt;</span>
+<span class="nt">&lt;/compsets&gt;</span>
 </pre></div>
 </div>
 </section>
 <section id="compset-longname">
-<span id="defining-compsets"></span><h2><a class="toc-backref" href="#id6" role="doc-backlink">Compset longname</a><a class="headerlink" href="#compset-longname" title="Link to this heading"></a></h2>
+<span id="defining-compsets"></span><h2><a class="toc-backref" href="#id5" role="doc-backlink">Compset longname</a><a class="headerlink" href="#compset-longname" title="Link to this heading"></a></h2>
 <p>Each config_compsets.xml file has a list of allowed component sets in the form of a longname and an alias.</p>
 <p>A compset longname has this form:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
@@ -253,7 +291,7 @@ For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 <strong>All</strong> data models have a %phys option that corresponds to the data model mode.</p>
 </section>
 <section id="creating-new-compsets">
-<span id="id1"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Creating New Compsets</a><a class="headerlink" href="#creating-new-compsets" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2><a class="toc-backref" href="#id6" role="doc-backlink">Creating New Compsets</a><a class="headerlink" href="#creating-new-compsets" title="Link to this heading"></a></h2>
 <p>A description of how CIME interprets a compset name is given in the section <a class="reference internal" href="#defining-compsets"><span class="std std-ref">Compset longname</span></a> .</p>
 <p>To create a new compset, you will at a minimum have to:</p>
 <ol class="arabic simple">

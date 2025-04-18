@@ -27,23 +27,23 @@ Multiple ``value`` elements allowed, each corresponds with a specific component.
 .. code-block:: xml
 
     <entry id="PES_SPEC_FILE">
-        <type>char</type>
-        <default_value>unset</default_value>
-        <values>
-            <value component="allactive">$SRCROOT/cime_config/allactive/config_pesall.xml</value>
-            <value component="drv"      >$COMP_ROOT_DIR_CPL/cime_config/config_pes.xml</value>
-            <value component="eam"      >$SRCROOT/components/eam/cime_config/config_pes.xml</value>
-            <value component="elm"      >$SRCROOT/components/elm/cime_config/config_pes.xml</value>
-            <value component="cice"     >$SRCROOT/components/cice/cime_config/config_pes.xml</value>
-            <value component="mpaso"    >$SRCROOT/components/mpas-ocean/cime_config/config_pes.xml</value>
-            <value component="mali"     >$SRCROOT/components/mpas-albany-landice/cime_config/config_pes.xml</value>
-            <value component="mpassi"   >$SRCROOT/components/mpas-seaice/cime_config/config_pes.xml</value>
-            <value component="ww3"      >$SRCROOT/components/ww3/cime_config/config_pes.xml</value>
-        </values>
-        <group>case_last</group>
-        <file>env_case.xml</file>
-        <desc>file containing specification of all pe-layouts for primary component (for documentation only - DO NOT EDIT)</desc>
-        <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_pes.xsd</schema>
+            <type>char</type>
+            <default_value>unset</default_value>
+            <values>
+                    <value component="allactive">$SRCROOT/cime_config/allactive/config_pesall.xml</value>
+                    <value component="drv"      >$COMP_ROOT_DIR_CPL/cime_config/config_pes.xml</value>
+                    <value component="eam"      >$SRCROOT/components/eam/cime_config/config_pes.xml</value>
+                    <value component="elm"      >$SRCROOT/components/elm/cime_config/config_pes.xml</value>
+                    <value component="cice"     >$SRCROOT/components/cice/cime_config/config_pes.xml</value>
+                    <value component="mpaso"    >$SRCROOT/components/mpas-ocean/cime_config/config_pes.xml</value>
+                    <value component="mali"     >$SRCROOT/components/mpas-albany-landice/cime_config/config_pes.xml</value>
+                    <value component="mpassi"   >$SRCROOT/components/mpas-seaice/cime_config/config_pes.xml</value>
+                    <value component="ww3"      >$SRCROOT/components/ww3/cime_config/config_pes.xml</value>
+            </values>
+            <group>case_last</group>
+            <file>env_case.xml</file>
+            <desc>file containing specification of all pe-layouts for primary component (for documentation only - DO NOT EDIT)</desc>
+            <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_pes.xsd</schema>
     </entry>
 
 Contents
@@ -52,6 +52,24 @@ Contents
 Schema Definition
 :::::::::::::::::
 
+======================= ====================================
+Element/Attributes      Description
+======================= ====================================
+grid                    Which grid the PES applies to, can be `any`.
+name                    Name of the grid.
+mach                    Which machines the PES applies to, can be `any`.
+name                    Name of the machine.
+pes                     The PES definition.
+compset                 Which compsets the PES applies to, can be `any`.
+pesize                  PES identifier can be `any`.
+MAX_MPITASKS_PER_NODE   Max number of mpi tasks per node.
+MAX_TASKS_PER_NODE      Max number of tasks per node.
+comment                 Comment about PES layout.
+ntasks                  Number of tasks for each model class, e.g. ntasks_atm, ntasks_lnd. Value can be `-1` which asks tasks for an entire node.
+nthrds                  Number of threads for each model class, e.g. nthrds_atm, nthrds_lnd.
+rootpe                  Root PE for each model class, e.g. rootpe_atm, rootpe_lnd, etc.
+======================= ====================================
+
 .. code-block:: xml
 
     <!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_pes.xsd config_pes on 2025-02-11 -->
@@ -59,159 +77,159 @@ Schema Definition
     <!-- Attributes 'version' is required-->
     <!-- Occurences min: 1 max: 1-->
     <config_pes version="">
-        <!-- Attributes 'name' is required-->
-        <!-- Occurences min: 1 max: Unlimited-->
-        <grid name="">
             <!-- Attributes 'name' is required-->
             <!-- Occurences min: 1 max: Unlimited-->
-            <mach name="">
-                <!-- Attributes 'compset' is required,'pesize' is required-->
-                <!-- Occurences min: 1 max: Unlimited-->
-                <pes compset="" pesize="">
-                    <!-- Occurences min: 0 max: 1-->
-                    <MAX_MPITASKS_PER_NODE></MAX_MPITASKS_PER_NODE>
-                    <!-- Occurences min: 0 max: 1-->
-                    <MAX_TASKS_PER_NODE></MAX_TASKS_PER_NODE>
-                    <!-- Occurences min: 0 max: 1-->
-                    <comment></comment>
-                    <!-- Occurences min: 0 max: 1-->
-                    <ntasks>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_atm></ntasks_atm>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_lnd></ntasks_lnd>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_rof></ntasks_rof>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_ice></ntasks_ice>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_cpl></ntasks_cpl>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_glc></ntasks_glc>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_ocn></ntasks_ocn>
-                        <!-- Occurences min: 1 max: 1-->
-                        <ntasks_wav></ntasks_wav>
-                    </ntasks>
-                    <!-- Occurences min: 0 max: 1-->
-                    <nthrds>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_atm></nthrds_atm>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_lnd></nthrds_lnd>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_cpl></nthrds_cpl>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_glc></nthrds_glc>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_ice></nthrds_ice>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_ocn></nthrds_ocn>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_rof></nthrds_rof>
-                        <!-- Occurences min: 1 max: 1-->
-                        <nthrds_wav></nthrds_wav>
-                    </nthrds>
-                    <!-- Occurences min: 0 max: 1-->
-                    <rootpe>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_atm></rootpe_atm>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_lnd></rootpe_lnd>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_cpl></rootpe_cpl>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_glc></rootpe_glc>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_ice></rootpe_ice>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_ocn></rootpe_ocn>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_rof></rootpe_rof>
-                        <!-- Occurences min: 1 max: 1-->
-                        <rootpe_wav></rootpe_wav>
-                    </rootpe>
-                </pes>
-            </mach>
-        </grid>
-        <!-- Occurences min: 0 max: 1-->
-        <overrides>
-            <!-- Attributes 'name' is required-->
-            <!-- Occurences min: 1 max: 1-->
             <grid name="">
-                <!-- Attributes 'name' is required-->
-                <!-- Occurences min: 1 max: Unlimited-->
-                <mach name="">
-                    <!-- Attributes 'compset' is required,'pesize' is required-->
+                    <!-- Attributes 'name' is required-->
                     <!-- Occurences min: 1 max: Unlimited-->
-                    <pes compset="" pesize="">
-                        <!-- Occurences min: 0 max: 1-->
-                        <MAX_MPITASKS_PER_NODE></MAX_MPITASKS_PER_NODE>
-                        <!-- Occurences min: 0 max: 1-->
-                        <MAX_TASKS_PER_NODE></MAX_TASKS_PER_NODE>
-                        <!-- Occurences min: 0 max: 1-->
-                        <comment></comment>
-                        <!-- Occurences min: 0 max: 1-->
-                        <ntasks>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_atm></ntasks_atm>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_lnd></ntasks_lnd>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_rof></ntasks_rof>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_ice></ntasks_ice>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_cpl></ntasks_cpl>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_glc></ntasks_glc>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_ocn></ntasks_ocn>
-                            <!-- Occurences min: 1 max: 1-->
-                            <ntasks_wav></ntasks_wav>
-                        </ntasks>
-                        <!-- Occurences min: 0 max: 1-->
-                        <nthrds>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_atm></nthrds_atm>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_lnd></nthrds_lnd>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_cpl></nthrds_cpl>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_glc></nthrds_glc>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_ice></nthrds_ice>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_ocn></nthrds_ocn>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_rof></nthrds_rof>
-                            <!-- Occurences min: 1 max: 1-->
-                            <nthrds_wav></nthrds_wav>
-                        </nthrds>
-                        <!-- Occurences min: 0 max: 1-->
-                        <rootpe>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_atm></rootpe_atm>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_lnd></rootpe_lnd>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_cpl></rootpe_cpl>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_glc></rootpe_glc>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_ice></rootpe_ice>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_ocn></rootpe_ocn>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_rof></rootpe_rof>
-                            <!-- Occurences min: 1 max: 1-->
-                            <rootpe_wav></rootpe_wav>
-                        </rootpe>
-                    </pes>
-                </mach>
+                    <mach name="">
+                            <!-- Attributes 'compset' is required,'pesize' is required-->
+                            <!-- Occurences min: 1 max: Unlimited-->
+                            <pes compset="" pesize="">
+                                    <!-- Occurences min: 0 max: 1-->
+                                    <MAX_MPITASKS_PER_NODE></MAX_MPITASKS_PER_NODE>
+                                    <!-- Occurences min: 0 max: 1-->
+                                    <MAX_TASKS_PER_NODE></MAX_TASKS_PER_NODE>
+                                    <!-- Occurences min: 0 max: 1-->
+                                    <comment></comment>
+                                    <!-- Occurences min: 0 max: 1-->
+                                    <ntasks>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_atm></ntasks_atm>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_lnd></ntasks_lnd>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_rof></ntasks_rof>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_ice></ntasks_ice>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_cpl></ntasks_cpl>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_glc></ntasks_glc>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_ocn></ntasks_ocn>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <ntasks_wav></ntasks_wav>
+                                    </ntasks>
+                                    <!-- Occurences min: 0 max: 1-->
+                                    <nthrds>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_atm></nthrds_atm>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_lnd></nthrds_lnd>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_cpl></nthrds_cpl>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_glc></nthrds_glc>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_ice></nthrds_ice>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_ocn></nthrds_ocn>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_rof></nthrds_rof>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <nthrds_wav></nthrds_wav>
+                                    </nthrds>
+                                    <!-- Occurences min: 0 max: 1-->
+                                    <rootpe>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_atm></rootpe_atm>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_lnd></rootpe_lnd>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_cpl></rootpe_cpl>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_glc></rootpe_glc>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_ice></rootpe_ice>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_ocn></rootpe_ocn>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_rof></rootpe_rof>
+                                            <!-- Occurences min: 1 max: 1-->
+                                            <rootpe_wav></rootpe_wav>
+                                    </rootpe>
+                            </pes>
+                    </mach>
             </grid>
-        </overrides>
+            <!-- Occurences min: 0 max: 1-->
+            <overrides>
+                    <!-- Attributes 'name' is required-->
+                    <!-- Occurences min: 1 max: 1-->
+                    <grid name="">
+                            <!-- Attributes 'name' is required-->
+                            <!-- Occurences min: 1 max: Unlimited-->
+                            <mach name="">
+                                    <!-- Attributes 'compset' is required,'pesize' is required-->
+                                    <!-- Occurences min: 1 max: Unlimited-->
+                                    <pes compset="" pesize="">
+                                            <!-- Occurences min: 0 max: 1-->
+                                            <MAX_MPITASKS_PER_NODE></MAX_MPITASKS_PER_NODE>
+                                            <!-- Occurences min: 0 max: 1-->
+                                            <MAX_TASKS_PER_NODE></MAX_TASKS_PER_NODE>
+                                            <!-- Occurences min: 0 max: 1-->
+                                            <comment></comment>
+                                            <!-- Occurences min: 0 max: 1-->
+                                            <ntasks>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_atm></ntasks_atm>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_lnd></ntasks_lnd>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_rof></ntasks_rof>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_ice></ntasks_ice>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_cpl></ntasks_cpl>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_glc></ntasks_glc>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_ocn></ntasks_ocn>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <ntasks_wav></ntasks_wav>
+                                            </ntasks>
+                                            <!-- Occurences min: 0 max: 1-->
+                                            <nthrds>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_atm></nthrds_atm>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_lnd></nthrds_lnd>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_cpl></nthrds_cpl>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_glc></nthrds_glc>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_ice></nthrds_ice>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_ocn></nthrds_ocn>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_rof></nthrds_rof>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <nthrds_wav></nthrds_wav>
+                                            </nthrds>
+                                            <!-- Occurences min: 0 max: 1-->
+                                            <rootpe>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_atm></rootpe_atm>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_lnd></rootpe_lnd>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_cpl></rootpe_cpl>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_glc></rootpe_glc>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_ice></rootpe_ice>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_ocn></rootpe_ocn>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_rof></rootpe_rof>
+                                                    <!-- Occurences min: 1 max: 1-->
+                                                    <rootpe_wav></rootpe_wav>
+                                            </rootpe>
+                                    </pes>
+                            </mach>
+                    </grid>
+            </overrides>
     </config_pes
 
 

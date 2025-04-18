@@ -191,6 +191,129 @@
 <p class="admonition-title">Warning</p>
 <p>Under <code class="docutils literal notranslate"><span class="pre">submit_args</span></code> the <code class="docutils literal notranslate"><span class="pre">arg</span></code> element is deprecated in favor of <code class="docutils literal notranslate"><span class="pre">argument</span></code>.</p>
 </div>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Element/Attributes</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>batch_system</p></td>
+<td><p>Defines a batch system.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MACH</p></td>
+<td><p>Optional name of a machine this batch system belongs to.</p></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>The type of batch system, used for a machine to define it’s batch system.</p></td>
+</tr>
+<tr class="row-odd"><td><p>batch_query</p></td>
+<td><p>Command to query batch system.</p></td>
+</tr>
+<tr class="row-even"><td><p>args</p></td>
+<td><p>Extra arguments for query command.</p></td>
+</tr>
+<tr class="row-odd"><td><p>per_job_arg</p></td>
+<td><p>Flag to query specific job.</p></td>
+</tr>
+<tr class="row-even"><td><p>batch_submit</p></td>
+<td><p>Command to submit to batch system.</p></td>
+</tr>
+<tr class="row-odd"><td><p>batch_cancel</p></td>
+<td><p>Command to cancel job.</p></td>
+</tr>
+<tr class="row-even"><td><p>batch_redirect</p></td>
+<td><p>Redirect used for batch submit output.</p></td>
+</tr>
+<tr class="row-odd"><td><p>batch_env</p></td>
+<td><p>Whether to run command is included in the batch script.</p></td>
+</tr>
+<tr class="row-even"><td><p>batch_directive</p></td>
+<td><p>Batch directive for submit file.</p></td>
+</tr>
+<tr class="row-odd"><td><p>jobid_pattern</p></td>
+<td><p>Regex pattern to parse job id.</p></td>
+</tr>
+<tr class="row-even"><td><p>depend_string</p></td>
+<td><p>Dependency string.</p></td>
+</tr>
+<tr class="row-odd"><td><p>depend_allow_string</p></td>
+<td><p>Dependency string if fails are allowed.</p></td>
+</tr>
+<tr class="row-even"><td><p>depend_separator</p></td>
+<td><p>Separator for dependencies.</p></td>
+</tr>
+<tr class="row-odd"><td><p>walltime_format</p></td>
+<td><p>Format used to parse walltime.</p></td>
+</tr>
+<tr class="row-even"><td><p>batch_mail_flag</p></td>
+<td><p>Mail flag to pass user.</p></td>
+</tr>
+<tr class="row-odd"><td><p>batch_mail_type_flag</p></td>
+<td><p>Mail type.</p></td>
+</tr>
+<tr class="row-even"><td><p>batch_mail_default</p></td>
+<td><p>Default type if <cite>batch_mail_type_flag</cite> is not set.</p></td>
+</tr>
+<tr class="row-odd"><td><p>arg</p></td>
+<td><p>Batch submission argument. Deprecated.</p></td>
+</tr>
+<tr class="row-even"><td><p>flag</p></td>
+<td><p>Name of the argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>Value of the argument.</p></td>
+</tr>
+<tr class="row-even"><td><p>argument</p></td>
+<td><p>Batch submision argument.</p></td>
+</tr>
+<tr class="row-odd"><td><p>job_queue</p></td>
+<td><p>If set the argument is only used when submitted to the queue.</p></td>
+</tr>
+<tr class="row-even"><td><p>directive</p></td>
+<td><p>Batch directive to add to submission script.</p></td>
+</tr>
+<tr class="row-odd"><td><p>default</p></td>
+<td><p>Default value is directive value cannot be resolved.</p></td>
+</tr>
+<tr class="row-even"><td><p>prefix</p></td>
+<td><p>Value to prefix directives.</p></td>
+</tr>
+<tr class="row-odd"><td><p>queue</p></td>
+<td><p>Queue defined for this batch system.</p></td>
+</tr>
+<tr class="row-even"><td><p>default</p></td>
+<td><p>Whether the queue is the default for the system.</p></td>
+</tr>
+<tr class="row-odd"><td><p>strict</p></td>
+<td><p>If true then the walltime must be less than the maximum allowed walltime.</p></td>
+</tr>
+<tr class="row-even"><td><p>nodemax</p></td>
+<td><p>Maximum number of nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>nodemin</p></td>
+<td><p>Minimum number of nodes.</p></td>
+</tr>
+<tr class="row-even"><td><p>jobmax</p></td>
+<td><p>Maximum number of tasks.</p></td>
+</tr>
+<tr class="row-odd"><td><p>jobmin</p></td>
+<td><p>Minimum number of tasks.</p></td>
+</tr>
+<tr class="row-even"><td><p>jobname</p></td>
+<td><p>If job matches value then this queue will be used.</p></td>
+</tr>
+<tr class="row-odd"><td><p>walltimemax</p></td>
+<td><p>Maximum walltime.</p></td>
+</tr>
+<tr class="row-even"><td><p>walltimemin</p></td>
+<td><p>Minimum walltime.</p></td>
+</tr>
+<tr class="row-odd"><td><p>walltimedef</p></td>
+<td><p>Default walltime.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_batch.xsd config_batch on 2025-02-06 --&gt;</span>
 
 <span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
@@ -199,82 +322,82 @@
 <span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;MACH&#39; is optional,&#39;type&#39; is required,&#39;version&#39; is optional--&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;args&#39; is optional,&#39;per_job_arg&#39; is optional--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_query</span><span class="w"> </span><span class="na">args=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">per_job_arg=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/batch_query&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_submit&gt;&lt;/batch_submit&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_cancel&gt;&lt;/batch_cancel&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_redirect&gt;&lt;/batch_redirect&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_env&gt;&lt;/batch_env&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_directive&gt;&lt;/batch_directive&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;jobid_pattern&gt;&lt;/jobid_pattern&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;depend_string&gt;&lt;/depend_string&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;depend_allow_string&gt;&lt;/depend_allow_string&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;depend_separator&gt;&lt;/depend_separator&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;walltime_format&gt;&lt;/walltime_format&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_mail_flag&gt;&lt;/batch_mail_flag&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_mail_type_flag&gt;&lt;/batch_mail_type_flag&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_mail_type&gt;&lt;/batch_mail_type&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_mail_default&gt;&lt;/batch_mail_default&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;submit_args&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;flag&#39; is required,&#39;name&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/arg&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;job_queue&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;argument</span><span class="w"> </span><span class="na">job_queue=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/argument&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/submit_args&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;None&#39; is None--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;directives</span><span class="w"> </span><span class="na">None=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;default&#39; is optional,&#39;prefix&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;directive</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">prefix=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="nt">&lt;/directive&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/directives&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;unknown_queue_directives&gt;&lt;/unknown_queue_directives&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;queues&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;default&#39; is optional,&#39;strict&#39; is optional,&#39;nodemax&#39; is optional,&#39;nodemin&#39; is optional,&#39;jobmax&#39; is optional,&#39;jobmin&#39; is optional,&#39;jobname&#39; is optional,&#39;walltimemax&#39; is optional,&#39;walltimemin&#39; is optional,&#39;walltimedef&#39; is optional--&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">strict=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">nodemin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobmax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobmin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobname=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimemin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimedef=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/queue&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/queues&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;args&#39; is optional,&#39;per_job_arg&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_query</span><span class="w"> </span><span class="na">args=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">per_job_arg=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/batch_query&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_submit&gt;&lt;/batch_submit&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_cancel&gt;&lt;/batch_cancel&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_redirect&gt;&lt;/batch_redirect&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_env&gt;&lt;/batch_env&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_directive&gt;&lt;/batch_directive&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;jobid_pattern&gt;&lt;/jobid_pattern&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;depend_string&gt;&lt;/depend_string&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;depend_allow_string&gt;&lt;/depend_allow_string&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;depend_separator&gt;&lt;/depend_separator&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;walltime_format&gt;&lt;/walltime_format&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_mail_flag&gt;&lt;/batch_mail_flag&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_mail_type_flag&gt;&lt;/batch_mail_type_flag&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_mail_type&gt;&lt;/batch_mail_type&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_mail_default&gt;&lt;/batch_mail_default&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;submit_args&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;flag&#39; is required,&#39;name&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/arg&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;job_queue&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;argument</span><span class="w"> </span><span class="na">job_queue=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/argument&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/submit_args&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;None&#39; is None--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;directives</span><span class="w"> </span><span class="na">None=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;default&#39; is optional,&#39;prefix&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;directive</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">prefix=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;/directive&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/directives&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;unknown_queue_directives&gt;&lt;/unknown_queue_directives&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;queues&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;default&#39; is optional,&#39;strict&#39; is optional,&#39;nodemax&#39; is optional,&#39;nodemin&#39; is optional,&#39;jobmax&#39; is optional,&#39;jobmin&#39; is optional,&#39;jobname&#39; is optional,&#39;walltimemax&#39; is optional,&#39;walltimemin&#39; is optional,&#39;walltimedef&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">strict=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">nodemin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobmax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobmin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobname=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimemin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimedef=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/queue&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/queues&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/batch_system&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_jobs&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;template&gt;&lt;/template&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;task_count&gt;&lt;/task_count&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;walltime&gt;&lt;/walltime&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;dependency&gt;&lt;/dependency&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;prereq&gt;&lt;/prereq&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/job&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;template&gt;&lt;/template&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;task_count&gt;&lt;/task_count&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;walltime&gt;&lt;/walltime&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;dependency&gt;&lt;/dependency&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: 1--&gt;</span>
+<span class="w">            </span><span class="nt">&lt;prereq&gt;&lt;/prereq&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/job&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/batch_jobs&gt;</span>
 <span class="nt">&lt;/config_batch&gt;</span>
 </pre></div>
