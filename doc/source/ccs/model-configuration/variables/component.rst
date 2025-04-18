@@ -33,30 +33,38 @@ The configuration is stored in ``config_component.xml`` under the components ``c
 This file will store multiple variables for the component defined using :ref:`*entry*<model_config_entry_id>` elements.
 Example contents of ``config_component.xml``.
 
+=================== ==================================
+Element/Attribute   Description
+=================== ==================================
+desc                Description for the component.
+entry               XML variable entries.
+help                Help text for the component.
+=================== ==================================
+
 .. code-block:: xml
 
     <?xml version="1.0"?>
     <?xml-stylesheet type="text/xsl" href="entry_id.xsl" ?>
 
     <entry_id version="3.0">
-        <description>
-            <desc atm="SATM">Stub atm component</desc>
-        </description>
+            <description>
+                    <desc atm="SATM">Stub atm component</desc>
+            </description>
 
-        <entry id="COMP_ATM">
-            <type>char</type>
-            <valid_values>satm</valid_values>
-            <default_value>satm</default_value>
-            <group>case_comp</group>
-            <file>env_case.xml</file>
-            <desc>Name of atmosphere component</desc>
-        </entry>
+            <entry id="COMP_ATM">
+                    <type>char</type>
+                    <valid_values>satm</valid_values>
+                    <default_value>satm</default_value>
+                    <group>case_comp</group>
+                    <file>env_case.xml</file>
+                    <desc>Name of atmosphere component</desc>
+            </entry>
 
-        <help>
-        =========================================
-        SATM naming conventions in compset name
-        =========================================
-        </help>
+            <help>
+            =========================================
+            SATM naming conventions in compset name
+            =========================================
+            </help>
     </entry_id>
 
 Triggering a rebuild

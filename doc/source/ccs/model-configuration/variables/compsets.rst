@@ -52,11 +52,24 @@ land and cice (in prescribed mode) and a data ocean is the atmosphere component 
 is defined, using the above example, in ``$SRCROOT/components/cam/cime_config/config_compsets.xml``
 In a compset where all components are prognostic, the primary component will be **allactive**.
 
-Definition
------------
+Schema Definition
+-----------------
 
-Schema
-------
+=================== ===================================================
+Element/Attribute   Description
+=================== ===================================================
+help                Help text.
+alias               Alias for the compset.
+lname               Longname for the compset.
+science_support     Whether the compset supports science.
+entry               XML variable provided by compsets.
+id                  Name of the variable.
+values              Values for the variable.
+match               Method used to determine which value to use.
+value               The value of the variable.
+compset             Specific compset that the variable is set for.
+grid                Specific grid that the variable is set for.
+=================== ===================================================
 
 .. code-block:: xml
 
@@ -65,34 +78,34 @@ Schema
     <!-- Attributes 'version' is required-->
     <!-- Occurences min: 1 max: 1-->
     <compsets version="">
-        <!-- Occurences min: 1 max: 1-->
-        <help></help>
-        <!-- Occurences min: 1 max: Unlimited-->
-        <compset>
             <!-- Occurences min: 1 max: 1-->
-            <alias></alias>
-            <!-- Occurences min: 1 max: 1-->
-            <lname></lname>
-            <!-- Attributes 'None' is None-->
-            <!-- Occurences min: 0 max: Unlimited-->
-            <science_support None="">
-                <!-- Occurences min: 0 max: Unlimited-->
-            </science_support>
-        </compset>
-        <!-- Occurences min: 0 max: 1-->
-        <entries>
-            <!-- Attributes 'id' is required-->
+            <help></help>
             <!-- Occurences min: 1 max: Unlimited-->
-            <entry id="">
-                <!-- Attributes 'match' is optional-->
-                <!-- Occurences min: 1 max: 1-->
-                <values match="">
-                    <!-- Attributes 'compset' is optional,'grid' is optional-->
+            <compset>
+                    <!-- Occurences min: 1 max: 1-->
+                    <alias></alias>
+                    <!-- Occurences min: 1 max: 1-->
+                    <lname></lname>
+                    <!-- Attributes 'None' is None-->
+                    <!-- Occurences min: 0 max: Unlimited-->
+                    <science_support None="">
+                    </science_support>
+            </compset>
+            <!-- Occurences min: 0 max: 1-->
+            <entries>
+                    <!-- Attributes 'id' is required-->
                     <!-- Occurences min: 1 max: Unlimited-->
-                    <value compset="" grid=""></value>
-                </values>
-            </entry>
-        </entries>
+                    <entry id="">
+                            <!-- Attributes 'match' is optional-->
+                            <!-- Occurences min: 1 max: 1-->
+                            <values match="">
+                                    <!-- Attributes 'compset' is optional,'grid' is optional-->
+                                    <!-- Occurences min: 1 max: Unlimited-->
+                                    <value compset="" grid=""></value>
+                            </values>
+                    </entry>
+            </entries>
+    </compsets>
 
 .. _defining-compsets:
 

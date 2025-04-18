@@ -6,7 +6,7 @@ import xmlschema
 
 def generate_xml_from_schema(root, depth=1):
     lines = []
-    prefix = ' ' * 4 * depth
+    prefix = ' ' * 8 * depth
 
     attrs = [f" {x}=\"\"" for x in root.attributes]
     attrs_comment = [f"'{x}' is {y.use}" for x, y in root.attributes.items()]

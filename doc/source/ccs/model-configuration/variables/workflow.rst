@@ -24,13 +24,28 @@ This is an example entry for ``config_files.xml``.
       <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_workflow.xsd</schema>
    </entry>
 
-Definition
-----------
+Schema Definition
+-----------------
 
-This is the contents of ``config_workflow.xml``.
-
-Schema
-------
+======================= ==================================
+Element/Attributes      Description
+======================= ==================================
+workflow_jobs           Describe jobs in a workflow.
+id                      Workflow identifier.
+prepend                 Workflow to prepend to current workflow.
+append                  Workflow to append to current workflow.
+job                     Describe the job.
+name                    Name of the job.
+template                Template file for job submission.
+hidden                  
+dependency              Job dependencies.
+prereq                  Job pre-requirements.
+runtime_parameters      Describe runtime parameters for the job.
+MACH                    Which machine these runtime parameters should be used on.
+task_count              Task count for the job.
+tasks_per_node          Number of tasks per node.
+walltime                Walltime for the job.
+======================= ==================================
 
 .. code-block:: xml
 
