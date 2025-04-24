@@ -187,7 +187,9 @@ def bless_history(test_name, case, baseline_name, baseline_root, report_only, fo
                         file_to_remove = (
                             line.split(NO_ORIGINAL)[0].split()[-1].strip("'")
                         )
-                        logger.info(f"Remove stale baseline file {file_to_remove}")
+                        logger.info(
+                            "Removing stale baseline file {}".format(file_to_remove)
+                        )
                         os.remove(os.path.join(baseline_full_dir, file_to_remove))
 
                 gen_result, gen_comments = generate_baseline(
