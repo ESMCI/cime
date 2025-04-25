@@ -24,7 +24,40 @@ These ``config_files.xml`` are stored in ``$CIMEROOT/CIME/data/config/<model>/``
 
 Usage
 -----
-The entries in ``config_files.xml`` will describe the following variables. 
+Then ``entry`` elements in ``config_files.xml`` are used to describe the variables that make up CIME's model configuration.
+
+The XML schema for ``entry`` is as follows.
+
+================= =======================================================
+Element           Description
+================= =======================================================
+type              The type of the variable. The type can be one of the following: ``char``, ``integer``, ``logical``, or ``real``.
+values            This element can contain multiple ``value`` elements. This is used to provide multiple values depending on the component.
+default_value     Used to define a single value for the variable.
+group             Used to group variables together.
+file              The file the variable should be stored in.
+desc              A description of the variable.
+schema            Path to a schema file that will be used to validate the contents of the variable value.
+================= =======================================================
+
+.. code-block::
+
+    <entry id="">
+         <type>char</type>
+         <values>
+                  <value></value>
+                  <value component=""></value>
+         </values>
+         <default_value></default_value>
+         <group></group>
+         <file></file>
+         <desc></desc>
+         <schema></schema>
+    </entry>
+
+Variables
+:::::::::
+These variables will define values or reference additional files to make up a models configuration.
 
 .. toctree::
    :maxdepth: 1
@@ -51,7 +84,6 @@ The entries in ``config_files.xml`` will describe the following variables.
    variables/tests-spec.rst
    variables/user-mods.rst
    variables/workflow.rst
-
 
 Schema Definition
 -----------------
