@@ -6,11 +6,11 @@ Creating a Case
 .. contents::
    :local:
 
-Before creating a case, you may want to create a user mod to customize the new case. If not, you can skip to the section on creating a new case.
+After determining a ``compset`` and ``grid`` a case can be created.
 
 User Mods
 ---------
-A user can customize a case by providing **user mods** when creating a new case. The **user mods** provide a few ways to customize a case. 
+A case can customized by providing **user mods** when creating a new case. The **user mods** provide a few ways to customize a case. 
 
 * Namelist files
 * Source code modifications
@@ -18,7 +18,7 @@ A user can customize a case by providing **user mods** when creating a new case.
 
 This can be useful when a user wants to carry out a series of experiments based on a common set of changes to the namelists, source code, and/or case XML settings.
 
-Here's a toy **user mod** to demonstrate.
+Here's an example **user mod** to demonstrate.
 
 ::
 
@@ -59,11 +59,7 @@ The following command demonstrates the three required options for creating a new
 
         > + * ? < > { } [ ] ~ ` @ :
 
-The ``--case`` argument defines the name of your case, which is used in filenames, internal metadata, and directory paths. The ``CASEROOT`` is a directory that ``create_newcase`` will create with the same name as the ``CASENAME``. If ``CASENAME`` is simply a name (not a path), ``CASEROOT`` is created in the directory where you execute ``create_newcase``. If ``CASENAME`` is a relative or absolute path, ``CASEROOT`` is created there, and the name of the case will be the last component of the path.
-
-Case Directory Contents
------------------------
-The following sections will describe the contents of the case directory.
+The ``<name>`` value can be a simple name or an relative/absolute path. If it's a simple name then the case will be created in the current directory. If it's a relative/absolute path then the case will be created in there.
 
 User Scripts
 ````````````
@@ -99,7 +95,7 @@ env_run.xml             Sets runtime settings such as length of run, frequency o
 env_workflow.xml        Sets parameters for the runtime workflow.
 ======================= ============================
 
-User Source Mods Directory
+Source Mods Directory
 ``````````````````````````
 =========== ===============
 Directory   Description
