@@ -85,7 +85,7 @@ These additional machine entries will be appended to the entries provided by the
 
 CMake macros
 ------------
-The user can define their own cmake macros by creating a ``$HOME/.cime/cmake_macros`` directory. See the :ref:`cmake_macros<model_config_cmake_macros_dir_def>` section for more information.
+The user can define their own cmake macros by placing them in the ``$HOME/.cime`` directory. See the :ref:`cmake_macros<model_config_cmake_macros_dir_def>` section for more information.
 
 Batch System
 ------------
