@@ -60,7 +60,7 @@ When you set up a case, a new Git repository will be created within the ``$CASER
 
 Each time you run ``case.setup``, ``case.build``, ``case.submit``, or ``xmlchange``, a new commit is created. This allows you to track changes to the case over time.
 
-If you set the ``CASE_GIT_REPOSITORY`` variable to a valid Git repository URL, the case will be pushed to that repository. 
+If you set the ``CASE_GIT_REPOSITORY`` variable to a valid Git repository URL, the case will be pushed to that repository where the branch name is the case name.
 
 .. code-block:: bash
 
