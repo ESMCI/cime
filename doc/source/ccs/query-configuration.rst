@@ -56,20 +56,20 @@ For example, the output for the "docker" machine with the "gnu" compiler may loo
     Machine(s)
 
     docker (gnu) : Docker 
-        os              LINUX
-        compilers       gnu,gnuX
-        mpilibs         openmpi
-        pes/node        8
-        max_tasks/node  8
-        max_gpus/node   0
+                os              LINUX
+                compilers       gnu,gnuX
+                mpilibs         openmpi
+                pes/node        8
+                max_tasks/node  8
+                max_gpus/node   0
 
-        Module commands:
+            Module commands:
 
-        Environment variables:
-        OMPI_ALLOW_RUN_AS_ROOT: 1
-        OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
-        NETCDF_C_PATH: /opt/conda
-        NETCDF_FORTRAN_PATH: /opt/conda
+            Environment variables:
+                OMPI_ALLOW_RUN_AS_ROOT: 1
+                OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+                NETCDF_C_PATH: /opt/conda
+                NETCDF_FORTRAN_PATH: /opt/conda
 
 Compsets 
 --------
@@ -107,14 +107,8 @@ To list all supported grids for the target model, use the following command:
 
     ./scripts/query_config --grids
 
-To display the settings for a specific grid, replace ``<grid>`` with the grid name in the following command:
+Adding the ``--long`` option will output detail information about the grid.
 
 .. code-block:: bash
 
-    ./scripts/query_config --grids <grid>
-
-To display the long name of a grid, use the ``--long`` flag:
-
-.. code-block:: bash
-
-    ./scripts/query_config --grids <grid> --long
+    ./scripts/query_config --grids --long
