@@ -142,3 +142,67 @@ CIME locks your ``$CASEROOT`` files according to the following rules:
 .. note::
 
     There are some exceptions in the **env_batch.xml** file.
+
+Customizing PE layout
+---------------------
+When creating a case the PE layout will be determined based on the selected ``$GRID``, ``$MACH``, and ``$COMPSET``.
+
+This can be customized using the ``--pecount`` or/and ``--pesfile``. 
+
+If multiple PE layouts match the ``$GRID``, ``$MACH``, and ``$COMPSET`` values then the first is selected. If these PE layouts
+have different ``pesize`` values then ``--pecount`` can be used to select a specific layout. 
+
+.. code-block:: shell
+
+    ./scripts/create_newcase ... --pecount M
+
+A user can provide an XML file containing custom PE layouts using the ``--pes-file`` option. The following is an example file.
+For more information on the format see the :ref:`PES XML<model_config_pes_schema>` documentation.
+
+.. code-block:: xml
+
+    <config_pes>
+            <grid name="any">
+                    <mach name="any">
+                            <pes compset="any" pesize="any">
+                                    <comment>allactive: any grid, any compset, any machine, any pesize, 10 node</comment>
+                                    <ntasks>
+                                            <ntasks_lnd>-10</ntasks_lnd>
+                                            <ntasks_atm>-10</ntasks_atm>
+                                            <ntasks_rof>-10</ntasks_rof>
+                                            <ntasks_ice>-10</ntasks_ice>
+                                            <ntasks_ocn>-10</ntasks_ocn>
+                                            <ntasks_glc>-10</ntasks_glc>
+                                            <ntasks_wav>-10</ntasks_wav>
+                                            <ntasks_cpl>-10</ntasks_cpl>
+                                    </ntasks>
+                            </pes>
+                            <pes compset="any" pesize="M">
+                                    <comment>allactive: any grid, any compset, any machine, any pesize, 20 node</comment>
+                                    <ntasks>
+                                            <ntasks_lnd>-20</ntasks_lnd>
+                                            <ntasks_atm>-20</ntasks_atm>
+                                            <ntasks_rof>-20</ntasks_rof>
+                                            <ntasks_ice>-20</ntasks_ice>
+                                            <ntasks_ocn>-20</ntasks_ocn>
+                                            <ntasks_glc>-20</ntasks_glc>
+                                            <ntasks_wav>-20</ntasks_wav>
+                                            <ntasks_cpl>-20</ntasks_cpl>
+                                    </ntasks>
+                            </pes>
+                            <pes compset="any" pesize="L">
+                                    <comment>allactive: any grid, any compset, any machine, any pesize, 30 node</comment>
+                                    <ntasks>
+                                            <ntasks_lnd>-30</ntasks_lnd>
+                                            <ntasks_atm>-30</ntasks_atm>
+                                            <ntasks_rof>-30</ntasks_rof>
+                                            <ntasks_ice>-30</ntasks_ice>
+                                            <ntasks_ocn>-30</ntasks_ocn>
+                                            <ntasks_glc>-30</ntasks_glc>
+                                            <ntasks_wav>-30</ntasks_wav>
+                                            <ntasks_cpl>-30</ntasks_cpl>
+                                    </ntasks>
+                            </pes>
+                    </mach>
+            </grid>
+    </config_pes>
