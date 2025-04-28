@@ -211,9 +211,10 @@ class SystemTestsCommon(object):
             smon = int(smon)
             sday = int(sday)
         else:
-            syr = int(startdate) / 10000
-            smon = int(startdate) - syr * 10000 / 100
-            sday = int(startdate) - syr * 10000 - smon * 100
+            startdate = int(startdate)
+            syr = int(startdate / 10000)
+            smon = int((startdate - syr * 10000) / 100)
+            sday = startdate - syr * 10000 - smon * 100
 
         addyr = syr // 10000
         syr = syr % 10000
