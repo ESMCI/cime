@@ -85,7 +85,7 @@ if [[ "${SKIP_MODEL_SETUP}" == "false" ]]; then
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
         echo "Setting up CESM"
 
-        [[ ! -e "${SRC_PATH}/CESM" ]] && git clone -b ${CESM_BRANCH:-master} ${GIT_FLAGS} ${E3SM_REPO:-https://github.com/ESCOMP/CESM} "${SRC_PATH}/CESM"
+        [[ ! -e "${SRC_PATH}/CESM" ]] && git clone -b ${CESM_BRANCH:-cesm3.0-alphabranch} ${GIT_FLAGS} ${E3SM_REPO:-https://github.com/ESCOMP/CESM} "${SRC_PATH}/CESM"
 
         pushd "${SRC_PATH}/CESM"
 
