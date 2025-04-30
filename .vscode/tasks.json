@@ -4,7 +4,7 @@
         {
             "label": "Build documentation",
             "type": "shell",
-            "command": "source ${workspaceFolder}/.venv/bin/activate && sphinx-autobuild . _build/html",
+            "command": "source ${workspaceFolder}/.venv/bin/activate && sphinx-autobuild --ignore generated/ . _build/html",
             "options": {
                 "cwd": "${workspaceFolder}/doc/source"
             }
