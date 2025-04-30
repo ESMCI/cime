@@ -6,55 +6,8 @@ Running a Case
 .. contents::
    :local:
 
-After the case has been customized, set up, and built, it is time to run it. This involves submitting the case to the batch queuing system. If a batch queuing system is not present, the case can be run interactively. The following sections provide detailed instructions on how to manage and monitor the execution of your case.
+After the case has been set up, and built, it is time to run it. This involves submitting the case to the batch queuing system. If a batch queuing system is not present, the case can be run interactively. The following sections provide detailed instructions on how to manage and monitor the execution of your case.
 
-.. note:: 
-
-    You now have the ability to create your own input data repository and add it to the **config_inputdata.xml**. This will permit you to easily collaborate by sharing your required input data with others.
-
-Input Data
-----------
-All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the XML variable ``$DIN_LOC_ROOT`` to be populated with input data.
-
-Input data is provided by various servers configured in the model's CIME configuration. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system's input data area as specified by ``$DIN_LOC_ROOT``.
-
-Input data can occupy significant space on a system, so users should share a common ``$DIN_LOC_ROOT`` directory on each system if possible.
-
-The build process will generate a list of required input data sets for each component in the ``$CASEROOT/Buildconf`` directory.
-
-When ``case.submit`` is invoked, all of the required data sets will be checked for locally and downloaded if missing.
-
-To check for missing data sets and download them, issue the command
-
-::
-
-    ./check_input_data --download
-
-PE Layout
----------
-Before you submit your job, you should ensure that the PE layout is set correctly. The PE layout is set by the XML variables **NTASKS**, **NTHRDS**, and **ROOTPE**. To see the exact settings for each component, issue the command
-
-.. code-block:: bash
-
-  ./pelayout
-
-Alternatively, you can use the command
-
-.. code-block:: bash
-
-  ./xmlquery NTASKS,NTHRDS,ROOTPE
-
-To change the **NTASKS** settings to 30 and the **NTHRDS** settings to 4 for all components, use the following command:
-
-::
-
-  ./xmlchange NTASKS=30,NTHRDS=4
-
-To change the **NTASKS** setting for only the atmosphere component (ATM) to 8, use this command:
-
-::
-
-  ./xmlchange NTASKS_ATM=8
 
 Previewing a Run
 ----------------
@@ -111,9 +64,54 @@ Example output:
       SUBMIT CMD:
         sbatch --time 00:20:00 -p debug --account e3sm --dependency=afterok:0 /gpfs/fs1/home/ac.boutte3/E3SM/cime/test1/case.st_archive --resubmit
 
+Input Data
+----------
+All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the XML variable ``$DIN_LOC_ROOT`` to be populated with input data.
+
+Input data is provided by various servers configured in the model's CIME configuration. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system's input data area as specified by ``$DIN_LOC_ROOT``.
+
+Input data can occupy significant space on a system, so users should share a common ``$DIN_LOC_ROOT`` directory on each system if possible.
+
+The build process will generate a list of required input data sets for each component in the ``$CASEROOT/Buildconf`` directory.
+
+When ``case.submit`` is invoked, all of the required data sets will be checked for locally and downloaded if missing.
+
+To check for missing data sets and download them, issue the command
+
+::
+
+    ./check_input_data --download
+
+PE Layout
+---------
+Before you submit your job, you should ensure that the PE layout is set correctly. The PE layout is set by the XML variables **NTASKS**, **NTHRDS**, and **ROOTPE**. To see the exact settings for each component, issue the command
+
+.. code-block:: bash
+
+  ./pelayout
+
+Alternatively, you can use the command
+
+.. code-block:: bash
+
+  ./xmlquery NTASKS,NTHRDS,ROOTPE
+
+To change the **NTASKS** settings to 30 and the **NTHRDS** settings to 4 for all components, use the following command:
+
+::
+
+  ./xmlchange NTASKS=30,NTHRDS=4
+
+To change the **NTASKS** setting for only the atmosphere component (ATM) to 8, use this command:
+
+::
+
+  ./xmlchange NTASKS_ATM=8
+
+
 Workflow
 --------
-Depending on the model and case configuration, a submission may consist of multiple jobs.
+Depending on the model and case configuration, a submission may consist of multiple jobs. This can be checked by running ``./preview_run`` which will show each job that will be submitted.
 
 There are some variables, e.g., ``JOB_WALLCLOCK_TIME``, ``JOB_QUEUE``, that can exist in multiple groups. For example, ``case.run`` and ``case.st_archive``.
 
@@ -235,7 +233,7 @@ Run-type Initialization
 The case initialization type is set using the ``$RUN_TYPE`` variable in
 **env_run.xml**. A CIME run can be initialized in one of three ways:
 
-startup
+Startup
 :::::::
 
 In a startup run (the default), all components are initialized using
@@ -247,7 +245,7 @@ at initialization. In addition, the coupler does not need an input data file.
 In a startup initialization, the ocean model does not start until the second
 ocean coupling step.
 
-branch
+Branch
 ::::::
 
 In a branch run, all components are initialized using a consistent
@@ -272,7 +270,7 @@ restart directory for ``$RUN_REFCASE`` and ``$RUN_REFDATE`` from a
 previous run, then place those files in the ``$RUNDIR`` directory.
 See :ref:`Starting from a reference case<starting_from_a_refcase>`.
 
-hybrid
+Hybrid
 ::::::
 
 A hybrid run is initialized like a startup but it uses
