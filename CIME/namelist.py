@@ -1,6 +1,7 @@
 """Module containing tools for dealing with Fortran namelists.
 
 The public interface consists of the following functions:
+
 - `character_literal_to_string`
 - `compress_literal_list`
 - `expand_literal_list`
@@ -62,6 +63,7 @@ allows such whitespace, to preserve the sanity of both implementors and users.
 The Fortran standard only applies to the interior of namelist groups, and not to
 text between one namelist group and the next. This module assumes that namelist
 groups are separated by (optional) whitespace and comments, and nothing else.
+
 """
 
 ###############################################################################
@@ -840,18 +842,18 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
     The `groupless` argument changes namelist parsing in two ways:
 
     1. `parse` allows an alternate file format where no group names or slashes
-       are present. In effect, the file is parsed as if an invisible, arbitrary
-       group name was prepended, and an invisible slash was appended. However,
-       if any group names actually are present, the file is parsed normally.
+    are present. In effect, the file is parsed as if an invisible, arbitrary
+    group name was prepended, and an invisible slash was appended. However,
+    if any group names actually are present, the file is parsed normally.
     2. The return value of this function is not a `Namelist` object. Instead a
-       single, flattened dictionary of name-value pairs is returned.
+    single, flattened dictionary of name-value pairs is returned.
 
     The `convert_tab_to_space` option can be used to force all tabs in the file
     to be converted to spaces, and is on by default. Note that this will usually
     allow files that use tabs as whitespace to be parsed. However, the
     implementation of this option is crude; it converts *all* tabs in the file,
     including those in character literals. (Note that there are many characters
-    that cannot be passed in via namelist in any standard way, including '\n',
+    that cannot be passed in via namelist in any standard way, including '\\n',
     so it is already a bad idea to assume that the namelist will preserve
     whitespace in strings, aside from simple spaces.)
 
@@ -860,6 +862,7 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
     All names and values returned are ultimately unicode strings. E.g. a value
     of "6*2" is returned as that string; it is not converted to 6 copies of the
     Python integer `2`. Null values are returned as the empty string ("").
+    
     """
     expect(
         in_file is not None or text is not None,

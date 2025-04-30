@@ -113,17 +113,20 @@ def set_logger_indent(indent):
 
 
 class EnvironmentContext(object):
-    """
-    Context manager for environment variables
-    Usage:
-        os.environ['MYVAR'] = 'oldvalue'
-        with EnvironmentContex(MYVAR='myvalue', MYVAR2='myvalue2'):
-            print os.getenv('MYVAR')    # Should print myvalue.
-            print os.getenv('MYVAR2')    # Should print myvalue2.
-        print os.getenv('MYVAR')        # Should print oldvalue.
-        print os.getenv('MYVAR2')        # Should print None.
+    """Context manager for environment variables.
+
+    .. code-block:: python
+
+        Usage:
+            os.environ['MYVAR'] = 'oldvalue'
+            with EnvironmentContex(MYVAR='myvalue', MYVAR2='myvalue2'):
+                print os.getenv('MYVAR')    # Should print myvalue.
+                print os.getenv('MYVAR2')    # Should print myvalue2.
+            print os.getenv('MYVAR')        # Should print oldvalue.
+            print os.getenv('MYVAR2')        # Should print None.
 
     CREDIT: https://github.com/sakurai-youhei/envcontext
+
     """
 
     def __init__(self, **kwargs):
@@ -988,10 +991,8 @@ def parse_test_name(test_name):
     parse and return the partial results.
 
     TESTMODS use hyphens in a special way:
-    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to
-      the path 'test/mods')
-    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path'
-      indicates two test mods: 'test/mods' and 'other/dir/path')
+    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to the path 'test/mods')
+    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path' indicates two test mods: 'test/mods' and 'other/dir/path')
 
     If there are one or more TESTMODS, then the testmods component of the result will be a
     list, where each element of the list is one testmod, and hyphens have been replaced by
@@ -1032,6 +1033,7 @@ def parse_test_name(test_name):
     Traceback (most recent call last):
         ...
     CIMEError: ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV
+    
     """
     rv = [None] * 7
     num_dots = test_name.count(".")
@@ -1092,10 +1094,8 @@ def get_full_test_name(
     Use the additional args to fill out the name if needed
 
     Testmods can be provided through one of two arguments, but *not* both:
-    - testmods_list: a list of one or more testmods (as would be returned by
-      parse_test_name, for example)
-    - testmods_string: a single string containing one or more testmods; if there is more
-      than one, then they should be separated by a string of two hyphens ('--')
+    - testmods_list: a list of one or more testmods (as would be returned by parse_test_name, for example)
+    - testmods_string: a single string containing one or more testmods; if there is more than one, then they should be separated by a string of two hyphens ('--')
 
     For both testmods_list and testmods_string, any slashes as path separators ('/') are
     replaced by hyphens ('-').
@@ -1132,6 +1132,7 @@ def get_full_test_name(
     The following tests the consistency check between the test name and various optional arguments:
     >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
     """
     (
         partial_testcase,
