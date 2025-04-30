@@ -187,6 +187,5 @@ For variables that can be set in more than one way, the order of precedence is:
     cloning-a-case
     examples/index
     timers
-    multi-instance
     troubleshooting
     model-configuration/index

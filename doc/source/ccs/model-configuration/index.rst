@@ -12,7 +12,6 @@ This section covers configuring a model for CIME, adding new machine support, ad
     :maxdepth: 2
 
     config-files
-    variables/index
     support-a-new-machine
     fortran-unit-testing
     customize-cime
