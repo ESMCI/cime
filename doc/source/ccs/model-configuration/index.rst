@@ -10,7 +10,6 @@ This section covers configuring a model for CIME, adding new machine support, ad
 
 .. toctree::
     :maxdepth: 2
-    :hidden:
 
     config-files
     variables/index
