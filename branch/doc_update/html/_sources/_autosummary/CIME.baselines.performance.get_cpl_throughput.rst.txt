@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.baselines.performance.get\_cpl\_throughput
-===============================================
-
-.. currentmodule:: CIME.baselines.performance
-
-.. autofunction:: get_cpl_throughput

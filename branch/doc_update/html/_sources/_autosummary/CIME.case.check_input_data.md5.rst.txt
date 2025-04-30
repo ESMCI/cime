@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.check\_input\_data.md5
-================================
-
-.. currentmodule:: CIME.case.check_input_data
-
-.. autofunction:: md5

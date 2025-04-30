@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.Tools.generate\_cylc\_workflow.parse\_command\_line
-========================================================
-
-.. currentmodule:: CIME.Tools.generate_cylc_workflow
-
-.. autofunction:: parse_command_line

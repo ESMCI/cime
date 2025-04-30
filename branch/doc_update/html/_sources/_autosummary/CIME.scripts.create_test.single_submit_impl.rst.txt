@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.scripts.create\_test.single\_submit\_impl
-==============================================
-
-.. currentmodule:: CIME.scripts.create_test
-
-.. autofunction:: single_submit_impl

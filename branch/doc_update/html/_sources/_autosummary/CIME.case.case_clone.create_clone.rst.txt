@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.case\_clone.create\_clone
-===================================
-
-.. currentmodule:: CIME.case.case_clone
-
-.. autofunction:: create_clone

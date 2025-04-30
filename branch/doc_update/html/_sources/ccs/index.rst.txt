@@ -175,7 +175,7 @@ For variables that can be set in more than one way, the order of precedence is:
 - variable is set in a ``$CASEROOT`` xml file
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
     :hidden:
 
     query-configuration
@@ -185,8 +185,7 @@ For variables that can be set in more than one way, the order of precedence is:
     building-a-case
     running-a-case
     cloning-a-case
-    customizing-inputs
+    examples/index
     timers
-    multi-instance
     troubleshooting
     model-configuration/index

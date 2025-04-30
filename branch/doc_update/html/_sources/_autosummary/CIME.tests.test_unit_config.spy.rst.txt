@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.test\_unit\_config.spy
-=================================
-
-.. currentmodule:: CIME.tests.test_unit_config
-
-.. autofunction:: spy

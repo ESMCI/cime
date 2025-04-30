@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.case\_submit.submit
-=============================
-
-.. currentmodule:: CIME.case.case_submit
-
-.. autofunction:: submit

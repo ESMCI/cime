@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.baselines.performance.read\_baseline\_file
-===============================================
-
-.. currentmodule:: CIME.baselines.performance
-
-.. autofunction:: read_baseline_file

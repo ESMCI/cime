@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.utils.make\_fake\_teststatus
-=======================================
-
-.. currentmodule:: CIME.tests.utils
-
-.. autofunction:: make_fake_teststatus

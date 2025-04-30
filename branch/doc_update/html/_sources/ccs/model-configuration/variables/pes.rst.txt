@@ -49,6 +49,7 @@ Multiple ``value`` elements allowed, each corresponds with a specific component.
 Contents
 ----------
 
+.. _model_config_pes_schema:
 Schema Definition
 :::::::::::::::::
 

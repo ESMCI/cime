@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.test\_unit\_system\_tests\_mvk.write\_evv\_output
-============================================================
-
-.. currentmodule:: CIME.tests.test_unit_system_tests_mvk
-
-.. autofunction:: write_evv_output

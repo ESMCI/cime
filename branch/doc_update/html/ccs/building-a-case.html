@@ -57,9 +57,8 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
@@ -71,7 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
         </div>
@@ -111,11 +110,14 @@
 </nav>
 <p>Once the case has been created and set up, it’s time to build the executable.
 Several directories full of source code must be built all with the same compiler and flags.
-<strong>case.build</strong> performs all build operations (setting dependencies, invoking Make/CMake,
+The <strong>case.build</strong> script performs all build operations (setting dependencies, invoking Make/CMake,
 creating the executable).</p>
 <section id="build-process">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Build Process</a><a class="headerlink" href="#build-process" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">case.build</span></code> command generates the utility/component libraries and the model executable. Each utility and component build has a log file generated named in the form: <strong>$component.bldlog.$datestamp</strong>. They are located in <code class="docutils literal notranslate"><span class="pre">$BLDDIR</span></code>. If they are compressed (as indicated by a .gz file extension), the build ran successfully.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">case.build</span></code> command generates the utility, component libraries and the model executable. Each utility
+and component build has a log file generated named in the form: <strong>$component.bldlog.$datestamp</strong>. These are
+located in <code class="docutils literal notranslate"><span class="pre">$EXEROOT</span></code> which can be retrieved using <code class="docutils literal notranslate"><span class="pre">./xmlquery</span> <span class="pre">EXEROOT</span></code>. If the logs are compressed
+(as indicated by a .gz file extension), the build ran successfully.</p>
 <p>Invoking <code class="docutils literal notranslate"><span class="pre">case.build</span></code> creates the following directory structure in <code class="docutils literal notranslate"><span class="pre">$EXEROOT</span></code> if the Intel compiler is used:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">atm</span><span class="o">/</span>
 <span class="n">cpl</span><span class="o">/</span>

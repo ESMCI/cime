@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Multi-instance" href="multi-instance.html" />
-    <link rel="prev" title="Customizing Inputs" href="customizing-inputs.html" /> 
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Multi-instance" href="examples/multi-instance.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,9 +57,8 @@
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html">Examples</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Timers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
@@ -71,7 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
         </div>
@@ -103,81 +102,125 @@
 <span id="id1"></span><h1>Timers<a class="headerlink" href="#timers" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#model-timing-data" id="id3">Model timing data</a></p></li>
-<li><p><a class="reference internal" href="#controlling-timers" id="id4">Controlling timers</a></p></li>
-<li><p><a class="reference internal" href="#advice-on-setting-your-wallclock-time" id="id5">Advice on setting your wallclock time</a></p></li>
+<li><p><a class="reference internal" href="#controlling-timers" id="id2">Controlling timers</a></p>
+<ul>
+<li><p><a class="reference internal" href="#level" id="id3">Level</a></p></li>
+<li><p><a class="reference internal" href="#detail" id="id4">Detail</a></p></li>
+<li><p><a class="reference internal" href="#find-grain-control" id="id5">Find-grain control</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#timing-data" id="id6">Timing data</a></p>
+<ul>
+<li><p><a class="reference internal" href="#model" id="id7">Model</a></p></li>
+<li><p><a class="reference internal" href="#component" id="id8">Component</a></p></li>
+<li><p><a class="reference internal" href="#coupler" id="id9">Coupler</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#advice-on-setting-your-wallclock-time" id="id10">Advice on setting your wallclock time</a></p></li>
 </ul>
 </nav>
-<p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver.  CIME-driven models typically
+<p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver. CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
-<section id="model-timing-data">
-<span id="id2"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Model timing data</a><a class="headerlink" href="#model-timing-data" title="Link to this heading"></a></h2>
+<p>To enable timers, set the xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code> to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> with <code class="docutils literal notranslate"><span class="pre">./xmlchange</span> <span class="pre">CHECK_TIMING=true</span></code>, this will produce files in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/timing</span></code>.</p>
+<section id="controlling-timers">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Controlling timers</a><a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
+<p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
+<section id="level">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Level</a><a class="headerlink" href="#level" title="Link to this heading"></a></h3>
+<p>Timer level using the XML variable <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>: This is the maximum code stack depth of enabled timers.</p>
+</section>
+<section id="detail">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Detail</a><a class="headerlink" href="#detail" title="Link to this heading"></a></h3>
+<p>Timer detail using the XML variable <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>: This is the maximum detail level of enabled timers.</p>
+<p>This is an integer indicating maximum detail level to profile.  This
+xml variable is used to set the namelist variable timing_detail_limit.
+This namelist variable is used by perf_mod (in
+$CIMEROOT/src/share/timing/perf_mod.F90) to turn timers off and on
+depending on calls to the routine t_adj_detailf.  If in the code a
+statement appears like t_adj_detailf(+1), then the current timer
+detail level is incremented by 1 and compared to the time_detail_limit
+obtained from the namelist.  If the limit is exceeded then the timer
+is turned off.</p>
+</section>
+<section id="find-grain-control">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Find-grain control</a><a class="headerlink" href="#find-grain-control" title="Link to this heading"></a></h3>
+<p>Further control of timers is then done via modifications of the <strong>prof_inparm namelists</strong> in the file <strong>drv_in</strong>. This is done
+via keyword-value settings in user_nl_cpl. As an example, if you want to set the namelist variable <code class="docutils literal notranslate"><span class="pre">profile_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">.true.</span></code>,
+add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>profile_barriers = .true.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="timing-data">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Timing data</a><a class="headerlink" href="#timing-data" title="Link to this heading"></a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
-<ol class="arabic">
-<li><p><strong>$CASEROOT/timing/$model_timing.$CASE.$datestamp</strong></p>
+<section id="model">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Model</a><a class="headerlink" href="#model" title="Link to this heading"></a></h3>
+<p>The timing output can be found in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/timing/$model_timing.$CASE.$datestamp</span></code>.</p>
 <p>This is the most useful way to quickly determine timing summaries across components
 The following describes the most important parts of this timing file:</p>
 <p>An example timing file of this type is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">----------------</span> <span class="n">TIMING</span> <span class="n">PROFILE</span> <span class="o">---------------------</span>
-<span class="n">Case</span>        <span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="mf">.20</span><span class="n">thC</span><span class="mf">.297_02</span>
-<span class="n">LID</span>         <span class="p">:</span> <span class="mf">9459679.</span><span class="n">chadmin1</span><span class="mf">.180517</span><span class="o">-</span><span class="mi">114852</span>
-<span class="n">Machine</span>     <span class="p">:</span> <span class="n">cheyenne</span>
-<span class="n">Caseroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="mf">.20</span><span class="n">thC</span><span class="mf">.297_02</span>
-<span class="n">Timeroot</span>    <span class="p">:</span> <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">p</span><span class="o">/</span><span class="n">cesmdata</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">runs</span><span class="o">/</span><span class="n">cesm2_0</span><span class="o">/</span><span class="n">b</span><span class="o">.</span><span class="n">e20</span><span class="o">.</span><span class="n">BHIST</span><span class="o">.</span><span class="n">f09_g17</span><span class="mf">.20</span><span class="n">thC</span><span class="mf">.297_02</span><span class="o">/</span><span class="n">Tools</span>
-<span class="n">User</span>        <span class="p">:</span> <span class="n">hannay</span>
-<span class="n">Curr</span> <span class="n">Date</span>   <span class="p">:</span> <span class="n">Thu</span> <span class="n">May</span> <span class="mi">17</span> <span class="mi">12</span><span class="p">:</span><span class="mi">42</span><span class="p">:</span><span class="mi">27</span> <span class="mi">2018</span>
-<span class="n">grid</span>        <span class="p">:</span> <span class="n">a</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="mf">.25</span><span class="n">_l</span><span class="o">%</span><span class="mf">0.9</span><span class="n">x1</span><span class="mf">.25</span><span class="n">_oi</span><span class="o">%</span><span class="n">gx1v7_r</span><span class="o">%</span><span class="n">r05_g</span><span class="o">%</span><span class="n">gland4_w</span><span class="o">%</span><span class="n">ww3a_m</span><span class="o">%</span><span class="n">gx1v7</span>
-<span class="n">compset</span>     <span class="p">:</span> <span class="n">HIST_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC</span><span class="o">-</span><span class="n">CROP_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
-<span class="n">run_type</span>    <span class="p">:</span> <span class="n">hybrid</span><span class="p">,</span> <span class="n">continue_run</span> <span class="o">=</span> <span class="n">FALSE</span> <span class="p">(</span><span class="n">inittype</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">)</span>
-<span class="n">stop_option</span> <span class="p">:</span> <span class="n">nyears</span><span class="p">,</span> <span class="n">stop_n</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">run_length</span>  <span class="p">:</span> <span class="mi">365</span> <span class="n">days</span> <span class="p">(</span><span class="mf">364.958333333</span> <span class="k">for</span> <span class="n">ocean</span><span class="p">)</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>---------------- TIMING PROFILE ---------------------
+Case        : b.e20.BHIST.f09_g17.20thC.297_02
+LID         : 9459679.chadmin1.180517-114852
+Machine     : cheyenne
+Caseroot    : /glade/p/cesmdata/cseg/runs/cesm2_0/b.e20.BHIST.f09_g17.20thC.297_02
+Timeroot    : /glade/p/cesmdata/cseg/runs/cesm2_0/b.e20.BHIST.f09_g17.20thC.297_02/Tools
+User        : hannay
+Curr Date   : Thu May 17 12:42:27 2018
+grid        : a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%ww3a_m%gx1v7
+compset     : HIST_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD
+run_type    : hybrid, continue_run = FALSE (inittype = TRUE)
+stop_option : nyears, stop_n = 1
+run_length  : 365 days (364.958333333 for ocean)
 
-<span class="n">component</span>       <span class="n">comp_pes</span>    <span class="n">root_pe</span>   <span class="n">tasks</span>  <span class="n">x</span> <span class="n">threads</span> <span class="n">instances</span> <span class="p">(</span><span class="n">stride</span><span class="p">)</span>
-<span class="o">---------</span>        <span class="o">------</span>     <span class="o">-------</span>   <span class="o">------</span>   <span class="o">------</span>  <span class="o">---------</span>  <span class="o">------</span>
-<span class="n">cpl</span> <span class="o">=</span> <span class="n">cpl</span>        <span class="mi">3456</span>        <span class="mi">0</span>        <span class="mi">1152</span>   <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">atm</span> <span class="o">=</span> <span class="n">cam</span>        <span class="mi">3456</span>        <span class="mi">0</span>        <span class="mi">1152</span>   <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">lnd</span> <span class="o">=</span> <span class="n">clm</span>        <span class="mi">2592</span>        <span class="mi">0</span>        <span class="mi">864</span>    <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">ice</span> <span class="o">=</span> <span class="n">cice</span>       <span class="mi">864</span>         <span class="mi">864</span>      <span class="mi">288</span>    <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">ocn</span> <span class="o">=</span> <span class="n">pop</span>        <span class="mi">768</span>         <span class="mi">1152</span>     <span class="mi">256</span>    <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">rof</span> <span class="o">=</span> <span class="n">mosart</span>     <span class="mi">2592</span>        <span class="mi">0</span>        <span class="mi">864</span>    <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">glc</span> <span class="o">=</span> <span class="n">cism</span>       <span class="mi">3456</span>        <span class="mi">0</span>        <span class="mi">1152</span>   <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">wav</span> <span class="o">=</span> <span class="n">ww</span>         <span class="mi">96</span>          <span class="mi">1408</span>     <span class="mi">32</span>     <span class="n">x</span> <span class="mi">3</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
-<span class="n">esp</span> <span class="o">=</span> <span class="n">sesp</span>       <span class="mi">1</span>           <span class="mi">0</span>        <span class="mi">1</span>      <span class="n">x</span> <span class="mi">1</span>       <span class="mi">1</span>      <span class="p">(</span><span class="mi">1</span>     <span class="p">)</span>
+component       comp_pes    root_pe   tasks  x threads instances (stride)
+---------        ------     -------   ------   ------  ---------  ------
+cpl = cpl        3456        0        1152   x 3       1      (1     )
+atm = cam        3456        0        1152   x 3       1      (1     )
+lnd = clm        2592        0        864    x 3       1      (1     )
+ice = cice       864         864      288    x 3       1      (1     )
+ocn = pop        768         1152     256    x 3       1      (1     )
+rof = mosart     2592        0        864    x 3       1      (1     )
+glc = cism       3456        0        1152   x 3       1      (1     )
+wav = ww         96          1408     32     x 3       1      (1     )
+esp = sesp       1           0        1      x 1       1      (1     )
 
-<span class="n">total</span> <span class="n">pes</span> <span class="n">active</span>           <span class="p">:</span> <span class="mi">12960</span>
-<span class="n">mpi</span> <span class="n">tasks</span> <span class="n">per</span> <span class="n">node</span>               <span class="p">:</span> <span class="mi">36</span>
-<span class="n">pe</span> <span class="n">count</span> <span class="k">for</span> <span class="n">cost</span> <span class="n">estimate</span> <span class="p">:</span> <span class="mi">4320</span>
+total pes active           : 12960
+mpi tasks per node               : 36
+pe count for cost estimate : 4320
 
-<span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
-<span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span>            <span class="mf">3541.30</span>   <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span>
-<span class="n">Model</span> <span class="n">Throughput</span><span class="p">:</span>        <span class="mf">29.28</span>   <span class="n">simulated_years</span><span class="o">/</span><span class="n">day</span>
+Overall Metrics:
+Model Cost:            3541.30   pe-hrs/simulated_year
+Model Throughput:        29.28   simulated_years/day
 
-<span class="n">Init</span> <span class="n">Time</span>   <span class="p">:</span>     <span class="mf">242.045</span> <span class="n">seconds</span>
-<span class="n">Run</span> <span class="n">Time</span>    <span class="p">:</span>    <span class="mf">2951.082</span> <span class="n">seconds</span>        <span class="mf">8.085</span> <span class="n">seconds</span><span class="o">/</span><span class="n">day</span>
-<span class="n">Final</span> <span class="n">Time</span>  <span class="p">:</span>       <span class="mf">0.008</span> <span class="n">seconds</span>
+Init Time   :     242.045 seconds
+Run Time    :    2951.082 seconds        8.085 seconds/day
+Final Time  :       0.008 seconds
 
-<span class="n">Actual</span> <span class="n">Ocn</span> <span class="n">Init</span> <span class="n">Wait</span> <span class="n">Time</span>     <span class="p">:</span>     <span class="mf">768.737</span> <span class="n">seconds</span>
-<span class="n">Estimated</span> <span class="n">Ocn</span> <span class="n">Init</span> <span class="n">Run</span> <span class="n">Time</span>   <span class="p">:</span>       <span class="mf">0.248</span> <span class="n">seconds</span>
-<span class="n">Estimated</span> <span class="n">Run</span> <span class="n">Time</span> <span class="n">Correction</span> <span class="p">:</span>       <span class="mf">0.000</span> <span class="n">seconds</span>
-  <span class="p">(</span><span class="n">This</span> <span class="n">correction</span> <span class="n">has</span> <span class="n">been</span> <span class="n">applied</span> <span class="n">to</span> <span class="n">the</span> <span class="n">ocean</span> <span class="ow">and</span> <span class="n">total</span> <span class="n">run</span> <span class="n">times</span><span class="p">)</span>
+Actual Ocn Init Wait Time     :     768.737 seconds
+Estimated Ocn Init Run Time   :       0.248 seconds
+Estimated Run Time Correction :       0.000 seconds
+(This correction has been applied to the ocean and total run times)
 
-<span class="n">Runs</span> <span class="n">Time</span> <span class="ow">in</span> <span class="n">total</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">seconds</span><span class="o">/</span><span class="n">model</span><span class="o">-</span><span class="n">day</span><span class="p">,</span> <span class="ow">and</span> <span class="n">model</span><span class="o">-</span><span class="n">years</span><span class="o">/</span><span class="n">wall</span><span class="o">-</span><span class="n">day</span>
-<span class="n">CPL</span> <span class="n">Run</span> <span class="n">Time</span> <span class="n">represents</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">CPL</span> <span class="n">pes</span> <span class="n">alone</span><span class="p">,</span> <span class="ow">not</span> <span class="n">including</span> <span class="n">time</span> <span class="n">associated</span> <span class="k">with</span> <span class="n">data</span> <span class="n">exchange</span> <span class="k">with</span> <span class="n">other</span> <span class="n">components</span>
+Runs Time in total seconds, seconds/model-day, and model-years/wall-day
+CPL Run Time represents time in CPL pes alone, not including time associated with data exchange with other components
 
-<span class="n">TOT</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>    <span class="mf">2951.082</span> <span class="n">seconds</span>        <span class="mf">8.085</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>        <span class="mf">29.28</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">CPL</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>     <span class="mf">248.696</span> <span class="n">seconds</span>        <span class="mf">0.681</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>       <span class="mf">347.41</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">ATM</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>    <span class="mf">2097.788</span> <span class="n">seconds</span>        <span class="mf">5.747</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>        <span class="mf">41.19</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">LND</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>     <span class="mf">545.991</span> <span class="n">seconds</span>        <span class="mf">1.496</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>       <span class="mf">158.24</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">ICE</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>     <span class="mf">389.173</span> <span class="n">seconds</span>        <span class="mf">1.066</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>       <span class="mf">222.01</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">OCN</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>    <span class="mf">2169.399</span> <span class="n">seconds</span>        <span class="mf">5.944</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>        <span class="mf">39.83</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">ROF</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>      <span class="mf">42.241</span> <span class="n">seconds</span>        <span class="mf">0.116</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>      <span class="mf">2045.41</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">GLC</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>       <span class="mf">1.049</span> <span class="n">seconds</span>        <span class="mf">0.003</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>     <span class="mf">82364.16</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">WAV</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>     <span class="mf">517.414</span> <span class="n">seconds</span>        <span class="mf">1.418</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>       <span class="mf">166.98</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">ESP</span> <span class="n">Run</span> <span class="n">Time</span><span class="p">:</span>       <span class="mf">0.000</span> <span class="n">seconds</span>        <span class="mf">0.000</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>         <span class="mf">0.00</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
-<span class="n">CPL</span> <span class="n">COMM</span> <span class="n">Time</span><span class="p">:</span>   <span class="mf">2464.660</span> <span class="n">seconds</span>        <span class="mf">6.752</span> <span class="n">seconds</span><span class="o">/</span><span class="n">mday</span>        <span class="mf">35.06</span> <span class="n">myears</span><span class="o">/</span><span class="n">wday</span>
+TOT Run Time:    2951.082 seconds        8.085 seconds/mday        29.28 myears/wday
+CPL Run Time:     248.696 seconds        0.681 seconds/mday       347.41 myears/wday
+ATM Run Time:    2097.788 seconds        5.747 seconds/mday        41.19 myears/wday
+LND Run Time:     545.991 seconds        1.496 seconds/mday       158.24 myears/wday
+ICE Run Time:     389.173 seconds        1.066 seconds/mday       222.01 myears/wday
+OCN Run Time:    2169.399 seconds        5.944 seconds/mday        39.83 myears/wday
+ROF Run Time:      42.241 seconds        0.116 seconds/mday      2045.41 myears/wday
+GLC Run Time:       1.049 seconds        0.003 seconds/mday     82364.16 myears/wday
+WAV Run Time:     517.414 seconds        1.418 seconds/mday       166.98 myears/wday
+ESP Run Time:       0.000 seconds        0.000 seconds/mday         0.00 myears/wday
+CPL COMM Time:   2464.660 seconds        6.752 seconds/mday        35.06 myears/wday
 
-<span class="o">----------------</span> <span class="n">DRIVER</span> <span class="n">TIMING</span> <span class="n">FLOWCHART</span> <span class="o">---------------------</span>
-<span class="o">.............</span>
+---------------- DRIVER TIMING FLOWCHART ---------------------
+..........................
 </pre></div>
 </div>
 <p>TIMING PROFILE is the first section in the timing output. It
@@ -194,51 +237,26 @@ output. It provides timing information for the driver in
 sequential order and indicates which processors are involved in
 the cost. Finally, the timings for the coupler are broken out at
 the bottom of the timing output file.</p>
-</li>
-<li><p><strong>$CASEROOT/timing/$model_timing_stats.$date</strong></p>
+</section>
+<section id="component">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Component</a><a class="headerlink" href="#component" title="Link to this heading"></a></h3>
+<p>The timing output can be found in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/timing/$model_timing_stats.$date</span></code>.</p>
 <p>Provides an overall detailed timing summary for each component, including the minimum and maximum of all the model timers.</p>
-</li>
-<li><p><strong>cpl.log.$datestamp</strong></p>
+</section>
+<section id="coupler">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Coupler</a><a class="headerlink" href="#coupler" title="Link to this heading"></a></h3>
+<p>The timing out put can be found in <code class="docutils literal notranslate"><span class="pre">$RUNDIR/cpl.log.$datestamp</span></code> or <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT/logs/cpl.log.$datestamp</span></code>.</p>
 <p>Contains the run time for each model day during the run and is
 output during the run. You can search for <code class="docutils literal notranslate"><span class="pre">tStamp</span></code> in the cpl.log
 file to see the information, which is useful for tracking down
 temporal variability in cost due to inherent model variability or
 to hardware. The model daily cost generally is pretty constant
 unless I/O is written intermittently, such as at the end of the
-month. This file will appear either in <strong>$RUNDIR</strong> or in
-<strong>DOUT_S_ROOT/logs</strong> for your run.</p>
-</li>
-</ol>
-<p>The xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code>, if set to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> (the default) will produce the timing files in the <strong>$CASEROOT/timing</strong> directory.</p>
+month.</p>
 </section>
-<section id="controlling-timers">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Controlling timers</a><a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
-<p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>:</p>
-<p>This is the maximum code stack depth of enabled timers.</p>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>:</p>
-<p>This is an integer indicating maximum detail level to profile.  This
-xml variable is used to set the namelist variable timing_detail_limit.
-This namelist variable is used by perf_mod (in
-$CIMEROOT/src/share/timing/perf_mod.F90) to turn timers off and on
-depending on calls to the routine t_adj_detailf.  If in the code a
-statement appears like t_adj_detailf(+1), then the current timer
-detail level is incremented by 1 and compared to the time_detail_limit
-obtained from the namelist.  If the limit is exceeded then the timer
-is turned off.</p>
-</li>
-</ul>
-<p>Further control of timers is then done via modifications of the <strong>prof_inparm namelists</strong> in the file <strong>drv_in</strong>. This is done
-via keyword-value settings in user_nl_cpl. As an example, if you want to set the namelist variable <code class="docutils literal notranslate"><span class="pre">profile_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">.true.</span></code>,
-add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">profile_barriers</span> <span class="o">=</span> <span class="o">.</span><span class="n">true</span><span class="o">.</span>
-</pre></div>
-</div>
 </section>
 <section id="advice-on-setting-your-wallclock-time">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Advice on setting your wallclock time</a><a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Advice on setting your wallclock time</a><a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
 <dl>
 <dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>
@@ -272,8 +290,8 @@ year/job. In this example, set your wallclock at 12 hours and invoke
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="customizing-inputs.html" class="btn btn-neutral float-left" title="Customizing Inputs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="multi-instance.html" class="btn btn-neutral float-right" title="Multi-instance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="examples/multi-instance.html" class="btn btn-neutral float-left" title="Multi-instance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

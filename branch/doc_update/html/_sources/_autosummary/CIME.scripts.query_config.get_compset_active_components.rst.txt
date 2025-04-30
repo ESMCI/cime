@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.scripts.query\_config.get\_compset\_active\_components
-===========================================================
-
-.. currentmodule:: CIME.scripts.query_config
-
-.. autofunction:: get_compset_active_components

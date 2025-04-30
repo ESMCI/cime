@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.scripts\_regression\_tests.configure\_tests
-======================================================
-
-.. currentmodule:: CIME.tests.scripts_regression_tests
-
-.. autofunction:: configure_tests

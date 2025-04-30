@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.test\_utils.get\_test\_status\_files
-=========================================
-
-.. currentmodule:: CIME.test_utils
-
-.. autofunction:: get_test_status_files

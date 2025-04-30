@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.baselines.performance.perf\_compare\_throughput\_baseline
-==============================================================
-
-.. currentmodule:: CIME.baselines.performance
-
-.. autofunction:: perf_compare_throughput_baseline

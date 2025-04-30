@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.preview\_namelists.create\_dirs
-=========================================
-
-.. currentmodule:: CIME.case.preview_namelists
-
-.. autofunction:: create_dirs

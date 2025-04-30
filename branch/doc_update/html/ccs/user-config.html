@@ -57,9 +57,8 @@
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
@@ -71,7 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
         </div>
@@ -103,23 +102,23 @@
 <span id="ccs-user-config"></span><h1>User Config<a class="headerlink" href="#user-config" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#configuration" id="id3">Configuration</a></p>
+<li><p><a class="reference internal" href="#configuration" id="id1">Configuration</a></p>
 <ul>
-<li><p><a class="reference internal" href="#main" id="id4">Main</a></p></li>
-<li><p><a class="reference internal" href="#create-test" id="id5">Create Test</a></p></li>
+<li><p><a class="reference internal" href="#main" id="id2">Main</a></p></li>
+<li><p><a class="reference internal" href="#create-test" id="id3">Create Test</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#machine" id="id6">Machine</a></p></li>
-<li><p><a class="reference internal" href="#cmake-macros" id="id7">CMake macros</a></p></li>
-<li><p><a class="reference internal" href="#batch-system" id="id8">Batch System</a></p></li>
+<li><p><a class="reference internal" href="#machine" id="id4">Machine</a></p></li>
+<li><p><a class="reference internal" href="#cmake-macros" id="id5">CMake macros</a></p></li>
+<li><p><a class="reference internal" href="#batch-system" id="id6">Batch System</a></p></li>
 </ul>
 </nav>
 <p>CIME provides a mechanism for users to customize their CCS environment by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code> directory. This directory can contain a number of files that will be used to customize the CCS environment. The following sections describe the files that can be placed in the <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code> directory.</p>
 <section id="configuration">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
 <p>The user can set defaults by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config</span></code> file. This file must follow the Python config format.</p>
 <section id="main">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Main</a><a class="headerlink" href="#main" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Main</a><a class="headerlink" href="#main" title="Link to this heading"></a></h3>
 <p>Variables can be defined in the <strong>[main]</strong> section of the config file.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[main]</span>
 <span class="na">CIME_MODEL</span><span class="o">=</span><span class="s">&lt;model&gt;</span>
@@ -128,8 +127,7 @@
 <span class="na">SRCROOT</span><span class="o">=</span><span class="s">&lt;srcroot&gt;</span>
 </pre></div>
 </div>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Main Variables</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Variable</p></th>
 <th class="head"><p>Description</p></th>
@@ -173,14 +171,13 @@
 </table>
 </section>
 <section id="create-test">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">Create Test</a><a class="headerlink" href="#create-test" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Create Test</a><a class="headerlink" href="#create-test" title="Link to this heading"></a></h3>
 <p>The following example shows setting defaults for the <strong>create_test</strong> script.</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[create_test]</span>
 <span class="na">MAIL_TYPE</span><span class="o">=</span><span class="s">fail</span>
 </pre></div>
 </div>
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Create Test Variables</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Variable</p></th>
 <th class="head"><p>Description</p></th>
@@ -261,16 +258,16 @@
 </section>
 </section>
 <section id="machine">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Machine</a><a class="headerlink" href="#machine" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Machine</a><a class="headerlink" href="#machine" title="Link to this heading"></a></h2>
 <p>The user can define their own machine configuration by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config_machines.xml</span></code> file. See the <a class="reference internal" href="model-configuration/variables/machine.html#model-config-machines-def"><span class="std std-ref">config_machines.xml</span></a> section for more information.</p>
 <p>These additional machine entries will be appended to the entries provided by the model.</p>
 </section>
 <section id="cmake-macros">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">CMake macros</a><a class="headerlink" href="#cmake-macros" title="Link to this heading"></a></h2>
-<p>The user can define their own cmake macros by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/cmake_macros</span></code> directory. See the <a class="reference internal" href="model-configuration/variables/cmake-macros-dir.html#model-config-cmake-macros-dir-def"><span class="std std-ref">cmake_macros</span></a> section for more information.</p>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">CMake macros</a><a class="headerlink" href="#cmake-macros" title="Link to this heading"></a></h2>
+<p>The user can define their own cmake macros by placing them in the <code class="docutils literal notranslate"><span class="pre">$HOME/.cime</span></code> directory. See the <a class="reference internal" href="model-configuration/variables/cmake-macros-dir.html#model-config-cmake-macros-dir-def"><span class="std std-ref">cmake_macros</span></a> section for more information.</p>
 </section>
 <section id="batch-system">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Batch System</a><a class="headerlink" href="#batch-system" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Batch System</a><a class="headerlink" href="#batch-system" title="Link to this heading"></a></h2>
 <p>The user can define their own batch system configuration by creating a <code class="docutils literal notranslate"><span class="pre">$HOME/.cime/config_batch.xml</span></code> file. See the <span class="xref std std-ref">config_batch.xml</span> section for more information.</p>
 </section>
 </section>

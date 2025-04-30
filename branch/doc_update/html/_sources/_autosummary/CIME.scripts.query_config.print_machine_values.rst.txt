@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.scripts.query\_config.print\_machine\_values
-=================================================
-
-.. currentmodule:: CIME.scripts.query_config
-
-.. autofunction:: print_machine_values

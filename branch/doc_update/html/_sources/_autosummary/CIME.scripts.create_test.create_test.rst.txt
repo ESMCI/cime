@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.scripts.create\_test.create\_test
-======================================
-
-.. currentmodule:: CIME.scripts.create_test
-
-.. autofunction:: create_test

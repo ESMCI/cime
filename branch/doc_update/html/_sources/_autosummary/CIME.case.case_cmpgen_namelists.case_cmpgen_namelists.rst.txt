@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.case\_cmpgen\_namelists.case\_cmpgen\_namelists
-=========================================================
-
-.. currentmodule:: CIME.case.case_cmpgen_namelists
-
-.. autofunction:: case_cmpgen_namelists

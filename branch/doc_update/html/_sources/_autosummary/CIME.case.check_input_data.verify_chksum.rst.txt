@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.check\_input\_data.verify\_chksum
-===========================================
-
-.. currentmodule:: CIME.case.check_input_data
-
-.. autofunction:: verify_chksum

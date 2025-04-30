@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.test\_unit\_case.make\_valid\_case
-=============================================
-
-.. currentmodule:: CIME.tests.test_unit_case
-
-.. autofunction:: make_valid_case

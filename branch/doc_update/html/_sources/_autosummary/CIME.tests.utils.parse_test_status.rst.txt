@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.utils.parse\_test\_status
-====================================
-
-.. currentmodule:: CIME.tests.utils
-
-.. autofunction:: parse_test_status

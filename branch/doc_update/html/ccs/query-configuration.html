@@ -57,9 +57,8 @@
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="running-a-case.html">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
@@ -71,7 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
         </div>
@@ -145,20 +144,20 @@ For example, the output for the “docker” machine may look like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Machine</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 
 <span class="n">docker</span> <span class="p">(</span><span class="n">gnu</span><span class="p">)</span> <span class="p">:</span> <span class="n">Docker</span>
-    <span class="n">os</span>              <span class="n">LINUX</span>
-    <span class="n">compilers</span>       <span class="n">gnu</span><span class="p">,</span><span class="n">gnuX</span>
-    <span class="n">mpilibs</span>         <span class="n">openmpi</span>
-    <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">8</span>
-    <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">8</span>
-    <span class="n">max_gpus</span><span class="o">/</span><span class="n">node</span>   <span class="mi">0</span>
+            <span class="n">os</span>              <span class="n">LINUX</span>
+            <span class="n">compilers</span>       <span class="n">gnu</span><span class="p">,</span><span class="n">gnuX</span>
+            <span class="n">mpilibs</span>         <span class="n">openmpi</span>
+            <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">8</span>
+            <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">8</span>
+            <span class="n">max_gpus</span><span class="o">/</span><span class="n">node</span>   <span class="mi">0</span>
 
-    <span class="n">Module</span> <span class="n">commands</span><span class="p">:</span>
+        <span class="n">Module</span> <span class="n">commands</span><span class="p">:</span>
 
-    <span class="n">Environment</span> <span class="n">variables</span><span class="p">:</span>
-    <span class="n">OMPI_ALLOW_RUN_AS_ROOT</span><span class="p">:</span> <span class="mi">1</span>
-    <span class="n">OMPI_ALLOW_RUN_AS_ROOT_CONFIRM</span><span class="p">:</span> <span class="mi">1</span>
-    <span class="n">NETCDF_C_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
-    <span class="n">NETCDF_FORTRAN_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
+        <span class="n">Environment</span> <span class="n">variables</span><span class="p">:</span>
+            <span class="n">OMPI_ALLOW_RUN_AS_ROOT</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="n">OMPI_ALLOW_RUN_AS_ROOT_CONFIRM</span><span class="p">:</span> <span class="mi">1</span>
+            <span class="n">NETCDF_C_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
+            <span class="n">NETCDF_FORTRAN_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
 </pre></div>
 </div>
 </section>
@@ -190,12 +189,8 @@ For example, the output for the “docker” machine may look like this:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--grids
 </pre></div>
 </div>
-<p>To display the settings for a specific grid, replace <code class="docutils literal notranslate"><span class="pre">&lt;grid&gt;</span></code> with the grid name in the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--grids<span class="w"> </span>&lt;grid&gt;
-</pre></div>
-</div>
-<p>To display the long name of a grid, use the <code class="docutils literal notranslate"><span class="pre">--long</span></code> flag:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--grids<span class="w"> </span>&lt;grid&gt;<span class="w"> </span>--long
+<p>Adding the <code class="docutils literal notranslate"><span class="pre">--long</span></code> option will output detail information about the grid.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/query_config<span class="w"> </span>--grids<span class="w"> </span>--long
 </pre></div>
 </div>
 </section>

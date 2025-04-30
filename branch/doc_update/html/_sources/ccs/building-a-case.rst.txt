@@ -8,12 +8,15 @@ Building a Case
 
 Once the case has been created and set up, it's time to build the executable.
 Several directories full of source code must be built all with the same compiler and flags.
-**case.build** performs all build operations (setting dependencies, invoking Make/CMake,
+The **case.build** script performs all build operations (setting dependencies, invoking Make/CMake,
 creating the executable).
 
 Build Process
 -------------
-The ``case.build`` command generates the utility/component libraries and the model executable. Each utility and component build has a log file generated named in the form: **$component.bldlog.$datestamp**. They are located in ``$BLDDIR``. If they are compressed (as indicated by a .gz file extension), the build ran successfully.
+The ``case.build`` command generates the utility, component libraries and the model executable. Each utility 
+and component build has a log file generated named in the form: **$component.bldlog.$datestamp**. These are 
+located in ``$EXEROOT`` which can be retrieved using ``./xmlquery EXEROOT``. If the logs are compressed 
+(as indicated by a .gz file extension), the build ran successfully.
 
 Invoking ``case.build`` creates the following directory structure in ``$EXEROOT`` if the Intel compiler is used:
 

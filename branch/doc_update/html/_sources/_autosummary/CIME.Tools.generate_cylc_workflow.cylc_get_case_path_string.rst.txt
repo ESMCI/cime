@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.Tools.generate\_cylc\_workflow.cylc\_get\_case\_path\_string
-=================================================================
-
-.. currentmodule:: CIME.Tools.generate_cylc_workflow
-
-.. autofunction:: cylc_get_case_path_string

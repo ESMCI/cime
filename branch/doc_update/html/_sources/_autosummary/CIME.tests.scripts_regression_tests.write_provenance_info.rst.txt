@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.scripts\_regression\_tests.write\_provenance\_info
-=============================================================
-
-.. currentmodule:: CIME.tests.scripts_regression_tests
-
-.. autofunction:: write_provenance_info

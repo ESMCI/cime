@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.scripts.query\_config.query\_component\_settings
-=====================================================
-
-.. currentmodule:: CIME.scripts.query_config
-
-.. autofunction:: query_component_settings

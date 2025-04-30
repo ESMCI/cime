@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.scripts.query\_config.get\_component\_classes
-==================================================
-
-.. currentmodule:: CIME.scripts.query_config
-
-.. autofunction:: get_component_classes

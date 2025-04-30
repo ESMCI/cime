@@ -57,9 +57,8 @@
 <li class="toctree-l2"><a class="reference internal" href="building-a-case.html">Building a Case</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Running a Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cloning-a-case.html">Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="customizing-inputs.html">Customizing Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html">Examples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="timers.html">Timers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="multi-instance.html">Multi-instance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="model-configuration/index.html">Model Configuration</a></li>
 </ul>
@@ -71,7 +70,7 @@
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
         </div>
@@ -103,9 +102,9 @@
 <span id="ccs-running-a-case"></span><h1>Running a Case<a class="headerlink" href="#running-a-case" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#input-data" id="id2">Input Data</a></p></li>
-<li><p><a class="reference internal" href="#pe-layout" id="id3">PE Layout</a></p></li>
-<li><p><a class="reference internal" href="#previewing-a-run" id="id4">Previewing a Run</a></p></li>
+<li><p><a class="reference internal" href="#previewing-a-run" id="id2">Previewing a Run</a></p></li>
+<li><p><a class="reference internal" href="#input-data" id="id3">Input Data</a></p></li>
+<li><p><a class="reference internal" href="#pe-layout" id="id4">PE Layout</a></p></li>
 <li><p><a class="reference internal" href="#workflow" id="id5">Workflow</a></p></li>
 <li><p><a class="reference internal" href="#submitting-a-case" id="id6">Submitting a Case</a></p>
 <ul>
@@ -118,9 +117,9 @@
 <ul>
 <li><p><a class="reference internal" href="#run-type-initialization" id="id11">Run-type Initialization</a></p>
 <ul>
-<li><p><a class="reference internal" href="#startup" id="id12">startup</a></p></li>
-<li><p><a class="reference internal" href="#branch" id="id13">branch</a></p></li>
-<li><p><a class="reference internal" href="#hybrid" id="id14">hybrid</a></p></li>
+<li><p><a class="reference internal" href="#startup" id="id12">Startup</a></p></li>
+<li><p><a class="reference internal" href="#branch" id="id13">Branch</a></p></li>
+<li><p><a class="reference internal" href="#hybrid" id="id14">Hybrid</a></p></li>
 </ul>
 </li>
 <li><p><a class="reference internal" href="#starting-from-a-reference-case-refcase" id="id15">Starting from a Reference Case (REFCASE)</a></p></li>
@@ -143,44 +142,9 @@
 </li>
 </ul>
 </nav>
-<p>After the case has been customized, set up, and built, it is time to run it. This involves submitting the case to the batch queuing system. If a batch queuing system is not present, the case can be run interactively. The following sections provide detailed instructions on how to manage and monitor the execution of your case.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You now have the ability to create your own input data repository and add it to the <strong>config_inputdata.xml</strong>. This will permit you to easily collaborate by sharing your required input data with others.</p>
-</div>
-<section id="input-data">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Input Data</a><a class="headerlink" href="#input-data" title="Link to this heading"></a></h2>
-<p>All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the XML variable <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> to be populated with input data.</p>
-<p>Input data is provided by various servers configured in the model’s CIME configuration. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system’s input data area as specified by <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code>.</p>
-<p>Input data can occupy significant space on a system, so users should share a common <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> directory on each system if possible.</p>
-<p>The build process will generate a list of required input data sets for each component in the <code class="docutils literal notranslate"><span class="pre">$CASEROOT/Buildconf</span></code> directory.</p>
-<p>When <code class="docutils literal notranslate"><span class="pre">case.submit</span></code> is invoked, all of the required data sets will be checked for locally and downloaded if missing.</p>
-<p>To check for missing data sets and download them, issue the command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">check_input_data</span> <span class="o">--</span><span class="n">download</span>
-</pre></div>
-</div>
-</section>
-<section id="pe-layout">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">PE Layout</a><a class="headerlink" href="#pe-layout" title="Link to this heading"></a></h2>
-<p>Before you submit your job, you should ensure that the PE layout is set correctly. The PE layout is set by the XML variables <strong>NTASKS</strong>, <strong>NTHRDS</strong>, and <strong>ROOTPE</strong>. To see the exact settings for each component, issue the command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./pelayout
-</pre></div>
-</div>
-<p>Alternatively, you can use the command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlquery<span class="w"> </span>NTASKS,NTHRDS,ROOTPE
-</pre></div>
-</div>
-<p>To change the <strong>NTASKS</strong> settings to 30 and the <strong>NTHRDS</strong> settings to 4 for all components, use the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NTASKS</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">NTHRDS</span><span class="o">=</span><span class="mi">4</span>
-</pre></div>
-</div>
-<p>To change the <strong>NTASKS</strong> setting for only the atmosphere component (ATM) to 8, use this command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NTASKS_ATM</span><span class="o">=</span><span class="mi">8</span>
-</pre></div>
-</div>
-</section>
+<p>After the case has been set up, and built, it is time to run it. This involves submitting the case to the batch queuing system. If a batch queuing system is not present, the case can be run interactively. The following sections provide detailed instructions on how to manage and monitor the execution of your case.</p>
 <section id="previewing-a-run">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Previewing a Run</a><a class="headerlink" href="#previewing-a-run" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Previewing a Run</a><a class="headerlink" href="#previewing-a-run" title="Link to this heading"></a></h2>
 <p>Before submitting a case, it is a good idea to preview the run to ensure that the case is set up correctly. The script <code class="docutils literal notranslate"><span class="pre">preview_run</span></code> will output the environment for your run along with the batch submit and mpirun commands.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./preview_run
 </pre></div>
@@ -231,9 +195,40 @@ BATCH<span class="w"> </span>INFO:
 </pre></div>
 </div>
 </section>
+<section id="input-data">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Input Data</a><a class="headerlink" href="#input-data" title="Link to this heading"></a></h2>
+<p>All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the XML variable <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> to be populated with input data.</p>
+<p>Input data is provided by various servers configured in the model’s CIME configuration. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system’s input data area as specified by <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code>.</p>
+<p>Input data can occupy significant space on a system, so users should share a common <code class="docutils literal notranslate"><span class="pre">$DIN_LOC_ROOT</span></code> directory on each system if possible.</p>
+<p>The build process will generate a list of required input data sets for each component in the <code class="docutils literal notranslate"><span class="pre">$CASEROOT/Buildconf</span></code> directory.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">case.submit</span></code> is invoked, all of the required data sets will be checked for locally and downloaded if missing.</p>
+<p>To check for missing data sets and download them, issue the command</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">check_input_data</span> <span class="o">--</span><span class="n">download</span>
+</pre></div>
+</div>
+</section>
+<section id="pe-layout">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">PE Layout</a><a class="headerlink" href="#pe-layout" title="Link to this heading"></a></h2>
+<p>Before you submit your job, you should ensure that the PE layout is set correctly. The PE layout is set by the XML variables <strong>NTASKS</strong>, <strong>NTHRDS</strong>, and <strong>ROOTPE</strong>. To see the exact settings for each component, issue the command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./pelayout
+</pre></div>
+</div>
+<p>Alternatively, you can use the command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlquery<span class="w"> </span>NTASKS,NTHRDS,ROOTPE
+</pre></div>
+</div>
+<p>To change the <strong>NTASKS</strong> settings to 30 and the <strong>NTHRDS</strong> settings to 4 for all components, use the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NTASKS</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">NTHRDS</span><span class="o">=</span><span class="mi">4</span>
+</pre></div>
+</div>
+<p>To change the <strong>NTASKS</strong> setting for only the atmosphere component (ATM) to 8, use this command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NTASKS_ATM</span><span class="o">=</span><span class="mi">8</span>
+</pre></div>
+</div>
+</section>
 <section id="workflow">
 <h2><a class="toc-backref" href="#id5" role="doc-backlink">Workflow</a><a class="headerlink" href="#workflow" title="Link to this heading"></a></h2>
-<p>Depending on the model and case configuration, a submission may consist of multiple jobs.</p>
+<p>Depending on the model and case configuration, a submission may consist of multiple jobs. This can be checked by running <code class="docutils literal notranslate"><span class="pre">./preview_run</span></code> which will show each job that will be submitted.</p>
 <p>There are some variables, e.g., <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code>, <code class="docutils literal notranslate"><span class="pre">JOB_QUEUE</span></code>, that can exist in multiple groups. For example, <code class="docutils literal notranslate"><span class="pre">case.run</span></code> and <code class="docutils literal notranslate"><span class="pre">case.st_archive</span></code>.</p>
 <p>To change <code class="docutils literal notranslate"><span class="pre">JOB_WALLCLOCK_TIME</span></code> for all groups to 2 hours, use</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span><span class="nv">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="m">02</span>:00:00
@@ -268,7 +263,7 @@ BATCH<span class="w"> </span>INFO:
 <p>Upon successful completion of the run, <code class="docutils literal notranslate"><span class="pre">case.run</span></code> will:</p>
 <ul class="simple">
 <li><p>Put timing information in <strong>$CASEROOT/timing</strong>.
-See <a class="reference internal" href="timers.html#model-timing-data"><span class="std std-ref">model timing data</span></a> for details.</p></li>
+See <span class="xref std std-ref">model timing data</span> for details.</p></li>
 <li><p>Submit the short-term archiver script <code class="docutils literal notranslate"><span class="pre">case.st_archive</span></code> to the batch queue if <code class="docutils literal notranslate"><span class="pre">$DOUT_S</span></code> is TRUE. Short-term archiving will copy and move component history, log, diagnostic, and restart files from <code class="docutils literal notranslate"><span class="pre">$RUNDIR</span></code> to the short-term archive directory <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT</span></code>.</p></li>
 <li><p>Resubmit <code class="docutils literal notranslate"><span class="pre">case.run</span></code> if <code class="docutils literal notranslate"><span class="pre">$RESUBMIT</span></code> &gt; 0.</p></li>
 </ul>
@@ -340,7 +335,7 @@ model years/day, set <code class="docutils literal notranslate"><span class="pre
 <p>The case initialization type is set using the <code class="docutils literal notranslate"><span class="pre">$RUN_TYPE</span></code> variable in
 <strong>env_run.xml</strong>. A CIME run can be initialized in one of three ways:</p>
 <section id="startup">
-<h4><a class="toc-backref" href="#id12" role="doc-backlink">startup</a><a class="headerlink" href="#startup" title="Link to this heading"></a></h4>
+<h4><a class="toc-backref" href="#id12" role="doc-backlink">Startup</a><a class="headerlink" href="#startup" title="Link to this heading"></a></h4>
 <p>In a startup run (the default), all components are initialized using
 baseline states. These states are set independently by each component
 and can include the use of restart files, initial files, external
@@ -351,7 +346,7 @@ In a startup initialization, the ocean model does not start until the second
 ocean coupling step.</p>
 </section>
 <section id="branch">
-<h4><a class="toc-backref" href="#id13" role="doc-backlink">branch</a><a class="headerlink" href="#branch" title="Link to this heading"></a></h4>
+<h4><a class="toc-backref" href="#id13" role="doc-backlink">Branch</a><a class="headerlink" href="#branch" title="Link to this heading"></a></h4>
 <p>In a branch run, all components are initialized using a consistent
 set of restart files from a previous run (determined by the
 <code class="docutils literal notranslate"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal notranslate"><span class="pre">$RUN_REFDATE</span></code> variables in <strong>env_run.xml</strong>).
@@ -375,7 +370,7 @@ previous run, then place those files in the <code class="docutils literal notran
 See <span class="xref std std-ref">Starting from a reference case</span>.</p>
 </section>
 <section id="hybrid">
-<h4><a class="toc-backref" href="#id14" role="doc-backlink">hybrid</a><a class="headerlink" href="#hybrid" title="Link to this heading"></a></h4>
+<h4><a class="toc-backref" href="#id14" role="doc-backlink">Hybrid</a><a class="headerlink" href="#hybrid" title="Link to this heading"></a></h4>
 <p>A hybrid run is initialized like a startup but it uses
 initialization data sets from a previous case. It is similar
 to a branch run with relaxed restart constraints.

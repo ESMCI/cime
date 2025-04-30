@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.test\_unit\_case\_setup.create\_machines\_dir
-========================================================
-
-.. currentmodule:: CIME.tests.test_unit_case_setup
-
-.. autofunction:: create_machines_dir

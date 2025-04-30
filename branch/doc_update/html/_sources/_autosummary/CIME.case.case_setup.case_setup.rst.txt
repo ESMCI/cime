@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.case\_setup.case\_setup
-=================================
-
-.. currentmodule:: CIME.case.case_setup
-
-.. autofunction:: case_setup

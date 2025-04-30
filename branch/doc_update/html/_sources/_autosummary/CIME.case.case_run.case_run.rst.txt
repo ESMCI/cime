@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.case\_run.case\_run
-=============================
-
-.. currentmodule:: CIME.case.case_run
-
-.. autofunction:: case_run

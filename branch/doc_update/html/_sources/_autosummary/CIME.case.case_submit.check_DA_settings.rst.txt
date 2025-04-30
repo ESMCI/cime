@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.case.case\_submit.check\_DA\_settings
-==========================================
-
-.. currentmodule:: CIME.case.case_submit
-
-.. autofunction:: check_DA_settings

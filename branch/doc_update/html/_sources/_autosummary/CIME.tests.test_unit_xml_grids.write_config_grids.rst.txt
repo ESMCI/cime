@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.tests.test\_unit\_xml\_grids.write\_config\_grids
-======================================================
-
-.. currentmodule:: CIME.tests.test_unit_xml_grids
-
-.. autofunction:: write_config_grids
