@@ -41,7 +41,6 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    # "sphinx.ext.viewcode",
     "sphinx.ext.linkcode",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
