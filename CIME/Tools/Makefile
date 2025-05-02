@@ -88,23 +88,6 @@ else
    CPPDEFS += -DNDEBUG
 endif
 
-
-#ifeq ($(strip $(USE_FTORCH)), True)
-#  FTORCH_LOC :=  /glade/u/home/addisus/pytorch_oneapi2024_2_1/ 
-#  INCLDIR += -I$(FTORCH_LOC)/include/ftorch
-#  SLIBS += -L$(FTORCH_LOC)/lib64 -lftorch
-#  LDFLAGS += -Wl,-rpath,$(FTORCH_LOC)/lib64
-#  FFLAGS += -module $(FTORCH_LOC)/include/ftorch
-#endif
-
-#ifeq ($(strip $(USE_FTORCH)), True)
-#	FTORCH_PREFIX := /glade/u/home/wchapman/FTorch/bin/oneapi_2023.2.1_torch_2.1_native/
-#	INCLDIR += -I$(FTORCH_PREFIX)/include/ftorch
-#	SLIBS += -L$(FTORCH_PREFIX)/lib64 -lftorch
-#	LDFLAGS += -Wl,-rpath,$(FTORCH_PREFIX)/lib64
-#endif
-
-
 # USE_ESMF_LIB is currently only defined in env_build.xml
 ifeq ($(USE_ESMF_LIB), TRUE)
    CPPDEFS += -DUSE_ESMF_LIB
@@ -133,12 +116,11 @@ ifdef USER_INCLDIR
   INCLDIR += $(USER_INCLDIR)
 endif
 
-#FTORCH CALLS NEED TO BE HERE
-ifeq ($(USE_FTORCH), TRUE)
+ifdef USE_FTORCH
+  FTORCH_LIBDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch
   CPPDEFS  += -DUSE_FTORCH
   INCLDIR  += -I$(FTORCH_PREFIX)/include/ftorch
-  SLIBS    += -L$(FTORCH_PREFIX)/lib64 -lftorch
-  LDFLAGS  += -Wl,-rpath,$(FTORCH_PREFIX)/lib64
+  LDFLAGS  += -Wl,-rpath,$(FTORCH_PREFIX)/lib64 -L$(FTORCH_PREFIX)/lib64 -lftorch
 endif
 
 ifdef FSTDLIB_PKGCONFIG
@@ -768,6 +750,11 @@ GLCMakefile:
 $(PIO_LIBDIR)/Makefile:
 	cd $(PIO_LIBDIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(PIO_SRC_DIR)
+
+$(FTORCH_LIBDIR)/Makefile:
+	cd $(FTORCH_LIBDIR)
+	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(FTORCH_SRC_DIR)
+
 
 #-------------------------------------------------------------------------------
 # Build & include dependency files
