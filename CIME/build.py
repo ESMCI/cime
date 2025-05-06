@@ -63,6 +63,7 @@ _CMD_ARGS_FOR_BUILD = (
     "USE_TRILINOS",
     "USE_ALBANY",
     "USE_PETSC",
+    "USE_FTORCH",
 )
 
 
