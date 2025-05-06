@@ -202,6 +202,17 @@
         <!-- PROJECT_REQUIRED: Does this machine require a project to be specified to
              the batch system?  See PROJECT above -->
         <xs:element ref="PROJECT_REQUIRED" minOccurs="0" maxOccurs="1"/>
+        <!-- Root directory of libtorch (optional) -->
+        
+        <xs:element name="TORCH_DIR" minOccurs="0" maxOccurs="1" >
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute ref="compiler"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>  
         <!-- mpirun: The mpi exec to start a job on this machine
              see detail below-->
         <xs:element ref="mpirun" minOccurs="1" maxOccurs="unbounded"/>

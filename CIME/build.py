@@ -64,6 +64,7 @@ _CMD_ARGS_FOR_BUILD = (
     "USE_ALBANY",
     "USE_PETSC",
     "USE_FTORCH",
+    "TORCH_DIR",
 )
 
 
