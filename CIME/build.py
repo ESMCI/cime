@@ -757,8 +757,7 @@ def _build_libraries(
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
 
-    if case.get_value("USE_FTORCH"):
-        libs.append("FTorch")
+    libs.append("FTorch")
 
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)

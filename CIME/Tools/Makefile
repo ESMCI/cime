@@ -116,11 +116,14 @@ ifdef USER_INCLDIR
   INCLDIR += $(USER_INCLDIR)
 endif
 
+FTORCH_DIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch/
+INCLDIR  += -I$(FTORCH_DIR)/modules
+
 ifeq ($(strip $(USE_FTORCH)), TRUE)
-  FTORCH_LIBDIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch
   CPPDEFS  += -DUSE_FTORCH
-  INCLDIR  += -I$(FTORCH_LIBDIR)/modules
-  SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_LIBDIR) -L$(FTORCH_LIBDIR) -lftorch
+  SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+else
+  SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch
 endif
 
 ifdef FSTDLIB_PKGCONFIG
@@ -751,10 +754,9 @@ $(PIO_LIBDIR)/Makefile:
 	cd $(PIO_LIBDIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(PIO_SRC_DIR)
 
-$(FTORCH_LIBDIR)/Makefile:
-	cd $(FTORCH_LIBDIR)
+FTMakefile:
+	cd $(FTORCH_DIR)
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(FTORCH_SRC_DIR)
-
 
 #-------------------------------------------------------------------------------
 # Build & include dependency files
