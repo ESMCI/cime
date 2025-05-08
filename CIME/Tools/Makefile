@@ -117,13 +117,14 @@ ifdef USER_INCLDIR
 endif
 
 FTORCH_DIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch/
-INCLDIR  += -I$(FTORCH_DIR)/modules
 
 ifeq ($(strip $(USE_FTORCH)), TRUE)
   CPPDEFS  += -DUSE_FTORCH
   SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  INCLDIR  += -I$(FTORCH_DIR)/modules
 else
   SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch
+  INCLDIR  += -I$(FTORCH_DIR)
 endif
 
 ifdef FSTDLIB_PKGCONFIG
