@@ -1,29 +1,37 @@
-# cime
-Common Infrastructure for Modeling the Earth
+# CIME
+The Common Infrastructure for Modeling the Earth (CIME - pronounced “SEAM”) provides two core features; a Case Control System (CCS) for configuring, compiling and executing Earth System Models, and a framework for system testing an Earth System Model.
 
-CIME, pronounced "SEAM", primarily consists of a Case Control System that supports the configuration, compilation, execution, system testing and unit testing of an Earth System Model. The two main components of the Case Control System are:
+> CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
 
-1. Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.
-2. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
-
-CIME does **not** contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.
-
-CIME is currently used by the
-<a href="http://www2.cesm.ucar.edu">Community Earth System Model </a>
-     (CESM) and the <a href="https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model">
-Energy Exascale Earth System Model</a> (E3SM).
+CIME is currently used by:
+- [Community Earth System Model](https://www.cesm.ucar.edu/)
+- [Energy Exascale Earth System Model](https://eesm.science.energy.gov/projects/energy-exascale-earth-system-model-e3sm)
 
 # Documentation
-
-See <a href="http://esmci.github.io/cime">esmci.github.io/cime</a>
+See [esmci.github.io](https://esmci.github.io/cime)
 
 # Developers
 
 ## Lead Developers
-Jim Edwards (NCAR), Jim Foucar (SNL)
+- Jim Edwards (NCAR)
+- Jim Foucar (SNL)
 
 ## Also Developed by
-Alice Bertini (NCAR), Jason Boutte (LLNL), Tony Craig (NCAR), Michael Deakin (SNL), Chris Fischer (NCAR), Erich Foster (SNL), Steve Goldhaber (NCAR), Robert Jacob (ANL), Mike Levy (NCAR), Bill Sacks (NCAR), Andrew Salinger (SNL), Sean Santos (NCAR), Jason Sarich (ANL), Mariana Vertenstein (NCAR), Andreas Wilke (ANL).
+- Alice Bertini (NCAR)
+- Jason Boutte (LLNL)
+- Tony Craig (NCAR)
+- Michael Deakin (SNL)
+- Chris Fischer (NCAR)
+- Erich Foster (SNL)
+- Steve Goldhaber (NCAR)
+- Robert Jacob (ANL)
+- Mike Levy (NCAR)
+- Bill Sacks (NCAR)
+- Andrew Salinger (SNL)
+- Sean Santos (NCAR)
+- Jason Sarich (ANL)
+- Mariana Vertenstein (NCAR)
+- Andreas Wilke (ANL).
 
 # Acknowledgements
 
@@ -32,7 +40,7 @@ of NSF's Division of Atmospheric and Geospace Sciences.
 
 # License
 
-CIME is free software made available under the BSD License. For details see the LICENSE file.
+CIME is free software made available under the BSD License. For details see the LICENSE.txt file.
 
 # Digital Object Identifier
 
