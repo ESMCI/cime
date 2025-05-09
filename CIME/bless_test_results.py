@@ -9,7 +9,7 @@ from CIME.utils import (
 )
 from CIME.config import Config
 from CIME.test_status import *
-from CIME.hist_utils import generate_baseline, compare_baseline
+from CIME.hist_utils import generate_baseline, compare_baseline, NO_ORIGINAL
 from CIME.case import Case
 from CIME.test_utils import get_test_status_files
 from CIME.baselines.performance import (
@@ -180,6 +180,18 @@ def bless_history(test_name, case, baseline_name, baseline_root, report_only, fo
             if not report_only and (
                 force or input("Update this diff (y/n)? ").upper() in ["Y", "YES"]
             ):
+                # Sometimes, in order to get things passing, files have to be removed
+                # from the baseline area.
+                for line in cmp_comments.splitlines():
+                    if NO_ORIGINAL in line:
+                        file_to_remove = (
+                            line.split(NO_ORIGINAL)[0].split()[-1].strip("'")
+                        )
+                        logger.info(
+                            "Removing stale baseline file {}".format(file_to_remove)
+                        )
+                        os.remove(os.path.join(baseline_full_dir, file_to_remove))
+
                 gen_result, gen_comments = generate_baseline(
                     case, baseline_dir=baseline_full_dir
                 )
