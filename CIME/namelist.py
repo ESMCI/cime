@@ -862,7 +862,7 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
     All names and values returned are ultimately unicode strings. E.g. a value
     of "6*2" is returned as that string; it is not converted to 6 copies of the
     Python integer `2`. Null values are returned as the empty string ("").
-    
+
     """
     expect(
         in_file is not None or text is not None,

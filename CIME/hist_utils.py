@@ -421,7 +421,7 @@ def compare_test(case, suffix1, suffix2, ignore_fieldlist_diffs=False):
         case (CIME.case.Case): The case containing the hist files to compare
         suffix1 (str): The suffix that identifies the first batch of hist files
         suffix1 (str): The suffix that identifies the second batch of hist files
-        ignore_fieldlist_diffs (bool): If True, then: If the two cases differ only in their 
+        ignore_fieldlist_diffs (bool): If True, then: If the two cases differ only in their
         field lists (i.e., all shared fields are bit-for-bit, but one case has some
         diagnostic fields that are missing from the other case), treat the two cases as
         identical.
@@ -462,12 +462,12 @@ def cprnc(
         file2 (str): The full or relative path of the second file.
         case (CIME.case.Case): the case containing the files.
         rundir (str): The rundir for the case
-        outfile_suffix (str): If non-blank, then the output file name ends with this 
-        suffix (with a '.' added before the given suffix). Use None to avoid 
+        outfile_suffix (str): If non-blank, then the output file name ends with this
+        suffix (with a '.' added before the given suffix). Use None to avoid
         permissions issues in the case dir.
         ignore_fieldlist_diffs (bool): If True, then: If the two cases differ only in
-        their field lists (i.e., all shared fields are bit-for-bit, but one case has 
-        some diagnostic fields that are missing from the other case), treat the two 
+        their field lists (i.e., all shared fields are bit-for-bit, but one case has
+        some diagnostic fields that are missing from the other case), treat the two
         cases as identical.
 
     Returns:
@@ -475,7 +475,7 @@ def cprnc(
         files_match is True if the files matched, False otherwise.
         output_filename is the name of the cprnc output file or None if outfile_suffix is None.
         comment is either an empty string or one of the module-level constants beginning with CPRNC (e.g., CPRNC_FIELDLISTS_DIFFER)
-        
+
     """
     if not cprnc_exe:
         cprnc_exe = case.get_value("CCSM_CPRNC")
@@ -560,7 +560,7 @@ def cprnc(
 
 def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
     """Compare the current test output to a baseline result
-    
+
     Args:
         case - The case containing the hist files to be compared against baselines
         baseline_dir - Optionally, specify a specific baseline dir, otherwise it will be computed from case config

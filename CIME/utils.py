@@ -1033,7 +1033,7 @@ def parse_test_name(test_name):
     Traceback (most recent call last):
         ...
     CIMEError: ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV
-    
+
     """
     rv = [None] * 7
     num_dots = test_name.count(".")

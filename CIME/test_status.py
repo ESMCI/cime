@@ -294,7 +294,7 @@ class TestStatus(object):
             skip_passes: if True, do not output lines that have a PASS status
             skip_phase_list: list of phases (from the phases given by ALL_PHASES) for which we skip output
             xfails: object of type ExpectedFails, giving expected failures for this test
-            
+
         """
         if skip_phase_list is None:
             skip_phase_list = []

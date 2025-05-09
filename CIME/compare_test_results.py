@@ -8,6 +8,7 @@ from CIME.test_utils import get_test_status_files
 
 import os, logging
 
+
 def append_status_cprnc_log(msg, logfile_name, test_dir):
     try:
         append_status(msg, logfile_name, caseroot=test_dir)
@@ -59,7 +60,7 @@ def compare_test_results(
     hist_only=False,
 ):
     """Compares with baselines for all matching tests
-    
+
     Outputs results for each test to stdout (one line per test); possible status
     codes are: PASS, FAIL, SKIP. (A SKIP denotes a test that did not make it to
     the run phase or a test for which the run phase did not pass: we skip
