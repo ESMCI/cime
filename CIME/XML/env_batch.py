@@ -241,12 +241,12 @@ class EnvBatch(EnvBase):
         mtpn = case.get_value("MAX_TASKS_PER_NODE")
         max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
         if mem_per_task and total_tasks <= mtpn:
-            mem_per_node = total_tasks
+            mem_per_node = total_tasks * mem_per_task
             if mem_per_node < mem_per_task:
                 mem_per_node = mem_per_task
             elif mem_per_node > max_mem_per_node:
                 mem_per_node = max_mem_per_node
-            overrides["mem_per_node"] = int(total_tasks / mtpn * max_mem_per_node)
+            overrides["mem_per_node"] = max( mem_per_node, int(total_tasks / mtpn * max_mem_per_node) )
         elif max_mem_per_node:
             overrides["mem_per_node"] = max_mem_per_node
 
