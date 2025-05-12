@@ -63,6 +63,8 @@ _CMD_ARGS_FOR_BUILD = (
     "USE_TRILINOS",
     "USE_ALBANY",
     "USE_PETSC",
+    "USE_FTORCH",
+    "TORCH_DIR",
 )
 
 
@@ -751,6 +753,8 @@ def _build_libraries(
         libs = ["gptl", "mct", "spio", "csm_share"]
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
+
+    libs.append("FTorch")
 
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
