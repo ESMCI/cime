@@ -63,6 +63,8 @@ _CMD_ARGS_FOR_BUILD = (
     "USE_TRILINOS",
     "USE_ALBANY",
     "USE_PETSC",
+    "USE_FTORCH",
+    "TORCH_DIR",
 )
 
 
@@ -752,6 +754,8 @@ def _build_libraries(
     else:
         libs = ["gptl", "mct", "pio", "csm_share"]
 
+    libs.append("FTorch")
+
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
 
@@ -803,10 +807,6 @@ def _build_libraries(
         else:
             full_lib_path = os.path.join(sharedlibroot, sharedpath, lib)
 
-        # pio build creates its own directory
-        if lib != "pio" and not os.path.isdir(full_lib_path):
-            os.makedirs(full_lib_path)
-
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
         if lib in build_script.keys():
             my_file = build_script[lib]
@@ -814,11 +814,16 @@ def _build_libraries(
             my_file = os.path.join(
                 cimeroot, "CIME", "build_scripts", "buildlib.{}".format(lib)
             )
-        expect(
-            os.path.exists(my_file),
-            "Build script {} for component {} not found.".format(my_file, lib),
-        )
+        if not os.path.exists(my_file):
+            logger.warning(
+                "Build script {} for component {} not found.".format(my_file, lib)
+            )
+            continue
+
         logger.info("Building {} with output to file {}".format(lib, file_build))
+        # pio build creates its own directory
+        if lib != "pio" and not os.path.isdir(full_lib_path):
+            os.makedirs(full_lib_path)
 
         run_sub_or_cmd(
             my_file,
