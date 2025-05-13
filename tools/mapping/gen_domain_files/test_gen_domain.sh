@@ -54,20 +54,20 @@ mkdir -p builds
 cd builds
 
 # Gen env_mach_specific
-${cime_root}/tools/configure --mpilib mpi-serial >> ${test_log} 2>&1
+${cime_root}/CIME/scripts/configure --mpilib mpi-serial >> ${test_log} 2>&1
 if [ ! -f .env_mach_specific.sh ]; then
     # try without mpi-serial flag
-    echo "ERROR running ${cime_root}/tools/configure" >&2
+    echo "ERROR running ${cime_root}/CIME/scripts/configure" >&2
     echo "It's possible mpi-serial doesn't work on this machine. Trying again with default" >&2
-    ${cime_root}/tools/configure --clean >> ${test_log} 2>&1
-    (. .env_mach_specific.sh && ${cime_root}/tools/configure --macros-format Makefile) >> ${test_log} 2>&1
+    ${cime_root}/CIME/scripts/configure --clean >> ${test_log} 2>&1
+    (. .env_mach_specific.sh && ${cime_root}/CIME/scripts/configure --macros-format Makefile) >> ${test_log} 2>&1
     if [ ! -f .env_mach_specific.sh ]; then
-        echo "ERROR running ${cime_root}/tools/configure" >&2
+        echo "ERROR running ${cime_root}/CIME/scripts/configure" >&2
         echo "cat ${test_log} for more info" >&2
         exit 1
     fi
 else
-    (. .env_mach_specific.sh && ${cime_root}/tools/configure --macros-format Makefile --mpilib mpi-serial) >> ${test_log} 2>&1
+    (. .env_mach_specific.sh && ${cime_root}/CIME/scripts/configure --macros-format Makefile --mpilib mpi-serial) >> ${test_log} 2>&1
 fi
 
 cp ${cime_root}/tools/mapping/gen_domain_files/src/* .
@@ -81,11 +81,11 @@ fi
 # Build the cprnc executable (for comparison of netcdf files)
 echo "" >> ${test_log}
 echo "Building cprnc in ${PWD}/builds ..." >> ${test_log}
-cp ${cime_root}/tools/cprnc/*.F90 .
-cp ${cime_root}/tools/cprnc/Makefile .
-cp ${cime_root}/tools/cprnc/Depends .
-cp ${cime_root}/tools/cprnc/*.in .
-(. .env_mach_specific.sh && make GENF90=${cime_root}/src/externals/genf90/genf90.pl) >> ${test_log} 2>&1
+cp ${cime_root}/CIME/non_py/cprnc/*.F90 .
+cp ${cime_root}/CIME/non_py/cprnc/Makefile .
+cp ${cime_root}/CIME/non_py/cprnc/Depends .
+cp ${cime_root}/CIME/non_py/cprnc/*.in .
+(. .env_mach_specific.sh && make GENF90=${cime_root}/CIME/non_py/externals/genf90/genf90.pl) >> ${test_log} 2>&1
 if [ ! -f cprnc ]; then
     echo "ERROR building cprnc" >&2
     echo "cat ${test_log} for more info" >&2

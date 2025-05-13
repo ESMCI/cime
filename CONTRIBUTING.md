@@ -62,21 +62,26 @@ We love pull requests from everyone. Fork, then clone the repo:
 
     git clone git@github.com:your-username/CIME.git
 
+Additionally you may need to checkout the submodules with:
+
+    cd CIME
+    git submodule update --init
+
 You will need to install CIME dependencies and edit config files
 to tell CIME about your development machine. See the [CIME users guide](https://esmci.github.io/cime/users_guide/porting-cime.html)
 
-Run the scripts_regression_test:
+Run the scripts_regression_tests:
 
-    cd scripts/lib/CIME/tests
+    cd CIME/tests
     python scripts_regression_tests.py
 
 Alternatively with `pytest`:
 
-    pytest scripts/lib/CIME/tests
+    pytest CIME/tests
 
 Make your change. Add tests for your change. Make the tests pass to the same level as before your changes.
 
-    cd scripts/lib/CIME/tests
+    cd CIME/tests
     python scripts_regression_tests.py
 
 Run [pre-commit](https://pre-commit.com/#usage) before committing changes and submitting a PR.

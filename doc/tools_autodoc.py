@@ -286,8 +286,8 @@ def get_templates(config, doc_dir):
             "os.chdir( '{{ caseroot }}')", "# os.chdir( '{{ caseroot }}')", 1
         )
         content = content.replace(
-            'os.path.join("{{ cimeroot }}", "scripts", "Tools")',
-            'os.path.join("../../../..","scripts", "Tools")',
+            'os.path.join("{{ cimeroot }}", "CIME", "Tools")',
+            'os.path.join("../../../..","CIME", "Tools")',
             1,
         )
         # create a temporary file
