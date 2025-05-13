@@ -38,7 +38,7 @@ OR
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    default_baseline = CIME.utils.get_current_branch(repo=CIME.utils.get_cime_root())
+    default_baseline = CIME.utils.get_current_branch(repo=CIME.utils.get_src_root())
     if default_baseline is not None:
         default_baseline = default_baseline.replace(".", "_").replace(
             "/", "_"
@@ -159,6 +159,10 @@ OR
     )
 
     parser.add_argument(
+        "-q", "--queue", help="Force create_test to use a specific queue."
+    )
+
+    parser.add_argument(
         "--check-throughput",
         action="store_true",
         help="Fail if throughput check fails (fail if tests slow down)",
@@ -171,9 +175,38 @@ OR
     )
 
     parser.add_argument(
+        "--ignore-memleak",
+        action="store_true",
+        help="Do not fail if there are memleaks",
+    )
+
+    parser.add_argument(
+        "--ignore-namelists",
+        action="store_true",
+        help="Do not fail if there are namelist diffs",
+    )
+
+    parser.add_argument(
+        "--ignore-diffs",
+        action="store_true",
+        help="Do not fail if there are history diffs",
+    )
+
+    parser.add_argument(
+        "--save-timing",
+        action="store_true",
+        help="Tell create_test to save timings of tests",
+    )
+
+    parser.add_argument(
         "--pes-file",
         help="Full pathname of an optional pes specification file. The file"
         "\ncan follow either the config_pes.xml or the env_mach_pes.xml format.",
+    )
+
+    parser.add_argument(
+        "--jenkins-id",
+        help="Specify an 'id' for the Jenkins jobs.",
     )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
@@ -243,7 +276,13 @@ OR
         args.update_success,
         args.check_throughput,
         args.check_memory,
+        args.ignore_memleak,
+        args.ignore_namelists,
+        args.ignore_diffs,
+        args.save_timing,
         args.pes_file,
+        args.jenkins_id,
+        args.queue,
     )
 
 
@@ -270,7 +309,13 @@ def _main_func(description):
         update_success,
         check_throughput,
         check_memory,
+        ignore_memleak,
+        ignore_namelists,
+        ignore_diffs,
+        save_timing,
         pes_file,
+        jenkins_id,
+        queue,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -295,7 +340,13 @@ def _main_func(description):
             update_success,
             check_throughput,
             check_memory,
+            ignore_memleak,
+            ignore_namelists,
+            ignore_diffs,
+            save_timing,
             pes_file,
+            jenkins_id,
+            queue,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )

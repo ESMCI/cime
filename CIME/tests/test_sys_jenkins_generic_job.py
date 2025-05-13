@@ -14,9 +14,10 @@ from CIME.tests import base
 
 class TestJenkinsGenericJob(base.BaseTestCase):
     def setUp(self):
-        if utils.get_model() != "e3sm":
-            self.skipTest("Skipping Jenkins tests. E3SM feature")
         super().setUp()
+
+        if self._config.test_mode == "cesm":
+            self.skipTest("Skipping Jenkins tests. E3SM feature")
 
         # Need to run in a subdir in order to not have CTest clash. Name it
         # such that it should be cleaned up by the parent tearDown
@@ -39,7 +40,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             extra_args += " --no-batch"
 
         # Need these flags to test dashboard if e3sm
-        if utils.get_model() == "e3sm" and build_name is not None:
+        if self._config.test_mode == "e3sm" and build_name is not None:
             extra_args += (
                 " -p ACME_test --submit-to-cdash --cdash-build-group=Nightly -c %s"
                 % build_name
@@ -60,18 +61,17 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             self._thread_error = str(e)
 
     def assert_num_leftovers(self, suite):
-        num_tests_in_tiny = len(get_tests.get_test_suite(suite))
+        num_tests_in_suite = len(get_tests.get_test_suite(suite))
 
-        jenkins_dirs = glob.glob(
-            "%s/*%s*/" % (self._jenkins_root, self._baseline_name.capitalize())
-        )  # case dirs
+        case_glob = "%s/*%s*/" % (self._jenkins_root, self._baseline_name.capitalize())
+        jenkins_dirs = glob.glob(case_glob)  # Case dirs
         # scratch_dirs = glob.glob("%s/*%s*/" % (self._testroot, test_id)) # blr/run dirs
 
         self.assertEqual(
-            num_tests_in_tiny,
+            num_tests_in_suite,
             len(jenkins_dirs),
-            msg="Wrong number of leftover directories in %s, expected %d, see %s"
-            % (self._jenkins_root, num_tests_in_tiny, jenkins_dirs),
+            msg="Wrong number of leftover directories in %s, expected %d, see %s. Glob checked %s"
+            % (self._jenkins_root, num_tests_in_suite, jenkins_dirs, case_glob),
         )
 
         # JGF: Can't test this at the moment due to root change flag given to jenkins_generic_job
@@ -95,6 +95,21 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             "cime_test_only_pass"
         )  # jenkins_generic_job should have automatically cleaned up leftovers from prior run
         self.assert_dashboard_has_build(build_name)
+
+    def test_jenkins_generic_job_save_timing(self):
+        self.simple_test(
+            True, "-t cime_test_timing --save-timing -b %s" % self._baseline_name
+        )
+        self.assert_num_leftovers("cime_test_timing")
+
+        jenkins_dirs = glob.glob(
+            "%s/*%s*/" % (self._jenkins_root, self._baseline_name.capitalize())
+        )  # case dirs
+        case = jenkins_dirs[0]
+        result = self.run_cmd_assert_result(
+            "./xmlquery --value SAVE_TIMING", from_dir=case
+        )
+        self.assertEqual(result, "TRUE")
 
     def test_jenkins_generic_job_kill(self):
         build_name = "jenkins_generic_job_kill_%s" % utils.get_timestamp()

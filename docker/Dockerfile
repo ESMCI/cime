@@ -1,56 +1,26 @@
-ARG MAMBAFORGE_VERSION=4.11.0-0
-FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
-
-ARG PNETCDF_VERSION=1.12.1
-ENV PNETCDF_VERSION=${PNETCDF_VERSION}
-
-ARG LIBNETCDF_VERSION=4.8.1
-ENV LIBNETCDF_VERSION=${LIBNETCDF_VERSION}
-
-ARG NETCDF_FORTRAN_VERSION=4.5.4
-ENV NETCDF_FORTRAN_VERSION=${NETCDF_FORTRAN_VERSION}
-
-ARG ESMF_VERSION=8.2.0
-ENV ESMF_VERSION=${ESMF_VERSION}
-
-ARG GCC_VERSION=9.4.*
-ENV GCC_VERSION=${GCC_VERSION}
-
-ENV USER=root
-ENV LOGNAME=root
+ARG BASE_TAG=24.3.0-0
+FROM condaforge/miniforge3:${BASE_TAG} AS base
 
 SHELL ["/bin/bash", "-c"]
 
-# Install common packages
-RUN mamba install --yes -c conda-forge \
-            cmake \
-            make \
-            wget \
-            curl \
-            subversion \
-            m4 \
-            pytest \
-            pytest-cov\
-            pyyaml \
-            vim \
-            openssh && \
-            rm -rf /opt/conda/pkgs/*
+# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
+RUN mkdir -p \
+    /storage/inputdata/cpl/gridmaps/oQU240 \
+    /storage/inputdata/share/domains \
+    /storage/timings && \
+    wget -O /storage/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
+    wget -O /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
+    wget -O /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 
-# Install cpan packages
-RUN cpan install LibXML::XML Switch
+COPY cime.yaml /cime.yaml
 
-# Install version locked packages
-RUN mamba install --yes -c conda-forge \
-            libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
-            netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
-            esmf=${ESMF_VERSION}=*openmpi* \
-            gcc_linux-64=${GCC_VERSION} \
-            gxx_linux-64=${GCC_VERSION} \
-            openmpi-mpifort \
-            gfortran_linux-64=${GCC_VERSION} && \
-            rm -rf /opt/conda/pkgs/* && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+RUN mamba env update -f /cime.yaml && \
+    rm -rf /opt/conda/pkgs/* && \
+    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
+    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+
+ARG PNETCDF_VERSION=1.12.3
+ENV PNETCDF_VERSION=${PNETCDF_VERSION}
 
 # Build pnetcdf
 RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
@@ -70,15 +40,26 @@ RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
             make install && \
             rm -rf "${PWD}/pnetcdf"
 
-RUN mkdir /root/.cime
+ARG CIME_BRANCH=master
+ARG CIME_REPO=https://github.com/esmci/cime
 
-COPY config_machines.xml /root/.cime/
-COPY docker.cmake /root/.cime/
+# Separate layer, it's most likely to change
+RUN git clone -b ${CIME_BRANCH} ${CIME_REPO} /src/cime
+
+# General variables
+ENV USER=root
+ENV LOGNAME=root
+ENV ESMFMKFILE=/opt/conda/lib/esmf.mk
+ENV SRC_PATH=/src
+
+WORKDIR /src
+
+COPY .cime /root/.cime
 COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-FROM base as slurm
+FROM base AS slurm
 
 RUN apt-get update && \
             DEBIAN_FRONTEND=noninteractive \
@@ -91,14 +72,14 @@ COPY slurm/slurm.conf /etc/slurm-llnl/
 COPY slurm/config_batch.xml /root/.cime/
 COPY slurm/entrypoint_batch.sh /entrypoint_batch.sh
 
-FROM base as pbs
+FROM base AS pbs
 
 RUN apt-get update && \
             DEBIAN_FRONTEND=noninteractive \
             apt-get install -y --no-install-recommends \
             curl ca-certificates software-properties-common \
             gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev \
-            libical-dev ncurses-dev perl python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
+            libical-dev ncurses-dev python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
             libxext-dev libxft-dev autoconf automake \
             postgresql-12 postgresql-server-dev-all postgresql-contrib \
             expat libedit2 python3 sendmail-bin sudo tcl tk && \

@@ -13,10 +13,9 @@ import traceback, stat, threading, time, glob
 from collections import OrderedDict
 
 from CIME.XML.standard_module_setup import *
-from CIME.get_tests import get_recommended_test_time, get_build_groups
+from CIME.get_tests import get_recommended_test_time, get_build_groups, is_perf_test
+from CIME.status import append_status, append_testlog
 from CIME.utils import (
-    append_status,
-    append_testlog,
     TESTS_FAILED_ERR_CODE,
     parse_test_name,
     get_full_test_name,
@@ -30,7 +29,9 @@ from CIME.utils import (
     get_timestamp,
     get_cime_default_driver,
     clear_folder,
+    CIMEError,
 )
+from CIME.config import Config
 from CIME.test_status import *
 from CIME.XML.machines import Machines
 from CIME.XML.generic_xml import GenericXML
@@ -46,6 +47,7 @@ from CIME.locked_files import lock_file
 from CIME.cs_status_creator import create_cs_status
 from CIME.hist_utils import generate_teststatus
 from CIME.build import post_build
+from CIME.SystemTests.test_mods import find_test_mods
 
 logger = logging.getLogger(__name__)
 
@@ -208,11 +210,13 @@ class TestScheduler(object):
         single_exe=False,
         workflow=None,
         chksum=False,
+        force_rebuild=False,
+        driver=None,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
         self._cime_model = get_model()
-        self._cime_driver = get_cime_default_driver()
+        self._cime_driver = driver if driver is not None else get_cime_default_driver()
         self._save_timing = save_timing
         self._queue = queue
         self._test_data = (
@@ -223,7 +227,11 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
-        self._allow_pnl = allow_pnl
+        self._single_exe = single_exe
+        if self._single_exe:
+            self._allow_pnl = True
+        else:
+            self._allow_pnl = allow_pnl
         self._non_local = non_local
         self._build_groups = []
         self._workflow = workflow
@@ -233,7 +241,9 @@ class TestScheduler(object):
 
         self._machobj = Machines(machine=machine_name)
 
-        if get_model() == "e3sm":
+        self._config = Config.instance()
+
+        if self._config.calculate_mode_build_cost:
             # Current build system is unlikely to be able to productively use more than 16 cores
             self._model_build_cost = min(
                 16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
@@ -284,6 +294,7 @@ class TestScheduler(object):
         )
 
         self._clean = clean
+
         self._namelists_only = namelists_only
 
         self._walltime = walltime
@@ -352,7 +363,7 @@ class TestScheduler(object):
                     "Use -o to avoid this error".format(existing_baselines),
                 )
 
-        if self._cime_model == "e3sm":
+        if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
 
         # This is the only data that multiple threads will simultaneously access
@@ -389,6 +400,9 @@ class TestScheduler(object):
         if use_existing:
             for test in self._tests:
                 with TestStatus(self._get_test_dir(test)) as ts:
+                    if force_rebuild:
+                        ts.set_status(SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS)
+
                     for phase, status in ts:
                         if phase in CORE_PHASES:
                             if status in [TEST_PEND_STATUS, TEST_FAIL_STATUS]:
@@ -434,8 +448,8 @@ class TestScheduler(object):
 
         # Setup build groups
         if single_exe:
-            self._build_groups = [self._tests]
-        elif self._cime_model == "e3sm":
+            self._build_groups = [tuple(self._tests.keys())]
+        elif self._config.share_exes:
             # Any test that's in a shared-enabled suite with other tests should share exes
             self._build_groups = get_build_groups(self._tests)
         else:
@@ -638,6 +652,7 @@ class TestScheduler(object):
         mpilib = None
         ninst = 1
         ncpl = 1
+        driver = self._cime_driver
         if case_opts is not None:
             for case_opt in case_opts:  # pylint: disable=not-an-iterable
                 if case_opt.startswith("M"):
@@ -657,53 +672,35 @@ class TestScheduler(object):
                 elif case_opt.startswith("P"):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
-                elif case_opt.startswith("G"):
-                    ngpus_per_node = case_opt[1:]
-                    create_newcase_cmd += " --ngpus-per-node {}".format(ngpus_per_node)
                 elif case_opt.startswith("V"):
-                    self._cime_driver = case_opt[1:]
-                    create_newcase_cmd += " --driver {}".format(self._cime_driver)
+                    driver = case_opt[1:]
+
+        create_newcase_cmd += " --driver {}".format(driver)
 
         if (
             "--ninst" in create_newcase_cmd
             and not "--multi-driver" in create_newcase_cmd
         ):
             if "--driver nuopc" in create_newcase_cmd or (
-                "--driver" not in create_newcase_cmd and self._cime_driver == "nuopc"
+                "--driver" not in create_newcase_cmd and driver == "nuopc"
             ):
                 expect(False, "_N option not supported by nuopc driver, use _C instead")
 
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "
 
-            for one_test_mod in test_mods:  # pylint: disable=not-an-iterable
-                if one_test_mod.find("/") != -1:
-                    (component, modspath) = one_test_mod.split("/", 1)
-                else:
-                    error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
-                    self._log_output(test, error)
-                    return False, error
+            try:
+                test_mods_paths = find_test_mods(self._cime_driver, test_mods)
+            except CIMEError as e:
+                error = f"{e}"
 
-                files = Files(comp_interface=self._cime_driver)
-                testmods_dir = files.get_value(
-                    "TESTS_MODS_DIR", {"component": component}
-                )
-                test_mod_file = os.path.join(testmods_dir, component, modspath)
-                # if no testmod is found check if a usermod of the same name exists and
-                # use it if it does.
-                if not os.path.exists(test_mod_file):
-                    usermods_dir = files.get_value(
-                        "USER_MODS_DIR", {"component": component}
-                    )
-                    test_mod_file = os.path.join(usermods_dir, modspath)
-                    if not os.path.exists(test_mod_file):
-                        error = "Missing testmod file '{}', checked {} and {}".format(
-                            modspath, testmods_dir, usermods_dir
-                        )
-                        self._log_output(test, error)
-                        return False, error
+                self._log_output(test, error)
 
-                create_newcase_cmd += "{} ".format(test_mod_file)
+                return False, error
+            else:
+                test_mods_paths = " ".join(test_mods_paths)
+
+                create_newcase_cmd += f"{test_mods_paths}"
 
         # create_test mpilib option overrides default but not explicitly set case_opt mpilib
         if mpilib is None and self._mpilib is not None:
@@ -727,7 +724,7 @@ class TestScheduler(object):
             create_newcase_cmd += " --walltime {}".format(self._walltime)
         else:
             # model specific ways of setting time
-            if self._cime_model == "e3sm":
+            if self._config.sort_tests:
                 recommended_time = _get_time_est(test, self._baseline_root)
 
                 if recommended_time is not None:
@@ -763,9 +760,16 @@ class TestScheduler(object):
         test_dir = self._get_test_dir(test)
         envtest = EnvTest(test_dir)
 
+        # Find driver. It may be different for the current test if V testopt is used
+        driver = self._cime_driver
+        if case_opts is not None:
+            for case_opt in case_opts:  # pylint: disable=not-an-iterable
+                if case_opt.startswith("V"):
+                    driver = case_opt[1:]
+
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
-        files = Files(comp_interface=self._cime_driver)
+        files = Files(comp_interface=driver)
         ufs_driver = os.environ.get("UFS_DRIVER")
         attribute = None
         if ufs_driver:
@@ -773,13 +777,11 @@ class TestScheduler(object):
 
         drv_config_file = files.get_value("CONFIG_CPL_FILE", attribute=attribute)
 
-        if self._cime_driver == "nuopc" and not os.path.exists(drv_config_file):
+        if driver == "nuopc" and not os.path.exists(drv_config_file):
             drv_config_file = files.get_value("CONFIG_CPL_FILE", {"component": "cpl"})
         expect(
             os.path.exists(drv_config_file),
-            "File {} not found, cime driver {}".format(
-                drv_config_file, self._cime_driver
-            ),
+            "File {} not found, cime driver {}".format(drv_config_file, driver),
         )
 
         drv_comp = Component(drv_config_file, "CPL")
@@ -904,7 +906,9 @@ class TestScheduler(object):
                 elif opt.startswith("A"):
                     # A option is for testing in ASYNC IO mode, only available with nuopc driver and pio2
                     envtest.set_test_parameter("PIO_ASYNC_INTERFACE", "TRUE")
-                    envtest.set_test_parameter("CIME_DRIVER", "nuopc")
+                    expect(
+                        driver == "nuopc", "ASYNC IO mode only works with nuopc driver"
+                    )
                     envtest.set_test_parameter("PIO_VERSION", "2")
                     match = re.match("A([0-9]+)x?([0-9])*", opt)
                     envtest.set_test_parameter("PIO_NUMTASKS_CPL", match.group(1))
@@ -937,7 +941,7 @@ class TestScheduler(object):
             if self._output_root is None:
                 self._output_root = case.get_value("CIME_OUTPUT_ROOT")
             # if we are running a single test we don't need sharedlibroot
-            if len(self._tests) > 1 and self._cime_model != "e3sm":
+            if len(self._tests) > 1 and self._config.common_sharedlibroot:
                 case.set_value(
                     "SHAREDLIBROOT",
                     os.path.join(
@@ -946,7 +950,10 @@ class TestScheduler(object):
                 )
             envtest.set_initial_values(case)
             case.set_value("TEST", True)
-            case.set_value("SAVE_TIMING", self._save_timing)
+            if is_perf_test(test):
+                case.set_value("SAVE_TIMING", True)
+            else:
+                case.set_value("SAVE_TIMING", self._save_timing)
 
             # handle single-exe here, all cases will use the EXEROOT from
             # the first case in the build group
@@ -987,10 +994,25 @@ class TestScheduler(object):
                 from_dir=test_dir,
                 env=env,
             )
-            expect(
-                cmdstat in [0, TESTS_FAILED_ERR_CODE],
-                "Fatal error in case.cmpgen_namelists: {}".format(output),
-            )
+            try:
+                expect(
+                    cmdstat in [0, TESTS_FAILED_ERR_CODE],
+                    "Fatal error in case.cmpgen_namelists: {}".format(output),
+                )
+            except Exception:
+                self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+                raise
+
+        if self._single_exe:
+            with Case(self._get_test_dir(test), read_only=False) as case:
+                tests = Tests()
+
+                try:
+                    tests.support_single_exe(case)
+                except Exception:
+                    self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+
+                    raise
 
         return rv
 
@@ -1122,7 +1144,7 @@ class TestScheduler(object):
             return total_pes
 
         elif phase == SHAREDLIB_BUILD_PHASE:
-            if self._cime_model != "e3sm":
+            if self._config.serialize_sharedlib_builds:
                 # Will force serialization of sharedlib builds
                 # TODO - instead of serializing, compute all library configs needed and build
                 # them all in parallel
@@ -1372,7 +1394,7 @@ class TestScheduler(object):
                     os.stat(cs_submit_file).st_mode | stat.S_IXUSR | stat.S_IXGRP,
                 )
 
-            if self._cime_model == "cesm":
+            if self._config.use_testreporter_template:
                 template_file = os.path.join(template_path, "testreporter.template")
                 template = open(template_file, "r").read()
                 template = template.replace("<PATH>", get_tools_path())
@@ -1394,6 +1416,7 @@ class TestScheduler(object):
         check_throughput=False,
         check_memory=False,
         ignore_namelists=False,
+        ignore_diffs=False,
         ignore_memleak=False,
     ):
         ###########################################################################
@@ -1418,8 +1441,10 @@ class TestScheduler(object):
 
         expect(threading.active_count() == 1, "Leftover threads?")
 
+        config = Config.instance()
+
         # Copy TestStatus files to baselines for tests that have already failed.
-        if get_model() == "cesm":
+        if config.baseline_store_teststatus:
             for test in self._tests:
                 status = self._get_test_data(test)[1]
                 if (
@@ -1447,6 +1472,7 @@ class TestScheduler(object):
             check_throughput=check_throughput,
             check_memory=check_memory,
             ignore_namelists=ignore_namelists,
+            ignore_diffs=ignore_diffs,
             ignore_memleak=ignore_memleak,
             no_run=self._no_run,
             expect_test_complete=expect_test_complete,

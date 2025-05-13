@@ -51,11 +51,11 @@ Primarily, the statistical analysis of the climates is done through [EVV](https:
 which will generate a portable test website to describe the results (pass or fail) in detail (see the extended output
 section below).
 
-For E3SM supported machines, the `e3sm_simple` conda environment is provided for these tests and includes the `EVV`
-conda package. You can activate the `e3sm_simple` environment in the same way as `e3sm_unified` environment:
+For E3SM supported machines, the `cime_env` conda environment is provided for these tests and includes the `EVV`
+conda package. You can activate the `cime_env` environment in the same way as `e3sm_unified` environment:
 
 ```
-source <activate_path>/load_latest_e3sm_simple.sh
+source <activate_path>/load_latest_cime_env.sh
 ```
 
 where `<activate_path>` is the machine-specific location of the activation script as described on this confluence page:
@@ -63,52 +63,52 @@ where `<activate_path>` is the machine-specific location of the activation scrip
 https://acme-climate.atlassian.net/wiki/spaces/EIDMG/pages/780271950/Diagnostics+and+Analysis+Quickstart#DiagnosticsandAnalysisQuickstart-Accessingmetapackagesoftwarebyactivatingacondaenvironment
 
 If you don't have access to confluence or are unable to activate this environment for whatever reason, you can install
-your own `e3sm_simple` conda environment with this command (once you have anaconda/miniconda installed):
+your own `cime_env` conda environment with this command (once you have anaconda/miniconda installed):
 
 ```
-conda create -n e3sm-simple -c conda-forge -c e3sm e3sm-simple
+conda create -n cime-env -c conda-forge -c e3sm cime-env
 ```
 
 *NOTE: If you run into problems with getting this environment working on your machine, please open an issue on E3SM's
-Github and tag @jhkennedy, or send Joseph H. Kennedy <kennedyjh@ornl.gov> an email.*
+Github and tag @mkstratos.
 
-After you've activated the `e3sm_simple` environment, change to the `$E3SM/cime/scripts` directory (where `$E3SM` is the
+After you've activated the `cime_env` environment, change to the `$E3SM/cime/scripts` directory (where `$E3SM` is the
 directory containing E3SM). Then to run one of the tests, you will use the `create_test` script like normal.
 To run the `MVK` test and generate a baseline, you would run a command like:
 
 ```
-./create_test MVK_PL.ne4_oQU240.FC5AV1C-L -g --baseline-root "/PATH/TO/BASELINE"
+./create_test MVK_PS.ne4pg2_oQU480.F2010 -g --baseline-root "/PATH/TO/BASELINE"
 ```
 
 And to compare to the baseline, you would run a command like:
 
 ```
-./create_test MVK_PL.ne4_oQU240.FC5AV1C-L -c --baseline-root "/PATH/TO/BASELINE"
+./create_test MVK_PS.ne4pg2_oQU480.F2010 -c --baseline-root "/PATH/TO/BASELINE"
 ```
 
-*NOTE: The MVK run a 20 member ensemble for at least 13 months (using the last 12 for the
+*NOTE: The MVK runs a 30 member ensemble for 13 months (using the last 12 for the
 statistical tests) and, depending on the machine, may take some fiddling to execute within a particular
 queue's wallclock time limit. You may want to over-ride the requested walltime using `--walltime HH:MM:SS`
 option to `create_test`.*
 
-The full set of commands to run the MVK test used on Cori are:
+The full set of commands to run the MVK test used on Perlmutter are:
 
 *Generate a baseline*
 ```
 cd $E3SM/cime/scripts
 
-source /global/project/projectdirs/acme/software/anaconda_envs/load_latest_e3sm_simple.sh
+source /global/common/software/e3sm/anaconda_envs/load_latest_cime_env.sh
 
-./create_test MVK_PL.ne4_ne4.FC5AV1C-L --baseline-root "${CSCRATCH}/baselines" --project acme -g -o --walltime 01:00:00
+./create_test MVK_PS.ne4pg2_oQU480.F2010 --baseline-root "${PSCRATCH}/baselines" --project e3sm -g -o --walltime 01:00:00
 ```
 
 *Compare to a baseline*
 ```
 cd $E3SM/cime/scripts
 
-source /global/project/projectdirs/acme/software/anaconda_envs/load_latest_e3sm_simple.sh
+source /global/common/software/e3sm/anaconda_envs/load_latest_cime_env.sh
 
-./create_test MVK_PL.ne4_ne4.FC5AV1C-L --baseline-root "${CSCRATCH}/baselines" --project acme -c --walltime 01:00:00
+./create_test MVK_PS.ne4pg2_oQU480.F2010 --baseline-root "${PSCRATCH}/baselines" --project e3sm -c --walltime 01:00:00
 ```
 
 ## Test pass/fail and extended output
@@ -117,9 +117,9 @@ When you launch these tests and compare to a baseline, CIME will output the loca
 something like this:
 
 ```
-# On cori-knl:
-./create_test MVK_PL.ne4_ne4.FC5AV1C-L --baseline-root "${CSCRATCH}/baselines" --project acme -c --walltime 01:00:00
-    Creating test directory /global/cscratch1/sd/${USER}/acme_scratch/cori-knl/MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID
+# On pm-cpu:
+./create_test MVK_PS.ne4pg2_oQU480.F2010 --baseline-root "${PSCRATCH}/baselines" --project e3sm -c --walltime 01:00:00
+    Creating test directory ${PSCRATCH}/e3sm_scratch/pm-cpu/MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID
 ```
 
 Let's call that directory `$CASE_DIR`. Once all the jobs are finished, navigate to that directory and
@@ -129,7 +129,7 @@ you can `cat TestStatus` to determine if the test passed or failed by looking at
 cd $CASE_DIR
 cat TestStatus
     ...
-    PASS MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel BASELINE
+    PASS MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel BASELINE
     ...
 
 ```
@@ -139,8 +139,8 @@ To get some basic summary statistics about the test that was run, look in the `T
 ```
 2019-08-14  22:09:02: BASELINE PASS for test 'YYYYMMDD_HHMMSS_RANDOMID'.
     Case: YYYYMMDD_HHMMSS_RANDOMID; Test status: pass; Variables analyzed: 118; Rejecting: 0; Critical value: 13; Ensembles: statistically identical
-    EVV results can be viewed at: /global/cscratch1/sd/${USER}/acme_scratch/cori-knl/MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID/run/MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv/
-    EVV viewing instructions can be found at: https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output
+    EVV results can be viewed at: ${PSCRATCH}/e3sm_scratch/pm-cpu/MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID/run/MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv/
+    EVV viewing instructions can be found at: https://github.com/ESMCI/CIME/blob/master/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output
 ```
 
 EVV reports the location of the output website where you can see the details of the analysis. For
@@ -153,18 +153,18 @@ the website directory to your machine and view it using EVV.
 
 ### View via ssh
 
-For this example, we'll assume the tests were run on Cori at NERSC, but these instructions should be
-easily adaptable to any E3SM supported machine. First, log into Cori via ssh and connect your local
-8080 port to the 8080 port on Cori:
+For this example, we'll assume the tests were run on Perlmutter at NERSC, but these instructions should be
+easily adaptable to any E3SM supported machine. First, log into Perlmutter via ssh and connect your local
+8080 port to the 8080 port on Perlmutter:
 
 ```
-ssh -L 8080:localhost:8080 [USER]@cori.nersc.gov
+ssh -L 8080:localhost:8080 [USER]@saul-p1.nersc.gov
 ```
 
-Activate the `e3sm_simple` environment:
+Activate the `cime_env` environment:
 
 ```
-source /global/project/projectdirs/acme/software/anaconda_envs/load_latest_e3sm_simple.sh
+source /global/common/software/e3sm/anaconda_envs/load_latest_cime_env.sh
 ```
 
 Navigate to the case's run directory:
@@ -176,7 +176,7 @@ pushd ${CASE_DIR}/run
 Then, using EVV, serve the website over port 8080:
 
 ```
-evv -o PGN_P1x1.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv -s 8080
+evv -o PGN_P1x1.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv -s 8080
 ```
 
 Evv will then report to you the URL where you can view the website:
@@ -194,17 +194,17 @@ Evv will then report to you the URL where you can view the website:
     Extended Verification and Validation for Earth System Models
 --------------------------------------------------------------------
 
-  Current run: 2019-08-27 14:16:49
-  User: kennedyj
-  OS Type: Linux 4.12.14-150.27-default
-  Machine: cori07
+  Current run: 2024-03-06 07:56:37
+  User: mek
+  OS Type: Linux 5.14.21-150400.24.81_12.0.87-cray_shasta_c
+  Machine: login31
 
 
 Serving HTTP on 0.0.0.0 port 8080 (http://0.0.0.0:8080/)
 
 View the generated website by navigating to:
 
-    http://0.0.0.0:8080/PGN_P1x1.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv/index.html
+    http://0.0.0.0:8080/PGN_P1x1.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv/index.html
 
 Exit by pressing `ctrl+c` to send a keyboard interrupt.
 ```
@@ -214,20 +214,20 @@ browser to view the output website.
 
 ### View a local copy
 
-For this example, we'll assume the tests were run on Cori at NERSC, but these instructions should be
-easily adaptable to any E3SM supported machine. Install `e3sm_simple` locally and activate it:
+For this example, we'll assume the tests were run on Perlmutter at NERSC, but these instructions should be
+easily adaptable to any E3SM supported machine. Install `cime_env` locally and activate it:
 
 ```
-conda create -n e3sm_simple -c conda-forge -c e3sm e3sm-simple
-conda activate e3sm_simple
+conda create -n cime_env -c conda-forge -c e3sm cime-env
+conda activate cime_env
 ```
 
 Then, copy the website to your local machine, and view it:
 
 ```
 # on your local machine
-scp -r /global/cscratch1/sd/${USER}/acme_scratch/cori-knl/MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID/run/MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv .
-evv -o MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv -s
+scp -r ${PSCRATCH}/e3sm_scratch/pm-cpu/MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID/run/MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv .
+evv -o MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv -s
     --------------------------------------------------------------------
                        ______  __      __ __      __
                       |  ____| \ \    / / \ \    / /
@@ -249,7 +249,7 @@ evv -o MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv -s
 
     View the generated website by navigating to:
 
-        http://0.0.0.0:8000/MVK_PL.ne4_ne4.FC5AV1C-L.cori-knl_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv/index.html
+        http://0.0.0.0:8000/MVK_PS.ne4pg2_oQU480.F2010.pm-cpu_intel.C.YYYYMMDD_HHMMSS_RANDOMID.evv/index.html
 
     Exit by pressing `ctrl+c` to send a keyboard interrupt.
 
@@ -262,6 +262,6 @@ browser to view the output website.
 **Please note:** the output website uses some JavaScript to render elements of the page (especially figures),
 and opening up the `index.html` file using the `file://` protocol in a web browser will likely not work
 well (most browser have stopped allowing access to "local resources" like JavaScript through the `file://`
-protocol). You can view the website by either copying it to a hosted location (`~/WWW` which is hosted at
-`http://users.nccs.gov/~user` on Titan, for example) or copying it to your local machine and running a
+protocol). You can view the website by either copying it to a hosted location (`/global/cfs/projectdirs/e3sm/www/${USER}` which is hosted at
+`https://portal.nersc.gov/project/e3sm/${USER}` on NERSC, for example) or copying it to your local machine and running a
 local http server (included in python!) and viewing it through an address like `http://0.0.0.0:8000/index.html`.

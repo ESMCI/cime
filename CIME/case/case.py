@@ -12,10 +12,13 @@ from CIME.XML.standard_module_setup import *
 
 # pylint: disable=import-error,redefined-builtin
 from CIME import utils
-from CIME.utils import expect, get_cime_root, append_status
+from CIME.config import Config
+from CIME.status import append_status
+from CIME.utils import expect, get_cime_root
 from CIME.utils import convert_to_type, get_model, set_model
 from CIME.utils import get_project, get_charge_account, check_name
 from CIME.utils import get_current_commit, safe_copy, get_cime_default_driver
+from CIME.gitinterface import GitInterface
 from CIME.locked_files import LOCKED_DIR, lock_file
 from CIME.XML.machines import Machines
 from CIME.XML.pes import Pes
@@ -42,6 +45,8 @@ from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
 
 logger = logging.getLogger(__name__)
+
+config = Config.instance()
 
 
 class Case(object):
@@ -71,9 +76,10 @@ class Case(object):
 
     This class extends across multiple files, class members external to this file
     are listed in the following imports
+
     """
 
-    from CIME.case.case_setup import case_setup
+    from CIME.case.case_setup import case_setup, _create_case_repo
     from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
     from CIME.case.case_test import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
@@ -86,11 +92,6 @@ class Case(object):
     )
     from CIME.case.case_run import case_run
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
-    from CIME.case.check_lockedfiles import (
-        check_lockedfile,
-        check_lockedfiles,
-        check_pelayouts_require_rebuild,
-    )
     from CIME.case.preview_namelists import create_dirs, create_namelists
     from CIME.case.check_input_data import (
         check_all_input_data,
@@ -99,7 +100,6 @@ class Case(object):
     )
 
     def __init__(self, case_root=None, read_only=True, record=False, non_local=False):
-
         if case_root is None:
             case_root = os.getcwd()
         expect(
@@ -120,6 +120,7 @@ class Case(object):
         self._env_generic_files = []
         self._files = []
         self._comp_interface = None
+        self.gpu_enabled = False
         self._non_local = non_local
         self.read_xml()
 
@@ -128,6 +129,12 @@ class Case(object):
         # Propagate `srcroot` to `GenericXML` to resolve $SRCROOT
         if srcroot is not None:
             utils.GLOBAL["SRCROOT"] = srcroot
+
+            # srcroot may not be known yet, in the instance of creating
+            # a new case
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+
+            config.load(customize_path)
 
         if record:
             self.record_cmd()
@@ -158,7 +165,7 @@ class Case(object):
         self._component_description = {}
         self._is_env_loaded = False
         self._loaded_envs = None
-
+        self._gitinterface = None
         # these are user_mods as defined in the compset
         # Command Line user_mods are handled seperately
 
@@ -193,8 +200,19 @@ class Case(object):
                             mach == probed_machine,
                             f"Current machine {probed_machine} does not match case machine {mach}.",
                         )
+                if os.path.exists(os.path.join(self.get_value("CASEROOT"), ".git")):
+                    self._gitinterface = GitInterface(
+                        self.get_value("CASEROOT"), logger
+                    )
 
             self.initialize_derived_attributes()
+
+    def get_baseline_dir(self):
+        baseline_root = self.get_value("BASELINE_ROOT")
+
+        baseline_name = self.get_value("BASECMP_CASE")
+
+        return os.path.join(baseline_root, baseline_name)
 
     def check_if_comp_var(self, vid):
         for env_file in self._env_entryid_files:
@@ -215,16 +233,17 @@ class Case(object):
         comp_classes = self.get_values("COMP_CLASSES")
         max_mpitasks_per_node = self.get_value("MAX_MPITASKS_PER_NODE")
         self.async_io = {}
+        asyncio = False
         for comp in comp_classes:
             self.async_io[comp] = self.get_value("PIO_ASYNC_INTERFACE", subgroup=comp)
+            if self.async_io[comp]:
+                asyncio = True
 
-        if any(self.async_io.values()):
-            self.iotasks = 1
-            for comp in comp_classes:
-                if self.async_io[comp]:
-                    self.iotasks = max(
-                        self.iotasks, self.get_value("PIO_NUMTASKS", subgroup=comp)
-                    )
+        self.iotasks = (
+            self.get_value("PIO_ASYNCIO_NTASKS")
+            if self.get_value("PIO_ASYNCIO_NTASKS")
+            else 0
+        )
 
         self.thread_count = env_mach_pes.get_max_thread_count(comp_classes)
 
@@ -247,14 +266,14 @@ class Case(object):
             self.spare_nodes = env_mach_pes.get_spare_nodes(self.num_nodes)
             self.num_nodes += self.spare_nodes
         else:
-            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes) + self.iotasks
+            self.total_tasks = env_mach_pes.get_total_tasks(comp_classes, asyncio)
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
-
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(
                 self.total_tasks, self.thread_count
             )
+
             self.num_nodes += self.spare_nodes
 
         logger.debug(
@@ -265,6 +284,9 @@ class Case(object):
 
         if max_gpus_per_node:
             self.ngpus_per_node = self.get_value("NGPUS_PER_NODE")
+        # update the maximum MPI tasks for a GPU node (could differ from a pure-CPU node)
+        if self.ngpus_per_node > 0:
+            max_mpitasks_per_node = self.get_value("MAX_CPUTASKS_PER_GPU_NODE")
 
         self.tasks_per_numa = int(math.ceil(self.tasks_per_node / 2.0))
         smt_factor = max(
@@ -441,6 +463,15 @@ class Case(object):
         return []
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
+        if item == "GPU_ENABLED":
+            if not self.gpu_enabled:
+                if (
+                    self.get_value("GPU_TYPE") != "none"
+                    and self.get_value("NGPUS_PER_NODE") > 0
+                ):
+                    self.gpu_enabled = True
+            return "true" if self.gpu_enabled else "false"
+
         result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
@@ -450,7 +481,7 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
-                    result = self.get_resolved_value(result)
+                    result = self.get_resolved_value(result, subgroup=subgroup)
                     vtype = env_file.get_type_info(item)
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
@@ -517,13 +548,17 @@ class Case(object):
 
         return result
 
-    def get_resolved_value(self, item, recurse=0, allow_unresolved_envvars=False):
+    def get_resolved_value(
+        self, item, recurse=0, allow_unresolved_envvars=False, subgroup=None
+    ):
         num_unresolved = item.count("$") if item else 0
         recurse_limit = 10
         if num_unresolved > 0 and recurse < recurse_limit:
             for env_file in self._env_entryid_files:
                 item = env_file.get_resolved_value(
-                    item, allow_unresolved_envvars=allow_unresolved_envvars
+                    item,
+                    allow_unresolved_envvars=allow_unresolved_envvars,
+                    subgroup=subgroup,
                 )
             if "$" not in item:
                 return item
@@ -532,6 +567,7 @@ class Case(object):
                     item,
                     recurse=recurse + 1,
                     allow_unresolved_envvars=allow_unresolved_envvars,
+                    subgroup=subgroup,
                 )
 
         return item
@@ -634,24 +670,23 @@ class Case(object):
         )
 
         self.set_lookup_value("COMP_INTERFACE", self._comp_interface)
-        if self._cime_model == "ufs":
-            ufs_driver = os.environ.get("UFS_DRIVER")
-            attribute = None
-            if ufs_driver:
-                attribute = {"component": "nems"}
-            comp_root_dir_cpl = files.get_value(
-                "COMP_ROOT_DIR_CPL", attribute=attribute
-            )
-        elif self._cime_model == "cesm":
-            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
+        if config.set_comp_root_dir_cpl:
+            if config.use_nems_comp_root_dir:
+                ufs_driver = os.environ.get("UFS_DRIVER")
+                attribute = None
+                if ufs_driver:
+                    attribute = {"component": "nems"}
+                comp_root_dir_cpl = files.get_value(
+                    "COMP_ROOT_DIR_CPL", attribute=attribute
+                )
+            else:
+                comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
 
-        if self._cime_model in ("cesm", "ufs"):
             self.set_lookup_value("COMP_ROOT_DIR_CPL", comp_root_dir_cpl)
 
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
         # that has a match for either the alias or the longname in that order
         for component in components:
-
             # Determine the compsets file for this component
             compsets_filename = files.get_value(
                 "COMPSETS_SPEC_FILE", {"component": component}
@@ -1128,10 +1163,10 @@ class Case(object):
         pes_rootpe = {}
         pes_pstrid = {}
         other = {}
+        append = {}
         comment = None
         force_tasks = None
         force_thrds = None
-
         if match1:
             opti_tasks = match1.group(1)
             if opti_tasks.isdigit():
@@ -1157,6 +1192,7 @@ class Case(object):
                 pes_rootpe,
                 pes_pstrid,
                 other,
+                append,
                 comment,
             ) = pesobj.find_pes_layout(
                 self._gridname,
@@ -1184,9 +1220,24 @@ class Case(object):
         mach_pes_obj.add_comment(comment)
 
         if other is not None:
-            logger.info("setting additional fields from config_pes: {}".format(other))
+            logger.info(
+                "setting additional fields from config_pes: {}, append {}".format(
+                    other, append
+                )
+            )
             for key, value in list(other.items()):
-                self.set_value(key, value)
+                ovalue = ""
+                if (
+                    value.startswith('"')
+                    and value.endswith('"')
+                    or value.startswith("'")
+                    and value.endswith("'")
+                ):
+                    value = value[1:-1]
+                if key in append and append[key]:
+                    ovalue = self.get_value(key)
+
+                self.set_value(key, value + " " + ovalue)
 
         totaltasks = []
         for comp_class in self._component_classes:
@@ -1201,7 +1252,6 @@ class Case(object):
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
 
             totaltasks.append((ntasks + rootpe) * nthrds)
-
             mach_pes_obj.set_value(ntasks_str, ntasks)
             mach_pes_obj.set_value(nthrds_str, nthrds)
             mach_pes_obj.set_value(rootpe_str, rootpe)
@@ -1218,9 +1268,11 @@ class Case(object):
             key = "NTASKS_{}".format(compclass)
             if key not in pes_ntasks:
                 mach_pes_obj.set_value(key, 1)
+
             key = "NTHRDS_{}".format(compclass)
-            if compclass not in pes_nthrds:
-                mach_pes_obj.set_value(compclass, 1)
+            if key not in pes_nthrds:
+                mach_pes_obj.set_value(key, 1)
+
         if multi_driver:
             mach_pes_obj.set_value("MULTI_DRIVER", True)
 
@@ -1249,9 +1301,7 @@ class Case(object):
         non_local=False,
         extra_machines_dir=None,
         case_group=None,
-        ngpus_per_node=0,
     ):
-
         expect(
             check_name(compset_name, additional_chars="."),
             "Invalid compset name {}".format(compset_name),
@@ -1332,6 +1382,7 @@ class Case(object):
             and "MPILIB" not in x
             and "MAX_MPITASKS_PER_NODE" not in x
             and "MAX_TASKS_PER_NODE" not in x
+            and "MAX_CPUTASKS_PER_GPU_NODE" not in x
             and "MAX_GPUS_PER_NODE" not in x
         ]
 
@@ -1366,6 +1417,7 @@ class Case(object):
         for name in (
             "MAX_TASKS_PER_NODE",
             "MAX_MPITASKS_PER_NODE",
+            "MAX_CPUTASKS_PER_GPU_NODE",
             "MAX_GPUS_PER_NODE",
         ):
             dmax = machobj.get_value(name, {"compiler": compiler})
@@ -1373,13 +1425,23 @@ class Case(object):
                 dmax = machobj.get_value(name)
             if dmax:
                 self.set_value(name, dmax)
+            elif name == "MAX_CPUTASKS_PER_GPU_NODE":
+                logger.debug(
+                    "Variable {} not defined for machine {} and compiler {}".format(
+                        name, machine_name, compiler
+                    )
+                )
             elif name == "MAX_GPUS_PER_NODE":
                 logger.debug(
-                    "Variable {} not defined for machine {}".format(name, machine_name)
+                    "Variable {} not defined for machine {} and compiler {}".format(
+                        name, machine_name, compiler
+                    )
                 )
             else:
                 logger.warning(
-                    "Variable {} not defined for machine {}".format(name, machine_name)
+                    "Variable {} not defined for machine {} and compiler {}".format(
+                        name, machine_name, compiler
+                    )
                 )
 
         machdir = machobj.get_machines_dir()
@@ -1489,55 +1551,12 @@ class Case(object):
         # Turn on short term archiving as cesm default setting
         model = get_model()
         self.set_model_version(model)
-        if model == "cesm" and not test:
+        if config.default_short_term_archiving and not test:
             self.set_value("DOUT_S", True)
             self.set_value("TIMER_LEVEL", 4)
 
         if test:
             self.set_value("TEST", True)
-
-        # ----------------------------------------------------------------------------------------------------------
-        # Sanity check:
-        #     1. We assume that there is always a string "gpu" in the compiler name if we want to enable GPU
-        #     2. For compilers without the string "gpu" in the name:
-        #        2.1. the ngpus-per-node argument would not update the NGPUS_PER_NODE XML variable, as long as
-        #             the MAX_GPUS_PER_NODE XML variable is not defined (i.e., this argument is not in effect).
-        #        2.2. if the MAX_GPUS_PER_NODE XML variable is defined, then the ngpus-per-node argument
-        #             must be set to 0. Otherwise, an error will be triggered.
-        #     3. For compilers with the string "gpu" in the name:
-        #        3.1. if ngpus-per-node argument is smaller than 0, an error will be triggered.
-        #        3.2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
-        #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
-        #        3.3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
-        # ----------------------------------------------------------------------------------------------------------
-        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if max_gpus_per_node:
-            if "gpu" in compiler:
-                if not ngpus_per_node:
-                    ngpus_per_node = 1
-                    logger.warning(
-                        "Setting ngpus_per_node to 1 for compiler {}".format(compiler)
-                    )
-                expect(
-                    ngpus_per_node > 0,
-                    " ngpus_per_node is expected > 0 for compiler {}; current value is {}".format(
-                        compiler, ngpus_per_node
-                    ),
-                )
-            else:
-                expect(
-                    ngpus_per_node == 0,
-                    " ngpus_per_node is expected = 0 for compiler {}; current value is {}".format(
-                        compiler, ngpus_per_node
-                    ),
-                )
-            if ngpus_per_node >= 0:
-                self.set_value(
-                    "NGPUS_PER_NODE",
-                    ngpus_per_node
-                    if ngpus_per_node <= max_gpus_per_node
-                    else max_gpus_per_node,
-                )
 
         self.initialize_derived_attributes()
 
@@ -1574,6 +1593,13 @@ class Case(object):
             )
 
         env_batch.set_job_defaults(bjobs, self)
+        # Set BATCH_COMMAND_FLAGS to the default values
+
+        for job in bjobs:
+            if test and job[0] == "case.run" or not test and job[0] == "case.test":
+                continue
+            submitargs = env_batch.get_submit_args(self, job[0], resolve=False)
+            self.set_value("BATCH_COMMAND_FLAGS", submitargs, subgroup=job[0])
 
         # Make sure that parallel IO is not specified if total_tasks==1
         if self.total_tasks == 1:
@@ -1680,7 +1706,7 @@ class Case(object):
                     )
                 )
 
-        if get_model() == "e3sm":
+        if config.copy_e3sm_tools:
             if os.path.exists(os.path.join(machines_dir, "syslog.{}".format(machine))):
                 safe_copy(
                     os.path.join(machines_dir, "syslog.{}".format(machine)),
@@ -1692,10 +1718,12 @@ class Case(object):
                     os.path.join(casetools, "mach_syslog"),
                 )
 
-            safe_copy(os.path.join(toolsdir, "e3sm_compile_wrap.py"), casetools)
+            srcroot = self.get_value("SRCROOT")
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+            safe_copy(os.path.join(customize_path, "e3sm_compile_wrap.py"), casetools)
 
         # add archive_metadata to the CASEROOT but only for CESM
-        if get_model() == "cesm":
+        if config.copy_cesm_tools:
             try:
                 exefile = os.path.join(toolsdir, "archive_metadata")
                 destfile = os.path.join(self._caseroot, os.path.basename(exefile))
@@ -1709,7 +1737,10 @@ class Case(object):
         if self._comp_interface == "nuopc":
             components.extend(["cdeps"])
 
-        readme_message = """Put source mods for the {component} library in this directory.
+        readme_message_start = (
+            "Put source mods for the {component} library in this directory."
+        )
+        readme_message_end = """
 
 WARNING: SourceMods are not kept under version control, and can easily
 become out of date if changes are made to the source code on which they
@@ -1743,9 +1774,20 @@ leveraging version control (git or svn).
                 # to fail).
                 readme_file = os.path.join(directory, "README")
                 with open(readme_file, "w") as fd:
-                    fd.write(readme_message.format(component=component))
+                    fd.write(readme_message_start.format(component=component))
 
-        if get_model() == "cesm":
+                    if component == "cdeps":
+                        readme_message_extra = """
+
+Note that this subdirectory should only contain files from CDEPS's
+dshr and streams source code directories.
+Files related to specific data models should go in SourceMods subdirectories
+for those data models (e.g., src.datm)."""
+                        fd.write(readme_message_extra)
+
+                    fd.write(readme_message_end)
+
+        if config.copy_cism_source_mods:
             # Note: this is CESM specific, given that we are referencing cism explitly
             if "cism" in components:
                 directory = os.path.join(
@@ -1804,13 +1846,15 @@ directory, NOT in this subdirectory."""
                 component_class in self._component_description
                 and len(self._component_description[component_class]) > 0
             ):
-                append_status(
-                    "Component {} is {}".format(
-                        component_class, self._component_description[component_class]
-                    ),
-                    "README.case",
-                    caseroot=self._caseroot,
-                )
+                if "Stub" not in self._component_description[component_class]:
+                    append_status(
+                        "Component {} is {}".format(
+                            component_class,
+                            self._component_description[component_class],
+                        ),
+                        "README.case",
+                        caseroot=self._caseroot,
+                    )
             if component_class == "CPL":
                 append_status(
                     "Using %s coupler instances" % (self.get_value("NINST_CPL")),
@@ -1819,12 +1863,13 @@ directory, NOT in this subdirectory."""
                 )
                 continue
             comp_grid = "{}_GRID".format(component_class)
-
-            append_status(
-                "{} is {}".format(comp_grid, self.get_value(comp_grid)),
-                "README.case",
-                caseroot=self._caseroot,
-            )
+            grid_val = self.get_value(comp_grid)
+            if grid_val != "null":
+                append_status(
+                    "{} is {}".format(comp_grid, self.get_value(comp_grid)),
+                    "README.case",
+                    caseroot=self._caseroot,
+                )
             comp = str(self.get_value("COMP_{}".format(component_class)))
             user_mods = self._get_comp_user_mods(comp)
             if user_mods is not None:
@@ -1932,6 +1977,10 @@ directory, NOT in this subdirectory."""
 
             return result
 
+    def get_job_id(self, output):
+        env_batch = self.get_env("batch")
+        return env_batch.get_job_id(output)
+
     def report_job_status(self):
         jobmap = self.get_job_info()
         if not jobmap:
@@ -1998,15 +2047,25 @@ directory, NOT in this subdirectory."""
             )
             run_misc_suffix = custom_run_misc_suffix
 
+        aprun_mode = env_mach_specific.get_aprun_mode(mpi_attribs)
+
         # special case for aprun
         if (
             executable is not None
             and "aprun" in executable
-            and not "theta" in self.get_value("MACH")
+            and aprun_mode != "ignore"
+            # and not "theta" in self.get_value("MACH")
         ):
-            aprun_args, num_nodes = get_aprun_cmd_for_case(
-                self, run_exe, overrides=overrides
-            )[0:2]
+            extra_args = env_mach_specific.get_aprun_args(
+                self, mpi_attribs, job, overrides=overrides
+            )
+
+            aprun_args, num_nodes, _, _, _ = get_aprun_cmd_for_case(
+                self,
+                run_exe,
+                overrides=overrides,
+                extra_args=extra_args,
+            )
             if job in ("case.run", "case.test"):
                 expect(
                     (num_nodes + self.spare_nodes) == self.num_nodes,
@@ -2024,12 +2083,10 @@ directory, NOT in this subdirectory."""
             mpi_arg_string += " : "
 
         ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-        if ngpus_per_node and ngpus_per_node > 0 and self._cime_model != "e3sm":
-            # 1. this setting is tested on Casper only and may not work on other machines
-            # 2. need to be revisited in the future for a more adaptable implementation
-            rundir = self.get_value("RUNDIR")
-            output_name = rundir + "/set_device_rank.sh"
-            mpi_arg_string = mpi_arg_string + " " + output_name + " "
+        if ngpus_per_node and ngpus_per_node > 0:
+            mpi_gpu_run_script = self.get_value("MPI_GPU_WRAPPER_SCRIPT")
+            if mpi_gpu_run_script:
+                mpi_arg_string = mpi_arg_string + " " + mpi_gpu_run_script
 
         return self.get_resolved_value(
             "{} {} {} {}".format(
@@ -2227,7 +2284,7 @@ directory, NOT in this subdirectory."""
         cimeroot = self.get_value("CIMEROOT")
 
         if cmd is None:
-            cmd = list(sys.argv)
+            cmd = self.fix_sys_argv_quotes(list(sys.argv))
 
         if init:
             ctime = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -2266,6 +2323,37 @@ directory, NOT in this subdirectory."""
         except PermissionError:
             logger.warning("Could not write to 'replay.sh' script")
 
+    def fix_sys_argv_quotes(self, cmd):
+        """Fixes removed quotes from argument list.
+
+        Restores quotes to `--val` and `KEY=VALUE` from sys.argv.
+        """
+        # handle fixing quotes
+        # case 1: "--val", " -nlev 276 "
+        # case 2: "-val" , " -nlev 276 "
+        # case 3: CAM_CONFIG_OPTS=" -nlev 276 "
+        for i, item in enumerate(cmd):
+            if re.match("[-]{1,2}val", item) is not None:
+                if i + 1 >= len(cmd):
+                    continue
+
+                # only quote if value contains spaces
+                if " " in cmd[i + 1]:
+                    cmd[i + 1] = f'"{cmd[i + 1]}"'
+            else:
+                m = re.search("([^=]*)=(.*)", item)
+
+                if m is None:
+                    continue
+
+                g = m.groups()
+
+                # only quote if value contains spaces
+                if " " in g[1]:
+                    cmd[i] = f'{g[0]}="{g[1]}"'
+
+        return cmd
+
     def create(
         self,
         casename,
@@ -2294,7 +2382,6 @@ directory, NOT in this subdirectory."""
         non_local=False,
         extra_machines_dir=None,
         case_group=None,
-        ngpus_per_node=0,
     ):
         try:
             # Set values for env_case.xml
@@ -2305,6 +2392,10 @@ directory, NOT in this subdirectory."""
 
             # Propagate to `GenericXML` to resolve $SRCROOT
             utils.GLOBAL["SRCROOT"] = srcroot
+
+            customize_path = os.path.join(srcroot, "cime_config", "customize")
+
+            config.load(customize_path)
 
             # If any of the top level user_mods_dirs contain a config_grids.xml file and
             # gridfile was not set on the command line, use it. However, if there are
@@ -2363,7 +2454,6 @@ directory, NOT in this subdirectory."""
                 non_local=non_local,
                 extra_machines_dir=extra_machines_dir,
                 case_group=case_group,
-                ngpus_per_node=ngpus_per_node,
             )
 
             self.create_caseroot()
@@ -2440,6 +2530,7 @@ directory, NOT in this subdirectory."""
             job = self.get_first_job()
 
         job_id_to_cmd = self.submit_jobs(dry_run=True, job=job)
+
         env_batch = self.get_env("batch")
         for job_id, cmd in job_id_to_cmd:
             write("  FOR JOB: {}".format(job_id))

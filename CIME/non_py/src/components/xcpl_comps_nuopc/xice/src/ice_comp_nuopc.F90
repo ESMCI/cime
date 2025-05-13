@@ -14,7 +14,7 @@ module ice_comp_nuopc
   use NUOPC_Model       , only : NUOPC_ModelGet, SetVM
   use shr_sys_mod       , only : shr_sys_abort
   use shr_kind_mod      , only : r8=>shr_kind_r8, i8=>shr_kind_i8, cl=>shr_kind_cl, cs=>shr_kind_cs
-  use shr_file_mod      , only : shr_file_getlogunit, shr_file_setlogunit
+  use shr_log_mod      , only : shr_log_getlogunit, shr_log_setlogunit
   use dead_methods_mod  , only : chkerr, state_setscalar,  state_diagnose, alarmInit, memcheck
   use dead_methods_mod  , only : set_component_logging, get_component_instance, log_clock_advance
   use dead_nuopc_mod    , only : dead_read_inparms, ModelInitPhase, ModelSetRunClock
@@ -281,7 +281,7 @@ contains
     ! Reset shr logging to original values
     !----------------------------------------------------------------------------
 
-    call shr_file_setLogUnit (shrlogunit)
+    call shr_log_setLogUnit (shrlogunit)
 
   end subroutine InitializeAdvertise
 
@@ -305,8 +305,8 @@ contains
     ! Reset shr logging to my log file
     !----------------------------------------------------------------------------
 
-    call shr_file_getLogUnit (shrlogunit)
-    call shr_file_setLogUnit (logUnit)
+    call shr_log_getLogUnit (shrlogunit)
+    call shr_log_setLogUnit (logUnit)
 
     !--------------------------------
     ! generate the mesh
@@ -368,7 +368,7 @@ contains
        if (chkerr(rc,__LINE__,u_FILE_u)) return
     endif
 
-    call shr_file_setLogUnit (shrlogunit)
+    call shr_log_setLogUnit (shrlogunit)
 
   end subroutine InitializeRealize
 
@@ -390,8 +390,8 @@ contains
     call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO, rc=rc)
     call memcheck(subname, 3, mastertask)
 
-    call shr_file_getLogUnit (shrlogunit)
-    call shr_file_setLogUnit (logunit)
+    call shr_log_getLogUnit (shrlogunit)
+    call shr_log_setLogUnit (logunit)
 
     !--------------------------------
     ! Pack export state
@@ -416,7 +416,7 @@ contains
        endif
     endif
 
-    call shr_file_setLogUnit (shrlogunit)
+    call shr_log_setLogUnit (shrlogunit)
 
     call ESMF_LogWrite(subname//' done', ESMF_LOGMSG_INFO, rc=rc)
 

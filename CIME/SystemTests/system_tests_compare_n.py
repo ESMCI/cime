@@ -40,9 +40,9 @@ In addition, they MAY require the following methods:
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.SystemTests.system_tests_common import SystemTestsCommon, fix_single_exe_case
 from CIME.case import Case
-from CIME.utils import get_model
+from CIME.config import Config
 from CIME.test_status import *
 
 import shutil, os, glob
@@ -60,6 +60,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         run_descriptions=None,
         multisubmit=False,
         ignore_fieldlist_diffs=False,
+        dry_run=False,
+        **kwargs
     ):
         """
         Initialize a SystemTestsCompareN object. Individual test cases that
@@ -84,7 +86,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                 the cases as identical. (This is needed for tests where one case
                 exercises an option that produces extra diagnostic fields.)
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
 
         self._separate_builds = separate_builds
         self._ignore_fieldlist_diffs = ignore_fieldlist_diffs
@@ -129,7 +131,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._cases[0] = self._case
         self._caseroots = self._get_caseroots()
 
-        self._setup_cases_if_not_yet_done()
+        if not dry_run:
+            self._setup_cases_if_not_yet_done()
 
         self._multisubmit = (
             multisubmit and self._cases[0].get_value("BATCH_SYSTEM") != "none"
@@ -182,6 +185,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         # with a with statement in all the API entrances in CIME. subsequent cases were
         # created via clone, not a with statement, so it's not in a writeable state,
         # so we need to use a with statement here to put it in a writeable state.
+        config = Config.instance()
+
         for i in range(1, self.N):
             with self._cases[i]:
                 if self._separate_builds:
@@ -193,7 +198,7 @@ class SystemTestsCompareN(SystemTestsCommon):
                     # Although we're doing separate builds, it still makes sense
                     # to share the sharedlibroot area with case1 so we can reuse
                     # pieces of the build from there.
-                    if get_model() != "e3sm":
+                    if config.common_sharedlibroot:
                         # We need to turn off this change for E3SM because it breaks
                         # the MPAS build system
                         ## TODO: ^this logic mimics what's done in SystemTestsCompareTwo
@@ -502,6 +507,7 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._activate_case(i)
         self._common_setup()
         self._case_setup(i)
+        fix_single_exe_case(self._cases[i])
         if i == 0:
             # Flush the case so that, if errors occur later, then at least base case is
             # in a correct, post-setup state. This is important because the mere
@@ -514,6 +520,7 @@ class SystemTestsCompareN(SystemTestsCommon):
             # This assures that case one namelists are populated
             # and creates the case.test script
             self._case.case_setup(test_mode=False, reset=True)
+            fix_single_exe_case(self._case)
         else:
             # Go back to base case to ensure that's where we are for any following code
             self._activate_case(0)

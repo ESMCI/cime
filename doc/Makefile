@@ -8,7 +8,6 @@ SPHINXPROJ    = on
 SOURCEDIR     = source
 BUILDDIR      = build
 SPHINXAPI     = sphinx-apidoc
-SCRIPTSDIR    = ../scripts
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -20,10 +19,10 @@ api: CIME_api Tools_api Tools_user
 	exit 0
 
 CIME_api:
-	@$(SPHINXAPI) --force -o $(SOURCEDIR)/$@ $(SCRIPTSDIR)/lib/CIME
+	@$(SPHINXAPI) --force -o $(SOURCEDIR)/$@ ../CIME
 
 Tools_api:
-	@$(SPHINXAPI) --force -o $(SOURCEDIR)/$@ $(SCRIPTSDIR)/Tools
+	@$(SPHINXAPI) --force -o $(SOURCEDIR)/$@ ../CIME/Tools
 
 Tools_user:
 	rm -f $(SOURCEDIR)/$@/*.rst

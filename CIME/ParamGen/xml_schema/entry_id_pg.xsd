@@ -9,7 +9,7 @@
   <!-- simple types -->
   <xs:simpleType name="identifier_type">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[A-Za-z][A-Za-z0-9_]{0,63}"/>
+      <xs:pattern value="[A-Za-z][A-Za-z0-9_]*"/>
     </xs:restriction>
   </xs:simpleType>
 

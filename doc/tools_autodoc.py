@@ -41,7 +41,7 @@ _tool_template = Template(
 $tool_name
 ####################################################
 
-**$tool_name** is a script in CIMEROOT/scripts/Tools.
+**$tool_name** is a script in CIMEROOT/CIME/Tools.
 
 .. toctree::
    :maxdepth: 1

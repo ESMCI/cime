@@ -1,6 +1,7 @@
 """
 CIME ERI test  This class inherits from SystemTestsCommon
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.utils import safe_copy
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
@@ -26,23 +27,27 @@ def _get_rest_date(archive_root):
 
 def _helper(dout_sr, refdate, refsec, rundir):
     rest_path = os.path.join(dout_sr, "rest", "{}-{}".format(refdate, refsec))
-
+    if not os.path.exists(rundir):
+        os.makedirs(rundir)
     for item in glob.glob("{}/*{}*".format(rest_path, refdate)):
         dst = os.path.join(rundir, os.path.basename(item))
-        if os.path.exists(dst):
+        if not os.path.exists(rundir):
+            os.mkdir(rundir)
+        elif os.path.exists(dst):
             os.remove(dst)
-        os.symlink(item, dst)
+        if not "rpointer" in item:
+            os.symlink(item, dst)
 
     for item in glob.glob("{}/*rpointer*".format(rest_path)):
         safe_copy(item, rundir)
 
 
 class ERI(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the ERI system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
         self._testname = "ERI"
 
     def run_phase(self):
@@ -79,7 +84,7 @@ class ERI(SystemTestsCommon):
         start_1 = run_startdate
 
         stop_n2 = stop_n - stop_n1
-        rest_n2 = int(stop_n2 / 2 + 1)
+
         hist_n = stop_n2
 
         start_1_year, start_1_month, start_1_day = [
@@ -89,10 +94,28 @@ class ERI(SystemTestsCommon):
         start_2 = "{:04d}-{:02d}-{:02d}".format(
             start_2_year, start_1_month, start_1_day
         )
+        rest_n2 = self._set_restart_interval(
+            stop_n=stop_n2,
+            stop_option=stop_option,
+            startdate=start_2,
+            starttime=start_tod,
+        )
 
         stop_n3 = stop_n2 - rest_n2
-        rest_n3 = int(stop_n3 / 2 + 1)
 
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+        self._set_drv_restart_pointer(drvrest)
+
+        rest_n3 = self._set_restart_interval(
+            stop_n=stop_n3,
+            stop_option=stop_option,
+            startdate=start_2,
+            starttime=start_tod,
+        )
         stop_n4 = stop_n3 - rest_n3
 
         expect(stop_n4 >= 1 and stop_n1 >= 1, "Run length too short")
@@ -219,8 +242,10 @@ class ERI(SystemTestsCommon):
         self._case.set_value("GET_REFCASE", False)
         self._case.set_value("CONTINUE_RUN", False)
         self._case.set_value("STOP_N", stop_n3)
-        self._case.set_value("REST_OPTION", stop_option)
-        self._case.set_value("REST_N", rest_n3)
+        self._set_restart_interval(
+            stop_n=stop_n3, startdate=refdate_3, starttime=refsec_3
+        )
+
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", stop_n2)
         self._case.set_value("DOUT_S", False)
@@ -262,6 +287,12 @@ class ERI(SystemTestsCommon):
         self._case.set_value("DOUT_S", False)
         self._case.set_value("HIST_OPTION", stop_option)
         self._case.set_value("HIST_N", hist_n)
+        drvrest = "rpointer.cpl"
+        if ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+
+        self._set_drv_restart_pointer(drvrest)
         self._case.flush()
 
         # do the restart run (short term archiving is off)

@@ -9,14 +9,14 @@ class TestManageAndQuery(base.BaseTestCase):
     """Tests various scripts to manage and query xml files"""
 
     def setUp(self):
-        if utils.get_model() == "e3sm":
-            self.skipTest("Skipping XML test management tests. E3SM does not use this.")
-
         super().setUp()
+
+        if self._config.test_mode == "e3sm":
+            self.skipTest("Skipping XML test management tests. E3SM does not use this.")
 
     def _run_and_assert_query_testlist(self, extra_args=""):
         """Ensure that query_testlist runs successfully with the given extra arguments"""
-        files = Files()
+        files = Files(self._driver)
         testlist_drv = files.get_value("TESTS_SPEC_FILE", {"component": "drv"})
 
         self.run_cmd_assert_result(

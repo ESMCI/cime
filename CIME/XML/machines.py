@@ -7,12 +7,20 @@ from CIME.XML.files import Files
 from CIME.utils import convert_to_unknown_type, get_cime_config
 
 import socket
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 
 class Machines(GenericXML):
-    def __init__(self, infile=None, files=None, machine=None, extra_machines_dir=None):
+    def __init__(
+        self,
+        infile=None,
+        files=None,
+        machine=None,
+        extra_machines_dir=None,
+        read_only=True,
+    ):
         """
         initialize an object
         if a filename is provided it will be used,
@@ -23,6 +31,9 @@ class Machines(GenericXML):
         additional directory that will be searched for a config_machines.xml file; if
         found, the contents of this file will be appended to the standard
         config_machines.xml. An empty string is treated the same as None.
+
+        The schema variable can be passed as a path to an xsd schema file or a dictionary of paths
+        with version number as keys.
         """
 
         self.machine_node = None
@@ -37,13 +48,28 @@ class Machines(GenericXML):
             files = Files()
         if infile is None:
             infile = files.get_value("MACHINES_SPEC_FILE")
-        schema = files.get_schema("MACHINES_SPEC_FILE")
-        logger.debug("Verifying using schema {}".format(schema))
 
         self.machines_dir = os.path.dirname(infile)
+        if os.path.exists(infile):
+            checked_files.append(infile)
+        else:
+            expect(False, f"file not found {infile}")
 
-        GenericXML.__init__(self, infile, schema)
-        checked_files.append(infile)
+        schema = {
+            "3.0": files.get_schema(
+                "MACHINES_SPEC_FILE", attributes={"version": "3.0"}
+            ),
+            "2.0": files.get_schema(
+                "MACHINES_SPEC_FILE", attributes={"version": "2.0"}
+            ),
+        }
+        # Before v3 there was but one choice
+        if not schema["3.0"]:
+            schema = files.get_schema("MACHINES_SPEC_FILE")
+
+        logger.debug("Verifying using schema {}".format(schema))
+
+        GenericXML.__init__(self, infile, schema, read_only=read_only)
 
         # Append the contents of $HOME/.cime/config_machines.xml if it exists.
         #
@@ -81,7 +107,7 @@ class Machines(GenericXML):
             machine is not None,
             f"Could not initialize machine object from {', '.join(checked_files)}. This machine is not available for the target CIME_MODEL.",
         )
-        self.set_machine(machine)
+        self.set_machine(machine, schema=schema)
 
     def get_child(self, name=None, attributes=None, root=None, err_msg=None):
         if root is None:
@@ -129,6 +155,19 @@ class Machines(GenericXML):
         for node in nodes:
             mach = self.get(node, "MACH")
             machines.append(mach)
+        if self.get_version() == 3.0:
+            machdirs = [
+                os.path.basename(f.path)
+                for f in os.scandir(self.machines_dir)
+                if f.is_dir()
+            ]
+            machdirs.remove("cmake_macros")
+            machdirs.remove("userdefined_laptop_template")
+            for mach in machdirs:
+                if mach not in machines:
+                    machines.append(mach)
+
+        machines.sort()
         return machines
 
     def probe_machine_name(self, warn=True):
@@ -140,6 +179,7 @@ class Machines(GenericXML):
         names_not_found = []
 
         nametomatch = socket.getfqdn()
+
         machine = self._probe_machine_name_one_guess(nametomatch)
 
         if machine is None:
@@ -167,10 +207,15 @@ class Machines(GenericXML):
         Find a matching regular expression for nametomatch in the NODENAME_REGEX
         field in the file. First match wins. Returns None if no match is found.
         """
+        if self.get_version() < 3:
+            return self._probe_machine_name_one_guess_v2(nametomatch)
+        else:
+            return self._probe_machine_name_one_guess_v3(nametomatch)
 
-        machine = None
+    def _probe_machine_name_one_guess_v2(self, nametomatch):
+
         nodes = self.get_children("machine")
-
+        machine = None
         for node in nodes:
             machtocheck = self.get(node, "MACH")
             logger.debug("machine is " + machtocheck)
@@ -212,7 +257,56 @@ class Machines(GenericXML):
 
         return machine
 
-    def set_machine(self, machine):
+    def _probe_machine_name_one_guess_v3(self, nametomatch):
+
+        nodes = self.get_children("NODENAME_REGEX", root=self.root)
+
+        children = [y for x in nodes for y in self.get_children(root=x)]
+
+        machine = None
+        for child in children:
+            machtocheck = self.get(child, "MACH")
+            regex_str = self.text(child)
+            logger.debug(
+                "machine is {} regex {}, nametomatch {}".format(
+                    machtocheck, regex_str, nametomatch
+                )
+            )
+
+            if regex_str is not None:
+                # an environment variable can be used
+                if regex_str.startswith("$ENV"):
+                    machine_value = self.get_resolved_value(
+                        regex_str, allow_unresolved_envvars=True
+                    )
+                    logger.debug("machine_value is {}".format(machine_value))
+                    if not machine_value.startswith("$ENV"):
+                        try:
+                            match, this_machine = machine_value.split(":")
+                        except ValueError:
+                            expect(
+                                False,
+                                "Bad formation of NODENAME_REGEX.  Expected envvar:value, found {}".format(
+                                    regex_str
+                                ),
+                            )
+                        if match == this_machine:
+                            machine = machtocheck
+                            break
+                else:
+                    regex = re.compile(regex_str)
+                    if regex.match(nametomatch):
+                        logger.debug(
+                            "Found machine: {} matches {}".format(
+                                machtocheck, nametomatch
+                            )
+                        )
+                        machine = machtocheck
+                        break
+
+        return machine
+
+    def set_machine(self, machine, schema=None):
         """
         Sets the machine block in the Machines object
 
@@ -225,15 +319,34 @@ class Machines(GenericXML):
         CIMEError: ERROR: No machine trump found
         """
         if machine == "Query":
-            self.machine = machine
-        elif self.machine != machine or self.machine_node is None:
-            self.machine_node = super(Machines, self).get_child(
-                "machine",
-                {"MACH": machine},
-                err_msg="No machine {} found".format(machine),
-            )
-            self.machine = machine
+            return machine
+        elif self.get_version() == 3:
+            machines_file = Path.home() / ".cime" / machine / "config_machines.xml"
 
+            if machines_file.exists():
+                GenericXML.read(
+                    self,
+                    machines_file,
+                    schema=schema,
+                )
+            else:
+                machines_file = (
+                    Path(self.machines_dir) / machine / "config_machines.xml"
+                )
+
+                if machines_file.exists():
+                    GenericXML.read(
+                        self,
+                        machines_file,
+                        schema=schema,
+                    )
+        self.machine_node = super(Machines, self).get_child(
+            "machine",
+            {"MACH": machine},
+            err_msg="No machine {} found".format(machine),
+        )
+
+        self.machine = machine
         return machine
 
     # pylint: disable=arguments-differ
@@ -282,6 +395,11 @@ class Machines(GenericXML):
         """
         expect(self.machine_node is not None, "Machine object has no machine defined")
         supported_values = self.get_value(listname, attributes=attributes)
+        logger.debug(
+            "supported values for {} on {} is {}".format(
+                listname, self.machine, supported_values
+            )
+        )
         # if no match with attributes, try without
         if supported_values is None:
             supported_values = self.get_value(listname, attributes=None)
@@ -326,26 +444,12 @@ class Machines(GenericXML):
     def is_valid_compiler(self, compiler):
         """
         Check the compiler is valid for the current machine
-
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.get_default_compiler()
-        'intel'
-        >>> machobj.is_valid_compiler("gnu")
-        True
-        >>> machobj.is_valid_compiler("nag")
-        False
         """
         return self.get_field_from_list("COMPILERS", reqval=compiler) is not None
 
     def is_valid_MPIlib(self, mpilib, attributes=None):
         """
         Check the MPILIB is valid for the current machine
-
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.is_valid_MPIlib("mpi-serial")
-        True
-        >>> machobj.is_valid_MPIlib("fake-mpi")
-        False
         """
         return (
             mpilib == "mpi-serial"
@@ -356,14 +460,6 @@ class Machines(GenericXML):
     def has_batch_system(self):
         """
         Return if this machine has a batch system
-
-        >>> machobj = Machines(machine="cori-knl")
-        >>> machobj.has_batch_system()
-        True
-        >>> machobj.set_machine("melvin")
-        'melvin'
-        >>> machobj.has_batch_system()
-        False
         """
         result = False
         batch_system = self.get_optional_child("BATCH_SYSTEM", root=self.machine_node)

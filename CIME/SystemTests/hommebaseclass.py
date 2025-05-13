@@ -4,21 +4,21 @@ CIME HOMME test. This class inherits from SystemTestsCommon
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-from CIME.utils import append_testlog, SharedArea
+from CIME.status import append_testlog
+from CIME.utils import SharedArea
 from CIME.test_status import *
 
 import shutil
-from distutils import dir_util
 
 logger = logging.getLogger(__name__)
 
 
 class HommeBase(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the SMS system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
         case.load_env()
         self.csnd = "not defined"
         self.cmakesuffix = self.csnd
@@ -97,10 +97,9 @@ class HommeBase(SystemTestsCommon):
                     shutil.rmtree(full_baseline_dir)
 
                 with SharedArea():
-                    dir_util.copy_tree(
+                    shutil.copytree(
                         os.path.join(exeroot, "tests", "baseline"),
                         full_baseline_dir,
-                        preserve_mode=False,
                     )
 
         elif compare:

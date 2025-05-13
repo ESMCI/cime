@@ -11,6 +11,7 @@ import sys
 import unittest
 
 from CIME import utils
+from CIME.config import Config
 from CIME.XML.machines import Machines
 
 
@@ -60,6 +61,10 @@ class BaseTestCase(unittest.TestCase):
         self._hasbatch = self.MACHINE.has_batch_system() and not self.NO_BATCH
         self._do_teardown = not self.NO_TEARDOWN
         self._root_dir = os.getcwd()
+        self._cprnc = self.MACHINE.get_value("CCSM_CPRNC")
+        customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+        self._config = Config.load(customize_path)
+        self._driver = utils.get_cime_default_driver()
 
     def tearDown(self):
         self.kill_subprocesses()
@@ -149,7 +154,7 @@ class BaseTestCase(unittest.TestCase):
 
     def assert_dashboard_has_build(self, build_name, expected_count=1):
         # Do not test E3SM dashboard if model is CESM
-        if utils.get_model() == "e3sm":
+        if self._config.test_mode == "e3sm":
             time.sleep(10)  # Give chance for cdash to update
 
             wget_file = tempfile.mktemp()
@@ -191,16 +196,22 @@ class BaseTestCase(unittest.TestCase):
     def kill_python_subprocesses(self, sig=signal.SIGKILL, expected_num_killed=None):
         self.kill_subprocesses("[Pp]ython", sig, expected_num_killed)
 
-    def _create_test(self, extra_args, test_id=None, run_errors=False, env_changes=""):
+    def _create_test(
+        self,
+        extra_args,
+        test_id=None,
+        run_errors=False,
+        env_changes="",
+        default_baseline_area=False,
+    ):
         """
         Convenience wrapper around create_test. Returns list of full paths to created cases. If multiple cases,
         the order of the returned list is not guaranteed to match the order of the arguments.
         """
         # All stub model not supported in nuopc driver
-        driver = utils.get_cime_default_driver()
-        if driver == "nuopc" and "cime_developer" in extra_args:
+        if self._driver == "nuopc" and "cime_developer" in extra_args:
             extra_args.append(
-                " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV"
+                " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV ^IRT_N2_Vmct_Ln9.f19_g16_rx1.A"
             )
 
         test_id = (
@@ -209,7 +220,8 @@ class BaseTestCase(unittest.TestCase):
             else test_id
         )
         extra_args.append("-t {}".format(test_id))
-        extra_args.append("--baseline-root {}".format(self._baseline_area))
+        if not default_baseline_area:
+            extra_args.append("--baseline-root {}".format(self._baseline_area))
         if self.NO_BATCH:
             extra_args.append("--no-batch")
         if self.TEST_COMPILER and (

@@ -3,10 +3,10 @@
 import os
 import shutil
 import sys
+import re
 
 from CIME import utils
 from CIME.tests import base
-from CIME.XML.compilers import Compilers
 from CIME.XML.files import Files
 
 
@@ -17,31 +17,63 @@ class TestUnitTest(base.BaseTestCase):
         cls._testroot = os.path.join(cls.TEST_ROOT, "TestUnitTests")
         cls._testdirs = []
 
-    def _has_unit_test_support(self):
-        if self.TEST_COMPILER is None:
-            compiler = self.MACHINE.get_default_compiler()
-        else:
-            compiler = self.TEST_COMPILER
+    def setUp(self):
+        super().setUp()
 
-        mach = self.MACHINE.get_machine_name()
+        self._driver = utils.get_cime_default_driver()
+        self._has_pfunit = self._has_unit_test_support()
+
+    def _has_unit_test_support(self):
         cmake_macros_dir = Files().get_value("CMAKE_MACROS_DIR")
+        cmake_machine_macros_dir = os.path.join(cmake_macros_dir, "..", self._machine)
 
         macros_to_check = [
-            os.path.join(cmake_macros_dir, "{}_{}.cmake".format(compiler, mach)),
-            os.path.join(cmake_macros_dir, "{}.cmake".format(mach)),
+            os.path.join(
+                cmake_macros_dir,
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(cmake_macros_dir, "{}.cmake".format(self._machine)),
+            os.path.join(
+                os.environ.get("HOME"),
+                ".cime",
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(
+                os.environ.get("HOME"), ".cime", "{}.cmake".format(self._machine)
+            ),
+            os.path.join(
+                cmake_machine_macros_dir,
+                "{}_{}.cmake".format(self._compiler, self._machine),
+            ),
+            os.path.join(cmake_machine_macros_dir, "{}.cmake".format(self._machine)),
         ]
+        env_ref_re = re.compile(r"\$ENV\{(\w+)\}")
 
         for macro_to_check in macros_to_check:
             if os.path.exists(macro_to_check):
-                macro_text = open(macro_to_check, "r").read()
-
-                return "PFUNIT_PATH" in macro_text
+                with open(macro_to_check, "r") as f:
+                    while True:
+                        line = f.readline().strip()
+                        if not line:
+                            break
+                        if "PFUNIT_PATH" in line:
+                            path = line.split(" ")[1][1:-2]
+                            m = env_ref_re.match(path)
+                            if m:
+                                env_var = m.groups()[0]
+                                env_var_exists = env_var in os.environ
+                                if env_var_exists:
+                                    path = path.replace(
+                                        "$ENV{" + env_var + "}", os.environ[env_var]
+                                    )
+                            if os.path.exists(path):
+                                return True
 
         return False
 
     def test_a_unit_test(self):
         cls = self.__class__
-        if not self._has_unit_test_support():
+        if not self._has_pfunit:
             self.skipTest(
                 "Skipping TestUnitTest - PFUNIT_PATH not found for the default compiler on this machine"
             )
@@ -56,8 +88,7 @@ class TestUnitTest(base.BaseTestCase):
         test_spec_dir = os.path.join(
             os.path.dirname(unit_test_tool), "Examples", "interpolate_1d", "tests"
         )
-        args = "--build-dir {} --test-spec-dir {}".format(test_dir, test_spec_dir)
-        args += " --machine {}".format(self.MACHINE.get_machine_name())
+        args = f"--build-dir {test_dir} --test-spec-dir {test_spec_dir} --machine {self._machine} --compiler {self._compiler} --comp-interface {self._driver}"
         utils.run_cmd_no_fail("{} {}".format(unit_test_tool, args))
         cls._do_teardown.append(test_dir)
 
@@ -80,8 +111,7 @@ class TestUnitTest(base.BaseTestCase):
                 test_spec_dir, "scripts", "fortran_unit_testing", "run_tests.py"
             )
         )
-        args = "--build-dir {} --test-spec-dir {}".format(test_dir, test_spec_dir)
-        args += " --machine {}".format(self.MACHINE.get_machine_name())
+        args = f"--build-dir {test_dir} --test-spec-dir {test_spec_dir} --machine {self._machine} --compiler {self._compiler} --comp-interface {self._driver}"
         utils.run_cmd_no_fail("{} {}".format(unit_test_tool, args))
         cls._do_teardown.append(test_dir)
 

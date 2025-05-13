@@ -4,127 +4,141 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'CIME/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'utils/**'
+      - 'docker/**'
 
   pull_request:
     branches:
       - master
+    paths:
+      - 'CIME/**'
+      - 'scripts/**'
+      - 'tools/**'
+      - 'utils/**'
+      - 'docker/**'
+
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read # to fetch code (actions/checkout)
+  packages: read
+
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      # Offical action is deprecated in favor of pre-commit.ci
-      # Should evaulate switching or just running manually.
-      # - name: Runs pre-commit action
-      #   # Do not run if using act tooling (https://github.com/nektos/act)
-      #   if: ${{ !env.ACT }}
-      #   uses: pre-commit/action@v2.0.3
-      - name: Runs pre-commit
-        run: |
-          pip install pre-commit
-
-          pre-commit run -a
-
-  # Check if there has been a change to any file under docker/
-  check-dockerfile-changed:
-    runs-on: ubuntu-latest
-    outputs:
-      all_changed_and_modified_files: ${{ steps.get-changed-files.outputs.all_changed_and_modified_files }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
-      - name: Get changed files
-        id: get-changed-files
-        uses: tj-actions/changed-files@v17.2
-        with:
-          files: docker/*
-
-  # Only build container if there has been a change.
-  # Only upload container when merging into master and there has been a change.
   build-containers:
     runs-on: ubuntu-latest
-    needs: check-dockerfile-changed
-    if: ${{ needs.check-dockerfile-changed.outputs.all_changed_and_modified_files != '' }}
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    permissions:
+      packages: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v5
         with:
-          images: jasonb87/cime
+          images: ghcr.io/ESMCI/cime
           tags: |
-            type=raw,value=latest
-            type=sha,prefix={{ date 'YYYYMMDD' }}_,format=short
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+            type=ref,event=pr,enable=${{ github.event_name == 'pull_request' }}
+            type=sha,format=long
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           target: base
           context: docker/
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && ! cancelled() }}
+    timeout-minutes: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Runs pre-commit
+        run: |
+          pip install pre-commit
+          pre-commit run -a
 
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
     needs: build-containers
-    if: ${{ always() }}
-    container: jasonb87/cime:latest
+    container:
+      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.8", "3.10", "3.12"]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Run tests
         shell: bash
         env:
-          INIT: "false"
           CIME_MODEL: "cesm"
-          CIME_DRIVER: "mct"
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
+          CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export INSTALL_PATH="${PWD}"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
-
-          mamba install -y python=${{ matrix.python-version }}
 
           source /entrypoint.sh
 
-          init_cime
+          # from 'entrypoint.sh', create and activate new environment
+          create_environment ${{ matrix.python-version }}
 
-          pytest -vvv --machine docker --no-fortran-run CIME/tests/test_unit*
+          pip install -r test-requirements.txt
+
+          # GitHub runner home is different than container
+          cp -rf /root/.cime /github/home/
+
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
   system-testing:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
     needs: build-containers
-    if: ${{ always() }}
-    container: jasonb87/cime:latest
+    container:
+      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      options: --hostname docker
     strategy:
+      # allow all jobs to finish
+      fail-fast: false
       matrix:
         model: ["e3sm", "cesm"]
         driver: ["mct", "nuopc"]
@@ -132,11 +146,13 @@ jobs:
           # exclude nuopc driver when running e3sm tests
           - model: "e3sm"
             driver: "nuopc"
+          # exclude mct driver when running cesm tests
+          - model: "cesm"
+            driver: "mct"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Cache inputdata
-        if: ${{ ! env.ACT }}
         uses: actions/cache@v2
         with:
           path: /storage/inputdata
@@ -144,28 +160,47 @@ jobs:
       - name: Run tests
         shell: bash
         env:
-          INIT: "false"
           CIME_MODEL: ${{ matrix.model }}
           CIME_DRIVER: ${{ matrix.driver }}
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
           CIME_TEST_PLATFORM: ubuntu-latest
         run: |
-          export INSTALL_PATH="${PWD}/cime"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          pip install -r test-requirements.txt
+
+          export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
           export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
 
           source /entrypoint.sh
 
-          if [[ "${CIME_MODEL}" == "e3sm" ]]
-          then
-            init_e3sm
-          else
-            init_cime
-          fi
+          # GitHub runner home is different than container
+          cp -rf /root/.cime /github/home/
 
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate base
 
-          pytest -vvv --machine docker --no-fortran-run CIME/tests/test_sys*
+          # container libnetcdf is 4.9.2 as cesm requires esmf >8.6.1
+          # e3sm scorpio incompatible with 4.9.2, downgrade to 4.9.1
+          # only reference found about scorpio incompatibility with 4.9.2 (https://github.com/E3SM-Project/scorpio/issues/554#issuecomment-1877361470)
+          # TODO open scorpio issue, possible solutions; 1. support two conda environments in container 2. maybe move from conda to spack? build all libraries in image
+          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
+            mamba install -y 'libnetcdf=4.9.1'
+          fi
+
+          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - uses: mxschmitt/action-tmate@v3
+        if: ${{ !always() }}
+        with:
+          limit-access-to-actor: true
+      - name: Create testing log archive
+        if: ${{ failure() }}
+        shell: bash
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz /storage/cases/
+        # How to download artifacts:
+        # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
+      - name: Upload testing logs
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: testing-logs-${{ github.run_number }}-${{ matrix.model }}-${{ matrix.driver }}
+          path: /testing-logs-${{ github.run_number}}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz
+          retention-days: 4

@@ -54,7 +54,10 @@ def create_clone(
     if os.path.isdir(os.path.join(newcase_cimeroot, "share")) and get_model() == "cesm":
         srcroot = newcase_cimeroot
     else:
-        srcroot = os.path.join(newcase_cimeroot, "..")
+        srcroot = self.get_value("SRCROOT")
+        if not srcroot:
+            srcroot = os.path.join(newcase_cimeroot, "..")
+
     newcase = self.copy(newcasename, newcaseroot, newsrcroot=srcroot)
     with newcase:
         newcase.set_value("CIMEROOT", newcase_cimeroot)
@@ -104,7 +107,7 @@ def create_clone(
         if exeroot is not None:
             expect(
                 not keepexe,
-                "create_case_clone: if keepexe is True, " "then exeroot cannot be set",
+                "create_case_clone: if keepexe is True, then exeroot cannot be set",
             )
             newcase.set_value("EXEROOT", exeroot)
         if rundir is not None:
@@ -215,8 +218,6 @@ def create_clone(
                 newcasename, clonename
             )
         )
-
-        newcase.case_setup()
 
     return newcase
 

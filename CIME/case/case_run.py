@@ -2,15 +2,20 @@
 case_run is a member of Class Case
 '"""
 from CIME.XML.standard_module_setup import *
-from CIME.utils import gzip_existing_file, new_lid, run_and_log_case_status
-from CIME.utils import run_sub_or_cmd, append_status, safe_copy, model_log, CIMEError
-from CIME.utils import get_model, batch_jobid
+from CIME.config import Config
+from CIME.utils import gzip_existing_file, new_lid
+from CIME.utils import run_sub_or_cmd, safe_copy, model_log, CIMEError
+from CIME.utils import batch_jobid, is_comp_standalone
+from CIME.status import append_status, run_and_log_case_status
 from CIME.get_timing import get_timing
-from CIME.provenance import save_prerun_provenance, save_postrun_provenance
+from CIME.locked_files import check_lockedfiles
 
 import shutil, time, sys, os, glob
 
+TERMINATION_TEXT = ("HAS ENDED", "END OF MODEL RUN", "SUCCESSFUL TERMINATION")
+
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
@@ -26,15 +31,20 @@ def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
     rundir = case.get_value("RUNDIR")
 
     if case.get_value("TESTCASE") == "PFS":
-        env_mach_pes = os.path.join(caseroot, "env_mach_pes.xml")
-        safe_copy(env_mach_pes, "{}.{}".format(env_mach_pes, lid))
+        for filename in ("env_mach_pes.xml", "software_environment.txt"):
+            fullpath = os.path.join(caseroot, filename)
+            safe_copy(fullpath, "{}.{}".format(filename, lid))
 
     # check for locked files, may impact BUILD_COMPLETE
     skip = None
+
     if case.get_value("EXTERNAL_WORKFLOW"):
         skip = "env_batch"
-    case.check_lockedfiles(skip=skip)
+
+    check_lockedfiles(case, skip=skip)
+
     logger.debug("check_lockedfiles OK")
+
     build_complete = case.get_value("BUILD_COMPLETE")
 
     # check that build is done
@@ -144,7 +154,10 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                 time.strftime("%Y-%m-%d %H:%M:%S")
             ),
         )
-        save_prerun_provenance(case)
+        try:
+            Config.instance().save_prerun_provenance(case)
+        except AttributeError:
+            logger.debug("No hook for saving prerun provenance was executed")
         model_log(
             "e3sm",
             logger,
@@ -169,6 +182,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                 custom_success_msg_functor=msg_func,
                 caseroot=case.get_value("CASEROOT"),
                 is_batch=is_batch,
+                gitinterface=case._gitinterface,
             )
             cmd_success = True
         except CIMEError:
@@ -234,7 +248,7 @@ def _run_model_impl(case, lid, skip_pnl=False, da_cycle=0):
                         case.case_st_archive(resubmit=False)
                         case.restore_from_archive()
 
-                    lid = new_lid()
+                    lid = new_lid(case=case)
                     case.create_namelists()
 
         if not cmd_success and not loop:
@@ -280,6 +294,7 @@ def _run_model(case, lid, skip_pnl=False, da_cycle=0):
         custom_success_msg_functor=msg_func,
         caseroot=case.get_value("CASEROOT"),
         is_batch=is_batch,
+        gitinterface=case._gitinterface,
     )
 
 
@@ -288,40 +303,39 @@ def _post_run_check(case, lid):
     ###############################################################################
 
     rundir = case.get_value("RUNDIR")
-    model = case.get_value("MODEL")
     driver = case.get_value("COMP_INTERFACE")
-    model = get_model()
 
-    fv3_standalone = False
+    comp_standalone, model = is_comp_standalone(case)
 
-    if "CPL" not in case.get_values("COMP_CLASSES"):
-        fv3_standalone = True
     if driver == "nuopc":
-        if fv3_standalone:
+        if comp_standalone:
             file_prefix = model
         else:
-            file_prefix = "drv"
+            file_prefix = "med"
     else:
         file_prefix = "cpl"
 
     cpl_ninst = 1
-    if file_prefix != "drv" and case.get_value("MULTI_DRIVER"):
+    if case.get_value("MULTI_DRIVER"):
         cpl_ninst = case.get_value("NINST_MAX")
     cpl_logs = []
 
-    if file_prefix != "drv" and cpl_ninst > 1:
+    if cpl_ninst > 1:
         for inst in range(cpl_ninst):
             cpl_logs.append(
                 os.path.join(rundir, file_prefix + "_%04d.log." % (inst + 1) + lid)
             )
+            if driver == "nuopc" and comp_standalone:
+                cpl_logs.append(
+                    os.path.join(rundir, "med_%04d.log." % (inst + 1) + lid)
+                )
     else:
         cpl_logs = [os.path.join(rundir, file_prefix + ".log." + lid)]
-
+        if driver == "nuopc" and comp_standalone:
+            cpl_logs.append(os.path.join(rundir, "med.log." + lid))
     cpl_logfile = cpl_logs[0]
-
     # find the last model.log and cpl.log
     model_logfile = os.path.join(rundir, model + ".log." + lid)
-
     if not os.path.isfile(model_logfile):
         expect(False, "Model did not complete, no {} log file ".format(model_logfile))
     elif os.stat(model_logfile).st_size == 0:
@@ -332,11 +346,10 @@ def _post_run_check(case, lid):
             if not os.path.isfile(cpl_logfile):
                 break
             with open(cpl_logfile, "r") as fd:
-                if fv3_standalone and "HAS ENDED" in fd.read():
+                logfile = fd.read()
+                if any([x in logfile for x in TERMINATION_TEXT]):
                     count_ok += 1
-                elif not fv3_standalone and "SUCCESSFUL TERMINATION" in fd.read():
-                    count_ok += 1
-        if count_ok != cpl_ninst:
+        if count_ok < cpl_ninst:
             expect(False, "Model did not complete - see {} \n ".format(cpl_logfile))
 
 
@@ -432,7 +445,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
     # Set up the run, run the model, do the postrun steps
 
     # set up the LID
-    lid = new_lid()
+    lid = new_lid(case=self)
 
     prerun_script = self.get_value("PRERUN_SCRIPT")
     if prerun_script:
@@ -464,7 +477,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
         and len(data_assimilation_script) > 0
         and os.path.isfile(data_assimilation_script)
     )
-
+    drv_restart_pointer = self.get_value("DRV_RESTART_POINTER")
     for cycle in range(data_assimilation_cycles):
         # After the first DA cycle, runs are restart runs
         if cycle > 0:
@@ -483,6 +496,15 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
             "{} RUN_MODEL BEGINS HERE".format(time.strftime("%Y-%m-%d %H:%M:%S")),
         )
         lid = _run_model(self, lid, skip_pnl, da_cycle=cycle)
+
+        # get the most recent cpl restart pointer file
+        rundir = self.get_value("RUNDIR")
+        if drv_restart_pointer:
+            pattern = os.path.join(rundir, "rpointer.cpl*")
+            files = sorted(glob.glob(pattern), key=os.path.getmtime)
+            if files:
+                drv_ptr = os.path.basename(files[-1])
+                self.set_value("DRV_RESTART_POINTER", drv_ptr)
         model_log(
             "e3sm",
             logger,
@@ -536,7 +558,10 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
                 time.strftime("%Y-%m-%d %H:%M:%S")
             ),
         )
-        save_postrun_provenance(self)
+        try:
+            Config.instance().save_postrun_provenance(self, lid)
+        except AttributeError:
+            logger.debug("No hook for saving postrun provenance was executed")
         model_log(
             "e3sm",
             logger,

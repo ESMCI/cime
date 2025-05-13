@@ -8,19 +8,20 @@ import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import (
-    run_and_log_case_status,
     ls_sorted_by_mtime,
     symlink_force,
     safe_copy,
     find_files,
+    batch_jobid,
 )
-from CIME.utils import batch_jobid
+from CIME.status import run_and_log_case_status
 from CIME.date import get_file_date
 from CIME.XML.archive import Archive
 from CIME.XML.files import Files
 from os.path import isdir, join
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _get_archive_fn_desc(archive_fn):
@@ -167,8 +168,10 @@ def _archive_rpointer_files(
     datename_is_last,
 ):
     ###############################################################################
-
     if datename_is_last:
+        rpointers = glob.glob(
+            os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
+        )
         # Copy of all rpointer files for latest restart date
         rpointers = glob.glob(os.path.join(rundir, "rpointer.*"))
         for rpointer in rpointers:
@@ -179,49 +182,63 @@ def _archive_rpointer_files(
         # Generate rpointer file(s) for interim restarts for the one datename and each
         # possible value of ninst_strings
         if save_interim_restart_files:
-
-            # parse env_archive.xml to determine the rpointer files
-            # and contents for the given archive_entry tag
-            rpointer_items = archive.get_rpointer_contents(archive_entry)
-
-            # loop through the possible rpointer files and contents
-            for rpointer_file, rpointer_content in rpointer_items:
-                temp_rpointer_file = rpointer_file
-                temp_rpointer_content = rpointer_content
-
-                # put in a temporary setting for ninst_strings if they are empty
-                # in order to have just one loop over ninst_strings below
-                if rpointer_content != "unset":
-                    if not ninst_strings:
-                        ninst_strings = ["empty"]
-
-                    for ninst_string in ninst_strings:
-                        rpointer_file = temp_rpointer_file
-                        rpointer_content = temp_rpointer_content
-                        if ninst_string == "empty":
-                            ninst_string = ""
-                        for key, value in [
-                            ("$CASE", casename),
-                            ("$DATENAME", _datetime_str(datename)),
-                            ("$MPAS_DATENAME", _datetime_str_mpas(datename)),
-                            ("$NINST_STRING", ninst_string),
-                        ]:
-                            rpointer_file = rpointer_file.replace(key, value)
-                            rpointer_content = rpointer_content.replace(key, value)
-
-                        # write out the respective files with the correct contents
-                        rpointer_file = os.path.join(archive_restdir, rpointer_file)
-                        logger.info("writing rpointer_file {}".format(rpointer_file))
-                        f = open(rpointer_file, "w")
-                        for output in rpointer_content.split(","):
-                            f.write("{} \n".format(output))
-                        f.close()
-                else:
-                    logger.info(
-                        "rpointer_content unset, not creating rpointer file {}".format(
-                            rpointer_file
-                        )
+            rpointers = glob.glob(
+                os.path.join(rundir, "rpointer.*" + _datetime_str(datename))
+            )
+            # If timestamped rpointers exist use them
+            if rpointers:
+                for rpointer in rpointers:
+                    safe_copy(
+                        rpointer,
+                        os.path.join(archive_restdir, os.path.basename(rpointer)),
                     )
+            else:
+                # parse env_archive.xml to determine the rpointer files
+                # and contents for the given archive_entry tag
+                rpointer_items = archive.get_rpointer_contents(archive_entry)
+
+                # loop through the possible rpointer files and contents
+                for rpointer_file, rpointer_content in rpointer_items:
+                    temp_rpointer_file = rpointer_file
+                    temp_rpointer_content = rpointer_content
+
+                    # put in a temporary setting for ninst_strings if they are empty
+                    # in order to have just one loop over ninst_strings below
+                    if rpointer_content != "unset":
+                        if not ninst_strings:
+                            ninst_strings = ["empty"]
+
+                        for ninst_string in ninst_strings:
+                            rpointer_file = temp_rpointer_file
+                            rpointer_content = temp_rpointer_content
+                            if ninst_string == "empty":
+                                ninst_string = ""
+                            for key, value in [
+                                ("$CASE", casename),
+                                ("$DATENAME", _datetime_str(datename)),
+                                ("$MPAS_DATENAME", _datetime_str_mpas(datename)),
+                                ("$NINST_STRING", ninst_string),
+                            ]:
+                                rpointer_file = rpointer_file.replace(key, value)
+                                rpointer_content = rpointer_content.replace(key, value)
+
+                                # write out the respective files with the correct contents
+                                rpointer_file = os.path.join(
+                                    archive_restdir, rpointer_file
+                                )
+                                logger.info(
+                                    "writing rpointer_file {}".format(rpointer_file)
+                                )
+                                f = open(rpointer_file, "w")
+                                for output in rpointer_content.split(","):
+                                    f.write("{} \n".format(output))
+                                f.close()
+                    else:
+                        logger.info(
+                            "rpointer_content unset, not creating rpointer file {}".format(
+                                rpointer_file
+                            )
+                        )
 
 
 ###############################################################################
@@ -364,8 +381,10 @@ def get_histfiles_for_restarts(
     histfiles = set()
     rest_hist_varname = archive.get_entry_value("rest_history_varname", archive_entry)
     if rest_hist_varname != "unset":
-        cmd = "ncdump -v {} {} ".format(
-            rest_hist_varname, os.path.join(rundir, restfile)
+        ncdump = shutil.which("ncdump")
+        expect(ncdump, "ncdump not found in path")
+        cmd = "{} -v {} {} ".format(
+            ncdump, rest_hist_varname, os.path.join(rundir, restfile)
         )
         if testonly:
             out = "{} =".format(rest_hist_varname)
@@ -443,7 +462,7 @@ def _archive_restarts_date(
 
     histfiles_savein_rundir_by_compname = {}
 
-    for (archive_entry, compname, compclass) in _get_component_archive_entries(
+    for archive_entry, compname, compclass in _get_component_archive_entries(
         components, archive
     ):
         if compclass:
@@ -499,9 +518,10 @@ def _archive_restarts_date_comp(
     """
     datename_str = _datetime_str(datename)
 
-    if datename_is_last or case.get_value("DOUT_S_SAVE_INTERIM_RESTART_FILES"):
-        if not os.path.exists(archive_restdir):
-            os.makedirs(archive_restdir)
+    if (
+        datename_is_last or case.get_value("DOUT_S_SAVE_INTERIM_RESTART_FILES")
+    ) and not os.path.isdir(archive_restdir):
+        os.makedirs(archive_restdir)
 
     # archive the rpointer file(s) for this datename and all possible ninst_strings
     _archive_rpointer_files(
@@ -531,10 +551,6 @@ def _archive_restarts_date_comp(
     # the compname is drv but the files are named cpl
     if compname == "drv":
         compname = "cpl"
-    if compname == "cice5":
-        compname = "cice"
-    if compname == "ww3dev":
-        compname = "ww3"
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):
@@ -881,7 +897,7 @@ def _archive_process(
 
     # archive history files
 
-    for (_, compname, compclass) in _get_component_archive_entries(components, archive):
+    for _, compname, compclass in _get_component_archive_entries(components, archive):
         if compclass:
             logger.info(
                 "Archiving history files for {} ({})".format(compname, compclass)
@@ -1052,6 +1068,7 @@ def case_st_archive(
         custom_success_msg_functor=msg_func,
         caseroot=caseroot,
         is_batch=is_batch,
+        gitinterface=self._gitinterface,
     )
 
     logger.info("st_archive completed")
@@ -1184,7 +1201,9 @@ def test_env_archive(self, testdir="env_archive_test"):
 
     for comp_archive_spec in comp_archive_specs:
         comp_expected = archive.get(comp_archive_spec, "compname")
-        if comp_expected == "ww3":
+        # Rename ww3 component when case and archive names don't match,
+        # specific to CESM.
+        if comp_expected == "ww3" and "ww" in comps_in_case:
             comp_expected = "ww"
         comp_class = archive.get(comp_archive_spec, "compclass").upper()
         if comp_class in components:

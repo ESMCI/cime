@@ -9,11 +9,11 @@ Script to create a new CIME Case Control System (CSS) experimental case.
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import (
     expect,
-    get_model,
     get_cime_config,
     get_cime_default_driver,
     get_src_root,
 )
+from CIME.config import Config
 from CIME.case import Case
 from argparse import RawTextHelpFormatter
 
@@ -27,6 +27,10 @@ def parse_command_line(args, cimeroot, description):
     )
 
     CIME.utils.setup_standard_logging_options(parser)
+
+    customize_path = os.path.join(CIME.utils.get_src_root(), "cime_config", "customize")
+
+    config = Config.load(customize_path)
 
     try:
         cime_config = get_cime_config()
@@ -166,11 +170,6 @@ def parse_command_line(args, cimeroot, description):
         help="A workflow from config_workflow.xml to apply to this case. ",
     )
 
-    if cime_config:
-        model = get_model()
-    else:
-        model = None
-
     srcroot_default = get_src_root()
 
     parser.add_argument(
@@ -190,7 +189,7 @@ def parse_command_line(args, cimeroot, description):
         "--script-root", dest="script_root", default=None, help=argparse.SUPPRESS
     )
 
-    if model == "cesm":
+    if config.allow_unsupported:
         parser.add_argument(
             "--run-unsupported",
             action="store_true",
@@ -231,25 +230,21 @@ def parse_command_line(args, cimeroot, description):
         "--input-dir",
         help="Use a non-default location for input files. This will change the xml value of DIN_LOC_ROOT.",
     )
-    if model == "cesm":
-        drv_choices = ("mct", "nuopc")
-        drv_help = (
-            "Override the top level driver type and use this one "
-            + "(changes xml variable COMP_INTERFACE) [this is an advanced option]"
-        )
-    elif model == "e3sm":
-        drv_choices = ("mct", "moab")
-        drv_help = argparse.SUPPRESS
-    else:
-        drv_choices = None
 
-    if drv_choices is not None:
-        parser.add_argument(
-            "--driver",
-            default=get_cime_default_driver(),
-            choices=drv_choices,
-            help=drv_help,
-        )
+    drv_choices = config.driver_choices
+    drv_help = (
+        "Override the top level driver type and use this one "
+        + "(changes xml variable COMP_INTERFACE) [this is an advanced option]"
+    )
+
+    parser.add_argument(
+        "--driver",
+        # use get_cime_default_driver rather than config.driver_default as it considers
+        # environment, user config then config.driver_default
+        default=get_cime_default_driver(),
+        choices=drv_choices,
+        help=drv_help,
+    )
 
     parser.add_argument(
         "-n",
@@ -262,19 +257,12 @@ def parse_command_line(args, cimeroot, description):
     parser.add_argument(
         "--extra-machines-dir",
         help="Optional path to a directory containing one or more of:"
-        "\nconfig_machines.xml, config_compilers.xml, config_batch.xml."
+        "\nconfig_machines.xml, config_batch.xml."
         "\nIf provided, the contents of these files will be appended to"
         "\nthe standard machine files (and any files in ~/.cime).",
     )
 
     parser.add_argument("--case-group", help="Add this case to a case group")
-
-    parser.add_argument(
-        "--ngpus-per-node",
-        default=0,
-        type=int,
-        help="Specify number of GPUs used for simulation. ",
-    )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
@@ -300,7 +288,7 @@ def parse_command_line(args, cimeroot, description):
         )
 
     run_unsupported = False
-    if model == "cesm":
+    if config.allow_unsupported:
         run_unsupported = args.run_unsupported
 
     expect(
@@ -313,7 +301,7 @@ def parse_command_line(args, cimeroot, description):
     elif cime_config and cime_config.has_option("main", "input_dir"):
         args.input_dir = os.path.abspath(cime_config.get("main", "input_dir"))
 
-    if model == "cesm" and args.driver == "mct":
+    if config.create_test_flag_mode == "cesm" and args.driver == "mct":
         logger.warning(
             """========================================================================
 WARNING: The MCT-based driver and data models will be removed from CESM
@@ -351,7 +339,6 @@ WARNING: if you need support migrating to the ESMF/NUOPC infrastructure.
         args.non_local,
         args.extra_machines_dir,
         args.case_group,
-        args.ngpus_per_node,
     )
 
 
@@ -388,7 +375,6 @@ def _main_func(description=None):
         non_local,
         extra_machines_dir,
         case_group,
-        ngpus_per_node,
     ) = parse_command_line(sys.argv, cimeroot, description)
 
     if script_root is None:
@@ -453,7 +439,6 @@ def _main_func(description=None):
             non_local=non_local,
             extra_machines_dir=extra_machines_dir,
             case_group=case_group,
-            ngpus_per_node=ngpus_per_node,
         )
 
         # Called after create since casedir does not exist yet

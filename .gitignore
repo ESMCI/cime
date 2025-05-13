@@ -4,6 +4,7 @@ buildnmlc
 buildlib.*c
 CIME.egg-info/
 build/
+_build/
 dist/
 .coverage
 
@@ -26,3 +27,5 @@ scripts/Tools/JENKINS*
 components
 libraries
 share
+test_coverage/**
+*.bak

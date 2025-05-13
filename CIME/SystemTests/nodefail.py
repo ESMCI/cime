@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class NODEFAIL(ERS):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the ERS system test
         """
-        ERS.__init__(self, case)
+        ERS.__init__(self, case, **kwargs)
 
         self._fail_sentinel = os.path.join(case.get_value("RUNDIR"), "FAIL_SENTINEL")
         self._fail_str = case.get_value("NODE_FAIL_REGEX")
@@ -24,7 +24,7 @@ class NODEFAIL(ERS):
         exeroot = self._case.get_value("EXEROOT")
         driver = self._case.get_value("COMP_INTERFACE")
         if driver == "nuopc":
-            logname = "drv"
+            logname = "med"
         else:
             logname = "cpl"
         fake_exe = """#!/bin/bash

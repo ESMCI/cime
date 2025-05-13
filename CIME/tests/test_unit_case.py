@@ -22,6 +22,8 @@ def make_valid_case(path):
 class TestCaseSubmit(unittest.TestCase):
     def test_check_case(self):
         case = mock.MagicMock()
+        # get_value arguments TEST, COMP_WAV, COMP_INTERFACE, BUILD_COMPLETE
+        case.get_value.side_effect = ["/tmp/caseroot", "", "", True]
         case_submit.check_case(case, chksum=True)
 
         case.check_all_input_data.assert_called_with(chksum=True)
@@ -76,6 +78,7 @@ class TestCaseSubmit(unittest.TestCase):
                 batch_args=None,
                 workflow=True,
                 chksum=True,
+                dryrun=False,
             )
 
 
@@ -83,6 +86,75 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         self.srcroot = os.path.abspath(cime_utils.get_src_root())
         self.tempdir = tempfile.TemporaryDirectory()
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes(self, read_xml):
+        input_data = ["./xmlquery", "--val", "PIO"]
+        expected_data = ["./xmlquery", "--val", "PIO"]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_incomplete(self, read_xml):
+        input_data = ["./xmlquery", "--val"]
+        expected_data = ["./xmlquery", "--val"]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_val(self, read_xml):
+        input_data = ["./xmlquery", "--val", "-test"]
+        expected_data = ["./xmlquery", "--val", "-test"]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_val_quoted(self, read_xml):
+        input_data = ["./xmlquery", "--val", " -nlev 267 "]
+        expected_data = ["./xmlquery", "--val", '" -nlev 267 "']
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
+
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def test_fix_sys_argv_quotes_kv(self, read_xml):
+        input_data = ["./xmlquery", "CAM_CONFIG_OPTS= -nlev 267", "OTHER_OPTS=-test"]
+        expected_data = [
+            "./xmlquery",
+            'CAM_CONFIG_OPTS=" -nlev 267"',
+            "OTHER_OPTS=-test",
+        ]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            make_valid_case(tempdir)
+
+            with Case(tempdir) as case:
+                output_data = case.fix_sys_argv_quotes(input_data)
+
+        assert output_data == expected_data
 
     @mock.patch("CIME.case.case.Case.read_xml")
     @mock.patch("sys.argv", ["/src/create_newcase", "--machine", "docker"])
@@ -153,14 +225,14 @@ class TestCase(unittest.TestCase):
                     self.srcroot,
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                 )
 
                 # Check that they're all called
                 configure.assert_called_with(
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                     project=None,
                     pecount=None,
                     compiler=None,
@@ -181,7 +253,6 @@ class TestCase(unittest.TestCase):
                     non_local=False,
                     extra_machines_dir=None,
                     case_group=None,
-                    ngpus_per_node=0,
                 )
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()
@@ -228,14 +299,14 @@ class TestCase(unittest.TestCase):
                     self.srcroot,
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                 )
 
                 # Check that they're all called
                 configure.assert_called_with(
                     "A",
                     "f19_g16_rx1",
-                    machine_name="cori-haswell",
+                    machine_name="perlmutter",
                     project=None,
                     pecount=None,
                     compiler=None,
@@ -256,7 +327,6 @@ class TestCase(unittest.TestCase):
                     non_local=False,
                     extra_machines_dir=None,
                     case_group=None,
-                    ngpus_per_node=0,
                 )
                 create_caseroot.assert_called()
                 apply_user_mods.assert_called()

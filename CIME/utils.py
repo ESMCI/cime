@@ -2,15 +2,15 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
+
 import shlex
 import configparser
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
 import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
+from argparse import Action
 from contextlib import contextmanager
-
-from distutils import file_util
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
@@ -19,6 +19,16 @@ logger = logging.getLogger(__name__)
 # Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
 # where it's used to resolve $SRCROOT in XML config files.
 GLOBAL = {}
+CASE_SUCCESS = "success"
+CASE_FAILURE = "error"
+
+
+def deprecate_action(message):
+    class ActionStoreDeprecated(Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            raise DeprecationWarning(f"{option_string} is deprecated{message}")
+
+    return ActionStoreDeprecated
 
 
 def import_from_file(name, file_path):
@@ -192,7 +202,7 @@ def check_name(fullname, additional_chars=None, fullpath=False):
     False
     """
 
-    chars = "+*?<>/{}[\]~`@:"  # pylint: disable=anomalous-backslash-in-string
+    chars = r"+*?<>/{}[\]~`@:"
     if additional_chars is not None:
         chars += additional_chars
     if fullname.endswith("/"):
@@ -262,7 +272,7 @@ def _read_cime_config_file():
     cime_config_file = os.path.abspath(
         os.path.join(os.path.expanduser("~"), ".cime", "config")
     )
-    cime_config = configparser.SafeConfigParser()
+    cime_config = configparser.ConfigParser()
     if os.path.isfile(cime_config_file):
         cime_config.read(cime_config_file)
         for section in cime_config.sections():
@@ -328,28 +338,13 @@ def copy_local_macros_to_dir(destination, extra_machdir=None):
             local_macros.extend(
                 glob.glob(os.path.join(extra_machdir, "cmake_macros/*.cmake"))
             )
-        elif os.path.isfile(os.path.join(extra_machdir, "config_compilers.xml")):
-            logger.warning(
-                "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
-                    extra_machdir
-                )
-            )
+
     dotcime = None
     home = os.environ.get("HOME")
     if home:
         dotcime = os.path.join(home, ".cime")
     if dotcime and os.path.isdir(dotcime):
         local_macros.extend(glob.glob(dotcime + "/*.cmake"))
-    if (
-        dotcime
-        and os.path.isfile(os.path.join(dotcime, "config_compilers.xml"))
-        and not local_macros
-    ):
-        logger.warning(
-            "WARNING: Found directory {} but no cmake macros within, set env variable CIME_NO_CMAKE_MACRO to use deprecated config_compilers method".format(
-                dotcime
-            )
-        )
 
     for macro in local_macros:
         safe_copy(macro, destination)
@@ -453,14 +448,16 @@ def get_cime_default_driver():
                 logger.debug(
                     "Setting CIME_driver={} from ~/.cime/config".format(driver)
                 )
+
+    from CIME.config import Config
+
+    config = Config.load_defaults()
+
     if not driver:
-        model = get_model()
-        if model == "ufs" or model == "cesm":
-            driver = "nuopc"
-        else:
-            driver = "mct"
+        driver = config.driver_default
+
     expect(
-        driver in ("mct", "nuopc", "moab"),
+        driver in config.driver_choices,
         "Attempt to set invalid driver {}".format(driver),
     )
     return driver
@@ -537,7 +534,9 @@ def get_model():
     if model is None:
         srcroot = get_src_root()
 
-        if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+        if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
+            model = "cesm"
+        elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                 for line in fd:
@@ -646,7 +645,7 @@ def import_and_run_sub_or_cmd(
     try:
         mod = importlib.import_module(f"{compname}_cime_py")
         getattr(mod, subname)(*subargs)
-    except (ModuleNotFoundError, AttributeError) as _:
+    except (ModuleNotFoundError, AttributeError) as e:
         # * ModuleNotFoundError if importlib can not find module,
         # * AttributeError if importlib finds the module but
         #   {subname} is not defined in the module
@@ -654,7 +653,19 @@ def import_and_run_sub_or_cmd(
             os.path.isfile(cmd),
             f"Could not find {subname} file for component {compname}",
         )
-        run_sub_or_cmd(cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout)
+
+        # TODO shouldn't need to use logger.isEnabledFor for debug logging
+        if isinstance(e, ModuleNotFoundError) and logger.isEnabledFor(logging.DEBUG):
+            logger.info(
+                "WARNING: Could not import module '{}_cime_py'".format(compname)
+            )
+
+        try:
+            run_sub_or_cmd(
+                cmd, cmdargs, subname, subargs, logfile, case, from_dir, timeout
+            )
+        except Exception as e1:
+            raise e1 from None
     except Exception:
         if logfile:
             with open(logfile, "a") as log_fd:
@@ -806,12 +817,10 @@ def run_cmd(
     # or build a relative path and append `sys.path` to import
     # `standard_script_setup`. Providing `PYTHONPATH` fixes protential
     # broken paths in external python.
-    env.update(
-        {
-            "CIMEROOT": f"{get_cime_root()}",
-            "PYTHONPATH": f"{get_cime_root()}:{get_tools_path()}",
-        }
-    )
+    env_pythonpath = os.environ.get("PYTHONPATH", "").split(":")
+    cime_pythonpath = [f"{get_cime_root()}", f"{get_tools_path()}"] + env_pythonpath
+    env["PYTHONPATH"] = ":".join(filter(None, cime_pythonpath))
+    env["CIMEROOT"] = f"{get_cime_root()}"
 
     if timeout:
         with Timeout(timeout):
@@ -1006,6 +1015,12 @@ def parse_test_name(test_name):
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', None]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.*_compiler.test-mods')
+    ['ERS', None, 'fe12_123', 'JGF', None, 'compiler', ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.machine_*.test-mods')
+    ['ERS', None, 'fe12_123', 'JGF', 'machine', None, ['test/mods']]
+    >>> parse_test_name('ERS.fe12_123.JGF.*_*.test-mods')
+    ['ERS', None, 'fe12_123', 'JGF', None, None, ['test/mods']]
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods', 'other/dir/path', 'and/one/more']]
     >>> parse_test_name('SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods') # doctest: +IGNORE_EXCEPTION_DETAIL
@@ -1039,6 +1054,10 @@ def parse_test_name(test_name):
             ),
         )
         rv[4:5] = rv[4].split("_")
+        if rv[4] == "*":
+            rv[4] = None
+        if rv[5] == "*":
+            rv[5] = None
         rv.pop()
 
     if rv[-1] is not None:
@@ -1131,7 +1150,6 @@ def get_full_test_name(
     ]
 
     result = partial_test
-
     for partial_val, arg_val, name in required_fields:
         if partial_val is None:
             # Add to result based on args
@@ -1141,9 +1159,14 @@ def get_full_test_name(
                     partial_test, name
                 ),
             )
-            result = "{}{}{}".format(
-                result, "_" if name == "compiler" else ".", arg_val
-            )
+            if name == "machine" and "*_" in result:
+                result = result.replace("*_", arg_val + "_")
+            elif name == "compiler" and "_*" in result:
+                result = result.replace("_*", "_" + arg_val)
+            else:
+                result = "{}{}{}".format(
+                    result, "_" if name == "compiler" else ".", arg_val
+                )
         elif arg_val is not None and partial_val != partial_compiler:
             expect(
                 arg_val == partial_val,
@@ -1289,13 +1312,15 @@ def start_buffering_output():
     sys.stdout = os.fdopen(sys.stdout.fileno(), "w")
 
 
-def match_any(item, re_list):
+def match_any(item, re_counts):
     """
-    Return true if item matches any regex in re_list
+    Return true if item matches any regex in re_counts' keys. Increments
+    count if a match was found.
     """
-    for regex_str in re_list:
+    for regex_str in re_counts:
         regex = re.compile(regex_str)
         if regex.match(item):
+            re_counts[regex_str] += 1
             return True
 
     return False
@@ -1384,24 +1409,29 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
 
         if owner_uid == os.getuid():
             # I am the owner, copy file contents, permissions, and metadata
-            file_util.copy_file(
-                src_path,
-                tgt_path,
-                preserve_mode=preserve_meta,
-                preserve_times=preserve_meta,
-            )
+            try:
+                shutil.copy2(
+                    src_path,
+                    tgt_path,
+                )
+            # ignore same file error
+            except shutil.SameFileError:
+                pass
         else:
             # I am not the owner, just copy file contents
             shutil.copyfile(src_path, tgt_path)
 
-    else:
+    elif preserve_meta:
         # We are making a new file, copy file contents, permissions, and metadata.
         # This can fail if the underlying directory is not writable by current user.
-        file_util.copy_file(
+        shutil.copy2(
             src_path,
             tgt_path,
-            preserve_mode=preserve_meta,
-            preserve_times=preserve_meta,
+        )
+    else:
+        shutil.copy(
+            src_path,
+            tgt_path,
         )
 
     # If src file was executable, then the tgt file should be too
@@ -1553,7 +1583,7 @@ def get_charge_account(machobj=None, project=None):
 
     >>> import CIME
     >>> import CIME.XML.machines
-    >>> machobj = CIME.XML.machines.Machines(machine="theta")
+    >>> machobj = CIME.XML.machines.Machines(machine="ubuntu-latest")
     >>> project = get_project(machobj)
     >>> charge_account = get_charge_account(machobj, project)
     >>> project == charge_account
@@ -1601,20 +1631,25 @@ def find_files(rootdir, pattern):
 
 
 def setup_standard_logging_options(parser):
+    group = parser.add_argument_group("Logging options")
+
     helpfile = os.path.join(os.getcwd(), os.path.basename("{}.log".format(sys.argv[0])))
-    parser.add_argument(
+
+    group.add_argument(
         "-d",
         "--debug",
         action="store_true",
         help="Print debug information (very verbose) to file {}".format(helpfile),
     )
-    parser.add_argument(
+
+    group.add_argument(
         "-v",
         "--verbose",
         action="store_true",
         help="Add additional context (time and file) to log messages",
     )
-    parser.add_argument(
+
+    group.add_argument(
         "-s",
         "--silent",
         action="store_true",
@@ -1632,7 +1667,7 @@ class _LessThanFilter(logging.Filter):
         return 1 if record.levelno < self.max_level else 0
 
 
-def configure_logging(verbose, debug, silent):
+def configure_logging(verbose, debug, silent, **_):
     root_logger = logging.getLogger()
 
     verbose_formatter = logging.Formatter(
@@ -1713,7 +1748,6 @@ def convert_to_type(value, type_str, vid=""):
     vid is only for generating better error messages.
     """
     if value is not None:
-
         if type_str == "char":
             pass
 
@@ -1759,7 +1793,6 @@ def convert_to_unknown_type(value):
     Convert value to it's real type by probing conversions.
     """
     if value is not None:
-
         # Attempt to convert to logical
         if value.upper() in ["TRUE", "FALSE"]:
             return value.upper() == "TRUE"
@@ -2019,39 +2052,6 @@ def format_time(time_format, input_format, input_time):
             output_time += "0" * min_len_spec[spec]
         output_time += field[1:]
     return output_time
-
-
-def append_status(msg, sfile, caseroot="."):
-    """
-    Append msg to sfile in caseroot
-    """
-    ctime = time.strftime("%Y-%m-%d %H:%M:%S: ")
-
-    # Reduce empty lines in CaseStatus. It's a very concise file
-    # and does not need extra newlines for readability
-    line_ending = "\n"
-
-    with open(os.path.join(caseroot, sfile), "a") as fd:
-        fd.write(ctime + msg + line_ending)
-        fd.write(" ---------------------------------------------------" + line_ending)
-
-
-def append_testlog(msg, caseroot="."):
-    """
-    Add to TestStatus.log file
-    """
-    append_status(msg, "TestStatus.log", caseroot)
-
-
-def append_case_status(phase, status, msg=None, caseroot="."):
-    """
-    Update CaseStatus file
-    """
-    append_status(
-        "{} {}{}".format(phase, status, " {}".format(msg if msg else "")),
-        "CaseStatus",
-        caseroot,
-    )
 
 
 def does_file_have_string(filepath, text):
@@ -2314,16 +2314,16 @@ def get_lids(case):
     return _get_most_recent_lid_impl(glob.glob("{}/{}.log*".format(rundir, model)))
 
 
-def new_lid():
+def new_lid(case=None):
     lid = time.strftime("%y%m%d-%H%M%S")
-    jobid = batch_jobid()
+    jobid = batch_jobid(case=case)
     if jobid is not None:
         lid = jobid + "." + lid
     os.environ["LID"] = lid
     return lid
 
 
-def batch_jobid():
+def batch_jobid(case=None):
     jobid = os.environ.get("PBS_JOBID")
     if jobid is None:
         jobid = os.environ.get("SLURM_JOB_ID")
@@ -2331,6 +2331,8 @@ def batch_jobid():
         jobid = os.environ.get("LSB_JOBID")
     if jobid is None:
         jobid = os.environ.get("COBALT_JOBID")
+    if case:
+        jobid = case.get_job_id(jobid)
     return jobid
 
 
@@ -2420,62 +2422,12 @@ def verbatim_success_msg(return_val):
     return return_val
 
 
-CASE_SUCCESS = "success"
-CASE_FAILURE = "error"
-
-
-def run_and_log_case_status(
-    func,
-    phase,
-    caseroot=".",
-    custom_starting_msg_functor=None,
-    custom_success_msg_functor=None,
-    is_batch=False,
-):
-    starting_msg = None
-
-    if custom_starting_msg_functor is not None:
-        starting_msg = custom_starting_msg_functor()
-
-    # Delay appending "starting" on "case.subsmit" phase when batch system is
-    # present since we don't have the jobid yet
-    if phase != "case.submit" or not is_batch:
-        append_case_status(phase, "starting", msg=starting_msg, caseroot=caseroot)
-    rv = None
-    try:
-        rv = func()
-    except BaseException:
-        custom_success_msg = (
-            custom_success_msg_functor(rv)
-            if custom_success_msg_functor and rv is not None
-            else None
-        )
-        if phase == "case.submit" and is_batch:
-            append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot
-            )
-        e = sys.exc_info()[1]
-        append_case_status(
-            phase, CASE_FAILURE, msg=("\n{}".format(e)), caseroot=caseroot
-        )
-        raise
-    else:
-        custom_success_msg = (
-            custom_success_msg_functor(rv) if custom_success_msg_functor else None
-        )
-        if phase == "case.submit" and is_batch:
-            append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot
-            )
-        append_case_status(
-            phase, CASE_SUCCESS, msg=custom_success_msg, caseroot=caseroot
-        )
-
-    return rv
-
-
 def _check_for_invalid_args(args):
-    if get_model() != "e3sm":
+    # Prevent circular import
+    from CIME.config import Config
+
+    # TODO Is this really model specific
+    if Config.instance().check_invalid_args:
         for arg in args:
             # if arg contains a space then it was originally quoted and we can ignore it here.
             if " " in arg or arg.startswith("--"):
@@ -2576,8 +2528,11 @@ def run_bld_cmd_ensure_logging(cmd, arg_logger, from_dir=None, timeout=None):
     expect(stat == 0, filter_unicode(errput))
 
 
-def get_batch_script_for_job(job):
-    return job if "st_archive" in job else "." + job
+def get_batch_script_for_job(job, hidden=None):
+    # this if statement is for backward compatibility
+    if hidden is None:
+        hidden = job != "case.st_archive"
+    return "." + job if hidden else job
 
 
 def string_in_list(_string, _list):
@@ -2674,3 +2629,46 @@ def clear_folder(_dir):
                     os.rmdir(file_path)
             except Exception as e:
                 print(e)
+
+
+def add_flag_to_cmd(flag, val):
+    """
+    Given a flag and value for a shell command, return a string
+
+    >>> add_flag_to_cmd("-f", "hi")
+    '-f hi'
+    >>> add_flag_to_cmd("--foo", 42)
+    '--foo 42'
+    >>> add_flag_to_cmd("--foo=", 42)
+    '--foo=42'
+    >>> add_flag_to_cmd("--foo:", 42)
+    '--foo:42'
+    >>> add_flag_to_cmd("--foo:", " hi ")
+    '--foo:hi'
+    """
+    no_space_chars = "=:"
+    no_space = False
+    for item in no_space_chars:
+        if flag.endswith(item):
+            no_space = True
+
+    separator = "" if no_space else " "
+    return "{}{}{}".format(flag, separator, str(val).strip())
+
+
+def is_comp_standalone(case):
+    """
+    Test if the case is a single component standalone
+    such as FKESSLER
+    """
+    stubcnt = 0
+    classes = case.get_values("COMP_CLASSES")
+    for comp in classes:
+        if case.get_value("COMP_{}".format(comp)) == "s{}".format(comp.lower()):
+            stubcnt = stubcnt + 1
+        else:
+            model = comp.lower()
+    numclasses = len(classes)
+    if stubcnt >= numclasses - 2:
+        return True, model
+    return False, get_model()

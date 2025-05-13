@@ -12,6 +12,11 @@ from CIME.tests import base
 from CIME.case.case import Case
 from CIME.XML.env_run import EnvRun
 
+try:
+    collectionsAbc = collections.abc
+except AttributeError:
+    collectionsAbc = collections
+
 
 class TestCimeCase(base.BaseTestCase):
     def test_cime_case(self):
@@ -61,7 +66,7 @@ class TestCimeCase(base.BaseTestCase):
         args = "--case {name} --script-root {testdir} --compset X --res f19_g16 --handle-preexisting-dirs=r --output-root {testdir}".format(
             name=testcase_name, testdir=testdir
         )
-        if utils.get_model() == "cesm":
+        if self._config.allow_unsupported:
             args += " --run-unsupported"
 
         self.run_cmd_assert_result(
@@ -86,7 +91,7 @@ class TestCimeCase(base.BaseTestCase):
                 prereq=prereq_name, job=job_name, skip_pnl=True, dry_run=True
             )
             self.assertTrue(
-                isinstance(batch_commands, collections.Sequence),
+                isinstance(batch_commands, collectionsAbc.Sequence),
                 "case.submit_jobs did not return a sequence for a dry run",
             )
             self.assertTrue(
@@ -99,7 +104,7 @@ class TestCimeCase(base.BaseTestCase):
             # The prerequisite should be applied to all jobs, though we're only expecting one
             for batch_cmd in batch_commands:
                 self.assertTrue(
-                    isinstance(batch_cmd, collections.Sequence),
+                    isinstance(batch_cmd, collectionsAbc.Sequence),
                     "case.submit_jobs did not return a sequence of sequences",
                 )
                 self.assertTrue(
@@ -161,7 +166,7 @@ class TestCimeCase(base.BaseTestCase):
                 dry_run=True,
             )
             self.assertTrue(
-                isinstance(batch_commands, collections.Sequence),
+                isinstance(batch_commands, collectionsAbc.Sequence),
                 "case.submit_jobs did not return a sequence for a dry run",
             )
             num_submissions = 1
@@ -190,7 +195,7 @@ class TestCimeCase(base.BaseTestCase):
                 job=job_name, skip_pnl=True, dry_run=True, resubmit_immediate=True
             )
             self.assertTrue(
-                isinstance(batch_commands, collections.Sequence),
+                isinstance(batch_commands, collectionsAbc.Sequence),
                 "case.submit_jobs did not return a sequence for a dry run",
             )
             if case.get_value("DOUT_S"):
@@ -231,7 +236,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         with Case(casedir, read_only=False) as case:
-            build_threaded = case.get_value("SMP_PRESENT")
+            build_threaded = case.get_value("BUILD_THREADED")
             self.assertFalse(build_threaded)
 
             build_threaded = case.get_build_threaded()
@@ -249,7 +254,7 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         with Case(casedir, read_only=False) as case:
-            build_threaded = case.get_value("SMP_PRESENT")
+            build_threaded = case.get_value("BUILD_THREADED")
             self.assertTrue(build_threaded)
 
             build_threaded = case.get_build_threaded()
@@ -310,7 +315,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "-opt1 -opt2")
 
     def test_cime_case_test_walltime_mgmt_1(self):
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS.f19_g16_rx1.A"
@@ -332,7 +337,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_2(self):
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
@@ -354,7 +359,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_3(self):
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P64.f19_g16_rx1.A"
@@ -382,7 +387,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")  # Not smart enough to select faster queue
 
     def test_cime_case_test_walltime_mgmt_4(self):
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
@@ -410,7 +415,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "biggpu")
 
     def test_cime_case_test_walltime_mgmt_5(self):
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
         test_name = "ERS_P1.f19_g16_rx1.A"
@@ -501,11 +506,13 @@ class TestCimeCase(base.BaseTestCase):
                 self.assertEqual(result, "421:32:11")
 
     def test_cime_case_test_walltime_mgmt_8(self):
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
-        test_name = "SMS_P25600.f19_g16_rx1.A"
-        machine, compiler = "theta", "gnu"
+        # Frontier has 56 MAX_MPITASKS_PER_NODE so 5600 should require 100 nodes
+        # which should land us in 6 hour queue
+        test_name = "SMS_P5600.f19_g16_rx1.A"
+        machine, compiler = "frontier", "gnu"
         casedir = self._create_test(
             [
                 "--no-setup",
@@ -523,20 +530,17 @@ class TestCimeCase(base.BaseTestCase):
             "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
-        self.assertEqual(result, "09:00:00")
+        self.assertEqual(result, "06:00:00")
 
         result = self.run_cmd_assert_result(
             "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
         )
-        self.assertEqual(result, "default")
+        self.assertEqual(result, "batch")
 
     def test_cime_case_test_custom_project(self):
         test_name = "ERS_P1.f19_g16_rx1.A"
         # have to use a machine both models know and one that doesn't put PROJECT in any key paths
-        if utils.get_model() == "e3sm":
-            machine = "mappy"
-        else:
-            machine = "melvin"
+        machine = self._config.test_custom_project_machine
         compiler = "gnu"
         casedir = self._create_test(
             [
@@ -727,7 +731,8 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         self.run_cmd_assert_result(
-            "./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc", from_dir=casedir
+            "./xmlchange CCSM_CPRNC=this_is_a_broken_cprnc --file env_test.xml",
+            from_dir=casedir,
         )
         self.run_cmd_assert_result("./case.build", from_dir=casedir)
         self.run_cmd_assert_result("./case.submit", from_dir=casedir)

@@ -81,6 +81,14 @@ def parse_command_line(args, description):
         )
 
     parser.add_argument(
+        "--skip-submit",
+        action="store_true",
+        help="Sets the current test phase to RUN, skipping the SUBMIT phase. This "
+        "may be useful if rebuilding the model while this test is in the batch queue. "
+        "ONLY USE IF A TEST CASE, OTHERWISE IGNORED.",
+    )
+
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Just print the cmake and ninja commands.",
@@ -173,6 +181,7 @@ def parse_command_line(args, description):
         args.separate_builds,
         args.ninja,
         args.dry_run,
+        args.skip_submit,
     )
 
 
@@ -191,6 +200,7 @@ def _main_func(description):
         separate_builds,
         ninja,
         dry_run,
+        skip_submit,
     ) = parse_command_line(sys.argv, description)
 
     success = True
@@ -234,6 +244,7 @@ def _main_func(description):
                 ninja=ninja,
                 dry_run=dry_run,
                 separate_builds=separate_builds,
+                skip_submit=skip_submit,
             )
 
         else:

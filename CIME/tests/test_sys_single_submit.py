@@ -9,7 +9,7 @@ class TestSingleSubmit(base.BaseTestCase):
         # Skip unless on a batch system and users did not select no-batch
         if not self._hasbatch:
             self.skipTest("Skipping single submit. Not valid without batch")
-        if utils.get_model() != "e3sm":
+        if self._config.test_mode == "cesm":
             self.skipTest("Skipping single submit. E3SM experimental feature")
         if self._machine not in ["sandiatoss3"]:
             self.skipTest("Skipping single submit. Only works on sandiatoss3")

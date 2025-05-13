@@ -38,6 +38,7 @@ from CIME.utils import (
     run_cmd_no_fail,
     get_cime_config,
 )
+from CIME.config import Config
 from CIME.XML.machines import Machines
 from CIME.case import Case
 from CIME.test_utils import get_tests_from_xml
@@ -55,7 +56,7 @@ def parse_command_line(args, description):
         description=description, formatter_class=RawTextHelpFormatter
     )
 
-    model = CIME.utils.get_model()
+    model_config = Config.instance()
 
     CIME.utils.setup_standard_logging_options(parser)
 
@@ -179,7 +180,7 @@ def parse_command_line(args, description):
         "\ninvoke ./query_config. The default is the first listing .",
     )
 
-    if model in ["cesm", "ufs"]:
+    if model_config.create_test_flag_mode == "cesm":
         parser.add_argument(
             "-c",
             "--compare",
@@ -217,8 +218,8 @@ def parse_command_line(args, description):
         )
 
         parser.add_argument(
-            "--xml-driver",
-            choices=("mct", "nuopc", "moab"),
+            "--driver",
+            choices=model_config.driver_choices,
             help="Override driver specified in tests and use this one.",
         )
 
@@ -257,6 +258,11 @@ def parse_command_line(args, description):
             action="store_true",
             help="While testing, generate baselines. "
             "\nNOTE: this can also be done after the fact with bless_test_results",
+        )
+
+        parser.add_argument(
+            "--driver",
+            help="Override driver specified in tests and use this one.",
         )
 
     default = get_default_setting(config, "COMPILER", None, check_main=True)
@@ -392,6 +398,12 @@ def parse_command_line(args, description):
     )
 
     parser.add_argument(
+        "--ignore-diffs",
+        action="store_true",
+        help="Do not fail if there history file diffs",
+    )
+
+    parser.add_argument(
         "--ignore-memleak", action="store_true", help="Do not fail if there's a memleak"
     )
 
@@ -472,14 +484,27 @@ def parse_command_line(args, description):
         f"The default is {srcroot_default}",
     )
 
+    parser.add_argument(
+        "--force-rebuild",
+        action="store_true",
+        help="When used with 'use-existing' and 'test-id', the"
+        "tests will have their 'BUILD_SHAREDLIB' phase reset to 'PEND'.",
+    )
+
     CIME.utils.add_mail_type_args(parser)
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     CIME.utils.resolve_mail_type_args(args)
 
+    if args.force_rebuild:
+        expect(
+            args.use_existing and args.test_id,
+            "Cannot force a rebuild without 'use-existing' and 'test-id'",
+        )
+
     # generate and compare flags may not point to the same directory
-    if model in ["cesm", "ufs"]:
+    if model_config.create_test_flag_mode == "cesm":
         if args.generate is not None:
             expect(
                 not (args.generate == args.compare),
@@ -577,7 +602,7 @@ def parse_command_line(args, description):
 
     # Compute list of fully-resolved test_names
     test_extra_data = {}
-    if model in ["cesm", "ufs"]:
+    if model_config.check_machine_name_from_test_name:
         machine_name = args.xml_machine if args.machine is None else args.machine
 
         # If it's still unclear what machine to use, look at test names
@@ -622,7 +647,7 @@ def parse_command_line(args, description):
                 xml_testlist=args.xml_testlist,
                 machine=machine_name,
                 compiler=args.compiler,
-                driver=args.xml_driver,
+                driver=args.driver,
             )
             test_names = [item["name"] for item in test_data]
             for test_datum in test_data:
@@ -630,13 +655,25 @@ def parse_command_line(args, description):
 
         logger.info("Testnames: %s" % test_names)
     else:
+        inf_machine, inf_compilers = get_tests.infer_arch_from_tests(args.testargs)
         if args.machine is None:
-            args.machine = get_tests.infer_machine_name_from_tests(args.testargs)
+            args.machine = inf_machine
 
         mach_obj = Machines(machine=args.machine)
-        args.compiler = (
-            mach_obj.get_default_compiler() if args.compiler is None else args.compiler
-        )
+        if args.compiler is None:
+            if len(inf_compilers) == 0:
+                args.compiler = mach_obj.get_default_compiler()
+            elif len(inf_compilers) == 1:
+                args.compiler = inf_compilers[0]
+            else:
+                # User has multiple compiler specifications in their testargs
+                args.compiler = inf_compilers[0]
+                expect(
+                    not args.compare and not args.generate,
+                    "It is not safe to do baseline operations with heterogenous compiler set: {}".format(
+                        inf_compilers
+                    ),
+                )
 
         test_names = get_tests.get_full_test_names(
             args.testargs, mach_obj.get_machine_name(), args.compiler
@@ -661,7 +698,7 @@ def parse_command_line(args, description):
     baseline_cmp_name = None
     baseline_gen_name = None
     if args.compare or args.generate:
-        if model in ["cesm", "ufs"]:
+        if model_config.create_test_flag_mode == "cesm":
             if args.compare is not None:
                 baseline_cmp_name = args.compare
             if args.generate is not None:
@@ -690,7 +727,7 @@ def parse_command_line(args, description):
         expect(dot_count > 1 and dot_count <= 4, "Invalid test Name, '{}'".format(name))
 
     # for e3sm, sort by walltime
-    if model == "e3sm":
+    if model_config.sort_tests:
         if args.walltime is None:
             # Longest tests should run first
             test_names.sort(key=get_tests.key_test_time, reverse=True)
@@ -735,12 +772,15 @@ def parse_command_line(args, description):
         args.check_throughput,
         args.check_memory,
         args.ignore_namelists,
+        args.ignore_diffs,
         args.ignore_memleak,
         args.allow_pnl,
         args.non_local,
         args.single_exe,
         args.workflow,
         args.chksum,
+        args.force_rebuild,
+        args.driver,
     )
 
 
@@ -894,12 +934,15 @@ def create_test(
     check_throughput,
     check_memory,
     ignore_namelists,
+    ignore_diffs,
     ignore_memleak,
     allow_pnl,
     non_local,
     single_exe,
     workflow,
     chksum,
+    force_rebuild,
+    driver,
 ):
     ###############################################################################
     impl = TestScheduler(
@@ -940,6 +983,8 @@ def create_test(
         single_exe=single_exe,
         workflow=workflow,
         chksum=chksum,
+        force_rebuild=force_rebuild,
+        driver=driver,
     )
 
     success = impl.run_tests(
@@ -947,6 +992,7 @@ def create_test(
         check_throughput=check_throughput,
         check_memory=check_memory,
         ignore_namelists=ignore_namelists,
+        ignore_diffs=ignore_diffs,
         ignore_memleak=ignore_memleak,
     )
 
@@ -992,6 +1038,11 @@ def create_test(
 ###############################################################################
 def _main_func(description=None):
     ###############################################################################
+    customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+
+    if os.path.exists(customize_path):
+        Config.instance().load(customize_path)
+
     (
         test_names,
         test_data,
@@ -1030,12 +1081,15 @@ def _main_func(description=None):
         check_throughput,
         check_memory,
         ignore_namelists,
+        ignore_diffs,
         ignore_memleak,
         allow_pnl,
         non_local,
         single_exe,
         workflow,
         chksum,
+        force_rebuild,
+        driver,
     ) = parse_command_line(sys.argv, description)
 
     success = False
@@ -1081,12 +1135,15 @@ def _main_func(description=None):
             check_throughput,
             check_memory,
             ignore_namelists,
+            ignore_diffs,
             ignore_memleak,
             allow_pnl,
             non_local,
             single_exe,
             workflow,
             chksum,
+            force_rebuild,
+            driver,
         )
         run_count += 1
 

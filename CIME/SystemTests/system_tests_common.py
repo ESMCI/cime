@@ -1,11 +1,12 @@
 """
 Base class for CIME system tests
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
+from CIME.status import append_testlog
 from CIME.utils import (
-    append_testlog,
     get_model,
     safe_copy,
     get_timestamp,
@@ -13,6 +14,7 @@ from CIME.utils import (
     expect,
     get_current_commit,
     SharedArea,
+    is_comp_standalone,
 )
 from CIME.test_status import *
 from CIME.hist_utils import (
@@ -23,11 +25,22 @@ from CIME.hist_utils import (
     get_ts_synopsis,
     generate_baseline,
 )
+from CIME.config import Config
 from CIME.provenance import save_test_time, get_test_success
 from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
+from CIME.baselines.performance import (
+    get_latest_cpl_logs,
+    perf_get_memory_list,
+    perf_compare_memory_baseline,
+    perf_compare_throughput_baseline,
+    perf_write_baseline,
+    load_coupler_customization,
+)
 import CIME.build as build
+from datetime import datetime, timedelta
+import glob, gzip, time, traceback, os, math, calendar
 
-import glob, gzip, time, traceback, os
+from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +48,55 @@ logger = logging.getLogger(__name__)
 INIT_GENERATED_FILES_DIRNAME = "init_generated_files"
 
 
+def fix_single_exe_case(case):
+    """Fixes cases created with --single-exe.
+
+    When tests are created using --single-exe, the test_scheduler will set
+    `BUILD_COMPLETE` to True, but some tests require calls to `case.case_setup`
+    which can resets `BUILD_COMPLETE` to false. This function will check if a
+    case was created with `--single-exe` and ensure `BUILD_COMPLETE` is True.
+
+    Returns:
+        True when case required modification otherwise False.
+    """
+    if is_single_exe_case(case):
+        with ExitStack() as stack:
+            # enter context if case is still read-only, entering the context
+            # multiple times can cause side effects for later calls to
+            # `set_value` when it's assumed the cause is writeable.
+            if case._read_only_mode:
+                stack.enter_context(case)
+
+            case.set_value("BUILD_COMPLETE", True)
+
+            return True
+
+    return False
+
+
+def is_single_exe_case(case):
+    """Determines if the case was created with the --single-exe option.
+
+    If `CASEROOT` is not part of `EXEROOT` and the `TEST` variable is True,
+    then its safe to assume the case was created with `./create_test`
+    and the `--single-exe` option.
+
+    Returns:
+        True when the case was created with `--single-exe` otherwise false.
+    """
+    caseroot = case.get_value("CASEROOT")
+
+    exeroot = case.get_value("EXEROOT")
+
+    test = case.get_value("TEST")
+
+    return caseroot not in exeroot and test
+
+
 class SystemTestsCommon(object):
-    def __init__(self, case, expected=None):
+    def __init__(
+        self, case, expected=None, **kwargs
+    ):  # pylint: disable=unused-argument
         """
         initialize a CIME system test object, if the locked env_run.orig.xml
         does not exist copy the current env_run.xml file.  If it does exist restore values
@@ -52,12 +112,167 @@ class SystemTestsCommon(object):
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
+        self._rest_time = None
         self._cpllog = (
-            "drv" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
+            "med" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
         )
         self._ninja = False
         self._dry_run = False
         self._user_separate_builds = False
+        self._expected_num_cmp = None
+        self._rest_n = None
+        # Does the model support this variable?
+        self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
+
+    def _set_drv_restart_pointer(self, value):
+        if self._drv_restart_pointer:
+            logger.info("setting DRV_RESTART_POINTER={}".format(value))
+            self._case.set_value("DRV_RESTART_POINTER", value)
+
+    def _set_restart_interval(
+        self, stop_n=None, stop_option=None, startdate=None, starttime=None
+    ):
+        if not stop_n:
+            stop_n = self._case.get_value("STOP_N")
+        if not stop_option:
+            stop_option = self._case.get_value("STOP_OPTION")
+
+        self._case.set_value("REST_OPTION", stop_option)
+        # We need to make sure the run is long enough and to set REST_N to a
+        # value that makes sense for all components
+        maxncpl = 10000
+        minncpl = 0
+        for comp in self._case.get_values("COMP_CLASSES"):
+            if comp == "CPL":
+                continue
+            compname = self._case.get_value("COMP_{}".format(comp))
+
+            # ignore stub components in this test.
+            if compname == "s{}".format(comp.lower()):
+                ncpl = None
+            else:
+                ncpl = self._case.get_value("{}_NCPL".format(comp))
+
+            if ncpl and maxncpl > ncpl:
+                maxncpl = ncpl
+            if ncpl and minncpl < ncpl:
+                minncpl = ncpl
+
+        ncpl_base_period = self._case.get_value("NCPL_BASE_PERIOD")
+        if ncpl_base_period == "hour":
+            coupling_secs = 3600 / maxncpl
+            timestep = 3600 / minncpl
+        elif ncpl_base_period == "day":
+            coupling_secs = 86400 / maxncpl
+            timestep = 86400 / minncpl
+        elif ncpl_base_period == "year":
+            coupling_secs = 31536000 / maxncpl
+            timestep = 31536000 / minncpl
+        elif ncpl_base_period == "decade":
+            coupling_secs = 315360000 / maxncpl
+            timestep = 315360000 / minncpl
+
+        # Convert stop_n to units of coupling intervals
+        factor = 1
+        if stop_option == "nsteps":
+            factor = timestep
+        elif stop_option == "nminutes":
+            factor = 60
+        elif stop_option == "nhours":
+            factor = 3600
+        elif stop_option == "ndays":
+            factor = 86400
+        elif stop_option == "nyears":
+            factor = 315360000
+        else:
+            expect(False, f"stop_option {stop_option} not available for this test")
+        stop_n = int(stop_n * factor // coupling_secs)
+        rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
+        expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
+        expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+        if not starttime:
+            starttime = self._case.get_value("START_TOD")
+        if not startdate:
+            startdate = self._case.get_value("RUN_STARTDATE")
+        if "-" in startdate:
+            startdatetime = datetime.fromisoformat(startdate) + timedelta(
+                seconds=int(starttime)
+            )
+        else:
+            startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
+                seconds=int(starttime)
+            )
+
+        cal = self._case.get_value("CALENDAR")
+
+        if stop_option == "nsteps":
+            rtd = timedelta(seconds=rest_n * factor)
+        elif stop_option == "nminutes":
+            rtd = timedelta(minutes=rest_n)
+        elif stop_option == "nhours":
+            rtd = timedelta(hours=rest_n)
+        elif stop_option == "ndays":
+            rtd = timedelta(days=rest_n)
+        elif stop_option == "nyears":
+            rtd = timedelta(days=rest_n * 365)
+        else:
+            expect(False, f"stop_option {stop_option} not available for this test")
+
+        restdatetime = startdatetime + rtd
+        # We are working with python datatime and the model uses a NO_LEAP 365 day calendar
+        # so we need to correct for leap years
+        if cal == "NO_LEAP":
+            restdatetime = restdatetime + self._leap_year_correction(
+                startdatetime, restdatetime
+            )
+
+        self._rest_time = (
+            f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
+        )
+        h = restdatetime.hour
+        m = restdatetime.minute
+        s = restdatetime.second
+        self._rest_time += f"{(h*3600+m*60+s):05d}"
+
+        logger.info(
+            "doing an {0} {1} initial test with restart file at {2} {1}".format(
+                str(stop_n), stop_option, str(rest_n)
+            )
+        )
+        self._case.set_value("REST_N", rest_n)
+
+        return rest_n
+
+    @staticmethod
+    def _leap_year_correction(startdatetime, restdatetime):
+        """
+        Compute correction needed for restdate time if model is using NO_LEAP calendar
+
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("00031231","%Y%m%d"), datetime.strptime("00040101","%Y%m%d"))
+        datetime.timedelta(0)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20000225","%Y%m%d"), datetime.strptime("20000301","%Y%m%d"))
+        datetime.timedelta(days=1)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20010301","%Y%m%d"))
+        datetime.timedelta(0)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20050301","%Y%m%d"))
+        datetime.timedelta(days=1)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("18500101","%Y%m%d"), datetime.strptime("20201231","%Y%m%d"))
+        datetime.timedelta(days=42)
+        """
+        dayscorrected = 0
+        syr = startdatetime.year
+        smon = startdatetime.month
+        ryr = syr
+        rmon = restdatetime.month
+        while ryr < restdatetime.year:
+            if calendar.isleap(ryr):
+                dayscorrected += 1
+            ryr = ryr + 1
+        if rmon > 2 and (smon <= 2 or restdatetime.year > syr):
+            if calendar.isleap(ryr):
+                dayscorrected += 1
+        logger.info("correcting calendar for no leap {}".format(dayscorrected))
+        return timedelta(days=dayscorrected)
 
     def _init_environment(self, caseroot):
         """
@@ -72,10 +287,10 @@ class SystemTestsCommon(object):
         env_run.xml file. If it does exist, restore values changed in a previous
         run of the test.
         """
-        if is_locked("env_run.orig.xml"):
+        if is_locked("env_run.orig.xml", caseroot):
             self.compare_env_run(expected=expected)
         elif os.path.isfile(os.path.join(caseroot, "env_run.xml")):
-            lock_file("env_run.xml", caseroot=caseroot, newname="env_run.orig.xml")
+            lock_file("env_run.xml", caseroot, newname="env_run.orig.xml")
 
     def _resetup_case(self, phase, reset=False):
         """
@@ -95,6 +310,7 @@ class SystemTestsCommon(object):
             )
             self._case.set_initial_test_values()
             self._case.case_setup(reset=True, test_mode=True)
+            fix_single_exe_case(self._case)
 
     def build(
         self,
@@ -103,6 +319,7 @@ class SystemTestsCommon(object):
         ninja=False,
         dry_run=False,
         separate_builds=False,
+        skip_submit=False,
     ):
         """
         Do NOT override this method, this method is the framework that
@@ -113,6 +330,9 @@ class SystemTestsCommon(object):
         self._ninja = ninja
         self._dry_run = dry_run
         self._user_separate_builds = separate_builds
+
+        was_run_pend = self._test_status.current_is(RUN_PHASE, TEST_PEND_STATUS)
+
         for phase_name, phase_bool in [
             (SHAREDLIB_BUILD_PHASE, not model_only),
             (MODEL_BUILD_PHASE, not sharedlib_only),
@@ -128,7 +348,9 @@ class SystemTestsCommon(object):
                         sharedlib_only=(phase_name == SHAREDLIB_BUILD_PHASE),
                         model_only=(phase_name == MODEL_BUILD_PHASE),
                     )
-                except BaseException as e:  # We want KeyboardInterrupts to generate FAIL status
+                except (
+                    BaseException
+                ) as e:  # We want KeyboardInterrupts to generate FAIL status
                     success = False
                     if isinstance(e, CIMEError):
                         # Don't want to print stacktrace for a build failure since that
@@ -150,6 +372,15 @@ class SystemTestsCommon(object):
                             TEST_PASS_STATUS if success else TEST_FAIL_STATUS,
                             comments=("time={:d}".format(int(time_taken))),
                         )
+
+        # Building model while job is queued and awaiting run
+        if (
+            skip_submit
+            and was_run_pend
+            and self._test_status.current_is(SUBMIT_PHASE, TEST_PEND_STATUS)
+        ):
+            with self._test_status:
+                self._test_status.set_status(SUBMIT_PHASE, TEST_PASS_STATUS)
 
         return success
 
@@ -192,7 +423,13 @@ class SystemTestsCommon(object):
         """
         success = True
         start_time = time.time()
-        self._skip_pnl = skip_pnl
+        wav_comp = self._case.get_value("COMP_WAV")
+        # WW3 requires pnl to be run again after the build phase.
+        if wav_comp and wav_comp == "ww3":
+            self._skip_pnl = False
+        else:
+            self._skip_pnl = skip_pnl
+
         try:
             self._resetup_case(RUN_PHASE)
             do_baseline_ops = True
@@ -217,10 +454,12 @@ class SystemTestsCommon(object):
             if self._case.get_value("COMPARE_BASELINE"):
                 if do_baseline_ops:
                     self._phase_modifying_call(BASELINE_PHASE, self._compare_baseline)
-                    self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
-                    self._phase_modifying_call(
-                        THROUGHPUT_PHASE, self._compare_throughput
-                    )
+                    comp_standalone, _ = is_comp_standalone(self._case)
+                    if not comp_standalone:
+                        self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
+                        self._phase_modifying_call(
+                            THROUGHPUT_PHASE, self._compare_throughput
+                        )
                 else:
                     with self._test_status:
                         self._test_status.set_status(BASELINE_PHASE, TEST_PEND_STATUS)
@@ -253,7 +492,9 @@ class SystemTestsCommon(object):
                     RUN_PHASE, status, comments=("time={:d}".format(int(time_taken)))
                 )
 
-            if get_model() == "e3sm":
+            config = Config.instance()
+
+            if config.verbose_run_phase:
                 # If run phase worked, remember the time it took in order to improve later walltime ests
                 baseline_root = self._case.get_value("BASELINE_ROOT")
                 if success:
@@ -320,7 +561,9 @@ class SystemTestsCommon(object):
                                     )
                                 )
 
-            if get_model() == "cesm" and self._case.get_value("GENERATE_BASELINE"):
+            if config.baseline_store_teststatus and self._case.get_value(
+                "GENERATE_BASELINE"
+            ):
                 baseline_dir = os.path.join(
                     self._case.get_value("BASELINE_ROOT"),
                     self._case.get_value("BASEGEN_CASE"),
@@ -373,6 +616,15 @@ class SystemTestsCommon(object):
         stop_option = self._case.get_value("STOP_OPTION")
         run_type = self._case.get_value("RUN_TYPE")
         rundir = self._case.get_value("RUNDIR")
+        try:
+            self._case.check_all_input_data()
+        except CIMEError:
+            caseroot = self._case.get_value("CASEROOT")
+            raise CIMEError(
+                "Could not find all inputdata on any server, try "
+                "manually running `./check_input_data --download "
+                f"--verbose` from {caseroot!r}."
+            ) from None
         if submit_resubmits is None:
             do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
         else:
@@ -416,7 +668,7 @@ class SystemTestsCommon(object):
             self._case.case_st_archive(resubmit=True)
 
     def _coupler_log_indicates_run_complete(self):
-        newestcpllogfiles = self._get_latest_cpl_logs()
+        newestcpllogfiles = get_latest_cpl_logs(self._case)
         logger.debug("Latest Coupler log file(s) {}".format(newestcpllogfiles))
         # Exception is raised if the file is not compressed
         allgood = len(newestcpllogfiles)
@@ -434,7 +686,10 @@ class SystemTestsCommon(object):
         return allgood == 0
 
     def _component_compare_copy(self, suffix):
-        comments = copy_histfiles(self._case, suffix)
+        # Only match .nc files
+        comments, num_copied = copy_histfiles(self._case, suffix, match_suffix="nc")
+        self._expected_num_cmp = num_copied
+
         append_testlog(comments, self._orig_caseroot)
 
     def _log_cprnc_output_tail(self, filename_pattern, prepend=None):
@@ -467,11 +722,25 @@ class SystemTestsCommon(object):
             diagnostic fields that are missing from the other case), treat the two cases
             as identical.
         """
-        success, comments = self._do_compare_test(
+        success, comments, num_compared = self._do_compare_test(
             suffix1, suffix2, ignore_fieldlist_diffs=ignore_fieldlist_diffs
         )
         if success_change:
             success = not success
+
+        if (
+            self._expected_num_cmp is not None
+            and num_compared is not None
+            and self._expected_num_cmp != num_compared
+        ):
+            comments = comments.replace("PASS", "")
+            comments += """\nWARNING
+Expected to compare {} hist files, but only compared {}. It's possible
+that the hist_file_extension entry in config_archive.xml is not correct
+for some of your components.
+""".format(
+                self._expected_num_cmp, num_compared
+            )
 
         append_testlog(comments, self._orig_caseroot)
 
@@ -504,43 +773,6 @@ class SystemTestsCommon(object):
             else:
                 self._test_status.set_status(STARCHIVE_PHASE, TEST_FAIL_STATUS)
 
-    def _get_mem_usage(self, cpllog):
-        """
-        Examine memory usage as recorded in the cpl log file and look for unexpected
-        increases.
-        """
-        memlist = []
-        meminfo = re.compile(
-            r".*model date =\s+(\w+).*memory =\s+(\d+\.?\d+).*highwater"
-        )
-        if cpllog is not None and os.path.isfile(cpllog):
-            if ".gz" == cpllog[-3:]:
-                fopen = gzip.open
-            else:
-                fopen = open
-            with fopen(cpllog, "rb") as f:
-                for line in f:
-                    m = meminfo.match(line.decode("utf-8"))
-                    if m:
-                        memlist.append((float(m.group(1)), float(m.group(2))))
-        # Remove the last mem record, it's sometimes artificially high
-        if len(memlist) > 0:
-            memlist.pop()
-        return memlist
-
-    def _get_throughput(self, cpllog):
-        """
-        Examine memory usage as recorded in the cpl log file and look for unexpected
-        increases.
-        """
-        if cpllog is not None and os.path.isfile(cpllog):
-            with gzip.open(cpllog, "rb") as f:
-                cpltext = f.read().decode("utf-8")
-                m = re.search(r"# simulated years / cmp-day =\s+(\d+\.\d+)\s", cpltext)
-                if m:
-                    return float(m.group(1))
-        return None
-
     def _phase_modifying_call(self, phase, function):
         """
         Ensures that unexpected exceptions from phases will result in a FAIL result
@@ -567,47 +799,29 @@ class SystemTestsCommon(object):
         Examine memory usage as recorded in the cpl log file and look for unexpected
         increases.
         """
-        with self._test_status:
-            latestcpllogs = self._get_latest_cpl_logs()
-            for cpllog in latestcpllogs:
-                memlist = self._get_mem_usage(cpllog)
+        config = load_coupler_customization(self._case)
 
-                if len(memlist) < 3:
-                    self._test_status.set_status(
-                        MEMLEAK_PHASE,
-                        TEST_PASS_STATUS,
-                        comments="insuffiencient data for memleak test",
-                    )
-                else:
-                    finaldate = int(memlist[-1][0])
-                    originaldate = int(
-                        memlist[1][0]
-                    )  # skip first day mem record, it can be too low while initializing
-                    finalmem = float(memlist[-1][1])
-                    originalmem = float(memlist[1][1])
-                    memdiff = -1
-                    if originalmem > 0:
-                        memdiff = (finalmem - originalmem) / originalmem
-                    tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
-                    if tolerance is None:
-                        tolerance = 0.1
-                    expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
-                    if memdiff < 0:
-                        self._test_status.set_status(
-                            MEMLEAK_PHASE,
-                            TEST_PASS_STATUS,
-                            comments="data for memleak test is insuffiencient",
-                        )
-                    elif memdiff < tolerance:
-                        self._test_status.set_status(MEMLEAK_PHASE, TEST_PASS_STATUS)
-                    else:
-                        comment = "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
-                            originalmem, finalmem, finaldate - originaldate
-                        )
-                        append_testlog(comment, self._orig_caseroot)
-                        self._test_status.set_status(
-                            MEMLEAK_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
+        # default to 0.1
+        tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE") or 0.1
+
+        expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
+
+        with self._test_status:
+            try:
+                memleak, comment = config.perf_check_for_memory_leak(
+                    self._case, tolerance
+                )
+            except AttributeError:
+                memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
+
+            if memleak:
+                append_testlog(comment, self._orig_caseroot)
+
+                status = TEST_FAIL_STATUS
+            else:
+                status = TEST_PASS_STATUS
+
+            self._test_status.set_status(MEMLEAK_PHASE, status, comments=comment)
 
     def compare_env_run(self, expected=None):
         """
@@ -634,121 +848,64 @@ class SystemTestsCommon(object):
                 return False
         return True
 
-    def _get_latest_cpl_logs(self):
-        """
-        find and return the latest cpl log file in the run directory
-        """
-        coupler_log_path = self._case.get_value("RUNDIR")
-        cpllogs = glob.glob(
-            os.path.join(coupler_log_path, "{}*.log.*".format(self._cpllog))
-        )
-        lastcpllogs = []
-        if cpllogs:
-            lastcpllogs.append(max(cpllogs, key=os.path.getctime))
-            basename = os.path.basename(lastcpllogs[0])
-            suffix = basename.split(".", 1)[1]
-            for log in cpllogs:
-                if log in lastcpllogs:
-                    continue
-
-                if log.endswith(suffix):
-                    lastcpllogs.append(log)
-
-        return lastcpllogs
-
     def _compare_memory(self):
+        """
+        Compares current test memory usage to baseline.
+        """
         with self._test_status:
-            # compare memory usage to baseline
-            baseline_name = self._case.get_value("BASECMP_CASE")
-            basecmp_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"), baseline_name
-            )
-            newestcpllogfiles = self._get_latest_cpl_logs()
-            if len(newestcpllogfiles) > 0:
-                memlist = self._get_mem_usage(newestcpllogfiles[0])
-            for cpllog in newestcpllogfiles:
-                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
-                if m is not None:
-                    baselog = os.path.join(basecmp_dir, m.group(1)) + ".gz"
-                if baselog is None or not os.path.isfile(baselog):
-                    # for backward compatibility
-                    baselog = os.path.join(basecmp_dir, self._cpllog + ".log")
-                if os.path.isfile(baselog) and len(memlist) > 3:
-                    blmem = self._get_mem_usage(baselog)
-                    blmem = 0 if blmem == [] else blmem[-1][1]
-                    curmem = memlist[-1][1]
-                    diff = 0.0 if blmem == 0 else (curmem - blmem) / blmem
-                    tolerance = self._case.get_value("TEST_MEMLEAK_TOLERANCE")
-                    if tolerance is None:
-                        tolerance = 0.1
+            try:
+                below_tolerance, comment = perf_compare_memory_baseline(self._case)
+            except Exception as e:
+                logger.info("Failed to compare memory usage baseline: {!s}".format(e))
+
+                self._test_status.set_status(
+                    MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=str(e)
+                )
+            else:
+                if below_tolerance is not None:
+                    append_testlog(comment, self._orig_caseroot)
+
                     if (
-                        diff < tolerance
+                        below_tolerance
                         and self._test_status.get_status(MEMCOMP_PHASE) is None
                     ):
                         self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
                     elif (
                         self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS
                     ):
-                        comment = "Error: Memory usage increase >{:d}% from baseline's {:f} to {:f}".format(
-                            int(tolerance * 100), blmem, curmem
-                        )
                         self._test_status.set_status(
                             MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
                         )
-                        append_testlog(comment, self._orig_caseroot)
 
     def _compare_throughput(self):
+        """
+        Compares current test throughput to baseline.
+        """
         with self._test_status:
-            # compare memory usage to baseline
-            baseline_name = self._case.get_value("BASECMP_CASE")
-            basecmp_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"), baseline_name
-            )
-            newestcpllogfiles = self._get_latest_cpl_logs()
-            for cpllog in newestcpllogfiles:
-                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
-                if m is not None:
-                    baselog = os.path.join(basecmp_dir, m.group(1)) + ".gz"
-                if baselog is None or not os.path.isfile(baselog):
-                    # for backward compatibility
-                    baselog = os.path.join(basecmp_dir, self._cpllog)
+            try:
+                below_tolerance, comment = perf_compare_throughput_baseline(self._case)
+            except Exception as e:
+                logger.info("Failed to compare throughput baseline: {!s}".format(e))
 
-                if os.path.isfile(baselog):
-                    # compare throughput to baseline
-                    current = self._get_throughput(cpllog)
-                    baseline = self._get_throughput(baselog)
-                    # comparing ypd so bigger is better
-                    if baseline is not None and current is not None:
-                        diff = (baseline - current) / baseline
-                        tolerance = self._case.get_value("TEST_TPUT_TOLERANCE")
-                        if tolerance is None:
-                            tolerance = 0.1
-                        expect(
-                            tolerance > 0.0,
-                            "Bad value for throughput tolerance in test",
+                self._test_status.set_status(
+                    THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=str(e)
+                )
+            else:
+                if below_tolerance is not None:
+                    append_testlog(comment, self._orig_caseroot)
+
+                    if (
+                        below_tolerance
+                        and self._test_status.get_status(THROUGHPUT_PHASE) is None
+                    ):
+                        self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
+                    elif (
+                        self._test_status.get_status(THROUGHPUT_PHASE)
+                        != TEST_FAIL_STATUS
+                    ):
+                        self._test_status.set_status(
+                            THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
                         )
-                        comment = "TPUTCOMP: Computation time changed by {:.2f}% relative to baseline".format(
-                            diff * 100
-                        )
-                        append_testlog(comment, self._orig_caseroot)
-                        if (
-                            diff < tolerance
-                            and self._test_status.get_status(THROUGHPUT_PHASE) is None
-                        ):
-                            self._test_status.set_status(
-                                THROUGHPUT_PHASE, TEST_PASS_STATUS
-                            )
-                        elif (
-                            self._test_status.get_status(THROUGHPUT_PHASE)
-                            != TEST_FAIL_STATUS
-                        ):
-                            comment = "Error: TPUTCOMP: Computation time increase > {:d}% from baseline".format(
-                                int(tolerance * 100)
-                            )
-                            self._test_status.set_status(
-                                THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
-                            )
-                            append_testlog(comment, self._orig_caseroot)
 
     def _compare_baseline(self):
         """
@@ -790,17 +947,58 @@ class SystemTestsCommon(object):
             )
             # copy latest cpl log to baseline
             # drop the date so that the name is generic
-            newestcpllogfiles = self._get_latest_cpl_logs()
+            newestcpllogfiles = get_latest_cpl_logs(self._case)
             with SharedArea():
+                # TODO ever actually more than one cpl log?
                 for cpllog in newestcpllogfiles:
                     m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
+
                     if m is not None:
                         baselog = os.path.join(basegen_dir, m.group(1)) + ".gz"
+
                         safe_copy(
                             cpllog,
                             os.path.join(basegen_dir, baselog),
                             preserve_meta=False,
                         )
+
+                        perf_write_baseline(self._case, basegen_dir, cpllog)
+
+
+def perf_check_for_memory_leak(case, tolerance):
+    leak = False
+    comment = ""
+
+    latestcpllogs = get_latest_cpl_logs(case)
+
+    for cpllog in latestcpllogs:
+        try:
+            memlist = perf_get_memory_list(case, cpllog)
+        except RuntimeError:
+            return False, "insufficient data for memleak test"
+
+        # last day - second day, skip first day, can be too low while initializing
+        elapsed_days = int(memlist[-1][0]) - int(memlist[1][0])
+
+        finalmem, originalmem = float(memlist[-1][1]), float(memlist[1][1])
+
+        memdiff = -1 if originalmem <= 0 else (finalmem - originalmem) / originalmem
+
+        if memdiff < 0:
+            leak = False
+            comment = "data for memleak test is insufficient"
+        elif memdiff < tolerance:
+            leak = False
+            comment = ""
+        else:
+            leak = True
+            comment = (
+                "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
+                    originalmem, finalmem, elapsed_days
+                )
+            )
+
+    return leak, comment
 
 
 class FakeTest(SystemTestsCommon):
@@ -812,8 +1010,8 @@ class FakeTest(SystemTestsCommon):
     in utils.py will work with these classes.
     """
 
-    def __init__(self, case, expected=None):
-        super(FakeTest, self).__init__(case, expected=expected)
+    def __init__(self, case, expected=None, **kwargs):
+        super(FakeTest, self).__init__(case, expected=expected, **kwargs)
         self._script = None
         self._requires_exe = False
         self._case._non_local = True
@@ -1031,8 +1229,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case):
-        FakeTest.__init__(self, case)
+    def __init__(self, case, **kwargs):
+        FakeTest.__init__(self, case, **kwargs)
         raise RuntimeError("Exception from init")
 
 

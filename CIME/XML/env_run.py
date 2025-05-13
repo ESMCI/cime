@@ -50,6 +50,7 @@ class EnvRun(EnvBase):
         Returns the value or None if not found
         subgroup is ignored in the general routine and applied in specific methods
         """
+        comp = None
         if any(self._pio_async_interface.values()):
             vid, comp, iscompvar = self.check_if_comp_var(vid, None)
             if vid.startswith("PIO") and iscompvar:
@@ -58,9 +59,12 @@ class EnvRun(EnvBase):
                 subgroup = "CPL"
 
         if vid == "PIO_ASYNC_INTERFACE":
-            if type(value) == type(True):
-                self._pio_async_interface = value
-            else:
-                self._pio_async_interface = convert_to_type(value, "logical", vid)
+            if comp:
+                if type(value) == type(True):
+                    self._pio_async_interface[comp] = value
+                else:
+                    self._pio_async_interface[comp] = convert_to_type(
+                        value, "logical", vid
+                    )
 
         return EnvBase.set_value(self, vid, value, subgroup, ignore_type)

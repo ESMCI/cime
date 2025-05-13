@@ -1,14 +1,504 @@
 #!/usr/bin/env python3
 
+import os
 import unittest
+import tempfile
+from contextlib import ExitStack
 from unittest import mock
 
-from CIME.XML.env_batch import EnvBatch
+from CIME.utils import CIMEError, expect
+from CIME.XML.env_batch import EnvBatch, get_job_deps
 
 # pylint: disable=unused-argument
 
+XML_BASE = b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system type="slurm">
+    <batch_query per_job_arg="-j">squeue</batch_query>
+    <batch_submit>sbatch</batch_submit>
+    <batch_cancel>scancel</batch_cancel>
+    <batch_directive>#SBATCH</batch_directive>
+    <jobid_pattern>(\\d+)$</jobid_pattern>
+    <depend_string>--dependency=afterok:jobid</depend_string>
+    <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
+    <depend_separator>:</depend_separator>
+    <walltime_format>%H:%M:%S</walltime_format>
+    <batch_mail_flag>--mail-user</batch_mail_flag>
+    <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
+    <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+    </submit_args>
+    <directives>
+      <directive> --job-name={{ job_id }}</directive>
+      <directive> --nodes={{ num_nodes }}</directive>
+      <directive> --output={{ job_id }}.%j </directive>
+      <directive> --exclusive </directive>
+    </directives>
+  </batch_system>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w docker</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="00:15:00" nodemax="1">debug</queue>
+      <queue walltimemax="24:00:00" nodemax="20" nodemin="5">big</queue>
+      <queue walltimemax="00:30:00" nodemax="5" default="true">smallfast</queue>
+    </queues>
+  </batch_system>
+</file>"""
+
+XML_DIFF = b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="pbs">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system type="slurm">
+    <batch_query per_job_arg="-j">squeue</batch_query>
+    <batch_submit>batch</batch_submit>
+    <batch_cancel>scancel</batch_cancel>
+    <batch_directive>#SBATCH</batch_directive>
+    <jobid_pattern>(\\d+)$</jobid_pattern>
+    <depend_string>--dependency=afterok:jobid</depend_string>
+    <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
+    <depend_separator>:</depend_separator>
+    <walltime_format>%H:%M:%S</walltime_format>
+    <batch_mail_flag>--mail-user</batch_mail_flag>
+    <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
+    <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="pbatch"/>
+      <arg flag="--account" name="$PROJECT"/>
+      <arg flag="-m" name="plane"/>
+    </submit_args>
+    <directives>
+      <directive> --job-name={{ job_id }}</directive>
+      <directive> --nodes=10</directive>
+      <directive> --output={{ job_id }}.%j </directive>
+      <directive> --exclusive </directive>
+      <directive> --qos=high </directive>
+    </directives>
+  </batch_system>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w docker</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="00:15:00" nodemax="1">debug</queue>
+      <queue walltimemax="24:00:00" nodemax="20" nodemin="10">big</queue>
+    </queues>
+  </batch_system>
+</file>"""
+
+
+def _open_temp_file(stack, data):
+    tfile = stack.enter_context(tempfile.NamedTemporaryFile())
+
+    tfile.write(data)
+
+    tfile.seek(0)
+
+    return tfile
+
 
 class TestXMLEnvBatch(unittest.TestCase):
+    def test_compare_xml(self):
+        with ExitStack() as stack:
+            file1 = _open_temp_file(stack, XML_DIFF)
+            batch1 = EnvBatch(infile=file1.name)
+
+            file2 = _open_temp_file(stack, XML_BASE)
+            batch2 = EnvBatch(infile=file2.name)
+
+            diff = batch1.compare_xml(batch2)
+            diff2 = batch2.compare_xml(batch1)
+
+        expected_diff = {
+            "BATCH_SYSTEM": ["pbs", "slurm"],
+            "arg1": ["-p pbatch", "-p $JOB_QUEUE"],
+            "arg3": ["-m plane", ""],
+            "batch_submit": ["batch", "sbatch"],
+            "directive1": [" --nodes=10", " --nodes={{ num_nodes }}"],
+            "directive4": [" --qos=high ", ""],
+            "queue1": ["big", "big"],
+            "queue2": ["", "smallfast"],
+        }
+
+        assert diff == expected_diff
+
+        expected_diff2 = {
+            "BATCH_SYSTEM": ["slurm", "pbs"],
+            "arg1": ["-p $JOB_QUEUE", "-p pbatch"],
+            "arg3": ["", "-m plane"],
+            "batch_submit": ["sbatch", "batch"],
+            "directive1": [" --nodes={{ num_nodes }}", " --nodes=10"],
+            "directive4": ["", " --qos=high "],
+            "queue1": ["big", "big"],
+            "queue2": ["smallfast", ""],
+        }
+
+        assert diff2 == expected_diff2
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch._submit_single_job")
+    def test_submit_jobs(self, _submit_single_job):
+        case = mock.MagicMock()
+
+        case.get_value.side_effect = [
+            False,
+        ]
+
+        env_batch = EnvBatch()
+
+        with self.assertRaises(CIMEError):
+            env_batch.submit_jobs(case)
+
+    @mock.patch("CIME.XML.env_batch.os.path.isfile")
+    @mock.patch("CIME.XML.env_batch.get_batch_script_for_job")
+    @mock.patch("CIME.XML.env_batch.EnvBatch._submit_single_job")
+    def test_submit_jobs_dependency(
+        self, _submit_single_job, get_batch_script_for_job, isfile
+    ):
+        case = mock.MagicMock()
+
+        case.get_env.return_value.get_jobs.return_value = [
+            "case.build",
+            "case.run",
+        ]
+
+        case.get_env.return_value.get_value.side_effect = [
+            None,
+            "",
+            None,
+            "case.build",
+        ]
+
+        case.get_value.side_effect = [
+            False,
+        ]
+
+        _submit_single_job.side_effect = ["0", "1"]
+
+        isfile.return_value = True
+
+        get_batch_script_for_job.side_effect = [".case.build", ".case.run"]
+
+        env_batch = EnvBatch()
+
+        depid = env_batch.submit_jobs(case)
+
+        _submit_single_job.assert_any_call(
+            case,
+            "case.build",
+            skip_pnl=False,
+            resubmit_immediate=False,
+            dep_jobs=[],
+            allow_fail=False,
+            no_batch=False,
+            mail_user=None,
+            mail_type=None,
+            batch_args=None,
+            dry_run=False,
+            workflow=True,
+        )
+        _submit_single_job.assert_any_call(
+            case,
+            "case.run",
+            skip_pnl=False,
+            resubmit_immediate=False,
+            dep_jobs=[
+                "0",
+            ],
+            allow_fail=False,
+            no_batch=False,
+            mail_user=None,
+            mail_type=None,
+            batch_args=None,
+            dry_run=False,
+            workflow=True,
+        )
+        assert depid == {"case.build": "0", "case.run": "1"}
+
+    @mock.patch("CIME.XML.env_batch.os.path.isfile")
+    @mock.patch("CIME.XML.env_batch.get_batch_script_for_job")
+    @mock.patch("CIME.XML.env_batch.EnvBatch._submit_single_job")
+    def test_submit_jobs_single(
+        self, _submit_single_job, get_batch_script_for_job, isfile
+    ):
+        case = mock.MagicMock()
+
+        case.get_env.return_value.get_jobs.return_value = [
+            "case.run",
+        ]
+
+        case.get_env.return_value.get_value.return_value = None
+
+        case.get_value.side_effect = [
+            False,
+        ]
+
+        _submit_single_job.return_value = "0"
+
+        isfile.return_value = True
+
+        get_batch_script_for_job.side_effect = [
+            ".case.run",
+        ]
+
+        env_batch = EnvBatch()
+
+        depid = env_batch.submit_jobs(case)
+
+        _submit_single_job.assert_any_call(
+            case,
+            "case.run",
+            skip_pnl=False,
+            resubmit_immediate=False,
+            dep_jobs=[],
+            allow_fail=False,
+            no_batch=False,
+            mail_user=None,
+            mail_type=None,
+            batch_args=None,
+            dry_run=False,
+            workflow=True,
+        )
+        assert depid == {"case.run": "0"}
+
+    def test_get_job_deps(self):
+        # no jobs
+        job_deps = get_job_deps("", {})
+
+        assert job_deps == []
+
+        # dependency doesn't exist
+        job_deps = get_job_deps("case.run", {})
+
+        assert job_deps == []
+
+        job_deps = get_job_deps("case.run", {"case.run": 0})
+
+        assert job_deps == [
+            "0",
+        ]
+
+        job_deps = get_job_deps(
+            "case.run case.post_run_io", {"case.run": 0, "case.post_run_io": 1}
+        )
+
+        assert job_deps == ["0", "1"]
+
+        # old syntax
+        job_deps = get_job_deps("case.run and case.post_run_io", {"case.run": 0})
+
+        assert job_deps == [
+            "0",
+        ]
+
+        # old syntax
+        job_deps = get_job_deps(
+            "(case.run and case.post_run_io) or case.test", {"case.run": 0}
+        )
+
+        assert job_deps == [
+            "0",
+        ]
+
+        job_deps = get_job_deps("", {}, user_prereq="2")
+
+        assert job_deps == [
+            "2",
+        ]
+
+        job_deps = get_job_deps("", {}, prev_job="1")
+
+        assert job_deps == [
+            "1",
+        ]
+
+    def test_get_submit_args_job_queue(self):
+        with tempfile.NamedTemporaryFile() as tfile:
+            tfile.write(
+                b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w default</argument>
+      <argument job_queue="short">-w short</argument>
+      <argument job_queue="long">-w long</argument>
+      <argument>-A $VARIABLE_THAT_DOES_NOT_EXIST</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="01:00:00" nodemax="1">long</queue>
+      <queue walltimemax="00:30:00" nodemax="1" default="true">short</queue>
+    </queues>
+  </batch_system>
+</file>
+"""
+            )
+
+            tfile.seek(0)
+
+            batch = EnvBatch(infile=tfile.name)
+
+            case = mock.MagicMock()
+
+            case.get_value.side_effect = ("long", "long", None)
+
+            case.get_resolved_value.return_value = None
+
+            case.filename = mock.PropertyMock(return_value=tfile.name)
+
+            submit_args = batch.get_submit_args(case, ".case.run")
+
+            expected_args = "  -w default -w long"
+            assert submit_args == expected_args
+
+    @mock.patch.dict(os.environ, {"TEST": "GOOD"})
+    def test_get_submit_args(self):
+        with tempfile.NamedTemporaryFile() as tfile:
+            tfile.write(
+                b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system type="slurm">
+    <batch_query per_job_arg="-j">squeue</batch_query>
+    <batch_submit>sbatch</batch_submit>
+    <batch_cancel>scancel</batch_cancel>
+    <batch_directive>#SBATCH</batch_directive>
+    <jobid_pattern>(\\d+)$</jobid_pattern>
+    <depend_string>--dependency=afterok:jobid</depend_string>
+    <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
+    <depend_separator>:</depend_separator>
+    <walltime_format>%H:%M:%S</walltime_format>
+    <batch_mail_flag>--mail-user</batch_mail_flag>
+    <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
+    <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
+    <submit_args>
+      <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+      <arg flag="-p" name="$JOB_QUEUE"/>
+      <arg flag="--account" name="$PROJECT"/>
+      <arg flag="--no-arg" />
+      <arg flag="--path" name="$$ENV{TEST}" />
+    </submit_args>
+    <directives>
+      <directive> --job-name={{ job_id }}</directive>
+      <directive> --nodes={{ num_nodes }}</directive>
+      <directive> --output={{ job_id }}.%j </directive>
+      <directive> --exclusive </directive>
+    </directives>
+  </batch_system>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w docker</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="01:00:00" nodemax="1">long</queue>
+      <queue walltimemax="00:30:00" nodemax="1" default="true">short</queue>
+    </queues>
+  </batch_system>
+</file>
+"""
+            )
+
+            tfile.seek(0)
+
+            batch = EnvBatch(infile=tfile.name)
+
+            case = mock.MagicMock()
+
+            case.get_value.side_effect = [
+                os.path.dirname(tfile.name),
+                "00:30:00",
+                "long",
+                "CIME",
+                "/test",
+            ]
+
+            def my_get_resolved_value(val):
+                return val
+
+            # value for --path
+            case.get_resolved_value.side_effect = my_get_resolved_value
+
+            case.filename = mock.PropertyMock(return_value=tfile.name)
+
+            submit_args = batch.get_submit_args(case, ".case.run")
+
+            expected_args = "  --time 00:30:00 -p long --account CIME --no-arg --path /test -w docker"
+
+            assert submit_args == expected_args
+
     @mock.patch("CIME.XML.env_batch.EnvBatch.get")
     def test_get_queue_specs(self, get):
         node = mock.MagicMock()

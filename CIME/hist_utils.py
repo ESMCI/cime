@@ -1,18 +1,22 @@
 """
 Functions for actions pertaining to history files.
 """
+import logging
+import os
+import re
+import filecmp
+
 from CIME.XML.standard_module_setup import *
+from CIME.config import Config
 from CIME.test_status import TEST_NO_BASELINES_COMMENT, TEST_STATUS_FILENAME
 from CIME.utils import (
     get_current_commit,
     get_timestamp,
-    get_model,
     safe_copy,
     SharedArea,
     parse_test_name,
 )
-
-import logging, os, re, filecmp
+from CIME.utils import CIMEError
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +36,8 @@ NO_COMPARE = "had no compare counterpart"
 NO_ORIGINAL = "had no original counterpart"
 FIELDLISTS_DIFFER = "had a different field list from"
 DIFF_COMMENT = "did NOT match"
+FAILED_OPEN = "Failed to open file"
+IDENTICAL = "the two files seem to be IDENTICAL"
 # COMPARISON_COMMENT_OPTIONS should include all of the above: these are any of the special
 # comment strings that describe the reason for a comparison failure
 COMPARISON_COMMENT_OPTIONS = set(
@@ -52,7 +58,7 @@ def _iter_model_file_substrs(case):
         yield model
 
 
-def copy_histfiles(case, suffix):
+def copy_histfiles(case, suffix, match_suffix=None):
     """Copy the most recent batch of hist files in a case, adding the given suffix.
 
     This can allow you to temporarily "save" these files so they won't be blown
@@ -60,6 +66,8 @@ def copy_histfiles(case, suffix):
 
     case - The case containing the files you want to save
     suffix - The string suffix you want to add to saved files, this can be used to find them later.
+
+    returns (comments, num_copied)
     """
     rundir = case.get_value("RUNDIR")
     ref_case = case.get_value("RUN_REFCASE")
@@ -69,9 +77,14 @@ def copy_histfiles(case, suffix):
     comments = "Copying hist files to suffix '{}'\n".format(suffix)
     num_copied = 0
     for model in _iter_model_file_substrs(case):
-        comments += "  Copying hist files for model '{}'\n".format(model)
+        if case.get_value("TEST") and archive.exclude_testing(model):
+            logger.info(
+                "Case is a test and component %r is excluded from comparison", model
+            )
+
+            continue
         test_hists = archive.get_latest_hist_files(
-            casename, model, rundir, ref_case=ref_case
+            casename, model, rundir, suffix=match_suffix, ref_case=ref_case
         )
         num_copied += len(test_hists)
         for test_hist in test_hists:
@@ -79,6 +92,14 @@ def copy_histfiles(case, suffix):
             if not test_hist.endswith(".nc") or "once" in os.path.basename(test_hist):
                 logger.info("Will not compare non-netcdf file {}".format(test_hist))
                 continue
+            if model == "mom":
+                if "ocean_geometry" in test_hist:
+                    comments += "    skipping '{}'\n".format(test_hist)
+                    continue
+                if "mom6.ic" in test_hist:
+                    comments += "    skipping '{}'\n".format(test_hist)
+                    continue
+            comments += "  Copying hist files for model '{}'\n".format(model)
             new_file = "{}.{}".format(test_hist, suffix)
             if os.path.exists(new_file):
                 os.remove(new_file)
@@ -104,7 +125,7 @@ def copy_histfiles(case, suffix):
         "copy_histfiles failed: no hist files found in rundir '{}'".format(rundir),
     )
 
-    return comments
+    return comments, num_copied
 
 
 def rename_all_hist_files(case, suffix):
@@ -173,9 +194,6 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
     multi_normalized1, multi_normalized2 = [], []
     multiinst = False
 
-    if model == "ww3dev":
-        model = "ww3"
-
     for hists, suffix, normalized, multi_normalized in [
         (hists1, suffix1, normalized1, multi_normalized1),
         (hists2, suffix2, normalized2, multi_normalized2),
@@ -197,10 +215,13 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
                     : len(normalized_name) - len(suffix) - 1
                 ]
 
-            m = re.search("(.+)_[0-9]{4}(.+.nc)", normalized_name)
+            m = re.search("(.+)_[0-9]{4}(.*.nc)", normalized_name)
             if m is not None:
                 multiinst = True
-                multi_normalized.append(m.group(1) + m.group(2))
+                if m.group(1).endswith(".") and m.group(2).startswith("."):
+                    multi_normalized.append(m.group(1) + m.group(2)[1:])
+                else:
+                    multi_normalized.append(m.group(1) + m.group(2))
 
             normalized.append(normalized_name)
 
@@ -265,6 +286,11 @@ def _compare_hists(
     outfile_suffix="",
     ignore_fieldlist_diffs=False,
 ):
+    """
+    Compares two sets of history files
+
+    Returns (success (True if all matched), comments, num_compared)
+    """
     if from_dir1 == from_dir2:
         expect(suffix1 != suffix2, "Comparing files to themselves?")
 
@@ -280,6 +306,12 @@ def _compare_hists(
     archive = case.get_env("archive")
     ref_case = case.get_value("RUN_REFCASE")
     for model in _iter_model_file_substrs(case):
+        if case.get_value("TEST") and archive.exclude_testing(model):
+            logger.info(
+                "Case is a test and component %r is excluded from comparison", model
+            )
+
+            continue
         if model == "cpl" and suffix2 == "multiinst":
             multiinst_driver_compare = True
         comments += "  comparing model '{}'\n".format(model)
@@ -319,20 +351,34 @@ def _compare_hists(
             if not ".nc" in hist1:
                 logger.info("Ignoring non-netcdf file {}".format(hist1))
                 continue
-            success, cprnc_log_file, cprnc_comment = cprnc(
-                model,
-                os.path.join(from_dir1, hist1),
-                os.path.join(from_dir2, hist2),
-                case,
-                from_dir1,
-                multiinst_driver_compare=multiinst_driver_compare,
-                outfile_suffix=outfile_suffix,
-                ignore_fieldlist_diffs=ignore_fieldlist_diffs,
-            )
+
+            success = False
+            cprnc_log_file = None
+
+            try:
+                success, cprnc_log_file, cprnc_comment = cprnc(
+                    model,
+                    os.path.join(from_dir1, hist1),
+                    os.path.join(from_dir2, hist2),
+                    case,
+                    from_dir1,
+                    multiinst_driver_compare=multiinst_driver_compare,
+                    outfile_suffix=outfile_suffix,
+                    ignore_fieldlist_diffs=ignore_fieldlist_diffs,
+                )
+            except CIMEError as e:
+                cprnc_comment = str(e)
+            except Exception as e:
+                cprnc_comment = f"Unknown CRPRC error: {e!s}"
+
             if success:
                 comments += "    {} matched {}\n".format(hist1, hist2)
             else:
-                if cprnc_comment == CPRNC_FIELDLISTS_DIFFER:
+                if not cprnc_log_file:
+                    comments += cprnc_comment
+                    all_success = False
+                    return all_success, comments, 0
+                elif cprnc_comment == CPRNC_FIELDLISTS_DIFFER:
                     comments += "    {} {} {}\n".format(hist1, FIELDLISTS_DIFFER, hist2)
                 else:
                     comments += "    {} {} {}\n".format(hist1, DIFF_COMMENT, hist2)
@@ -352,6 +398,7 @@ def _compare_hists(
                         )
 
                 all_success = False
+
     # Some tests don't save history files.
     if num_compared == 0 and testcase not in NO_HIST_TESTS:
         all_success = False
@@ -359,7 +406,7 @@ def _compare_hists(
 
     comments += "PASS" if all_success else "FAIL"
 
-    return all_success, comments
+    return all_success, comments, num_compared
 
 
 def compare_test(case, suffix1, suffix2, ignore_fieldlist_diffs=False):
@@ -374,7 +421,7 @@ def compare_test(case, suffix1, suffix2, ignore_fieldlist_diffs=False):
         diagnostic fields that are missing from the other case), treat the two cases as
         identical.
 
-    returns (SUCCESS, comments)
+    returns (SUCCESS, comments, num_compared)
     """
     rundir = case.get_value("RUNDIR")
 
@@ -420,6 +467,11 @@ def cprnc(
     """
     if not cprnc_exe:
         cprnc_exe = case.get_value("CCSM_CPRNC")
+    expect(
+        os.path.isfile(cprnc_exe) and os.access(cprnc_exe, os.X_OK),
+        f"cprnc {cprnc_exe} does not exist or is not executable",
+    )
+
     basename = os.path.basename(file1)
     multiinst_regex = re.compile(r".*%s[^_]*(_[0-9]{4})[.]h.?[.][^.]+?[.]nc" % model)
     mstr = ""
@@ -476,7 +528,10 @@ def cprnc(
                     comment = CPRNC_FIELDLISTS_DIFFER
             elif "files seem to be IDENTICAL" in out:
                 files_match = True
+            elif "Failed to open file" in out:
+                raise CIMEError("Failed to open file")
             else:
+                # TODO convert to CIMEError
                 expect(
                     False,
                     "Did not find an expected summary string in cprnc output:\n{}".format(
@@ -517,10 +572,10 @@ def compare_baseline(case, baseline_dir=None, outfile_suffix=""):
                 TEST_NO_BASELINES_COMMENT, bdir
             )
 
-    success, comments = _compare_hists(
+    success, comments, _ = _compare_hists(
         case, rundir, basecmp_dir, outfile_suffix=outfile_suffix
     )
-    if get_model() == "e3sm":
+    if Config.instance().create_bless_log:
         bless_log = os.path.join(basecmp_dir, BLESS_LOG_NAME)
         if os.path.exists(bless_log):
             lines = open(bless_log, "r", encoding="utf-8").readlines()
@@ -536,23 +591,22 @@ def generate_teststatus(testdir, baseline_dir):
     CESM stores it's TestStatus file in baselines. Do not let exceptions
     escape from this function.
     """
-    if get_model() == "cesm":
-        try:
-            with SharedArea():
-                if not os.path.isdir(baseline_dir):
-                    os.makedirs(baseline_dir)
+    try:
+        with SharedArea():
+            if not os.path.isdir(baseline_dir):
+                os.makedirs(baseline_dir)
 
-                safe_copy(
-                    os.path.join(testdir, TEST_STATUS_FILENAME),
-                    baseline_dir,
-                    preserve_meta=False,
-                )
-        except Exception as e:
-            logger.warning(
-                "Could not copy {} to baselines, {}".format(
-                    os.path.join(testdir, TEST_STATUS_FILENAME), str(e)
-                )
+            safe_copy(
+                os.path.join(testdir, TEST_STATUS_FILENAME),
+                baseline_dir,
+                preserve_meta=False,
             )
+    except Exception as e:
+        logger.warning(
+            "Could not copy {} to baselines, {}".format(
+                os.path.join(testdir, TEST_STATUS_FILENAME), str(e)
+            )
+        )
 
 
 def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=False):
@@ -595,9 +649,6 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
         )
         logger.debug("latest_files: {}".format(hists))
         num_gen += len(hists)
-
-        if model == "ww3dev":
-            model = "ww3"
 
         for hist in hists:
             offset = hist.rfind(model)
@@ -646,7 +697,7 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
         ),
     )
 
-    if get_model() == "e3sm":
+    if Config.instance().create_bless_log:
         bless_log = os.path.join(basegen_dir, BLESS_LOG_NAME)
         with open(bless_log, "a", encoding="utf-8") as fd:
             fd.write(
@@ -676,6 +727,8 @@ def get_ts_synopsis(comments):
 
     >>> get_ts_synopsis('')
     ''
+    >>> get_ts_synopsis('\n')
+    ''
     >>> get_ts_synopsis('big error')
     'big error'
     >>> get_ts_synopsis('big error\n')
@@ -694,44 +747,54 @@ def get_ts_synopsis(comments):
     'DIFF'
     >>> get_ts_synopsis('File foo had no compare counterpart in bar with suffix baz\n File foo had no original counterpart in bar with suffix baz\n')
     'DIFF'
+    >>> get_ts_synopsis('file1=\nfile2=\nFailed to open file\n')
+    'ERROR CPRNC failed to open files'
+    >>> get_ts_synopsis('file1=\nfile2=\nSome other error\n')
+    'ERROR Could not interpret CPRNC output'
+    >>> get_ts_synopsis('file1=\nfile2=\n  diff_test: the two files seem to be IDENTICAL \n')
+    ''
     """
-    if not comments:
-        return ""
-    elif "\n" not in comments.strip():
-        return comments.strip()
-    else:
-        has_fieldlist_differences = False
-        has_bfails = False
-        has_real_fails = False
-        for line in comments.splitlines():
-            if FIELDLISTS_DIFFER in line:
-                has_fieldlist_differences = True
-            if NO_COMPARE in line:
-                has_bfails = True
-            for comparison_failure_comment in COMPARISON_FAILURE_COMMENT_OPTIONS:
-                if comparison_failure_comment in line:
-                    has_real_fails = True
+    comments = comments.strip()
 
-        if has_real_fails:
-            # If there are any real differences, we just report that: we assume that the
-            # user cares much more about those real differences than fieldlist or bfail
-            # issues, and we don't want to complicate the matter by trying to report all
-            # issues in this case.
-            return "DIFF"
-        else:
-            if has_fieldlist_differences and has_bfails:
-                # It's not clear which of these (if either) the user would care more
-                # about, so we report both. We deliberately avoid printing the keywords
-                # 'FIELDLIST' or TEST_NO_BASELINES_COMMENT (i.e., 'BFAIL'): if we printed
-                # those, then (e.g.) a 'grep -v FIELDLIST' (which the user might do if
-                # (s)he was expecting fieldlist differences) would also filter out this
-                # line, which we don't want.
-                return "MULTIPLE ISSUES: field lists differ and some baseline files were missing"
-            elif has_fieldlist_differences:
-                return "FIELDLIST field lists differ (otherwise bit-for-bit)"
-            elif has_bfails:
-                return "ERROR {} some baseline files were missing".format(
-                    TEST_NO_BASELINES_COMMENT
-                )
-            else:
-                return ""
+    if comments == "" or "\n" not in comments:
+        return comments
+
+    # Empty synopsis when files are identicial
+    if re.search(IDENTICAL, comments) is not None:
+        return ""
+
+    fieldlist_differences = re.search(FIELDLISTS_DIFFER, comments) is not None
+    baseline_fail = re.search(NO_COMPARE, comments) is not None
+    real_fail = [
+        re.search(x, comments) is not None for x in COMPARISON_FAILURE_COMMENT_OPTIONS
+    ]
+    open_fail = re.search(FAILED_OPEN, comments) is not None
+
+    if any(real_fail):
+        # If there are any real differences, we just report that: we assume that the
+        # user cares much more about those real differences than fieldlist or bfail
+        # issues, and we don't want to complicate the matter by trying to report all
+        # issues in this case.
+        synopsis = "DIFF"
+    elif fieldlist_differences and baseline_fail:
+        # It's not clear which of these (if either) the user would care more
+        # about, so we report both. We deliberately avoid printing the keywords
+        # 'FIELDLIST' or TEST_NO_BASELINES_COMMENT (i.e., 'BFAIL'): if we printed
+        # those, then (e.g.) a 'grep -v FIELDLIST' (which the user might do if
+        # (s)he was expecting fieldlist differences) would also filter out this
+        # line, which we don't want.
+        synopsis = (
+            "MULTIPLE ISSUES: field lists differ and some baseline files were missing"
+        )
+    elif fieldlist_differences:
+        synopsis = "FIELDLIST field lists differ (otherwise bit-for-bit)"
+    elif baseline_fail:
+        synopsis = "ERROR {} some baseline files were missing".format(
+            TEST_NO_BASELINES_COMMENT
+        )
+    elif open_fail:
+        synopsis = "ERROR CPRNC failed to open files"
+    else:
+        synopsis = "ERROR Could not interpret CPRNC output"
+
+    return synopsis

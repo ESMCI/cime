@@ -66,7 +66,7 @@ ERP    pes counts hybrid (open-MP/MPI) restart bfb test from startup, default 6 
        do an 11 day initial test - write a restart at day 6     (suffix base)
        half the number of tasks and threads for each component
        do a  5  day restart test starting from restart at day 6 (suffix rest)
-       this is just like an ERS test but the pe-counts/threading count are modified on retart
+       this is just like an ERS test but the pe-counts/threading count are modified on restart
 
 ERI    hybrid/branch/exact restart test, default (by default STOP_N is 22 days)
        (1) ref1case
@@ -261,7 +261,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
     <FORCE_BUILD_SMP>TRUE</FORCE_BUILD_SMP>
-    <REST_N>$STOP_N / 2 + 1 </REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
@@ -272,7 +271,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
-    <REST_N>$STOP_N / 2 + 1</REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
@@ -298,7 +296,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
-    <REST_N>$STOP_N / 2 - 1</REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
@@ -320,12 +317,12 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>7</STOP_N>
-    <REST_N>$STOP_N / 2 + 1</REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <RESUBMIT>1</RESUBMIT>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
+    <DOUT_S_SAVE_INTERIM_RESTART_FILES>TRUE</DOUT_S_SAVE_INTERIM_RESTART_FILES>
   </test>
 
   <test NAME="ERRI">
@@ -333,7 +330,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>7</STOP_N>
-    <REST_N>$STOP_N / 2 + 1</REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
@@ -540,7 +536,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <STOP_OPTION>nsteps</STOP_OPTION>
     <OCN_NCPL>$ATM_NCPL</OCN_NCPL>
     <STOP_N>11</STOP_N>
-    <REST_N>$STOP_N / 2 + 1</REST_N>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>

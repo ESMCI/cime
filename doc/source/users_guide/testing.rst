@@ -1,84 +1,63 @@
 .. _testing:
 
-**********
-Testing
-**********
+**************
+Testing Cases
+**************
 
-`create_test <../Tools_user/create_test.html>`_
-is the tool we use to test both CIME and CIME-driven models.
-It can be used as an easy way to run a single basic test or an entire suite of tests.
-`create_test <../Tools_user/create_test.html>`_ runs a test suite in parallel for improved performance.
-It is the driver behind the automated nightly testing of cime-driven models.
-
-Running create_test is generally resource intensive, so run it in a manner appropriate for your system,
-e.g. using 'nice', batch queues, nohup, the ``--parallel-jobs`` option to create_test, etc.
-It will create and submit additional jobs to the batch queue (if one is available).
+The `create_test <../Tools_user/create_test.html>`_ command provides
+a powerful tool capable of testing a Case. The command can create, 
+setup, build and run a case according to the :ref:`testname <testname syntax>` syntax, returning 
+a PASS or FAIL result.
 
 .. _individual:
 
 An individual test can be run as::
 
-  $CIMEROOT/scripts/create_test $test_name
+  $CIMEROOT/scripts/create_test <testname>
 
-Multiple tests can be run similarly, by listing all of the test names on the command line::
+Everything the test will do is controlled by the :ref:`testname <testname syntax>`.
 
-  $CIMEROOT/scripts/create_test  $test_name  $test_name2
+.. _`testname syntax`:
 
-or by putting the test names into a file, one name per line::
-
-  $CIMEROOT/scripts/create_test -f $file_of_test_names
-
-A pre-defined suite of tests can by run using the ``--xml`` options to create_test,
-which harvest test names from testlist*.xml files.
-As described in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide,
-to determine what pre-defined test suites are available and what tests they contain,
-you can run query_testlists_.
-
-Test suites are retrieved in create_test via 3 selection attributes::
-
-    --xml-category your_category   The test category.
-    --xml-machine  your_machine    The machine.
-    --xml-compiler your_compiler   The compiler.
-
-| If none of these 3 are used, the default values are 'none'.
-| If any of them are used, the default for the unused options is 'all'.
-| Existing values of these attributes can be seen by running query_testlists_.
-
-The search for test names can be restricted to a single test list using::
-
-    --xml-testlist your_testlist
-
-Omitting this results in searching all testlists listed in::
-
-    cime/config/{cesm,e3sm}/config_files.xml
-
-=================
+================
 Testname syntax
-=================
-.. _`Test naming`:
+================
 
-Tests must be named with the following forms, [ ]=optional::
+Tests are defined by the following format, where anything enclosed in ``[]`` is optional::
 
   TESTTYPE[_MODIFIERS].GRID.COMPSET[.MACHINE_COMPILER][.GROUP-TESTMODS]
+
+For example using the minimum TESTTYPE_, `GRID <../users_guide/grids.html>`_, and `COMPSET <../users_guide/compsets.html>`_::
+
+  ERP.ne4pg2_oQU480.F2010
+
+Below is a break-down of the different parts of the ``testname`` syntax.
 
 =================  =====================================================================================
 NAME PART
 =================  =====================================================================================
 TESTTYPE_          the general type of test, e.g. SMS. Options are listed in the following table and config_tests.xml.
-MODIFIERS_         These are changes to the default settings for the test.
+MODIFIERS_         Changes to the default settings for the test type.
                    See the following table and test_scheduler.py.
-GRID               The model grid (can be an alias).
-COMPSET            alias of the compset, or long name, if no ``--xml`` arguments are used.
+GRID               The grid set (usually a grid alias).
+COMPSET            The compset, Can be a longname but usually a compset alias
 MACHINE            This is optional; if this value is not supplied, `create_test <../Tools_user/create_test.html>`_
                    will probe the underlying machine.
 COMPILER           If this value is not supplied, use the default compiler for MACHINE.
 GROUP-TESTMODS_    This is optional. This points to a directory with  ``user_nl_xxx`` files or a ``shell_commands``
-                   that can be used to make namelist and ``XML`` modifications prior to running a test.
-                    |
-
+                   that can be used to make namelist and other  modifications prior to running a test.
 =================  =====================================================================================
 
 .. _TESTTYPE:
+
+-------------
+TESTTYPE
+-------------
+The test types in CIME are all system tests: they compile all the code needed in a case, They test
+functionality of the model such as restart capability, invariance with MPI task count, and short
+term archiving. At this time, they do not test for scientific correctness.
+
+The currently supported test types are:
 
 ============ =====================================================================================
 TESTTYPE     Description
@@ -86,8 +65,8 @@ TESTTYPE     Description
    ERS       Exact restart from startup (default 6 days + 5 days)
               | Do an 11 day initial test - write a restart at day 6.    (file suffix: base)
               | Do a 5 day restart test, starting from restart at day 6. (file suffix: rest)
-              | Compare component history files '.base' and '.rest' at day 11.
-              |    They should be identical.
+              | Compare component history files '.base' and '.rest' at day 11 with cprnc
+              |    PASS if they are identical.
 
    ERS2      Exact restart from startup  (default 6 days + 5 days).
 
@@ -96,11 +75,11 @@ TESTTYPE     Description
                 then resuming from restart at day 6. (file suffix: rest)
               | Compare component history files ".base" and ".rest" at day 11.
 
-   ERT       Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).
+   ERT       Longer version of ERS. Exact restart from startup, default 2 month + 1 month (ERS with info DBUG = 1).
 
    IRT       Exact restart from startup, (default 4 days + 7 days) with restart from interim file.
 
-   ERIO      Exact restart from startup with different PIO methods, (default 6 days + 5 days).
+   ERIO      Exact restart from startup with different IO file types, (default 6 days + 5 days).
 
    ERR       Exact restart from startup with resubmit, (default 4 days + 3 days).
 
@@ -161,12 +140,12 @@ TESTTYPE     Description
               Do an initial run test with NINST 2. (file suffix: multiinst for both _0001 and _0002)
               Compare base and _0001 and _0002.
 
-   REP       Reproducibility: Two identical runs are bit for bit. (default 5 days)
+   REP       Reproducibility: Two identical initial runs are bit for bit. (default 5 days)
 
    SBN       Smoke build-namelist test (just run preview_namelist and check_input_data).
 
-   SMS       Smoke startup test (default 5 days)
-              Do a 5 day initial test. (file suffix: base)
+   SMS       Smoke test (default 5 days)
+              Do a 5 day initial test that runs to completing without error. (file suffix: base)
 
    SEQ       Different sequencing bit for bit test. (default 10 days)
               Do an initial run test with out-of-box PE-layout. (file suffix: base)
@@ -181,7 +160,15 @@ TESTTYPE     Description
 
 ============ =====================================================================================
 
+The tests run for a default length indicated above, will use default pelayouts for the case
+on the machine the test runs on and its default coupler and MPI library. Its possible to modify
+elements of the test through a test type modifier.
+
 .. _MODIFIERS:
+
+-------------------
+MODIFIERS
+-------------------
 
 ============ =====================================================================================
 MODIFIERS    Description
@@ -212,26 +199,261 @@ MODIFIERS    Description
 
 ============ =====================================================================================
 
+For example, this will run the ERP test with debugging turned on during compilation::
+
+    $CIMEROOT/scripts/create_test ERP_D.ne4pg2_oQU480.F2010
+
+This will run the ERP test for 3 days instead of the default 11 days::
+
+    $CIMEROOT/scripts/create_test ERP_Ld3.ne4pg2_oQU480.F2010
+
+You can combine testtype modifiers::
+
+    $CIMEROOT/scripts/create_test ERP_D_Ld3.ne4pg2_oQU480.F2010
+
 .. _GROUP-TESTMODS:
 
-============ =====================================================================================
-TESTMODS     Description
-============ =====================================================================================
-GROUP        A subdirectory of testmods_dirs and the parent directory of various testmods.
-`-`          Replaces '/' in the path name where the testmods are found.
-TESTMODS     A subdirectory of GROUP containing files which set non-default values
-             of the set-up and run-time variables via namelists or xml_change commands.
-             See "Adding tests": CESM_.
-             Examples include
+-------------------
+GROUP-TESTMODS
+-------------------
 
-              | GROUP-TESTMODS = cam-outfrq9s points to
-              |    $cesm/components/cam/cime_config/testdefs/testmods_dirs/cam/outfrq9s
-              | while allactive-defaultio points to
-              |    $cesm/cime_config/testmods_dirs/allactive/defaultio
+The `create_test <../Tools_user/create_test.html>`_ command runs with out-of-the-box compsets and grid sets. 
+Sometimes you may want to run a test with modification to a namelist or other setting without creating an 
+entire compset. Case Control System (CCS) provides the testmods capability for this situation.
+
+The ``GROUP-TESTMODS`` string is at the end of the full :ref:`testname <testname syntax>` (including machine and compiler).
+The form ``GROUP-TESTMODS`` are parsed as follows.
 
 ============ =====================================================================================
+PART         Description
+============ =====================================================================================
+GROUP        Name of the directory under ``TESTS_MODS_DIR`` that contains ``TESTMODS``.
+
+TESTMODS     Any combination of `user_nl_* <USER_NL_>`_, `shell_commands <SHELL_COMMANDS_>`_, 
+             `user_mods <USER_MODS_>`_, or `params.py <TESTYPE_MOD_>`_ in a directory under the 
+             ``GROUP`` directory.
+============ =====================================================================================
+
+For example, the *ERP* test for an E3SM *F-case* can be modified to use a different radiation scheme by using ``eam-rrtmgp``::
+
+  ERP_D_Ld3.ne4pg2_oQU480.F2010.pm-cpu_intel.eam-rrtmgp
+
+If ``TESTS_MODS_DIR`` was set to ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs`` then the
+directory containg the testmods woulc be ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg``.
+
+In this directory you'd find a `shell_commands`` file containing the following::
+
+  #!/bin/bash
+  ./xmlchange --append CAM_CONFIG_OPTS='-rad rrtmgp'
+
+These commands are applied after the testcase is created and case.setup is called.
+
+Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
+
+.. _USER_NL:
+
+````````
+Example *user_nl_<component>*
+````````
+
+A components namelist can be modified by providing a ``user_nl_*`` file in a GROUP-TESTMODS_ directory.
+For example, to change the namelist for the *eam* component a file name ``user_nl_eam`` could be used.
+
+::
+
+  # user_nl_eam
+  deep_scheme        = 'off',
+  zmconv_microp      = .false.
+  shallow_scheme     = 'CLUBB_SGS',
+  l_tracer_aero      = .false.
+  l_rayleigh         = .false.
+  l_gw_drag          = .false.
+  l_ac_energy_chk    = .true.
+  l_bc_energy_fix    = .true.
+  l_dry_adj          = .false.
+  l_st_mac           = .true.
+  l_st_mic           = .false.
+  l_rad              = .false.
+
+.. _SHELL_COMMANDS:
+
+``````````````
+Example *shell_commands*
+``````````````
+
+A test can be modified by providing a ``shell_commands`` file in a GROUP-TESTMODS_ directory.
+This shell file can contain any arbitrary commands, for example::
+
+  # shell_commands
+  #!/bin/bash
+
+  # Remove exe if chem pp exe (campp) already exists (it ensures that exe is always built)
+  /bin/rm -f $CIMEROOT/../components/eam/chem_proc/campp
+
+  # Invoke campp (using v3 mechanism file)
+  ./xmlchange --append CAM_CONFIG_OPTS='-usr_mech_infile $CIMEROOT/../components/eam/chem_proc/inputs/pp_chemUCI_linozv3_mam5_vbs.in'
+
+  # Assuming atmchange is available via $PATH
+  atmchange initial_conditions::perturbation_random_seed = 32
+
+.. _USER_MODS:
+
+`````````
+Example *user_mods*
+`````````
+
+Additional GROUP_TESTMODS_ can be applied by providing a list in a ``user_mods`` file in a GROUP-TESTMODS_ directory.
+
+::
+
+  # user_mods
+  eam/cosp
+  eam/hommexx
+
+.. _TESTYPE_MOD:
+
+``````````````````````
+Example *params.py*
+``````````````````````
+
+Supported TESTYPES_ can further be modified by providing a ``params.py`` file in the GROUP-TESTMODS_ directory.
+
+^^^^^^^^^^^^
+MVK
+^^^^^^^^^^^^
+The `MVK` system test can be configured by defining :ref:`variables <MVKConfig Variables>` and :ref:`methods <MVKConfig Methods>` in ``params.py``.
+
+See :ref:`examples <MVK Examples>` for a simple and complex use case.
+
+.. _MVKConfig Variables:
+
+"""""""""
+Variables
+"""""""""
+========== ======== ==== ===============================================
+Variable   Default  Type Description                                    
+========== ======== ==== ===============================================
+component           str  The main component.                            
+components []       list Components that require namelist customization.
+ninst      30       int  The number of instances.                       
+var_set    default  str  Name of the variable set to analyze.           
+ref_case   Baseline str  Name of the reference case.                    
+test_case  Test     str  Name of the test case.                         
+========== ======== ==== ===============================================
+
+.. _MVKConfig Methods:
+
+"""""""
+Methods
+"""""""
+.. code-block::
+
+  def evv_test_config(case, config):
+      """
+      Customize the evv4esm configuration.
+      
+      This method is used to customize the default evv4esm configuration
+      or generate a completely new one.
+      
+      The return configuration will be written to `$RUNDIR/$CASE.json`.
+      
+      Args:
+          case (CIME.case.case.Case): The case instance.
+          config (dict): Default evv4esm configuration.
+      
+      Returns:
+          dict: Dictionary with test configuration.
+      """
+.. code-block::
+
+  def generate_namelist(case, component, i, filename):
+      """
+      Generate per instance namelist.
+      
+      This method is called for each instance to generate the desired
+      modifications.
+      
+      Args:
+          case (CIME.case.case.Case): The case instance.
+          component (str): Component the namelist belongs to.
+          i (int): Instance unique number.
+          filename (str): Name of the namelist that needs to be created.
+      """
+
+.. _MVK Examples:
+
+""""""""""
+Examples
+""""""""""
+.. _MVK Simple:
+In the simplest form just :ref:`variables <MVKConfig Variables>` need to be defined in ``params.py``.
+
+For this case the default ``evv_test_config`` and ``generate_namelist`` functions will be called.
+
+.. code-block::
+
+  component = "eam"
+  # components = [] can be omitted when modifying a single component
+  ninst = 10
+
+.. _MVK Complex:
+
+If more control over the evv4esm configuration file or the per instance configuration is desired then
+the ``evv_test_config`` and ``generate_namelist`` functions can be overridden in the ``params.py`` file.
+
+The :ref:`variables <MVKConfig Variables>` will still need to be defined to generate the default
+evv4esm config or ``config`` in the ``evv_test_config`` function can be ignored and a completely new
+dictionary can be returned.
+
+In the following example, the default ``module`` is changed as well as ``component`` and ``ninst``.
+The ``generate_namelist`` function creates namelists for certain components while running a shell
+command to customize others.
+
+Note; this is a toy example, no scientific usage.
+
+.. code-block::
+
+  import os
+  from CIME.SystemTests.mvk import EVV_LIB_DIR
+  from CIME.namelist import Namelist
+  from CIME.utils import safe_copy
+  from CIME.utils import run_cmd
+
+  component "eam"
+  # The generate_namelist function will be called `ninst` times per component
+  components = ["eam", "clm", "eamxx"]
+  ninst = 30
+
+  # This can be omitted if the default evv4esm configuration is sufficient
+  def evv_test_config(case, config):
+    config["module"] = os.path.join(EVV_LIB_DIR, "extensions", "kso.py")
+    config["component"] = "clm"
+    config["ninst"] = 20
+
+    return config
+
+  def generate_namelist(case, component, i, filename):
+    namelist = Namelist()
+
+    if component in ["eam", "clm"]:
+      with namelist(filename) as nml:
+        if component == "eam":
+          # arguments group, key, value
+          nml.set_variable_value("", "eam_specific", f"perturn-{i}")
+        elif component == "clm":
+          if i % 2 == 0:
+            nml.set_variable_value("", "clm_specific", "even")
+          else:
+            nml.set_variable_value("", "clm_specific", "odd")
+    else:
+      stat, output, err = run_cmd(f"atmchange initial_conditions::perturbation_random_seed = {i*32}")
+
+      safe_copy("namelist_scream.xml", f"namelist_scream_{i:04}.xml")
 
 
+========================
+Test progress and output
+========================
 
 Each test run by `create_test <../Tools_user/create_test.html>`_  includes the following mandatory steps:
 
@@ -253,50 +475,23 @@ And the following optional phases:
 * GENERATE: Generate baseline results
 * BASELINE: Compare results against baselines
 
-Each test may be in one of the following states:
+Each phase within the test may be in one of the following states:
 
 * PASS: The phase was executed successfully
 * FAIL: We attempted to execute this phase, but it failed. If this phase is mandatory, no further progress will be made on this test. A detailed explanation of the failure should be in TestStatus.log.
 * PEND: This phase will be run or is currently running but not complete
 
-The current state of a test is represented in the file $CASEROOT/TestStatus
+======================================================
+Running multiple tests and other command line examples
+======================================================
 
-All output from the CIME infrastructure regarding this test will be put in the file $CASEROOT/TestStatus.log
+Multiple tests can be run by listing all of the test names on the command line::
 
-A cs.status.$testid script will be put in the test root. This script will allow you to see the
-current status of all your tests.
+  $CIMEROOT/scripts/create_test  $test_name  $test_name2
 
-===================
-Query_testlists
-===================
-.. _query_testlists:
+or by putting the test names into a file, one name per line::
 
-**$CIMEROOT/scripts/query_testlists** gathers descriptions of the tests and testlists available
-for CESM, the components, and projects.
-
-The ``--xml-{compiler,machine,category,testlist}`` arguments can be used
-as in create_test (above) to focus the search.
-The 'category' descriptor of a test can be used to run a group of associated tests at the same time.
-The available categories, with the tests they encompass, can be listed by::
-
-   ./query_testlists --define-testtypes
-
-The ``--show-options`` argument does the same, but displays the 'options' defined for the tests,
-such as queue, walltime, etc..
-
-============================
-Using **create_test** (E3SM)
-============================
-.. _`Using create_test (E3SM)`:
-
-
-Usage will differ slightly depending on if you're using E3SM or CESM.
-
-Using examples to illustrate common use cases
-
-To run a test::
-
-  ./create_test SMS.f19_f19.A
+  $CIMEROOT/scripts/create_test -f $file_of_test_names
 
 To run a test with a non-default compiler::
 
@@ -326,25 +521,106 @@ To run a test and force it to go into a certain batch queue::
 
   ./create_test SMS.f19_f19.A -q myqueue
 
-To run a test and use a non-default project (can impact things like directory paths and acct for batch system)::
+The Case Control System supports more sophisticated ways to specify a suite of tests and
+how they should be run.  One approach uses XML files and the other uses python dictionaries.
 
-  ./create_test SMS.f19_f19.A -p myproj
+===========================
+Test control with XML files
+===========================
+.. _query_testlists:
 
-To run two tests::
+A pre-defined suite of tests can by run using the ``--xml`` options to create_test,
+which harvest test names from testlist*.xml files.
+As described in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide,
+to determine what pre-defined test suites are available and what tests they contain,
+you can run query_testlists_.
 
-  ./create_test SMS.f19_f19.A SMS.f19_f19.B
+Test suites are retrieved in create_test via 3 selection attributes::
 
-To run a test suite::
+    --xml-category your_category   The test category.
+    --xml-machine  your_machine    The machine.
+    --xml-compiler your_compiler   The compiler.
+
+| If none of these 3 are used, the default values are 'none'.
+| If any of them are used, the default for the unused options is 'all'.
+| Existing values of these attributes can be seen by running query_testlists_.
+
+The search for test names can be restricted to a single test list using::
+
+    --xml-testlist your_testlist
+
+Omitting this results in searching all testlists listed in::
+
+    cime/config/{cesm,e3sm}/config_files.xml
+
+**$CIMEROOT/scripts/query_testlists** gathers descriptions of the tests and testlists available
+in the XML format, the components, and projects.
+
+The ``--xml-{compiler,machine,category,testlist}`` arguments can be used
+as in create_test (above) to focus the search.
+The 'category' descriptor of a test can be used to run a group of associated tests at the same time.
+The available categories, with the tests they encompass, can be listed by::
+
+   ./query_testlists --define-testtypes
+
+The ``--show-options`` argument does the same, but displays the 'options' defined for the tests,
+such as queue, walltime, etc..
+
+Adding a test requires first deciding which compset will be tested
+and then finding the appropriate testlist_$component.xml file::
+
+    components/$component/cime_config/testdefs/
+       testlist_$component.xml
+       testmods_dirs/$component/{TESTMODS1,TESTMODS2,...}
+    cime_config/
+       testlist_allactive.xml
+       testmods_dirs/allactive/{defaultio,...}
+
+You can optionally add testmods for that test in the testmods_dirs.
+Testlists and testmods live in different paths for cime, drv, and components.
+
+If this test will only be run as a single test, you can now create a test name
+and follow the individual_ test instructions for create_test.
+
+=====================================
+Test control with python dictionaries
+=====================================
+.. _`python dict testing`:
+
+One can also define suites of tests in a file called tests.py typically located in $MODEL/cime_config/tests.py
+
+To run a test suite called e3sm_developer::
 
   ./create_test e3sm_developer
 
-To run a test suite excluding a specific test::
+One can exclude a specific test from a suite::
 
   ./create_test e3sm_developer ^SMS.f19_f19.A
 
 See create_test -h for the full list of options
+`
 
-Interpreting test output is pretty easy, looking at an example::
+To add a test, open the MODEL/cime_config/tests.py file, you'll see a python dict at the top
+of the file called _TESTS, find the test category you want to
+change in this dict and add your testcase to the list.  Note the
+comment at the top of this file indicating that you add a test with
+this format: test>.<grid>.<compset>, and then there is a second
+argument for mods.  Machine and compiler are added later depending on where
+create_test is invoked and its arguments.
+
+Existing tests can be listed using the cime/CIME/Tools/list_e3sm_tests script.
+
+For example::
+
+  /list_e3sm_tests -t compsets e3sm_developer
+
+Will list all the compsets tested in the e3sm_developer test suite.
+
+============================
+Create_test output
+============================
+
+Interpreting test output is pretty easy. Looking at an example::
 
   % ./create_test SMS.f19_f19.A
 
@@ -371,133 +647,195 @@ Interpreting test output is pretty easy, looking at an example::
 You can see that `create_test <../Tools_user/create_test.html>`_  informs the user of the case directory and of the progress and duration
 of the various test phases.
 
-===================
+The $CASEDIR for the test will be created in $CIME_OUTPUT_ROOT.  The name will be of the form::
+
+     TESTTYPE[_MODIFIERS].GRID.COMPSET.MACHINE_COMPILER[.GROUP-TESTMODS].YYYYMMDD_HHMMSS_hash
+
+If MODIFIERS or GROUP-TESTMODS are used, those will be included in the test output directory name.  THe
+extra string with YYYYMMDD_HHMMSS_hash is the testid and used to distinquish mulitple runs of the
+same test.  That string
+can be replaced with the --test-id argument to create_test.
+
+For a test, the $CASEDIR will have $EXEROOT and $RUNDIR as subdirectories.
+
+The current state of a test is represented in the file $CASEDIR/TestStatus.  Example output::
+
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel CREATE_NEWCASE
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel XML
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel SETUP
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel SHAREDLIB_BUILD time=277
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel MODEL_BUILD time=572
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel SUBMIT
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel RUN time=208
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel COMPARE_base_rest
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel MEMLEAK insufficient data for memleak test
+     PASS ERP_D_Ld3.ne4pg2_oQU480.F2010.chrysalis_intel SHORT_TERM_ARCHIVER
+
+All other stdout output from the CIME case control system produced by running this test will
+be put in the file $CASEDIR/TestStatus.log
+
+A cs.status.$testid script will also be put in the test root. This script will allow you to see the
+
+==============================
+Baselines and Baseline Testing
+==============================
+.. _`Baselines`:
+
+A big part of testing is managing your baselines (sometimes called gold results) and doing additional tests against
+the baseline. The baseline for a test will be copy of the (history) files created in the run of the test.
+
+create_test can
+be asked to perform bit-for-bit comparisons between the files generated by the current run of the test and
+the files stored in the baseline.  They must be bit-for-bit identical for the baseline test to pass.
+
+baseline testing adds an additional
+test criteria to the one that comes from the test type and is used as a way to guard against unintentionaly
+changing the results from a determinstic climate model.
+
+-------------------
+Creating a baseline
+-------------------
+.. _`Creating a baseline`:
+
+A baseline can be generated by passing ``-g`` to `create_test <../Tools_user/create_test.html>`_. There
+are additional options to control generating baselines.::
+
+  ./scripts/create_test -b master -g SMS.ne30_f19_g16_rx1.A
+
+--------------------
+Comparing a baseline
+--------------------
+.. _`Comparing a baseline`:
+
+Comparing the output of a test to a baseline is achieved by passing ``-c`` to `create_test <../Tools_user/create_test.html>`_.::
+
+  ./scripts/create_test -b master -c SMS.ne30_f19_g16_rx1.A
+
+Suppose you accidentally changed something in the source code that does not cause the model to crash but
+does cause it to change the answers it produces.  In this case, the SMS test would pass (it still runs) but the
+comparison with baselines would FAIL (answers are not bit-for-bit identical to the baseline) and so the test
+as a whole would FAIL.
+
+------------------
 Managing baselines
-===================
+------------------
 .. _`Managing baselines`:
 
-A big part of testing is managing your baselines (sometimes called gold results). We have provided
-tools to help the user do this without having to repeat full runs of test cases with `create_test <../Tools_user/create_test.html>`_ .
+If you intended to change the answers, you need to update the baseline with new files.  This is referred to 
+as "blessing" the test.
+This is done with the `bless_test_results <../Tools_user/bless_test_results.html>`_ tool. The tool provides the ability to bless different features of the baseline. The currently supported features are namelist files, history files, and performance metrics. The performance metrics are separated into throughput and memory usage.
 
-bless_test_results: Takes a batch of cases of tests that have already been run and copy their
-results to a baseline area.
+The following command can be used to compare a test to a baseline and bless an update to the history file.::
 
-compare_test_results: Takes a batch of cases of tests that have already been run and compare their
-results to a baseline area.
+  ./CIME/Tools/bless_test_results -b master --hist-only SMS.ne30_f19_g16_rx1.A
 
-Take a batch of results for the jenkins user for the testid 'mytest' and copy the results to
-baselines for 'master'::
+The `compare_test_results <../Tools_user/compare_test_results.html>_` tool can be used to quickly compare tests to baselines and report any `diffs`.::
 
-  ./bless_test_results -r /home/jenkins/e3sm/scratch/jenkins/ -t mytest -b master
+  ./CIME/Tools/compare_test_results -b master SMS.ne30_f19_g16_rx1.A
 
-Take a batch of results for the jenkins user for the testid 'mytest' and compare the results to
-baselines for 'master'::
+---------------------
+Performance baselines
+---------------------
+.. _`Performance baselines`:
+By default performance baselines are generated by parsing the coupler log and comparing the throughput in SYPD (Simulated Years Per Day) and the memory usage high water.
 
-  ./compare_test_results -r /home/jenkins/e3sm/scratch/jenkins/ -t mytest -b master
+This can be customized by creating a python module under ``$DRIVER_ROOT/cime_config/customize``. There are four hooks that can be used to customize the generation and comparison.
 
-=============
-Adding tests
-=============
-.. _`Adding tests`:
+- perf_get_throughput
+- perf_get_memory
+- perf_compare_throughput_baseline
+- perf_compare_memory_baseline
 
-E3SM
+..
+  TODO need to add api docs and link
+The following pseudo code is an example of this customization.::
 
-Open the config/e3sm/tests.py file, you'll see a python dict at the top
-of the file called _TESTS, find the test category you want to
-change in this dict and add your testcase to the list.  Note the
-comment at the top of this file indicating that you add a test with
-this format: test>.<grid>.<compset>, and then there is a second
-argument for mods.
+  # $DRIVER/cime_config/customize/perf_baseline.py
 
-CESM
+  def perf_get_throughput(case):
+    """
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+      Current case object.
 
-.. _CESM:
+    Returns
+    -------
+    str
+      Storing throughput value.
+    str
+      Open baseline file for writing.
+    """
+    current = analyze_throughput(...)
 
-Select a compset to test.  If you need to test a non-standard compset,
-define an alias for it in the most appropriate config_compsets.xml in ::
+    return json.dumps(current), "w"
 
-    $cesm/components/$component/cime_config
-    $cesm/cime/src/drivers/mct/cime_config
-    $cesm/cime_config
+  def perf_get_memory(case):
+    """
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+      Current case object.
 
-If you want to test non-default namelist or xml variable values for your chosen compset,
-you might find them in a suitable existing testmods directory (see "branching", this section, for locations).
-If not, then populate a new testmods directory with the needed files (see "contents", below).
-Note; do not use '-' in the testmods directory name because it has a special meaning to create_test.
-Testlists and testmods live in different paths for cime, drv, and components.
-The relevant directory branching looks like
-::
+    Returns
+    -------
+    str
+      Storing memory value.
+    str
+      Open baseline file for writing.
+    """
+    current = analyze_memory(case)
 
-    components/$component/cime_config/testdefs/
-       testlist_$component.xml
-       testmods_dirs/$component/{TESTMODS1,TESTMODS2,...}
-    cime/src/drivers/mct/cime_config/testdefs/
-       testlist_drv.xml
-       testmods_dirs/drv/{default,5steps,...}
-    cime_config/
-       testlist_allactive.xml
-       testmods_dirs/allactive/{defaultio,...}
+    return json.dumps(current), "w"
 
-The contents of each testmods directory can include
-::
+  def perf_compare_throughput_baseline(case, baseline, tolerance):
+    """
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+      Current case object.
+    baseline : str
+      Baseline throughput value.
+    tolerance : float
+      Allowed difference tolerance.
 
-    user_nl_$components    namelist variable=value pairs
-    shell_commands         xmlchange commands
-    user_mods              a list of other GROUP-TESTMODS which should be imported
-                           but at a lower precedence than the local testmods.
+    Returns
+    -------
+    bool
+      Whether throughput diff is below tolerance.
+    str
+      Comments about the results.
+    """
+    current = analyze_throughput(case)
 
-If this test will only be run as a single test, you can now create a test name
-and follow the individual_ test instructions for create_test.
-If you want this test to be part of a suite, then it must be described in the relevant testlists_YYY.xml file.
+    baseline = json.loads(baseline)
 
-===============================
-CIME's scripts regression tests
-===============================
-.. _`CIME's scripts regression tests`:
+    diff, comments = generate_diff(...)
 
-**$CIMEROOT/scripts/lib/CIME/tests/scripts_regression_tests.py** is the suite of internal tests we run
-for the stand-alone CIME testing. With no arguments, it will run the full suite. You can limit testing to a specific
-test class or even a specific test within a test class.
+    return diff, comments
 
-Run full suite::
+  def perf_compare_memory_baseline(case, baseline, tolerance):
+    """
+    Parameters
+    ----------
+    case : CIME.case.case.Case
+      Current case object.
+    baseline : str
+      Baseline memory value.
+    tolerance : float
+      Allowed difference tolerance.
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py
+    Returns
+    -------
+    bool
+      Whether memory diff is below tolerance.
+    str
+      Comments about the results.
+    """
+    current = analyze_memory(case)
 
-Run a test class::
+    baseline = json.loads(baseline)
 
-  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
+    diff, comments = generate_diff(...)
 
-Run a specific test::
-
-  python scripts/lib/CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
-
-If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
-won't print the output of the test until testing has completed. When there are failures for a
-test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
-analysis. The user will be notified of the specific directories that will be left for them to
-examine.
-
-The test suite can also be ran with `pytest` and `pytest-cov`. After the test suite is done running
-a coverage report will be presented.
-
-Install dependencies::
-
-  python -m pip install pytest pytest-cov
-
-Run full suite::
-
-  pytest -vvv
-
-Run just unit tests::
-
-  pytest -vvv scripts/lib/CIME/tests/test_unit*
-
-Run a test class::
-
-  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py
-
-Run a specific test::
-
-  pytest -vvv scripts/lib/CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
-
-More description can be found in https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide
+    return diff, comments

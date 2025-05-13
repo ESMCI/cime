@@ -122,7 +122,7 @@ OBJS := gen_domain.o
 
 # Append user defined compiler and load flags to Makefile defaults
 CFLAGS   += $(USER_CFLAGS) -I$(INC_NETCDF)
-FFLAGS   += $(USER_FFLAGS) -I$(MOD_NETCDF) -I$(INC_NETCDF)
+FFLAGS   += $(USER_FFLAGS) -I$(MOD_NETCDF) -I$(INC_NETCDF) $(CMAKE_Fortran_FLAGS)
 LDFLAGS  += $(USER_LDFLAGS)
 
 # Set user specified linker

@@ -5,13 +5,13 @@ ERR tests short term archiving and restart capabilities
 import glob, os
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.restart_tests import RestartTest
-from CIME.utils import ls_sorted_by_mtime, safe_copy
+from CIME.utils import safe_copy
 
 logger = logging.getLogger(__name__)
 
 
 class ERR(RestartTest):
-    def __init__(self, case):  # pylint: disable=super-init-not-called
+    def __init__(self, case, **kwargs):  # pylint: disable=super-init-not-called
         """
         initialize an object interface to the ERR system test
         """
@@ -22,6 +22,7 @@ class ERR(RestartTest):
             run_one_description="initial",
             run_two_description="restart",
             multisubmit=True,
+            **kwargs
         )
 
     def _case_one_setup(self):
@@ -34,12 +35,11 @@ class ERR(RestartTest):
 
     def _case_two_custom_prerun_action(self):
         dout_s_root = self._case1.get_value("DOUT_S_ROOT")
-        rest_root = os.path.abspath(os.path.join(dout_s_root, "rest"))
-        restart_list = ls_sorted_by_mtime(rest_root)
-        expect(len(restart_list) >= 1, "No restart files found in {}".format(rest_root))
-        self._case.restore_from_archive(
-            rest_dir=os.path.join(rest_root, restart_list[0])
-        )
+        self._drv_restart_pointer = self._case2.get_value("DRV_RESTART_POINTER")
+        resttime = self._drv_restart_pointer[-16:]
+        rest_root = os.path.abspath(os.path.join(dout_s_root, "rest", resttime))
+        expect(os.path.isdir(rest_root), "None such directory {}".format(rest_root))
+        self._case.restore_from_archive(rest_dir=rest_root)
 
     def _case_two_custom_postrun_action(self):
         # Link back to original case1 name

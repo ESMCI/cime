@@ -5,18 +5,19 @@ the fortran unit tests; grid and compset are ignored.
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-from CIME.utils import append_testlog, get_cime_root
+from CIME.status import append_testlog
+from CIME.utils import get_cime_root
 from CIME.test_status import *
 
 logger = logging.getLogger(__name__)
 
 
 class FUNIT(SystemTestsCommon):
-    def __init__(self, case):
+    def __init__(self, case, **kwargs):
         """
         initialize an object interface to the FUNIT system test
         """
-        SystemTestsCommon.__init__(self, case)
+        SystemTestsCommon.__init__(self, case, **kwargs)
         case.load_env()
 
     def build_phase(self, sharedlib_only=False, model_only=False):

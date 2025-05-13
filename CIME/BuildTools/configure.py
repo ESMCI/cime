@@ -24,12 +24,11 @@ from CIME.utils import (
     stringify_bool,
     copy_local_macros_to_dir,
 )
-from CIME.XML.compilers import Compilers
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
 
-import shutil
+import shutil, glob
 
 logger = logging.getLogger(__name__)
 
@@ -61,67 +60,46 @@ def configure(
     unit_testing - Boolean specifying whether we're running unit tests (as
                    opposed to a system run)
     extra_machines_dir - String giving path to an additional directory that will be
-                         searched for a config_compilers.xml file.
+                         searched for cmake_macros.
     """
-    # Macros generation.
-    suffixes = {"Makefile": "make", "CMake": "cmake"}
-
     new_cmake_macros_dir = Files(comp_interface=comp_interface).get_value(
         "CMAKE_MACROS_DIR"
     )
-    macro_maker = None
     for form in macros_format:
 
-        if (
-            new_cmake_macros_dir is not None
-            and os.path.exists(new_cmake_macros_dir)
-            and not "CIME_NO_CMAKE_MACRO" in os.environ
-        ):
+        if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
+            safe_copy(os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir)
+        output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
+        if not os.path.exists(output_cmake_macros_dir):
+            shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)
+            ccs_mach_dir = os.path.join(
+                new_cmake_macros_dir, "..", machobj.get_machine_name()
+            )
+            for f in glob.iglob(os.path.join(ccs_mach_dir, "*.cmake")):
+                print(f"copying {f} to {output_cmake_macros_dir}")
+                safe_copy(f, output_cmake_macros_dir)
 
-            if not os.path.isfile(os.path.join(output_dir, "Macros.cmake")):
-                safe_copy(
-                    os.path.join(new_cmake_macros_dir, "Macros.cmake"), output_dir
-                )
-            output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
-            if not os.path.exists(output_cmake_macros_dir):
-                shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)
+        copy_local_macros_to_dir(
+            output_cmake_macros_dir, extra_machdir=extra_machines_dir
+        )
 
-            copy_local_macros_to_dir(
-                output_cmake_macros_dir, extra_machdir=extra_machines_dir
+        if form == "Makefile":
+            # Use the cmake macros to generate the make macros
+            cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
+                sysos,
+                machobj.get_machine_name(),
+                compiler,
+                stringify_bool(debug),
+                mpilib,
+                stringify_bool(threaded),
+                output_dir,
             )
 
-            if form == "Makefile":
-                # Use the cmake macros to generate the make macros
-                cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={}".format(
-                    sysos,
-                    machobj.get_machine_name(),
-                    compiler,
-                    stringify_bool(debug),
-                    mpilib,
-                    stringify_bool(threaded),
-                    output_dir,
-                )
+            with CmakeTmpBuildDir(macroloc=output_dir) as cmaketmp:
+                output = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
 
-                with CmakeTmpBuildDir(macroloc=output_dir) as cmaketmp:
-                    output = cmaketmp.get_makefile_vars(cmake_args=cmake_args)
-
-                with open(os.path.join(output_dir, "Macros.make"), "w") as fd:
-                    fd.write(output)
-
-        else:
-            logger.warning("Using deprecated CIME makefile generators")
-            if macro_maker is None:
-                macro_maker = Compilers(
-                    machobj,
-                    compiler=compiler,
-                    mpilib=mpilib,
-                    extra_machines_dir=extra_machines_dir,
-                )
-
-            out_file_name = os.path.join(output_dir, "Macros." + suffixes[form])
-            macro_maker.write_macros_file(
-                macros_file=out_file_name, output_format=suffixes[form]
-            )
+            with open(os.path.join(output_dir, "Macros.make"), "w") as fd:
+                fd.write(output)
 
     copy_depends_files(
         machobj.get_machine_name(), machobj.machines_dir, output_dir, compiler
@@ -173,13 +151,17 @@ class FakeCase(object):
             "DEBUG": debug,
             "COMP_INTERFACE": comp_interface,
             "PIO_VERSION": 2,
-            "SMP_PRESENT": threading,
+            "BUILD_THREADED": threading,
             "MODEL": get_model(),
             "SRCROOT": get_src_root(),
         }
 
     def get_build_threaded(self):
-        return self.get_value("SMP_PRESENT")
+        return self.get_value("BUILD_THREADED")
+
+    def get_case_root(self):
+        """Returns the root directory for this case."""
+        return self.get_value("CASEROOT")
 
     def get_value(self, attrib):
         expect(
@@ -187,6 +169,10 @@ class FakeCase(object):
             "FakeCase does not support getting value of '%s'" % attrib,
         )
         return self._vals[attrib]
+
+    def set_value(self, attrib, value):
+        """Sets a given variable value for the case"""
+        self._vals[attrib] = value
 
 
 def generate_env_mach_specific(

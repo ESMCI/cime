@@ -35,7 +35,6 @@ from CIME.utils import (
 import CIME.test_scheduler, CIME.wait_for_tests
 from CIME import get_tests
 from CIME.test_scheduler import TestScheduler
-from CIME.XML.compilers import Compilers
 from CIME.XML.env_run import EnvRun
 from CIME.XML.machines import Machines
 from CIME.XML.files import Files
@@ -45,6 +44,7 @@ from CIME.test_status import *
 from CIME.provenance import get_test_success, save_test_success
 from CIME import utils
 from CIME.tests.base import BaseTestCase
+from CIME.config import Config
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -151,6 +151,9 @@ def configure_tests(
     **kwargs
 ):
     config = CIME.utils.get_cime_config()
+
+    customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+    Config.load(customize_path)
 
     if timeout:
         BaseTestCase.GLOBAL_TIMEOUT = str(timeout)

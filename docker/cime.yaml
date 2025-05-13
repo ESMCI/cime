@@ -1,0 +1,30 @@
+name: base
+channels:
+  - conda-forge
+dependencies:
+  - cmake
+  - make
+  - wget
+  - curl
+  - subversion
+  - m4
+  - pkg-config
+  - pytest
+  - pytest-cov
+  - pyyaml
+  - vim
+  - rsync
+  - openssh
+  - lapack
+  - blas
+  - libnetcdf=4.9.2=*openmpi*
+  - netcdf-fortran=*=*openmpi*
+  - esmf=*=*openmpi*
+  - gcc_linux-64=12.*
+  - gxx_linux-64=12.*
+  - gfortran_linux-64=12.*
+  - openmpi-mpifort
+  - gcc
+  - gxx
+  - gfortran
+prefix: /opt/conda

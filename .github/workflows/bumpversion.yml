@@ -3,8 +3,12 @@ on:
   push:
     branches:
       - master
+permissions: {}
 jobs:
   build:
+    permissions:
+      contents: write # to create a tag (mathieudutour/github-tag-action)
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

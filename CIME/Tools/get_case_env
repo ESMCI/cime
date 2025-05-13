@@ -8,7 +8,8 @@ Only supports E3SM for now.
 from standard_script_setup import *
 from CIME.XML.machines import Machines
 from CIME.test_scheduler import TestScheduler
-from CIME.utils import parse_test_name, expect
+from CIME.utils import parse_test_name, expect, get_src_root
+from CIME.config import Config
 import CIME.get_tests
 
 import argparse, tempfile, shutil
@@ -60,8 +61,12 @@ def _main_func(description):
     ###############################################################################
     casename = parse_command_line(sys.argv, description)
 
-    compiler = parse_test_name(casename)[5]
-    machine = CIME.get_tests.infer_machine_name_from_tests([casename])
+    customize_path = os.path.join(get_src_root(), "cime_config", "customize")
+    config = Config.load(customize_path)
+
+    machine, compiler = CIME.get_tests.infer_arch_from_tests([casename])
+    expect(len(compiler) <= 1, "How did we get multiple compilers from one test case?")
+    compiler = compiler[0] if len(compiler) == 1 else None
     mach_obj = Machines(machine=machine)
     compiler = mach_obj.get_default_compiler() if compiler is None else compiler
     full_test_name = CIME.get_tests.get_full_test_names(

@@ -44,11 +44,18 @@ def delete_old_test_data(
             "{}/*{}*{}*".format(clutter_area, mach_comp, test_id_root)
         ):
             if avoid_test_id not in old_file:
-                logging.info("TEST ARCHIVER: Removing {}".format(old_file))
+                logging.info("TEST ARCHIVER: removing {}".format(old_file))
                 if os.path.isdir(old_file):
                     shutil.rmtree(old_file)
                 else:
                     os.remove(old_file)
+
+            else:
+                logging.info(
+                    "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
+                        old_file, avoid_test_id
+                    )
+                )
 
 
 ###############################################################################
@@ -157,6 +164,13 @@ def archive_old_test_data(
                         )
                     )
 
+        else:
+            logging.info(
+                "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
+                    old_case, avoid_test_id
+                )
+            )
+
     # Check size of archive
     bytes_of_old_test_data = int(
         run_cmd_no_fail("du -sb {}".format(old_test_archive)).split()[0]
@@ -264,7 +278,13 @@ def jenkins_generic_job(
     update_success,
     check_throughput,
     check_memory,
+    ignore_memleak,
+    ignore_namelists,
+    ignore_diffs,
+    save_timing,
     pes_file,
+    jenkins_id,
+    queue,
 ):
     ###############################################################################
     """
@@ -304,10 +324,14 @@ def jenkins_generic_job(
     # the Jenkins jobs with timeouts to avoid this.
     #
 
-    test_id_root = "J{}{}".format(
-        baseline_name.capitalize(), test_suite.replace("e3sm_", "").capitalize()
-    )
-    test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp())
+    if jenkins_id is not None:
+        test_id_root = jenkins_id
+        test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp("%y%m%d_%H%M%S"))
+    else:
+        test_id_root = "J{}{}".format(
+            baseline_name.capitalize(), test_suite.replace("e3sm_", "").capitalize()
+        )
+        test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp())
     archiver_thread = threading.Thread(
         target=handle_old_test_data,
         args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
@@ -340,13 +364,19 @@ def jenkins_generic_job(
         create_test_args.append("-j {:d}".format(parallel_jobs))
 
     if walltime is not None:
-        create_test_args.append(" --walltime " + walltime)
+        create_test_args.append("--walltime " + walltime)
 
     if baseline_root is not None:
-        create_test_args.append(" --baseline-root " + baseline_root)
+        create_test_args.append("--baseline-root " + baseline_root)
 
     if pes_file is not None:
-        create_test_args.append(" --pesfile " + pes_file)
+        create_test_args.append("--pesfile " + pes_file)
+
+    if queue is not None:
+        create_test_args.append("--queue " + queue)
+
+    if save_timing:
+        create_test_args.append("--save-timing")
 
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
@@ -393,7 +423,9 @@ def jenkins_generic_job(
         no_wait=not use_batch,  # wait if using queue
         check_throughput=check_throughput,
         check_memory=check_memory,
-        ignore_namelists=False,  # don't ignore namelist diffs
+        ignore_namelists=ignore_namelists,
+        ignore_diffs=ignore_diffs,
+        ignore_memleak=ignore_memleak,
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,
         cdash_build_group=cdash_build_group,

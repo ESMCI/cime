@@ -6,30 +6,30 @@ case_setup is a member of class Case from file case.py
 import os
 
 from CIME.XML.standard_module_setup import *
-
+from CIME.config import Config
 from CIME.XML.machines import Machines
 from CIME.BuildTools.configure import (
-    configure,
     generate_env_mach_specific,
     copy_depends_files,
 )
 from CIME.utils import (
-    run_and_log_case_status,
-    get_model,
     get_batch_script_for_job,
     safe_copy,
     file_contains_python_function,
     import_from_file,
     copy_local_macros_to_dir,
+    batch_jobid,
+    run_cmd_no_fail,
 )
-from CIME.utils import batch_jobid
-from CIME.utils import transform_vars
+from CIME.status import run_and_log_case_status, append_case_status
 from CIME.test_status import *
-from CIME.locked_files import unlock_file, lock_file
+from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
+from CIME.gitinterface import GitInterface
 
 import errno, shutil
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _build_usernl_files(case, model, comp):
@@ -144,12 +144,33 @@ def _create_macros_cmake(
     ###############################################################################
     if not os.path.isfile(os.path.join(caseroot, "Macros.cmake")):
         safe_copy(os.path.join(cmake_macros_dir, "Macros.cmake"), caseroot)
-    if not os.path.exists(os.path.join(caseroot, "cmake_macros")):
-        shutil.copytree(cmake_macros_dir, case_cmake_path)
 
-    copy_depends_files(
-        mach_obj.get_machine_name(), mach_obj.machines_dir, caseroot, compiler
-    )
+    if not os.path.exists(case_cmake_path):
+        os.mkdir(case_cmake_path)
+
+    # This impl is coupled to contents of Macros.cmake
+    os_ = mach_obj.get_value("OS")
+    mach = mach_obj.get_machine_name()
+    macros = [
+        "universal.cmake",
+        os_ + ".cmake",
+        compiler + ".cmake",
+        "{}_{}.cmake".format(compiler, os),
+        mach + ".cmake",
+        "{}_{}.cmake".format(compiler, mach),
+        "CMakeLists.txt",
+    ]
+    for macro in macros:
+        repo_macro = os.path.join(cmake_macros_dir, macro)
+        mach_repo_macro = os.path.join(cmake_macros_dir, "..", mach, macro)
+        case_macro = os.path.join(case_cmake_path, macro)
+        if not os.path.exists(case_macro):
+            if os.path.exists(mach_repo_macro):
+                safe_copy(mach_repo_macro, case_cmake_path)
+            elif os.path.exists(repo_macro):
+                safe_copy(repo_macro, case_cmake_path)
+
+    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
 
 ###############################################################################
@@ -180,50 +201,14 @@ def _create_macros(
         )
         case.read_xml()
 
-    # export CIME_NO_CMAKE_MACRO=1 to disable new macros
-    if (
-        new_cmake_macros_dir is not None
-        and os.path.exists(new_cmake_macros_dir)
-        and not "CIME_NO_CMAKE_MACRO" in os.environ
-    ):
-        case_cmake_path = os.path.join(caseroot, "cmake_macros")
+    case_cmake_path = os.path.join(caseroot, "cmake_macros")
 
-        _create_macros_cmake(
-            caseroot, new_cmake_macros_dir, mach_obj, compiler, case_cmake_path
-        )
-        copy_local_macros_to_dir(
-            case_cmake_path, extra_machdir=case.get_value("EXTRA_MACHDIR")
-        )
-
-    else:
-        if not os.path.isfile("Macros.make"):
-            configure(
-                mach_obj,
-                caseroot,
-                ["Makefile"],
-                compiler,
-                mpilib,
-                debug,
-                comp_interface,
-                sysos,
-                noenv=True,
-                extra_machines_dir=mach_obj.get_extra_machines_dir(),
-            )
-
-        # Also write out Cmake macro file
-        if not os.path.isfile("Macros.cmake"):
-            configure(
-                mach_obj,
-                caseroot,
-                ["CMake"],
-                compiler,
-                mpilib,
-                debug,
-                comp_interface,
-                sysos,
-                noenv=True,
-                extra_machines_dir=mach_obj.get_extra_machines_dir(),
-            )
+    _create_macros_cmake(
+        caseroot, new_cmake_macros_dir, mach_obj, compiler, case_cmake_path
+    )
+    copy_local_macros_to_dir(
+        case_cmake_path, extra_machdir=case.get_value("EXTRA_MACHDIR")
+    )
 
 
 ###############################################################################
@@ -366,23 +351,25 @@ def _case_setup_impl(
 
             case.initialize_derived_attributes()
 
-            case.set_value("SMP_PRESENT", case.get_build_threaded())
+            case.set_value("BUILD_THREADED", case.get_build_threaded())
 
         else:
-            case.check_pelayouts_require_rebuild(models)
+            caseroot = case.get_value("CASEROOT")
 
-            unlock_file("env_build.xml")
-            unlock_file("env_batch.xml")
+            unlock_file("env_build.xml", caseroot)
+
+            unlock_file("env_batch.xml", caseroot)
 
             case.flush()
-            case.check_lockedfiles()
+
+            check_lockedfiles(case, skip=["env_build", "env_mach_pes"])
 
             case.initialize_derived_attributes()
 
             cost_per_node = case.get_value("COSTPES_PER_NODE")
             case.set_value("COST_PES", case.num_nodes * cost_per_node)
             threaded = case.get_build_threaded()
-            case.set_value("SMP_PRESENT", threaded)
+            case.set_value("BUILD_THREADED", threaded)
             if threaded and case.total_tasks * case.thread_count > cost_per_node:
                 smt_factor = max(
                     1.0, int(case.get_value("MAX_TASKS_PER_NODE") / cost_per_node)
@@ -402,13 +389,58 @@ def _case_setup_impl(
                     + case.iotasks,
                 )
 
+            # ----------------------------------------------------------------------------------------------------------
+            # Sanity check for a GPU run:
+            #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUs
+            #        2. If the NGPUS_PER_NODE XML variable in the env_mach_pes.xml file is larger than
+            #           the value of MAX_GPUS_PER_NODE, set it to MAX_GPUS_PER_NODE automatically.
+            #        3. If the NGPUS_PER_NODE XML variable is equal to 0, it will be updated to 1 automatically.
+            # ----------------------------------------------------------------------------------------------------------
+            max_gpus_per_node = case.get_value("MAX_GPUS_PER_NODE")
+            gpu_type = case.get_value("GPU_TYPE")
+            openacc_gpu_offload = case.get_value("OPENACC_GPU_OFFLOAD")
+            openmp_gpu_offload = case.get_value("OPENMP_GPU_OFFLOAD")
+            kokkos_gpu_offload = case.get_value("KOKKOS_GPU_OFFLOAD")
+            gpu_offload = (
+                openacc_gpu_offload or openmp_gpu_offload or kokkos_gpu_offload
+            )
+            ngpus_per_node = case.get_value("NGPUS_PER_NODE")
+            if gpu_type and str(gpu_type).lower() != "none":
+                if max_gpus_per_node <= 0:
+                    raise RuntimeError(
+                        f"MAX_GPUS_PER_NODE must be larger than 0 for machine={mach} and compiler={compiler} in order to configure a GPU run"
+                    )
+                if not gpu_offload:
+                    raise RuntimeError(
+                        "GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled"
+                    )
+                case.gpu_enabled = True
+                if ngpus_per_node >= 0:
+                    case.set_value(
+                        "NGPUS_PER_NODE",
+                        max(1, ngpus_per_node)
+                        if ngpus_per_node <= max_gpus_per_node
+                        else max_gpus_per_node,
+                    )
+            elif gpu_offload:
+                raise RuntimeError(
+                    "GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled"
+                )
+            elif ngpus_per_node and ngpus_per_node != 0:
+                raise RuntimeError(
+                    f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;"
+                )
+
             # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
             env_batch = case.get_env("batch")
             env_batch.set_job_defaults([(case.get_primary_job(), {})], case)
 
             # create batch files
             env_batch.make_all_batch_files(case)
-            if get_model() == "e3sm" and not case.get_value("TEST"):
+
+            if Config.instance().make_case_run_batch_script and not case.get_value(
+                "TEST"
+            ):
                 input_batch_script = os.path.join(
                     case.get_value("MACHDIR"), "template.case.run.sh"
                 )
@@ -422,9 +454,14 @@ def _case_setup_impl(
             # Make a copy of env_mach_pes.xml in order to be able
             # to check that it does not change once case.setup is invoked
             case.flush()
+
             logger.debug("at copy TOTALPES = {}".format(case.get_value("TOTALPES")))
-            lock_file("env_mach_pes.xml")
-            lock_file("env_batch.xml")
+
+            caseroot = case.get_value("CASEROOT")
+
+            lock_file("env_mach_pes.xml", caseroot)
+
+            lock_file("env_batch.xml", caseroot)
 
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):
@@ -440,6 +477,17 @@ def _case_setup_impl(
                 run_cmd_no_fail(
                     "{}/cime_config/cism.template {}".format(glcroot, caseroot)
                 )
+            if comp == "cam":
+                camroot = case.get_value("COMP_ROOT_DIR_ATM")
+                if os.path.exists(
+                    os.path.join(camroot, "cime_config/cam.case_setup.py")
+                ):
+                    logger.info("Running cam.case_setup.py")
+                    run_cmd_no_fail(
+                        "python {cam}/cime_config/cam.case_setup.py {cam} {case}".format(
+                            cam=camroot, case=caseroot
+                        )
+                    )
 
         _build_usernl_files(case, "drv", "cpl")
 
@@ -451,7 +499,9 @@ def _case_setup_impl(
         )
 
         # Some tests need namelists created here (ERP) - so do this if we are in test mode
-        if (test_mode or get_model() == "e3sm") and not non_local:
+        if (
+            test_mode or Config.instance().case_setup_generate_namelist
+        ) and not non_local:
             logger.info("Generating component namelists as part of setup")
             case.create_namelists()
 
@@ -515,31 +565,30 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             caseroot=caseroot,
             is_batch=is_batch,
         )
+        self._create_case_repo(caseroot)
 
-    # put the following section here to make sure the rundir is generated first
-    machdir = self.get_value("MACHDIR")
-    mach = self.get_value("MACH")
-    ngpus_per_node = self.get_value("NGPUS_PER_NODE")
-    overrides = {}
-    overrides["ngpus_per_node"] = ngpus_per_node
-    input_template = os.path.join(machdir, "mpi_run_gpu.{}".format(mach))
-    if os.path.isfile(input_template):
-        # update the wrapper script that sets the device id for each MPI rank
-        output_text = transform_vars(
-            open(input_template, "r").read(), case=self, overrides=overrides
+
+def _create_case_repo(self, caseroot):
+    self._gitinterface = GitInterface(caseroot, logger, branch=self.get_value("CASE"))
+    if self._gitinterface and not os.path.exists(os.path.join(caseroot, ".gitignore")):
+        safe_copy(
+            os.path.join(
+                self.get_value("CIMEROOT"),
+                "CIME",
+                "data",
+                "templates",
+                "gitignore.template",
+            ),
+            os.path.join(caseroot, ".gitignore"),
         )
-
-        # write it out to the run dir
-        rundir = self.get_value("RUNDIR")
-        output_name = os.path.join(rundir, "set_device_rank.sh")
-        logger.info("Creating file {}".format(output_name))
-        with open(output_name, "w") as f:
-            f.write(output_text)
-
-        # make the wrapper script executable
-        if os.path.isfile(output_name):
-            os.system("chmod +x " + output_name)
-        else:
-            expect(
-                False, "The file {} is not written out correctly.".format(output_name)
-            )
+        append_case_status(
+            "", "", "local git repository created", gitinterface=self._gitinterface
+        )
+        # add all files in caseroot to local repository
+        self._gitinterface._git_command("add", "*")
+    elif not self._gitinterface:
+        append_case_status(
+            "",
+            "",
+            "Local git version too old for cime git interface, version 2.28 or newer required.",
+        )

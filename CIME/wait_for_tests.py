@@ -3,7 +3,6 @@ import queue
 import os, time, threading, socket, signal, shutil, glob
 
 # pylint: disable=import-error
-from distutils.spawn import find_executable
 import logging
 import xml.etree.ElementTree as xmlet
 
@@ -38,7 +37,7 @@ def get_test_time(test_path):
     ###############################################################################
     ts = TestStatus(test_dir=test_path)
     comment = ts.get_comment(RUN_PHASE)
-    if comment is None or "time=" not in comment:
+    if "time=" not in comment:
         logging.warning("No run-phase time data found in {}".format(test_path))
         return 0
     else:
@@ -516,7 +515,7 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
             hostname,
             cdash_build_name,
             cdash_project,
-            find_executable("scp"),
+            shutil.which("scp"),
             cdash_timestamp,
             drop_method,
         )
@@ -573,6 +572,7 @@ def wait_for_test(
     check_throughput,
     check_memory,
     ignore_namelists,
+    ignore_diffs,
     ignore_memleak,
     no_run,
 ):
@@ -607,6 +607,7 @@ def wait_for_test(
                     check_throughput=check_throughput,
                     check_memory=check_memory,
                     ignore_namelists=ignore_namelists,
+                    ignore_diffs=ignore_diffs,
                     ignore_memleak=ignore_memleak,
                 )
 
@@ -649,12 +650,14 @@ def wait_for_tests_impl(
     check_throughput=False,
     check_memory=False,
     ignore_namelists=False,
+    ignore_diffs=False,
     ignore_memleak=False,
     no_run=False,
 ):
     ###############################################################################
     results = queue.Queue()
 
+    wft_threads = []
     for test_path in test_paths:
         t = threading.Thread(
             target=wait_for_test,
@@ -665,15 +668,17 @@ def wait_for_tests_impl(
                 check_throughput,
                 check_memory,
                 ignore_namelists,
+                ignore_diffs,
                 ignore_memleak,
                 no_run,
             ),
         )
         t.daemon = True
         t.start()
+        wft_threads.append(t)
 
-    while threading.active_count() > 1:
-        time.sleep(1)
+    for wft_thread in wft_threads:
+        wft_thread.join()
 
     test_results = {}
     completed_test_paths = []
@@ -717,6 +722,7 @@ def wait_for_tests(
     check_throughput=False,
     check_memory=False,
     ignore_namelists=False,
+    ignore_diffs=False,
     ignore_memleak=False,
     cdash_build_name=None,
     cdash_project=E3SM_MAIN_CDASH,
@@ -739,6 +745,7 @@ def wait_for_tests(
             check_throughput,
             check_memory,
             ignore_namelists,
+            ignore_diffs,
             ignore_memleak,
             no_run,
         )
