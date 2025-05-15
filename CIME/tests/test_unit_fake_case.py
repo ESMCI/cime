@@ -49,6 +49,12 @@ class TestFakeCase(unittest.TestCase):
         with self.assertRaisesRegex(CIMEError, "ERROR: FakeCase does not support getting value of 'ZZTOP'" ):
             fake_case.get_value("ZZTOP")
         
+    def test_get_case_root(self):
+        fake_case = self.create_fake_case(self.compiler, self.mpilib, self.debug, self.comp_interface)
+
+        caseroot = os.path.join( self.srcroot, "newcase" )
+        fake_case.set_value("CASEROOT", caseroot)
+        self.assertEqual( fake_case.get_case_root(), caseroot )
 
 if __name__ == "__main__":
     unittest.main()
