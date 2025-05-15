@@ -149,7 +149,7 @@ def _download_if_in_repo(
             os.makedirs(full_path + ".tmp")
         isdirectory = True
     elif not os.path.exists(os.path.dirname(full_path)):
-        os.makedirs(os.path.dirname(full_path))
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     # Use umask to make sure files are group read/writable. As long as parent directories
     # have +s, then everything should work.
