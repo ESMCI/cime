@@ -1153,7 +1153,7 @@ class TestScheduler(object):
             ]
             if phase in build_group_dep_phases:
                 if self._get_test_status(first_test, phase=phase) == TEST_PEND_STATUS:
-                    return None # None indicates job is ineligible to run
+                    return None  # None indicates job is ineligible to run
                 else:
                     return 1
 
@@ -1288,9 +1288,7 @@ class TestScheduler(object):
         test_phase, test_status = self._get_test_data(test)
         expect(test_status != TEST_PEND_STATUS, test)
         next_phase = self._phases[self._phases.index(test_phase) + 1]
-        procs_needed = self._get_procs_needed(
-            test, next_phase, threads_in_flight
-        )
+        procs_needed = self._get_procs_needed(test, next_phase, threads_in_flight)
 
         if procs_needed is None:
             # This test cannot run now so skip
@@ -1299,7 +1297,7 @@ class TestScheduler(object):
         elif procs_needed > self._proc_pool:
             # This test is asking for more than we can ever provide
             # This should only ever happen for RUN_PHASE
-            msg = "Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool (self._proc_pool)")
+            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool (self._proc_pool)"
             expect(next_phase == RUN_PHASE, msg)
 
             # CIME phase won't be run, so we need to update TEST_STATUS ourselves
@@ -1321,7 +1319,9 @@ class TestScheduler(object):
             self._procs_avail -= procs_needed
 
             # Necessary to print this way when multiple threads printing
-            logger.info(f"Starting {next_phase} for test {test} with {procs_needed} procs")
+            logger.info(
+                f"Starting {next_phase} for test {test} with {procs_needed} procs"
+            )
 
             self._update_test_status(test, next_phase, TEST_PEND_STATUS)
             phase_method = getattr(self, f"_{next_phase.lower()}_phase")
@@ -1366,7 +1366,9 @@ class TestScheduler(object):
                     # Check if this test is already running a phase. If so, we can't
                     # launch a new phase now.
                     if test not in threads_in_flight:
-                        launched = self._producer_indv_test_launch(test, threads_in_flight)
+                        launched = self._producer_indv_test_launch(
+                            test, threads_in_flight
+                        )
                         if launched:
                             num_threads_launched_this_iteration += 1
 
