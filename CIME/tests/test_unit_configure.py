@@ -11,14 +11,13 @@ from CIME.XML.machines import Machines
 class TestConfigure(unittest.TestCase):
 
     def setUp(self):
-        self.compiler = "intel"
-        self.mpilib = "mpich"
+        self.mach_obj = Machines()
+        self.compiler = self.mach_obj.get_default_compiler()
+        self.sysos = self.mach_obj.get_value("OS")
+        self.mpilib = self.mach_obj.get_default_MPIlib(attributes={"compiler": self.compiler})
         self.debug = "FALSE"
         self.comp_interface = "nuopc"
-        self.sysos = "CNL"
-        mach = "derecho"
 
-        self.mach_obj = Machines(machine=mach)
 
         self.tempdir = tempfile.mkdtemp()
         self.caseroot = os.path.join( self.tempdir, "newcase" )
@@ -47,4 +46,3 @@ class TestConfigure(unittest.TestCase):
               unit_testing = False,
               threaded = False
           )
-
