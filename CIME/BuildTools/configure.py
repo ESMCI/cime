@@ -142,7 +142,9 @@ def copy_depends_files(machine_name, machines_dir, output_dir, compiler):
 
 
 class FakeCase(object):
-    def __init__(self, compiler, mpilib, debug, comp_interface, threading=False):
+    def __init__(
+        self, compiler, mpilib, debug, comp_interface, threading=False, gpu_type="none"
+    ):
         # PIO_VERSION is needed to parse config_machines.xml but isn't otherwise used
         # by FakeCase
         self._vals = {
@@ -151,6 +153,7 @@ class FakeCase(object):
             "DEBUG": debug,
             "COMP_INTERFACE": comp_interface,
             "PIO_VERSION": 2,
+            "GPU_TYPE": gpu_type,
             "BUILD_THREADED": threading,
             "MODEL": get_model(),
             "SRCROOT": get_src_root(),
