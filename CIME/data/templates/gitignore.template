@@ -4,6 +4,10 @@ run
 # logger output files
 *.log
 
+# queueing system output files
+run.*.o\d+
+st_archive.*.o\d+
+
 #python files
 __pycache__/
 *.so

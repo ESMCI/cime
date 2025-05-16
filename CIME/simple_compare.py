@@ -118,7 +118,6 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
 
         norm_gold_value = _normalize_string_value(gold_value, case)
         norm_comp_value = _normalize_string_value(comp_value, case)
-
         if norm_gold_value != norm_comp_value:
             comments += "Inequivalent lines {} != {}\n".format(gold_value, comp_value)
             comments += "  NORMALIZED: {} != {}\n".format(
@@ -177,7 +176,6 @@ def compare_runconfigfiles(gold_file, compare_file, case=None):
     # create dictionary's of the runconfig files and compare them
     gold_dict = _parse_runconfig(gold_file)
     compare_dict = _parse_runconfig(compare_file)
-
     comments = findDiff(gold_dict, compare_dict, case=case)
     comments = comments.replace(" d1", " " + gold_file)
     comments = comments.replace(" d2", " " + compare_file)
@@ -240,6 +238,8 @@ def findDiff(d1, d2, path="", case=None):
                 elif "username" in k:
                     pass
                 elif "logfile" in k:
+                    pass
+                elif "model_version" in k:
                     pass
                 elif d1[k] != d2[k]:
                     comment += path + ":\n"
