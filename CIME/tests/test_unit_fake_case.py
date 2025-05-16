@@ -22,10 +22,19 @@ class TestFakeCase(unittest.TestCase):
         self.srcroot = "."
         os.environ["SRCROOT"] = self.srcroot
 
-    def create_fake_case(self, compiler, mpilib, debug, comp_interface, threading=False, gpu_type="none"):
+    def create_fake_case(
+        self, compiler, mpilib, debug, comp_interface, threading=False, gpu_type="none"
+    ):
 
         pio_version = 2
-        fake_case = FakeCase(compiler, mpilib, debug, comp_interface, threading=threading, gpu_type=gpu_type)
+        fake_case = FakeCase(
+            compiler,
+            mpilib,
+            debug,
+            comp_interface,
+            threading=threading,
+            gpu_type=gpu_type,
+        )
 
         # Verify
         self.assertEqual(compiler, fake_case.get_value("COMPILER"))
@@ -36,25 +45,34 @@ class TestFakeCase(unittest.TestCase):
         self.assertEqual(pio_version, fake_case.get_value("PIO_VERSION"))
         self.assertEqual(self.model, fake_case.get_value("MODEL"))
         self.assertEqual(self.srcroot, fake_case.get_value("SRCROOT"))
-        self.assertEqual(threading, fake_case.get_build_threaded() )
+        self.assertEqual(threading, fake_case.get_build_threaded())
 
         return fake_case
 
     def test_create_simple(self):
-        fake_case = self.create_fake_case(self.compiler, self.mpilib, self.debug, self.comp_interface)
+        fake_case = self.create_fake_case(
+            self.compiler, self.mpilib, self.debug, self.comp_interface
+        )
 
     def test_get_bad_setting(self):
-        fake_case = self.create_fake_case(self.compiler, self.mpilib, self.debug, self.comp_interface)
+        fake_case = self.create_fake_case(
+            self.compiler, self.mpilib, self.debug, self.comp_interface
+        )
 
-        with self.assertRaisesRegex(CIMEError, "ERROR: FakeCase does not support getting value of 'ZZTOP'" ):
+        with self.assertRaisesRegex(
+            CIMEError, "ERROR: FakeCase does not support getting value of 'ZZTOP'"
+        ):
             fake_case.get_value("ZZTOP")
-        
-    def test_get_case_root(self):
-        fake_case = self.create_fake_case(self.compiler, self.mpilib, self.debug, self.comp_interface)
 
-        caseroot = os.path.join( self.srcroot, "newcase" )
+    def test_get_case_root(self):
+        fake_case = self.create_fake_case(
+            self.compiler, self.mpilib, self.debug, self.comp_interface
+        )
+
+        caseroot = os.path.join(self.srcroot, "newcase")
         fake_case.set_value("CASEROOT", caseroot)
-        self.assertEqual( fake_case.get_case_root(), caseroot )
+        self.assertEqual(fake_case.get_case_root(), caseroot)
+
 
 if __name__ == "__main__":
     unittest.main()
