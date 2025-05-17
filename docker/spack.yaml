@@ -1,0 +1,19 @@
+spack:
+  specs:
+  - esmf %gcc ^openmpi
+  - openblas %gcc
+  - hdf5 +hl %gcc ^openmpi
+  - netcdf-c +parallel-netcdf %gcc ^openmpi
+  - netcdf-fortran %gcc ^openmpi
+  - parallel-netcdf %gcc ^openmpi
+  mirrors:
+    develop: https://binaries.spack.io/develop
+  concretizer:
+    unify: when_possible
+  config:
+    install_tree: /opt/software
+  view: 
+    default: /opt/views/view
+  packages:
+    all:
+      target: [x86_64_v3]
