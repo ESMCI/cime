@@ -6,6 +6,10 @@ COMP_ROOT_DIR_*
 .. contents::
     :local:
 
+Overview
+--------
+This variable defines the root directory for each supported component.
+
 Entry
 -----
 The following is an example entry for ``COMP_ROOT_DIR_<component>`` in ``config_files.xml``.

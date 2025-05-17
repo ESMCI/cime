@@ -6,6 +6,8 @@ WORKFLOW_SPEC_FILE
 .. contents::
    :local:
 
+Overview
+--------
 Provides CIME with a models various ``workflows``.
 
 Entry

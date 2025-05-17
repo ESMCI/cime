@@ -6,6 +6,10 @@ CMAKE_MACROS_DIR
 .. contents::
     :local:
 
+Overview
+--------
+This variable defines the path for CCS to search for CMake macro files.
+
 Entry
 -----
 The following is an example for ``CMAKE_MACROS_DIR`` in ``config_files.xml``.

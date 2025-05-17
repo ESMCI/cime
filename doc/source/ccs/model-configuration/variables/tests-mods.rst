@@ -6,6 +6,8 @@ TESTS_MODS_DIR
 .. contents::
     :local:
 
+Overview
+--------
 Provides CIME with the root directories to discover ``TestMods``.
 
 Entry

@@ -6,6 +6,15 @@ ARCHIVE_SPEC_FILE
 .. contents::
     :local:
 
+Overview
+---------
+This variable allows individual components to define regular expression for matching history/restart/rpointer
+files that will be archved. These same patterns are used to match files for ``System Tests`` that compare
+them between case instances.
+
+These patterns can be tested using ``test_file_names`` where each ``tfile`` is a pattern with an expected action
+defined by the ``disposition`` attribute.
+
 Entry
 -----
 The following is an example entry for ``ARCHIVE_SPEC_FILE`` in ``config_files.xml``.
@@ -50,7 +59,7 @@ Element/Attribute       Description
 comp_archive_spec       Component archive specification defined for either a specific compnent or class.
 compname                Component name the specification applies.
 compclass               Component class the specification applies. 
-exclude_testing         Whether to exclude the testing archiving.
+exclude_testing         Whether to exclude from archive testing.
 rest_file_extension     Suffix used to match restart files.
 hist_file_extension     Suffix used to match history files.
 hist_file_ext_regex     Regular expression used to match file extension of history files.

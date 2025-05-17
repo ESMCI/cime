@@ -6,6 +6,8 @@ CONFIG_TESTS_FILE
 .. contents::
     :local:
 
+Overview
+--------
 Provides CIME with defaults for various ``SystemTests``.
 
 Entry

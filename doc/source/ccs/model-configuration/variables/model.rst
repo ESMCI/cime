@@ -6,6 +6,10 @@ MODEL
 .. contents::
     :local:
 
+Overview
+--------
+This variable defines the name of the Model.
+
 Entry
 -----
 The following is an example entry for ``MODEL`` in ``config_files.xml``.
