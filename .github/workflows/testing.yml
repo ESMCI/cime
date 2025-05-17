@@ -103,7 +103,7 @@ jobs:
       - name: Checkout CESM
         uses: actions/checkout@v4
         with:
-          repository: https://github.com/ESCOMP/CESM.git
+          repository: ESCOMP/CESM.git
           ref: cesm3.0-alphabranch
           # $GITHUB_WORKSPACE/CESM
           path: CESM
