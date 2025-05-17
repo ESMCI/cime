@@ -62,7 +62,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          target: base
           context: docker/
           push: true
           tags: ${{ steps.meta.outputs.tags }}
