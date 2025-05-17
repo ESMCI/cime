@@ -134,13 +134,18 @@
 <span id="model-config-component"></span><h1>CONFIG_*_FILE<a class="headerlink" href="#config-file" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#entry" id="id1">Entry</a></p></li>
-<li><p><a class="reference internal" href="#schema-definition" id="id2">Schema Definition</a></p></li>
-<li><p><a class="reference internal" href="#triggering-a-rebuild" id="id3">Triggering a rebuild</a></p></li>
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#entry" id="id2">Entry</a></p></li>
+<li><p><a class="reference internal" href="#schema-definition" id="id3">Schema Definition</a></p></li>
+<li><p><a class="reference internal" href="#triggering-a-rebuild" id="id4">Triggering a rebuild</a></p></li>
 </ul>
 </nav>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This variables defines the configuration XML for each component.</p>
+</section>
 <section id="entry">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Entry</a><a class="headerlink" href="#entry" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Entry</a><a class="headerlink" href="#entry" title="Link to this heading"></a></h2>
 <p>The following is an example entry for <code class="docutils literal notranslate"><span class="pre">CONFIG_&lt;component&gt;_FILE</span></code> in <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">&lt;component&gt;</span></code> is replaced by the name of the component.
 There will be multiple <code class="docutils literal notranslate"><span class="pre">entry</span></code> elements, one for each component supported by the model.</p>
@@ -159,7 +164,7 @@ There will be multiple <code class="docutils literal notranslate"><span class="p
 </div>
 </section>
 <section id="schema-definition">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h2>
 <p>The configuration is stored in <code class="docutils literal notranslate"><span class="pre">config_component.xml</span></code> under the components <code class="docutils literal notranslate"><span class="pre">cime_config</span></code> directory e.g. <code class="docutils literal notranslate"><span class="pre">mosart/cime_config/config_component.xml</span></code>.
 This file will store multiple variables for the component defined using <span class="xref std std-ref">*entry*</span> elements.
 Example contents of <code class="docutils literal notranslate"><span class="pre">config_component.xml</span></code>.</p>
@@ -208,7 +213,7 @@ Example contents of <code class="docutils literal notranslate"><span class="pre"
 </div>
 </section>
 <section id="triggering-a-rebuild">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Triggering a rebuild</a><a class="headerlink" href="#triggering-a-rebuild" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Triggering a rebuild</a><a class="headerlink" href="#triggering-a-rebuild" title="Link to this heading"></a></h2>
 <p>It’s the responsibility of a component to define which settings will require a component to be rebuilt.</p>
 <p>These triggers can be defined as follows.</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;REBUILD_TRIGGER_ATM&quot;</span><span class="nt">&gt;</span>

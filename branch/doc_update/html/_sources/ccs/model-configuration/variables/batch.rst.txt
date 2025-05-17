@@ -6,6 +6,65 @@ BATCH_SPEC_FILE
 .. contents::
     :local:
 
+Overview
+--------
+This variable allows a model to define the batch systems it can use. The ``batch_system``
+element is pretty expressive and can be adapted for most batch systems used in HPC centers.
+
+The ``batch_system`` entries are composable supporting a ``Don't Repeat Yourself (DRY)`` 
+design. For example each batch system type only needs to be defined once and machines
+that support a specific type can just define their queues and inherit the rest of the
+configuration.
+
+An example of this can be seen if ``slurm`` was defined as the following.
+
+.. code-block:: xml
+
+        <batch_system type="slurm" >
+                <batch_query per_job_arg="-j">squeue</batch_query>
+                <batch_submit>sbatch</batch_submit>
+                <batch_cancel>scancel</batch_cancel>
+                <batch_directive>#SBATCH</batch_directive>
+                <jobid_pattern>(\d+)$</jobid_pattern>
+                <depend_string>--dependency=afterok:jobid</depend_string>
+                <depend_allow_string>--dependency=afterany:jobid</depend_allow_string>
+                <depend_separator>:</depend_separator>
+                <walltime_format>%H:%M:%S</walltime_format>
+                <batch_mail_flag>--mail-user</batch_mail_flag>
+                <batch_mail_type_flag>--mail-type</batch_mail_type_flag>
+                <batch_mail_type>none, all, begin, end, fail</batch_mail_type>
+                <submit_args>
+                        <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+                        <arg flag="-p" name="$JOB_QUEUE"/>
+                        <arg flag="--account" name="$PROJECT"/>
+                </submit_args>
+                <directives>
+                        <directive> --job-name={{ job_id }}</directive>
+                        <directive> --nodes={{ num_nodes }}</directive>
+                        <directive> --output={{ job_id }}.%j </directive>
+                        <directive> --exclusive </directive>
+                </directives>
+        </batch_system>
+
+Then there may be multiple machines that support slurm but only need to define their queues as
+long as they set their type to ``slurm``.
+
+.. code-block:: xml
+
+        <batch_system MACH="X" type="slurm">
+                <queues>
+                        <queue walltimemax="24:00:00" nodemax="520" default="true">pbatch</queue>
+                        <queue walltimemax="01:00:00" nodemax="12">pdebug</queue>
+                </queues>
+        </batch_system>
+
+        <batch_system MACH="Y" type="slurm">
+                <queues>
+                        <queue walltimemax="24:00:00" nodemax="520" default="true">pbatch</queue>
+                        <queue walltimemax="01:00:00" nodemax="20">pdebug</queue>
+                </queues>
+        </batch_system>
+
 Entry
 -----
 The following is an example entry for ``BATCH_SPEC_FILE`` in ``config_files.xml``.
@@ -28,29 +87,6 @@ Example
 Contents
 --------
 The following describes the contents of the ``config_batch.xml`` file.
-
-The **config_batch.xml** schema is defined in **$CIMEROOT/config/xml_schemas/config_batch.xsd**.
-
-CIME supports these batch systems: pbs, cobalt, lsf, and slurm.
-
-The entries in **config_batch.xml** are hierarchical.
-
-#. General configurations for each system are provided at the top of the file.
-
-#. Specific modifications for a given machine are provided below. In particular, each machine should define its own queues.
-
-#. Following is a machine-specific queue section. This section details the parameters for each queue on the target machine.
-
-#. The last section describes several things:
-
-   - Each job that will be submitted to the queue for a CIME workflow,
-   - The template file that will be used to generate that job,
-   - The prerequisites that must be met before the job is submitted, and
-   - The dependencies that must be satisfied before the job is run.
-
-By default, the CIME workflow consists of two jobs (**case.run**, **case.st_archive**).
-
-In addition, there is a **case.test** job that is used by the CIME system test workflow.
 
 Schema Definition
 -----------------

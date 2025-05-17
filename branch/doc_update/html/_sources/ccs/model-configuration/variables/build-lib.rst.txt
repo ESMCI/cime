@@ -6,7 +6,10 @@ BUILD_LIB_FILE
 .. contents::
     :local:
 
-Each library will need to provide a ``buildlib`` to configure and build the library.
+Overview
+--------
+This variable defines the paths to library build scripts. A description of the scripts
+themselves can be found below.
 
 Entry
 -----

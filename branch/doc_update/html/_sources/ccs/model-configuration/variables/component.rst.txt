@@ -6,6 +6,10 @@ CONFIG_*_FILE
 .. contents::
   :local:
 
+Overview
+--------
+This variables defines the configuration XML for each component.
+
 Entry
 -----
 The following is an example entry for ``CONFIG_<component>_FILE`` in ``config_files.xml``.

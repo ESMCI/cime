@@ -6,6 +6,10 @@ INPUTDATA_SPEC_FILE
 .. contents::
     :local:
 
+Overview
+--------
+This variable defines the servers CCS will use to find input data required by components.
+
 Entry
 -----
 The following is an example entry for ``INPUTDATA_SPEC_FILE`` in ``config_files.xml``.
