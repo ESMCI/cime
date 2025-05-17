@@ -185,7 +185,7 @@ jobs:
         with:
           path: ${{ matrix.model.name }}
       - name: Setup CESM model
-        when: matrix.model.name == 'cesm'
+        if: matrix.model.name == 'cesm'
         run: |
           cd ${{ matrix.model.name }}
           git config --global --add safe.directory "*"
@@ -195,7 +195,7 @@ jobs:
           # remove CIME to checkout PR branch
           rm -rf cime
       - name: Setup E3SM model
-        when: matrix.model.name == 'e3sm'
+        if: matrix.model.name == 'e3sm'
         run: |
           cd ${{ matrix.model.name }}
           git config --global --add safe.directory "*"
