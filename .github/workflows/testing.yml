@@ -142,7 +142,7 @@ jobs:
 
           pip install -r test-requirements.txt
 
-          cp -rf /root/.cime /github/home
+          cp -rf /home/cime_user/.cime /github/home/
 
           ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
 

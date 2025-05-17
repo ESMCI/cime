@@ -48,6 +48,7 @@ COPY --from=builder /opt/software /opt/software
 COPY --from=builder /opt/views /opt/views
 COPY helper.sh /helper.sh
 COPY entrypoint.sh /entrypoint.sh
+COPY .cime/ /home/cime_user/
 
 RUN ln -s /opt/views/view /opt/view
 
