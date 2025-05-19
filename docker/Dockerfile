@@ -30,9 +30,6 @@ RUN apt-get update \
         gfortran-12 \
         python3 \
         python3-pip \
-        python3-pytest \
-        python3-pytest-cov \
-        python3-yaml \
         cmake \
         ca-certificates \
         wget \
@@ -42,7 +39,8 @@ RUN apt-get update \
         vim \
         rsync \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 50
+    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 50 \
+    && python3 -m pip install pytest pytest-cov pyyaml
 
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
