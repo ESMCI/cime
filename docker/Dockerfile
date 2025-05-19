@@ -39,8 +39,7 @@ RUN apt-get update \
         vim \
         rsync \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 50 \
-    && python3 -m pip install pytest pytest-cov pyyaml
+    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 50
 
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
@@ -48,8 +47,10 @@ COPY --from=builder /opt/views /opt/views
 COPY helper.sh /helper.sh
 COPY entrypoint.sh /entrypoint.sh
 COPY .cime /home/cime_user/.cime
+COPY test-requirements.txt /home/cime_user/test-requirements.txt
 
-RUN ln -s /opt/views/view /opt/view
+RUN ln -s /opt/views/view /opt/view \
+    && python3 -m pip install -r /home/cime_user/test-requirements.txt
 
 ENV USER=cime_user
 

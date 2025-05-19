@@ -1,1 +1,4 @@
+pytest
+pytest-cov
+pyyaml
 evv4esm
