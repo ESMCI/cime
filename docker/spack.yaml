@@ -12,7 +12,7 @@ spack:
     unify: when_possible
   config:
     install_tree: /opt/software
-  view: 
+  view:
     default: /opt/views/view
   packages:
     all:
