@@ -11,12 +11,12 @@ RUN apt-get update \
 
 RUN mkdir -p /opt/spack-environment
 
-COPY spack.yaml /opt/spack-environment
+COPY docker/spack.yaml /opt/spack-environment
 
 WORKDIR /opt/spack-environment
 
 RUN spack env activate . && spack buildcache keys --install --trust &&  spack install --fail-fast && spack gc -y
- 
+
 RUN spack env activate --sh -d . > activate.sh
 
 FROM ubuntu:22.04
@@ -44,9 +44,9 @@ RUN apt-get update \
 COPY --from=builder /opt/spack-environment /opt/spack-environment
 COPY --from=builder /opt/software /opt/software
 COPY --from=builder /opt/views /opt/views
-COPY helper.sh /helper.sh
-COPY entrypoint.sh /entrypoint.sh
-COPY .cime /home/cime_user/.cime
+COPY docker/helper.sh /helper.sh
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/.cime /home/cime_user/.cime
 COPY test-requirements.txt /home/cime_user/test-requirements.txt
 
 RUN ln -s /opt/views/view /opt/view \
