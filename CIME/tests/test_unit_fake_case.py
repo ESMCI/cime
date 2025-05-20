@@ -7,7 +7,7 @@ This is seperate from FakeCase that's under CIME/tests
 
 import unittest
 import os
-from CIME.utils import get_model, CIMEError
+from CIME.utils import get_model, CIMEError, GLOBAL
 
 from CIME.BuildTools.configure import FakeCase
 
@@ -19,8 +19,8 @@ class TestFakeCase(unittest.TestCase):
         self.debug = "FALSE"
         self.comp_interface = "nuopc"
         self.model = get_model()
-        self.srcroot = "."
-        os.environ["SRCROOT"] = self.srcroot
+        self.srcroot = os.path.abspath("../../..")
+        GLOBAL["SRCROOT"] = self.srcroot
 
     def create_fake_case(
         self, compiler, mpilib, debug, comp_interface, threading=False, gpu_type="none"
