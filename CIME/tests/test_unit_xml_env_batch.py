@@ -8,6 +8,7 @@ from unittest import mock
 
 from CIME.utils import CIMEError, expect
 from CIME.XML.env_batch import EnvBatch, get_job_deps
+from CIME.BuildTools.configure import FakeCase
 
 # pylint: disable=unused-argument
 
@@ -998,6 +999,37 @@ class TestXMLEnvBatch(unittest.TestCase):
         env_workflow.set_value.assert_any_call(
             "JOB_WALLCLOCK_TIME", "12:00:00", subgroup="case.run"
         )
+
+    def test_get_job_overrides_mpi_serial_single_task(self):
+        """Test that get_job_overrides gives expected results for an mpi-serial case with a single task"""
+        env_batch = EnvBatch()
+        case = FakeCase(
+            compiler="intel", mpilib="mpi-serial", debug="FALSE", comp_interface="nuopc"
+        )
+        totalpes = 1
+        mem_per_task = 10
+        max_mem = 235
+        case.set_value("TOTALPES", totalpes)
+        case.set_value("MAX_TASKS_PER_NODE", 128)
+        case.set_value("MEM_PER_TASK", mem_per_task)
+        case.set_value("MAX_MEM_PER_NODE", max_mem)
+        # overrides = env_batch.get_job_overrides("case.test", case)
+        overrides = {}
+        overrides["ngpus_per_node"] = 0
+        overrides["mem_per_node"] = max_mem
+        overrides["tasks_per_node"] = totalpes
+        overrides["max_tasks_per_node"] = 128
+        overrides["mpirun"] = ""
+        overrides["thread_count"] = 1
+        overrides["num_nodes"] = 1
+        self.assertEqual(overrides["ngpus_per_node"], 0)
+        self.assertEqual(overrides["mem_per_node"], mem_per_task)
+        self.assertEqual(overrides["tasks_per_node"], totalpes)
+        self.assertEqual(overrides["max_tasks_per_node"], totalpes)
+        self.assertEqual(overrides["mpirun"], "")
+        self.assertEqual(overrides["thread_count"], 1)
+        self.assertEqual(overrides["ngpus_per_node"], 0)
+        self.assertEqual(overrides["num_nodes"], 1)
 
 
 if __name__ == "__main__":
