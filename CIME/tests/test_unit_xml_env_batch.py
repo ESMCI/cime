@@ -212,6 +212,25 @@ def _open_temp_file(stack, data):
 
 
 class FakeCaseWWorkflow(FakeCase):
+    def __init__(
+        self,
+        compiler,
+        mpilib,
+        debug,
+        comp_interface,
+        task_count,
+        thread_count,
+        tasks_per_node,
+        mem_per_task,
+        max_mem,
+    ):
+        super().__init__(compiler, mpilib, debug, comp_interface)
+        self._vals["task_count"] = task_count
+        self._vals["thread_count"] = thread_count
+        self._vals["tasks_per_node"] = tasks_per_node
+        self._vals["mem_per_task"] = mem_per_task
+        self._vals["max_mem"] = max_mem
+
     def get_env(self, short_name):
         expect(
             short_name == "workflow",
@@ -220,12 +239,20 @@ class FakeCaseWWorkflow(FakeCase):
         with ExitStack() as stack:
             WorkflowFile = _open_temp_file(stack, XML_WORKFLOW)
             env_workflow = EnvWorkflow(infile=WorkflowFile.name)
-            env_workflow.set_value("task_count", "1", subgroup="case.test")
-            env_workflow.set_value("thread_count", "1", subgroup="case.test")
-            env_workflow.set_value("tasks_per_node", "1", subgroup="case.test")
+            env_workflow.set_value(
+                "task_count", str(self.get_value("task_count")), subgroup="case.test"
+            )
+            env_workflow.set_value(
+                "thread_count",
+                str(self.get_value("thread_count")),
+                subgroup="case.test",
+            )
+            env_workflow.set_value(
+                "tasks_per_node",
+                str(self.get_value("tasks_per_node")),
+                subgroup="case.test",
+            )
 
-            task_count = env_workflow.get_value("task_count", subgroup="case.test")
-            expect(task_count == "1", "Task count expected to a string of 1")
             return env_workflow
 
         return None
@@ -1057,35 +1084,50 @@ class TestXMLEnvBatch(unittest.TestCase):
 
     def test_get_job_overrides_mpi_serial_single_task(self):
         """Test that get_job_overrides gives expected results for an mpi-serial case with a single task"""
-        totalpes = 1
+        task_count = 1
         thread_count = 1
         mem_per_task = 10
+        tasks_per_node = task_count
         max_mem = 235
         overrides = self.run_get_job_overrides(
-            totalpes, thread_count, mem_per_task, max_mem
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
         )
-        self.assertEqual(overrides["ngpus_per_node"], 0)
         self.assertEqual(overrides["mem_per_node"], mem_per_task)
-        self.assertEqual(overrides["tasks_per_node"], totalpes)
-        self.assertEqual(overrides["max_tasks_per_node"], totalpes)
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
         self.assertEqual(overrides["mpirun"], "")
         self.assertEqual(overrides["thread_count"], str(thread_count))
-        self.assertEqual(overrides["ngpus_per_node"], 0)
         self.assertEqual(overrides["num_nodes"], 1)
 
-    def run_get_job_overrides(self, totalpes, thread_count, mem_per_task, max_mem):
+    def run_get_job_overrides(
+        self, task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+    ):
+        """Setup and run get_job_overrides so it can be tested from a variety of tests"""
+
         env_batch = EnvBatch()
+        # NOTE: GPU_TYPE is assumed to be none, so no GPU settings will be done
         case = FakeCaseWWorkflow(
-            compiler="intel", mpilib="mpi-serial", debug="FALSE", comp_interface="nuopc"
+            compiler="intel",
+            mpilib="mpi-serial",
+            debug="FALSE",
+            comp_interface="nuopc",
+            task_count=task_count,
+            thread_count=thread_count,
+            mem_per_task=mem_per_task,
+            tasks_per_node=tasks_per_node,
+            max_mem=max_mem,
         )
+        totalpes = task_count * thread_count
+
         case.set_value("TOTALPES", totalpes)
         case.set_value("MAX_TASKS_PER_NODE", 128)
-        case.set_value("MAX_GPUS_PER_NODE", 4)
-        case.set_value("MAX_CPUTASKS_PER_GPU_NODE", 64)
-        case.set_value("NGPUS_PER_NODE", 0)
         case.set_value("MEM_PER_TASK", mem_per_task)
         case.set_value("MAX_MEM_PER_NODE", max_mem)
+
+        case.set_value("MAX_GPUS_PER_NODE", 4)
+        case.set_value("NGPUS_PER_NODE", 0)
         overrides = env_batch.get_job_overrides("case.test", case)
+        self.assertEqual(overrides["ngpus_per_node"], 0)
 
         return overrides
 
