@@ -8,6 +8,7 @@ from unittest import mock
 
 from CIME.utils import CIMEError, expect
 from CIME.XML.env_batch import EnvBatch, get_job_deps
+from CIME.XML.env_workflow import EnvWorkflow
 from CIME.BuildTools.configure import FakeCase
 
 # pylint: disable=unused-argument
@@ -180,6 +181,25 @@ XML_CHECK = b"""<?xml version="1.0"?>
   </batch_system>
 </file>"""
 
+XML_WORKFLOW = b"""<?xml version="1.0"?>
+<file id="env_workflow.xml" version="2.0">
+ <header>
+      These variables may be changed anytime during a run, they
+      control jobs that will be submitted and their dependancies.
+ </header>
+ <group id="case.test">
+    <entry id="task_count" value="1">
+      <type>char</type>
+    </entry>
+    <entry id="thread_count" value="1">
+      <type>char</type>
+    </entry>
+    <entry id="tasks_per_node" value="1">
+      <type>char</type>
+    </entry>
+ </group>
+</file>"""
+
 
 def _open_temp_file(stack, data):
     tfile = stack.enter_context(tempfile.NamedTemporaryFile())
@@ -189,6 +209,41 @@ def _open_temp_file(stack, data):
     tfile.seek(0)
 
     return tfile
+
+
+class FakeCaseWWorkflow(FakeCase):
+    def get_env(self, short_name):
+        expect(
+            short_name == "workflow",
+            "FakeWWorkflow only can handle workflow as short_name sent in",
+        )
+        with ExitStack() as stack:
+            WorkflowFile = _open_temp_file(stack, XML_WORKFLOW)
+            env_workflow = EnvWorkflow(infile=WorkflowFile.name)
+            env_workflow.set_value("task_count", "1", subgroup="case.test")
+            env_workflow.set_value("thread_count", "1", subgroup="case.test")
+            env_workflow.set_value("tasks_per_node", "1", subgroup="case.test")
+
+            task_count = env_workflow.get_value("task_count", subgroup="case.test")
+            expect(task_count == "1", "Task count expected to a string of 1")
+            return env_workflow
+
+        return None
+
+    def get_resolved_value(
+        self, item, attribute=None, subgroup="PRIMARY", resolved=True
+    ):
+        print(item)
+        expect(isinstance(item, str), "item must be a string")
+        expect(("$" not in item), "$ not allowed in item for this fake")
+        return item
+
+    def get_mpirun_cmd(self, job, overrides):
+        if self.get_value("MPILIB") == "mpi-serial":
+            mpirun = ""
+        else:
+            mpirun = "mpirun"
+        return mpirun
 
 
 class TestXMLEnvBatch(unittest.TestCase):
@@ -1003,7 +1058,7 @@ class TestXMLEnvBatch(unittest.TestCase):
     def test_get_job_overrides_mpi_serial_single_task(self):
         """Test that get_job_overrides gives expected results for an mpi-serial case with a single task"""
         env_batch = EnvBatch()
-        case = FakeCase(
+        case = FakeCaseWWorkflow(
             compiler="intel", mpilib="mpi-serial", debug="FALSE", comp_interface="nuopc"
         )
         totalpes = 1
@@ -1011,9 +1066,12 @@ class TestXMLEnvBatch(unittest.TestCase):
         max_mem = 235
         case.set_value("TOTALPES", totalpes)
         case.set_value("MAX_TASKS_PER_NODE", 128)
+        case.set_value("MAX_GPUS_PER_NODE", 128)
+        case.set_value("NGPUS_PER_NODE", 0)
         case.set_value("MEM_PER_TASK", mem_per_task)
         case.set_value("MAX_MEM_PER_NODE", max_mem)
-        # overrides = env_batch.get_job_overrides("case.test", case)
+        self.assertEqual(case.get_value("TOTALPES"), int(totalpes))
+        self.assertEqual(case.get_value("MAX_TASKS_PER_NODE"), 128)
         overrides = {}
         overrides["ngpus_per_node"] = 0
         overrides["mem_per_node"] = max_mem
@@ -1022,12 +1080,14 @@ class TestXMLEnvBatch(unittest.TestCase):
         overrides["mpirun"] = ""
         overrides["thread_count"] = 1
         overrides["num_nodes"] = 1
+
+        overrides = env_batch.get_job_overrides("case.test", case)
         self.assertEqual(overrides["ngpus_per_node"], 0)
         self.assertEqual(overrides["mem_per_node"], mem_per_task)
         self.assertEqual(overrides["tasks_per_node"], totalpes)
         self.assertEqual(overrides["max_tasks_per_node"], totalpes)
         self.assertEqual(overrides["mpirun"], "")
-        self.assertEqual(overrides["thread_count"], 1)
+        self.assertEqual(overrides["thread_count"], "1")
         self.assertEqual(overrides["ngpus_per_node"], 0)
         self.assertEqual(overrides["num_nodes"], 1)
 
