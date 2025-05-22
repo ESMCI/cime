@@ -1,112 +1,74 @@
-ARG BASE_TAG=24.3.0-0
-FROM condaforge/miniforge3:${BASE_TAG} AS base
+FROM spack/ubuntu-jammy:develop AS builder
 
-SHELL ["/bin/bash", "-c"]
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gcc-12 \
+        g++-12 \
+        gfortran-12 \
+        make \
+        cmake \
+        autoconf \
+        automake \
+        hwloc \
+        libtool \
+        pkgconf \
+        m4 \
+        python3-dev \
+        openmpi-bin \
+        libopenmpi-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
+    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 100
 
-# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
-RUN mkdir -p \
-    /storage/inputdata/cpl/gridmaps/oQU240 \
-    /storage/inputdata/share/domains \
-    /storage/timings && \
-    wget -O /storage/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
-    wget -O /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
-    wget -O /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+RUN mkdir -p /opt/spack-environment
 
-COPY cime.yaml /cime.yaml
+COPY docker/spack.yaml /opt/spack-environment
 
-RUN mamba env update -f /cime.yaml && \
-    rm -rf /opt/conda/pkgs/* && \
-    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+WORKDIR /opt/spack-environment
 
-ARG PNETCDF_VERSION=1.12.3
-ENV PNETCDF_VERSION=${PNETCDF_VERSION}
+RUN spack env activate . \
+    && spack buildcache keys --install --trust \
+    && spack external find --all --exclude openssl --exclude hwloc \
+    && spack install --fresh-roots --fresh --fail-fast \
+    && spack gc -y
+    
+RUN spack env activate --sh -d . > activate.sh
 
-# Build pnetcdf
-RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
-            https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz && \
-            mkdir "${PWD}/pnetcdf" && \
-            tar -xvf "${PWD}/pnetcdf.tar.gz" -C "${PWD}/pnetcdf" --strip-components=1 && \
-            rm -rf "${PWD}/pnetcdf.tar.gz" && \
-            cd "${PWD}/pnetcdf" && \
-            source /opt/conda/etc/profile.d/conda.sh && \
-            conda activate base && \
-            ./configure --prefix /opt/conda --disable-cxx --enable-shared \
-            MPICC=/opt/conda/bin/mpicc \
-            MPICXX=/opt/conda/bin/mpicxx \
-            MPIF77=/opt/conda/bin/mpif77 \
-            MPIF90=/opt/conda/bin/mpif90 && \
-            make -j4 && \
-            make install && \
-            rm -rf "${PWD}/pnetcdf"
+FROM ubuntu:22.04
 
-ARG CIME_BRANCH=master
-ARG CIME_REPO=https://github.com/esmci/cime
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        gosu \
+        build-essential \
+        gcc-12 \
+        g++-12 \
+        gfortran-12 \
+        python3 \
+        python3-pip \
+        cmake \
+        ca-certificates \
+        wget \
+        curl \
+        subversion \
+        git \
+        vim \
+        rsync \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 50
 
-# Separate layer, it's most likely to change
-RUN git clone -b ${CIME_BRANCH} ${CIME_REPO} /src/cime
+COPY --from=builder /opt/spack-environment /opt/spack-environment
+COPY --from=builder /opt/software /opt/software
+COPY --from=builder /opt/views /opt/views
+COPY docker/helper.sh /helper.sh
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/.cime /home/cime_user/.cime
+COPY test-requirements.txt /home/cime_user/test-requirements.txt
 
-# General variables
-ENV USER=root
-ENV LOGNAME=root
-ENV ESMFMKFILE=/opt/conda/lib/esmf.mk
-ENV SRC_PATH=/src
+RUN ln -s /opt/views/view /opt/view \
+    && python3 -m pip install -r /home/cime_user/test-requirements.txt
 
-WORKDIR /src
+ENV USER=cime_user
 
-COPY .cime /root/.cime
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT [ "/entrypoint.sh" ]
-
-FROM base AS slurm
-
-RUN apt-get update && \
-            DEBIAN_FRONTEND=noninteractive \
-            apt-get install -y --no-install-recommends \
-            munge slurmd slurm-client slurmctld && \
-            rm -rf /var/lib/apt/lists/* && \
-            sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1slurm\2/g" ~/.cime/config_machines.xml
-
-COPY slurm/slurm.conf /etc/slurm-llnl/
-COPY slurm/config_batch.xml /root/.cime/
-COPY slurm/entrypoint_batch.sh /entrypoint_batch.sh
-
-FROM base AS pbs
-
-RUN apt-get update && \
-            DEBIAN_FRONTEND=noninteractive \
-            apt-get install -y --no-install-recommends \
-            curl ca-certificates software-properties-common \
-            gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev \
-            libical-dev ncurses-dev python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
-            libxext-dev libxft-dev autoconf automake \
-            postgresql-12 postgresql-server-dev-all postgresql-contrib \
-            expat libedit2 python3 sendmail-bin sudo tcl tk && \
-            add-apt-repository ppa:deadsnakes/ppa && \
-            apt-get update && \
-            DEBIAN_FRONTEND=noninteractive \
-            apt-get install -y python3.7 python3.7-dev && \
-            rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /src && pushd /src && \
-            curl -LO https://github.com/openpbs/openpbs/archive/refs/tags/v20.0.1.tar.gz && \
-            tar -xvf v20.0.1.tar.gz  && \
-            cd openpbs-20.0.1 && \
-            sed -i"" 's/\(#include "list_link.h"\)/\1\n#include <stddef.h>/' /src/openpbs-20.0.1/src/lib/Libifl/list_link.c && \
-            export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin && \
-            ./autogen.sh && \
-            PYTHON=/usr/bin/python3.7 \
-            CFLAGS="`/usr/bin/python3.7m-config --cflags`" \
-            LDFLAGS="`/usr/bin/python3.7m-config --ldflags`" \
-            LIBS="-lpthread -lm -lpython3.7m" \
-            ./configure --prefix=/opt/pbs && \
-            make -j8 && \
-            make install && \
-            popd && \
-            rm -rf /src && \
-            sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1pbs\2/g" ~/.cime/config_machines.xml
-
-COPY pbs/pbs.conf /etc/
-COPY pbs/config_batch.xml /root/.cime/
-COPY pbs/entrypoint_batch.sh /entrypoint_batch.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/bash", "--rcfile", "/etc/profile", "-l"]
