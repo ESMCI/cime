@@ -1099,6 +1099,109 @@ class TestXMLEnvBatch(unittest.TestCase):
         self.assertEqual(overrides["thread_count"], str(thread_count))
         self.assertEqual(overrides["num_nodes"], 1)
 
+    def test_get_job_overrides_two_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with two tasks"""
+        task_count = 2
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        # import pdb; pdb.set_trace()
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], mem_per_task * task_count)
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_sixteen_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with sixteen tasks"""
+        task_count = 16
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], mem_per_task * task_count)
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_eight_tasks_eight_threads(self):
+        """Test that get_job_overrides gives expected results for a case with 8 tasks and 8 threads"""
+        task_count = 8
+        thread_count = 8
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem / 2))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count * thread_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_sixtyfour_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with 64 tasks"""
+        task_count = 64
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem / 2))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_ninetysix_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with ninetysix tasks"""
+        task_count = 96
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * 3 / 4))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_hundredtwentyseven_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with 127 tasks"""
+        task_count = 127
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * task_count / 128))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
     def run_get_job_overrides(
         self, task_count, thread_count, mem_per_task, tasks_per_node, max_mem
     ):
@@ -1106,9 +1209,12 @@ class TestXMLEnvBatch(unittest.TestCase):
 
         env_batch = EnvBatch()
         # NOTE: GPU_TYPE is assumed to be none, so no GPU settings will be done
+        mpilib = "mpich"
+        if task_count == 1:
+            mpilib = "mpi-serial"
         case = FakeCaseWWorkflow(
             compiler="intel",
-            mpilib="mpi-serial",
+            mpilib=mpilib,
             debug="FALSE",
             comp_interface="nuopc",
             task_count=task_count,
