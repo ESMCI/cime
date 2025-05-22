@@ -816,6 +816,8 @@ def _build_libraries(
             my_file = os.path.join(
                 cimeroot, "CIME", "build_scripts", "buildlib.{}".format(lib)
             )
+        if not my_file:
+            continue
         if not os.path.exists(my_file):
             logger.warning(
                 "Build script {} for component {} not found.".format(my_file, lib)
