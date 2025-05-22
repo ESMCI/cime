@@ -219,20 +219,20 @@ class EnvBatch(EnvBase):
         overrides = {}
 
         if total_tasks:
-            overrides["total_tasks"] = total_tasks
+            overrides["total_tasks"] = int(total_tasks)
             overrides["num_nodes"] = num_nodes
             overrides["tasks_per_node"] = tasks_per_node
             if thread_count:
                 overrides["thread_count"] = thread_count
-                total_tasks = total_tasks * thread_count
+                total_tasks = int(total_tasks) * int(thread_count)
             else:
-                total_tasks = total_tasks * case.thread_count
+                total_tasks = int(total_tasks) * case.thread_count
         else:
             # Total PES accounts for threads as well as mpi tasks
             total_tasks = case.get_value("TOTALPES")
             thread_count = case.thread_count
         if int(total_tasks) < case.get_value("MAX_TASKS_PER_NODE"):
-            overrides["max_tasks_per_node"] = int(total_tasks)
+            overrides["max_tasks_per_node"] = total_tasks
 
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
@@ -244,13 +244,15 @@ class EnvBatch(EnvBase):
             "Error MAX_TASKS_PER_NODE not set or set incorrectly",
         )
         max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
-        if mem_per_task and int(total_tasks) <= max_tasks_per_node:
-            mem_per_node = int(total_tasks) * mem_per_task
+        if mem_per_task and total_tasks <= max_tasks_per_node:
+            # Use memory per task until about a fifth of the machine and then use the fraction of total memory
+            mem_per_node = total_tasks * mem_per_task
             mem_per_node = min(mem_per_node, max_mem_per_node)
-            overrides["mem_per_node"] = max(
-                mem_per_node,
-                int(float(total_tasks) / float(max_tasks_per_node) * max_mem_per_node),
-            )
+            if total_tasks > max_tasks_per_node / 5:
+                mem_per_node = int(
+                    float(total_tasks) / float(max_tasks_per_node) * max_mem_per_node
+                )
+            overrides["mem_per_node"] = mem_per_node
         elif max_mem_per_node:
             overrides["mem_per_node"] = max_mem_per_node
 
