@@ -2,12 +2,24 @@ FROM spack/ubuntu-jammy:develop AS builder
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        build-essential \
         gcc-12 \
         g++-12 \
         gfortran-12 \
+        make \
+        cmake \
+        autoconf \
+        automake \
+        hwloc \
+        libtool \
+        pkgconf \
+        m4 \
+        python3-dev \
+        openmpi-bin \
+        libopenmpi-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 50
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100 \
+    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-12 100
 
 RUN mkdir -p /opt/spack-environment
 
@@ -15,8 +27,12 @@ COPY docker/spack.yaml /opt/spack-environment
 
 WORKDIR /opt/spack-environment
 
-RUN spack env activate . && spack buildcache keys --install --trust &&  spack install --fail-fast && spack gc -y
-
+RUN spack env activate . \
+    && spack buildcache keys --install --trust \
+    && spack external find --all --exclude openssl --exclude hwloc \
+    && spack install --fresh-roots --fresh --fail-fast \
+    && spack gc -y
+    
 RUN spack env activate --sh -d . > activate.sh
 
 FROM ubuntu:22.04

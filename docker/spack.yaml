@@ -1,15 +1,15 @@
 spack:
   specs:
-  - esmf %gcc ^openmpi
-  - openblas %gcc
-  - hdf5 +hl %gcc ^openmpi
-  - netcdf-c +parallel-netcdf %gcc ^openmpi
-  - netcdf-fortran %gcc ^openmpi
-  - parallel-netcdf %gcc ^openmpi
+  - esmf %gcc@12.3.0 ^openmpi
+  - openblas %gcc@12.3.0
+  - hdf5 +hl %gcc@12.3.0 ^openmpi
+  - netcdf-c +parallel-netcdf %gcc@12.3.0 ^openmpi
+  - netcdf-fortran %gcc@12.3.0 ^openmpi
+  - parallel-netcdf %gcc@12.3.0 ^openmpi
   mirrors:
     develop: https://binaries.spack.io/develop
   concretizer:
-    unify: when_possible
+    unify: true
   config:
     install_tree: /opt/software
   view:
