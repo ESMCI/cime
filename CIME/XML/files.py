@@ -56,6 +56,7 @@ class Files(EntryID):
             self.read(model_config_files)
             self.overwrite_existing_entries()
 
+    # pylint: disable=arguments-differ
     def get_value(self, vid, attribute=None, resolved=True, subgroup=None, attribute_required=False):
         if vid == "COMP_ROOT_DIR_CPL":
             if self._cpl_comp:
