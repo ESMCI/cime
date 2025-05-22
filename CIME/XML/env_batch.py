@@ -245,10 +245,10 @@ class EnvBatch(EnvBase):
         )
         max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
         if mem_per_task and total_tasks <= max_tasks_per_node:
-            # Use memory per task until about a fifth of the machine and then use the fraction of total memory
+            # Use memory per task until about a 10th of the node and then use the fraction of total memory
             mem_per_node = total_tasks * mem_per_task
             mem_per_node = min(mem_per_node, max_mem_per_node)
-            if total_tasks > max_tasks_per_node / 5:
+            if total_tasks > max_tasks_per_node / 10:
                 mem_per_node = int(
                     float(total_tasks) / float(max_tasks_per_node) * max_mem_per_node
                 )

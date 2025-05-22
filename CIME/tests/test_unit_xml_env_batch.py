@@ -1127,7 +1127,7 @@ class TestXMLEnvBatch(unittest.TestCase):
         overrides = self.run_get_job_overrides(
             task_count, thread_count, mem_per_task, tasks_per_node, max_mem
         )
-        self.assertEqual(overrides["mem_per_node"], mem_per_task * task_count)
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * task_count / 128))
         self.assertEqual(overrides["tasks_per_node"], task_count)
         self.assertEqual(overrides["max_tasks_per_node"], task_count)
         self.assertEqual(overrides["mpirun"], "mpirun")
