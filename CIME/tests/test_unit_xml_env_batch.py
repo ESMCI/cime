@@ -8,6 +8,8 @@ from unittest import mock
 
 from CIME.utils import CIMEError, expect
 from CIME.XML.env_batch import EnvBatch, get_job_deps
+from CIME.XML.env_workflow import EnvWorkflow
+from CIME.BuildTools.configure import FakeCase
 
 # pylint: disable=unused-argument
 
@@ -179,6 +181,25 @@ XML_CHECK = b"""<?xml version="1.0"?>
   </batch_system>
 </file>"""
 
+XML_WORKFLOW = b"""<?xml version="1.0"?>
+<file id="env_workflow.xml" version="2.0">
+ <header>
+      These variables may be changed anytime during a run, they
+      control jobs that will be submitted and their dependancies.
+ </header>
+ <group id="case.test">
+    <entry id="task_count" value="1">
+      <type>char</type>
+    </entry>
+    <entry id="thread_count" value="1">
+      <type>char</type>
+    </entry>
+    <entry id="tasks_per_node" value="1">
+      <type>char</type>
+    </entry>
+ </group>
+</file>"""
+
 
 def _open_temp_file(stack, data):
     tfile = stack.enter_context(tempfile.NamedTemporaryFile())
@@ -188,6 +209,74 @@ def _open_temp_file(stack, data):
     tfile.seek(0)
 
     return tfile
+
+
+class FakeCaseWWorkflow(FakeCase):
+    """
+    Extend the FakeCase class to have the functions needed for testing get_jobs_overrides
+    Use FakeCase rather than a class mock in order to return a more complex and dynamic
+    env_workflow object
+    """
+
+    def __init__(
+        self,
+        compiler,
+        mpilib,
+        debug,
+        comp_interface,
+        task_count,
+        thread_count,
+        tasks_per_node,
+        mem_per_task,
+        max_mem,
+    ):
+        super().__init__(compiler, mpilib, debug, comp_interface)
+        self._vals["task_count"] = task_count
+        self._vals["thread_count"] = thread_count
+        self._vals["tasks_per_node"] = tasks_per_node
+        self._vals["mem_per_task"] = mem_per_task
+        self._vals["max_mem"] = max_mem
+
+    def get_env(self, short_name):
+        expect(
+            short_name == "workflow",
+            "FakeWWorkflow only can handle workflow as short_name sent in",
+        )
+        with ExitStack() as stack:
+            WorkflowFile = _open_temp_file(stack, XML_WORKFLOW)
+            env_workflow = EnvWorkflow(infile=WorkflowFile.name)
+            env_workflow.set_value(
+                "task_count", str(self.get_value("task_count")), subgroup="case.test"
+            )
+            env_workflow.set_value(
+                "thread_count",
+                str(self.get_value("thread_count")),
+                subgroup="case.test",
+            )
+            env_workflow.set_value(
+                "tasks_per_node",
+                str(self.get_value("tasks_per_node")),
+                subgroup="case.test",
+            )
+
+            return env_workflow
+
+        return None
+
+    def get_resolved_value(
+        self, item, attribute=None, subgroup="PRIMARY", resolved=True
+    ):
+        print(item)
+        expect(isinstance(item, str), "item must be a string")
+        expect(("$" not in item), "$ not allowed in item for this fake")
+        return item
+
+    def get_mpirun_cmd(self, job, overrides):
+        if self.get_value("MPILIB") == "mpi-serial":
+            mpirun = ""
+        else:
+            mpirun = "mpirun"
+        return mpirun
 
 
 class TestXMLEnvBatch(unittest.TestCase):
@@ -998,6 +1087,179 @@ class TestXMLEnvBatch(unittest.TestCase):
         env_workflow.set_value.assert_any_call(
             "JOB_WALLCLOCK_TIME", "12:00:00", subgroup="case.run"
         )
+
+    def test_get_job_overrides_mpi_serial_single_task(self):
+        """Test that get_job_overrides gives expected results for an mpi-serial case with a single task"""
+        task_count = 1
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], mem_per_task)
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_two_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with two tasks"""
+        task_count = 2
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        # import pdb; pdb.set_trace()
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], mem_per_task * task_count)
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_sixteen_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with sixteen tasks"""
+        task_count = 16
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * task_count / 128))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_twentyfive_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with 25 tasks"""
+        # This test is mportant for the CTSM regional amazon case that can use 25 tasks
+        task_count = 25
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * task_count / 128))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_eight_tasks_eight_threads(self):
+        """Test that get_job_overrides gives expected results for a case with 8 tasks and 8 threads"""
+        task_count = 8
+        thread_count = 8
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem / 2))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count * thread_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_sixtyfour_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with 64 tasks"""
+        task_count = 64
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem / 2))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_ninetysix_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with ninetysix tasks"""
+        task_count = 96
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * 3 / 4))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def test_get_job_overrides_hundredtwentyseven_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with 127 tasks"""
+        task_count = 127
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * task_count / 128))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
+    def run_get_job_overrides(
+        self, task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+    ):
+        """Setup and run get_job_overrides so it can be tested from a variety of tests"""
+
+        env_batch = EnvBatch()
+        # NOTE: GPU_TYPE is assumed to be none, so no GPU settings will be done
+        mpilib = "mpich"
+        if task_count == 1:
+            mpilib = "mpi-serial"
+        case = FakeCaseWWorkflow(
+            compiler="intel",
+            mpilib=mpilib,
+            debug="FALSE",
+            comp_interface="nuopc",
+            task_count=task_count,
+            thread_count=thread_count,
+            mem_per_task=mem_per_task,
+            tasks_per_node=tasks_per_node,
+            max_mem=max_mem,
+        )
+        totalpes = task_count * thread_count
+
+        case.set_value("TOTALPES", totalpes)
+        case.set_value("MAX_TASKS_PER_NODE", 128)
+        case.set_value("MEM_PER_TASK", mem_per_task)
+        case.set_value("MAX_MEM_PER_NODE", max_mem)
+
+        case.set_value("MAX_GPUS_PER_NODE", 4)
+        case.set_value("NGPUS_PER_NODE", 0)
+        overrides = env_batch.get_job_overrides("case.test", case)
+        self.assertEqual(overrides["ngpus_per_node"], 0)
+
+        return overrides
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 """
 Interface to the config_files.xml file.  This class inherits from EntryID.py
 """
+
 import re
 import os
 from CIME.XML.standard_module_setup import *
@@ -56,7 +57,15 @@ class Files(EntryID):
             self.read(model_config_files)
             self.overwrite_existing_entries()
 
-    def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
+    # pylint: disable=arguments-differ
+    def get_value(
+        self,
+        vid,
+        attribute=None,
+        resolved=True,
+        subgroup=None,
+        attribute_required=False,
+    ):
         if vid == "COMP_ROOT_DIR_CPL":
             if self._cpl_comp:
                 attribute = self._cpl_comp
@@ -82,6 +91,9 @@ class Files(EntryID):
             value = super(Files, self).get_value(
                 vid, attribute=attribute, resolved=False, subgroup=subgroup
             )
+            if not value:
+                if attribute_required:
+                    return value
         if value is None:
             value = super(Files, self).get_value(
                 vid, attribute=None, resolved=False, subgroup=subgroup
