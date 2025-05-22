@@ -212,6 +212,12 @@ def _open_temp_file(stack, data):
 
 
 class FakeCaseWWorkflow(FakeCase):
+    """
+    Extend the FakeCase class to have the functions needed for testing get_jobs_overrides
+    Use FakeCase rather than a class mock in order to return a more complex and dynamic
+    env_workflow object
+    """
+
     def __init__(
         self,
         compiler,
