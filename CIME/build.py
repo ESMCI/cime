@@ -807,7 +807,6 @@ def _build_libraries(
         else:
             full_lib_path = os.path.join(sharedlibroot, sharedpath, lib)
 
-        file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
         if lib in build_script.keys():
             my_file = build_script[lib]
         else:
@@ -820,6 +819,7 @@ def _build_libraries(
             )
             continue
 
+        file_build = os.path.join(exeroot, "{}.bldlog.{}".format(lib, lid))
         logger.info("Building {} with output to file {}".format(lib, file_build))
         # pio build creates its own directory
         if lib != "pio" and not os.path.isdir(full_lib_path):
