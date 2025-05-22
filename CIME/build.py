@@ -1,6 +1,7 @@
 """
 functions for building CIME models
 """
+
 import glob, shutil, time, threading, subprocess
 from pathlib import Path
 from CIME.XML.standard_module_setup import *
@@ -775,7 +776,9 @@ def _build_libraries(
 
     files = Files(comp_interface=comp_interface)
     for lib in libs:
-        build_script[lib] = files.get_value("BUILD_LIB_FILE", {"lib": lib}, attribute_required=True)
+        build_script[lib] = files.get_value(
+            "BUILD_LIB_FILE", {"lib": lib}, attribute_required=True
+        )
 
     sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     # Check if we need to build our own cprnc
