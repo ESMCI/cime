@@ -91,8 +91,9 @@ class Files(EntryID):
             value = super(Files, self).get_value(
                 vid, attribute=attribute, resolved=False, subgroup=subgroup
             )
-            if attribute_required:
-                return value
+            if not value:
+                if attribute_required:
+                    return value
         if value is None:
             value = super(Files, self).get_value(
                 vid, attribute=None, resolved=False, subgroup=subgroup
