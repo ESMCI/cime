@@ -56,7 +56,7 @@ class Files(EntryID):
             self.read(model_config_files)
             self.overwrite_existing_entries()
 
-    def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
+    def get_value(self, vid, attribute=None, resolved=True, subgroup=None, attribute_required=False):
         if vid == "COMP_ROOT_DIR_CPL":
             if self._cpl_comp:
                 attribute = self._cpl_comp
@@ -82,6 +82,8 @@ class Files(EntryID):
             value = super(Files, self).get_value(
                 vid, attribute=attribute, resolved=False, subgroup=subgroup
             )
+            if attribute_required:
+                return value
         if value is None:
             value = super(Files, self).get_value(
                 vid, attribute=None, resolved=False, subgroup=subgroup
