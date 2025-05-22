@@ -1134,6 +1134,24 @@ class TestXMLEnvBatch(unittest.TestCase):
         self.assertEqual(overrides["thread_count"], str(thread_count))
         self.assertEqual(overrides["num_nodes"], 1)
 
+    def test_get_job_overrides_twentyfive_tasks(self):
+        """Test that get_job_overrides gives expected results for a case with 25 tasks"""
+        # This test is mportant for the CTSM regional amazon case that can use 25 tasks
+        task_count = 25
+        thread_count = 1
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["mem_per_node"], int(max_mem * task_count / 128))
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        self.assertEqual(overrides["max_tasks_per_node"], task_count)
+        self.assertEqual(overrides["mpirun"], "mpirun")
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+        self.assertEqual(overrides["num_nodes"], 1)
+
     def test_get_job_overrides_eight_tasks_eight_threads(self):
         """Test that get_job_overrides gives expected results for a case with 8 tasks and 8 threads"""
         task_count = 8
