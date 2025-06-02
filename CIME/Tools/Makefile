@@ -116,6 +116,16 @@ ifdef USER_INCLDIR
   INCLDIR += $(USER_INCLDIR)
 endif
 
+FTORCH_DIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch/
+ifneq "$(wildcard $(FTORCH_DIR) )" ""
+  INCLDIR  += -I$(FTORCH_DIR)/modules -I$(FTORCH_DIR)
+  SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+endif
+ifeq ($(strip $(USE_FTORCH)), TRUE)
+  CPPDEFS  += -DUSE_FTORCH
+  SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+endif
+
 ifdef FSTDLIB_PKGCONFIG
   STDLIB_INC  := `pkg-config --cflags fortran_stdlib`
   STDLIB_LIBS := `pkg-config --libs fortran_stdlib`
@@ -743,6 +753,10 @@ GLCMakefile:
 $(PIO_LIBDIR)/Makefile:
 	cd $(PIO_LIBDIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(PIO_SRC_DIR)
+
+FTMakefile:
+	cd $(FTORCH_DIR)
+	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(FTORCH_SRC_DIR)
 
 #-------------------------------------------------------------------------------
 # Build & include dependency files

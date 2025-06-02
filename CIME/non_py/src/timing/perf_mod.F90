@@ -1162,7 +1162,7 @@ contains
 !-----------------------------------------------------------------------
 !
    if (.not. timing_initialized) return
-#if defined NUOPC_INTERFACE && ! (defined MODEL_THETA_L && defined HOMME_ENABLE_COMPOSE)
+#ifdef NUOPC_INTERFACE
    return
 #endif
 
