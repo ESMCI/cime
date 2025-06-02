@@ -100,10 +100,10 @@ How to add unit testing support on your machine
 
 The following instructions assume that you have ported CIME to your
 machine by following the instructions in
-:doc:`/users_guide/porting-cime`.  If you have done that, you can add
-unit testing support by building pFUnit on your machine and then
-pointing to the build in your ** *MACH*_*COMPILER*.cmake** file. Those
-processes are described in the following sections.
+:ref:`suppting a new machine<ccs-supporting-new-machine>`.  If you have 
+done that, you can add unit testing support by building pFUnit on your 
+machine and then pointing to the build in your ** *MACH*_*COMPILER*.cmake** 
+file. Those processes are described in the following sections.
 
 Building pFUnit
 ~~~~~~~~~~~~~~~

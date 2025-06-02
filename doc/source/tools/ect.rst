@@ -1,8 +1,8 @@
 .. _ensemble-consistency-test:
 
-==============================
+==========================================
 CESM-ECT (CESM Ensemble Consistency Test):
-==============================
+==========================================
 
 .. contents::
        :local:
@@ -29,9 +29,9 @@ you can upload the (3) generated runs for comparison to our ensemble.
 Please see the webpage at http://www.cesm.ucar.edu/models/cesm2/verification/
 for further instructions.
 
------------------------------------
+-------------------------------------
 Creating or obtaining a summary file:
------------------------------------
+-------------------------------------
 
 Before the test can be run, a summary file is needed of the ensemble
 runs to which the comparison will be made. Ensemble summary files

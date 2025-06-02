@@ -1,4 +1,4 @@
-.. _ccs_examples_multi-instance:
+.. _ccs-examples-multi-instance:
 
 Multi-instance
 ==============

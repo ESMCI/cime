@@ -34,7 +34,7 @@ Schema Definition
 -----------------
 
 The configuration is stored in ``config_component.xml`` under the components ``cime_config`` directory e.g. ``mosart/cime_config/config_component.xml``.
-This file will store multiple variables for the component defined using :ref:`*entry*<model_config_entry_id>` elements.
+This file will store multiple variables for the component defined using :ref:`*entry*<model-configuration-entry>` elements.
 Example contents of ``config_component.xml``.
 
 =================== ==================================

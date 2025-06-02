@@ -50,6 +50,7 @@ Contents
 ----------
 
 .. _model_config_pes_schema:
+
 Schema Definition
 :::::::::::::::::
 
@@ -231,8 +232,7 @@ rootpe                  Root PE for each model class, e.g. rootpe_atm, rootpe_ln
                             </mach>
                     </grid>
             </overrides>
-    </config_pes
-
+    </config_pes>
 
 .. _defining-pes:
 
@@ -240,7 +240,7 @@ pe-settings for a case
 -------------------------
 
 CIME looks at the xml element ``PES_SPEC_FILE`` in the **$CIMEROOT/config/$model/config_files.xml** file to determine where
-to find the supported out-of-the-box model pe-settings for the primary component (See :ref:`Compsets<compsets>` for definition of primary component.)
+to find the supported out-of-the-box model pe-settings for the primary component (See :ref:`Compsets<model-config-compsets>` for definition of primary component.)
 
 When your run `create_newcase  <../Tools_user/create_newcase.html>`_, CIME identifies the primary component and the setting of the ``PES_SPEC_FILE`` in the standard output.
 
@@ -441,11 +441,9 @@ for scientific reasons. As a result, running the atmosphere
 concurrently with the ice and land will result in idle processors at
 some point in the timestepping sequence.
 
-.. hint:: If you need to load balance a fully coupled case, use the :ref:`Load Balancing Tool<load_balancing_tool>`
-
 **One approach to load balancing**
 
-Carry out a :ref:`PFS test <testing>`. This test is by default a
+Carry out a :ref:`PFS test <system-testings-types>`. This test is by default a
 20-day model run with restarts and history output turned off. This
 should help you find the layout that has the best load balance for the
 targeted number of processors. This provides a reasonable performance
@@ -503,4 +501,4 @@ when running with mixed active and data models.
 
 - Assume that hardware performance can vary due to contention on the interconnect, file systems, or other areas. If you are unsure of a timing result, run cases multiple times.
 
-The pe-layout and the associated timings are found in the  :ref:`timing files <model-timing-data>` generated for your run.
+The pe-layout and the associated timings are found in the  :ref:`timing files <ccs-timers>` generated for your run.

@@ -42,6 +42,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.linkcode",
+    "sphinx.ext.todo",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
     "sphinx_toolbox.code",

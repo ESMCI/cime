@@ -11,6 +11,7 @@ Configuration
 After creating a case, some aspects of the configuration are fixed (any variables in ``env_case.xml``). But many can be changed before calling ``case.setup``, which generates the files required to build and run the case. CIME provides ``xmlquery`` to view and ``xmlchange`` to modify the variables used in this process.
 
 .. _ccs_xmlquery:
+
 Querying
 `````````
 CIME provides the ``xmlquery`` command to view the configuration of a case. The configuration is a collection of variables stored in XML files. These variables are grouped together when defined in the model's configuration.
@@ -28,6 +29,7 @@ To view a specific group, replace ``<group>`` with the desired group name.
     ./xmlquery --subgroup <group> --listall
 
 .. _ccs_xmlchange:
+
 Modifying
 `````````
 The ``xmlchange`` command is used to modify the configuration of a case. The following will change the value of a variable.
@@ -112,7 +114,6 @@ Each data model can be runtime-configured with its own namelist.
 Data Atmosphere (DATM)
 ``````````````````````
 
-DATM is discussed in detail in :ref:`data atmosphere overview <data-atm>` (**link currently broken**).
 DATM can be user-customized by changing either its  *namelist input files* or its *stream files*.
 The namelist file for DATM is **datm_in** (or **datm_in_NNN** for multiple instances).
 
@@ -134,7 +135,6 @@ After calling ``preview_namelists`` again, your edits should appear in **CaseDoc
 Data Ocean (DOCN)
 `````````````````
 
-DOCN is discussed in detail in :ref:`data ocean overview <data-ocean>` (**link currently broken**).
 DOCN can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DOCN is **docn_in** (or **docn_in_NNN** for multiple instances).
 
@@ -156,7 +156,6 @@ After changing this file and calling ``preview_namelists`` again, your edits sho
 Data Sea-ice (DICE)
 ```````````````````
 
-DICE is discussed in detail in :ref:`data sea-ice overview <data-seaice>` (**link currently broken**).
 DICE can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_dice`` (or ``user_nl_dice_NNN`` for multiple instances).
 
@@ -173,7 +172,6 @@ The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple insta
 Data Land (DLND)
 ````````````````
 
-DLND is discussed in detail in :ref:`data land overview <data-lnd>` (**link currently broken**).
 DLND can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_dlnd`` (or ``user_nl_dlnd_NNN`` for multiple instances).
 
@@ -190,7 +188,6 @@ The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple insta
 Data River (DROF)
 `````````````````
 
-DROF is discussed in detail in :ref:`data river overview <data-river>` (**link currently broken**).
 DROF can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple instances) and its values can be changed by editing the ``$CASEROOT`` file ``user_nl_drof`` (or ``user_nl_drof_NNN`` for multiple instances).
 
@@ -204,7 +201,8 @@ The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple insta
         ``chmod 644 user_drof.streams.txt[extension``
   3. Edit the **user_drof.streams.txt.*** file.
 
-.. TODO: remove cesm specific docs
+.. TODO:: remove cesm specific docs
+
 Customizing CESM active component-specific namelist settings
 ------------------------------------------------------------
 
@@ -324,6 +322,6 @@ Depends.*                       Lists of source code files that need special bui
 Macros.cmake                    File containing machine-specific makefile directives for your target platform/compiler. This file is created if it does not already exist. The user can modify the file to change certain aspects of the build, such as compiler flags. Running ``case.setup --clean`` will not remove the file once it has been created. However, if you remove or rename the Macros.make file, running ``case.setup`` recreates it.
 case.st_archive                 Script to perform short-term archiving to disk for your case output. Note that this script is run automatically by the normal CIME workflow.
 cmake_macros/                   Directory containing any CMake macros required for the machine/compiler combination.
-user_nl_xxx[_NNNN]              Files where all user modifications to component namelists are made. **xxx** is any one of the set of components targeted for the case. For example, for a full active CESM compset, **xxx** is cam, clm, or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See :ref:`multiple instances<multi-instance>`) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling ``case.setup --clean`` will *not remove* any user_nl files. Changing the number of instances in the **env_mach_pes.xml** file will cause only new user_nl files to be added to ``$CASEROOT``.
+user_nl_xxx[_NNNN]              Files where all user modifications to component namelists are made. **xxx** is any one of the set of components targeted for the case. For example, for a full active CESM compset, **xxx** is cam, clm, or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See :ref:`multiple instances<ccs-examples-multi-instance>`) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling ``case.setup --clean`` will *not remove* any user_nl files. Changing the number of instances in the **env_mach_pes.xml** file will cause only new user_nl files to be added to ``$CASEROOT``.
 software_environment.txt        This file records some aspects of the computing system on which the case is built, such as the shell environment.
 =============================   ===============================================================================================================================

@@ -1,4 +1,4 @@
-.. _timers:
+.. _ccs-timers:
 
 Timers
 ======

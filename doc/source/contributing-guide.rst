@@ -1,4 +1,4 @@
-.. _contributing_guide:
+.. _contributing-guide:
 
 Contributing Guide
 ==================
@@ -16,6 +16,8 @@ XML files that are part of the CIME distribution and are intended to be read-onl
 XML files that are part of a case and thus are read/write to a case are typically named `env_whatever.xml`. The corresponding Python modules are `CIME.XML.env_whatever.py`, and the classes are named `EnvWhatever`. These are referred to as the Case env classes.
 
 The `Case` class includes an array of the Case env classes. In the `configure` function and its supporting functions, the case object creates and manipulates the Case env classes by reading and interpreting the CIME config classes.
+
+.. _contributing-guide-running-tests:
 
 Testing
 -------
@@ -155,10 +157,12 @@ Setting it to `CESM` will clone CESM into `/src/CESM`, run `checkout_externals` 
 The container can further be modified using the environment variables defined below.
 
 .. code-block:: bash
+
     docker run -it --name cime --hostname docker cime:latest bash
 
 
 .. code-block:: bash
+
     docker run -it --name cime --hostname docker -e CIME_MODEL=e3sm cime:latest bash
 
 .. note::
@@ -216,6 +220,7 @@ It's also possible to persist the source git repositories.
 Local git respositories can be mounted as well.
 
 .. code-block:: bash
+
     docker run -v ${PWD}:/src/cime cime:latest bash
 
     docker run -v ${PWD}:/src/E3SM cime:latest bash
@@ -229,6 +234,7 @@ The container provides 3 targets.
 * pbs - PBS batch system with configuration and single queue.
 
 .. code-block:: bash
+    
     docker build -t ghcr.io/ESMCI/cime:latest --target <target> docker/
 
 Customizing
