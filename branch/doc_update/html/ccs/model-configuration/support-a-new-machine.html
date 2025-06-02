@@ -106,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="support-a-new-machine">
-<span id="porting"></span><h1>Support a new machine<a class="headerlink" href="#support-a-new-machine" title="Link to this heading"></a></h1>
+<span id="ccs-supporting-new-machine"></span><h1>Support a new machine<a class="headerlink" href="#support-a-new-machine" title="Link to this heading"></a></h1>
 <p>One of the first steps for many users is getting CIME-based models running on their local machine.
 This section describes that process.</p>
 <section id="required-libraries-packages">
@@ -193,7 +193,7 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 <ul>
 <li><p>Create a <strong>$HOME/.cime</strong> directory and create a <strong>config_machines.xml</strong> file in that directory.</p>
 <p>This file contains all the information you must set in order to configure a new machine to be CIME-compliant.</p>
-<p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <span class="xref std std-ref">the config_machines.xml file</span>.</p>
+<p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <a class="reference internal" href="index.html#model-config"><span class="std std-ref">the config_machines.xml file</span></a>.</p>
 <p>Check to ensure that your <strong>config_machines.xml</strong> file conforms to the CIME schema definition by doing the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 </pre></div>
@@ -203,8 +203,7 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 The default compiler settings are defined in <strong>$CIME/config/$model/machines/cmake_macros/</strong>.</p></li>
 <li><p>If you have a batch system, you may also need to create a <strong>$HOME/.cime/config_batch.xml</strong> file.
 Out-of-the-box batch settings are set in <strong>$CIME/config/$model/machines/config_batch.xml</strong>.</p></li>
-<li><p>Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run <strong>scripts_regression_test.py</strong> interactively. This test is found and must be run in the directory <strong>$CIMEROOT/scripts/tests/</strong>.
-This performs a number of basic unit tests starting from the simplest and working toward more complicated ones. If you have problems running <strong>scripts_regression_tests.py</strong>, see <span class="xref std std-ref">scripts_regression_tests</span>.</p></li>
+<li><p>Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run the <a class="reference internal" href="../../contributing-guide.html#contributing-guide-running-tests"><span class="std std-ref">unittest</span></a>.</p></li>
 </ul>
 <p>After running those steps correctly, you are ready to try a case at your target compset and resolution.</p>
 </section>
@@ -237,10 +236,10 @@ These tests will be run in the <strong>$CIME_OUTPUT_ROOT</strong>. To see the re
 <p>where testid was indicated in the output when calling <a class="reference external" href="../Tools_user/create_test.html">create_test</a></p>
 </li>
 <li><p>Carry out ensemble consistency tests:</p>
-<p>This is described in <strong>$CIMEROOT/tools/statistical_ensemble_test/README</strong>.
+<p>This is described in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/tools/statistical_ensemble_test/README</span></code>.
 The CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
 The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine (currently cheyenne).
-The python ECT tools are located in the pyCECT subdirectory <a href="#id1"><span class="problematic" id="id2">**</span></a>$CIMEROOT/tools/statistical_ensemble_test/pyCECT.</p>
+The python ECT tools are located in the pyCECT subdirectory <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/tools/statistical_ensemble_test/pyCECT</span></code>.</p>
 <p>The verification tools in the CESM-ECT suite are:</p>
 <p><code class="docutils literal notranslate"><span class="pre">CAM-ECT</span></code>: detects issues in CAM and CLM (12 month runs)</p>
 <p><code class="docutils literal notranslate"><span class="pre">UF-CAM-ECT</span></code>: detects issues in CAM and CLM (9 time step runs)</p>

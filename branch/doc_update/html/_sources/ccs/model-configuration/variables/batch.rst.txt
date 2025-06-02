@@ -1,4 +1,4 @@
-.. _model_config_batch:
+.. _model-config-batch:
 
 BATCH_SPEC_FILE
 ===============

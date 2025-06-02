@@ -102,46 +102,46 @@
 <span id="ccs-setting-up-a-case"></span><h1>Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#configuration" id="id1">Configuration</a></p>
+<li><p><a class="reference internal" href="#configuration" id="id2">Configuration</a></p>
 <ul>
-<li><p><a class="reference internal" href="#querying" id="id2">Querying</a></p></li>
-<li><p><a class="reference internal" href="#modifying" id="id3">Modifying</a></p></li>
+<li><p><a class="reference internal" href="#querying" id="id3">Querying</a></p></li>
+<li><p><a class="reference internal" href="#modifying" id="id4">Modifying</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#configure-model-components" id="id4">Configure model components</a></p></li>
-<li><p><a class="reference internal" href="#customizing-driver-input-variables" id="id5">Customizing driver input variables</a></p></li>
-<li><p><a class="reference internal" href="#customizing-data-model-input-variable-and-stream-files" id="id6">Customizing data model input variable and stream files</a></p>
+<li><p><a class="reference internal" href="#configure-model-components" id="id5">Configure model components</a></p></li>
+<li><p><a class="reference internal" href="#customizing-driver-input-variables" id="id6">Customizing driver input variables</a></p></li>
+<li><p><a class="reference internal" href="#customizing-data-model-input-variable-and-stream-files" id="id7">Customizing data model input variable and stream files</a></p>
 <ul>
-<li><p><a class="reference internal" href="#data-atmosphere-datm" id="id7">Data Atmosphere (DATM)</a></p></li>
-<li><p><a class="reference internal" href="#data-ocean-docn" id="id8">Data Ocean (DOCN)</a></p></li>
-<li><p><a class="reference internal" href="#data-sea-ice-dice" id="id9">Data Sea-ice (DICE)</a></p></li>
-<li><p><a class="reference internal" href="#data-land-dlnd" id="id10">Data Land (DLND)</a></p></li>
-<li><p><a class="reference internal" href="#data-river-drof" id="id11">Data River (DROF)</a></p></li>
+<li><p><a class="reference internal" href="#data-atmosphere-datm" id="id8">Data Atmosphere (DATM)</a></p></li>
+<li><p><a class="reference internal" href="#data-ocean-docn" id="id9">Data Ocean (DOCN)</a></p></li>
+<li><p><a class="reference internal" href="#data-sea-ice-dice" id="id10">Data Sea-ice (DICE)</a></p></li>
+<li><p><a class="reference internal" href="#data-land-dlnd" id="id11">Data Land (DLND)</a></p></li>
+<li><p><a class="reference internal" href="#data-river-drof" id="id12">Data River (DROF)</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#customizing-cesm-active-component-specific-namelist-settings" id="id12">Customizing CESM active component-specific namelist settings</a></p>
+<li><p><a class="reference internal" href="#customizing-cesm-active-component-specific-namelist-settings" id="id13">Customizing CESM active component-specific namelist settings</a></p>
 <ul>
-<li><p><a class="reference internal" href="#cam" id="id13">CAM</a></p></li>
-<li><p><a class="reference internal" href="#clm" id="id14">CLM</a></p></li>
-<li><p><a class="reference internal" href="#mosart" id="id15">MOSART</a></p></li>
-<li><p><a class="reference internal" href="#cice" id="id16">CICE</a></p></li>
-<li><p><a class="reference internal" href="#pop2" id="id17">POP2</a></p></li>
-<li><p><a class="reference internal" href="#cism" id="id18">CISM</a></p></li>
+<li><p><a class="reference internal" href="#cam" id="id14">CAM</a></p></li>
+<li><p><a class="reference internal" href="#clm" id="id15">CLM</a></p></li>
+<li><p><a class="reference internal" href="#mosart" id="id16">MOSART</a></p></li>
+<li><p><a class="reference internal" href="#cice" id="id17">CICE</a></p></li>
+<li><p><a class="reference internal" href="#pop2" id="id18">POP2</a></p></li>
+<li><p><a class="reference internal" href="#cism" id="id19">CISM</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#setting-up-the-case" id="id19">Setting up the Case</a></p>
+<li><p><a class="reference internal" href="#setting-up-the-case" id="id20">Setting up the Case</a></p>
 <ul>
-<li><p><a class="reference internal" href="#tracking-changes-with-git" id="id20">Tracking changes with Git</a></p></li>
-<li><p><a class="reference internal" href="#generated-files" id="id21">Generated files</a></p></li>
+<li><p><a class="reference internal" href="#tracking-changes-with-git" id="id21">Tracking changes with Git</a></p></li>
+<li><p><a class="reference internal" href="#generated-files" id="id22">Generated files</a></p></li>
 </ul>
 </li>
 </ul>
 </nav>
 <section id="configuration">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Configuration</a><a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
 <p>After creating a case, some aspects of the configuration are fixed (any variables in <code class="docutils literal notranslate"><span class="pre">env_case.xml</span></code>). But many can be changed before calling <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, which generates the files required to build and run the case. CIME provides <code class="docutils literal notranslate"><span class="pre">xmlquery</span></code> to view and <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> to modify the variables used in this process.</p>
 <section id="querying">
-<span id="ccs-xmlquery"></span><h3><a class="toc-backref" href="#id2" role="doc-backlink">Querying</a><a class="headerlink" href="#querying" title="Link to this heading"></a></h3>
+<span id="ccs-xmlquery"></span><h3><a class="toc-backref" href="#id3" role="doc-backlink">Querying</a><a class="headerlink" href="#querying" title="Link to this heading"></a></h3>
 <p>CIME provides the <code class="docutils literal notranslate"><span class="pre">xmlquery</span></code> command to view the configuration of a case. The configuration is a collection of variables stored in XML files. These variables are grouped together when defined in the model’s configuration.</p>
 <p>The following will list all of the current configuration.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlquery<span class="w"> </span>--listall
@@ -153,7 +153,7 @@
 </div>
 </section>
 <section id="modifying">
-<span id="ccs-xmlchange"></span><h3><a class="toc-backref" href="#id3" role="doc-backlink">Modifying</a><a class="headerlink" href="#modifying" title="Link to this heading"></a></h3>
+<span id="ccs-xmlchange"></span><h3><a class="toc-backref" href="#id4" role="doc-backlink">Modifying</a><a class="headerlink" href="#modifying" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> command is used to modify the configuration of a case. The following will change the value of a variable.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span>&lt;variable&gt;<span class="o">=</span>&lt;value&gt;
 </pre></div>
@@ -165,7 +165,7 @@
 </section>
 </section>
 <section id="configure-model-components">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Configure model components</a><a class="headerlink" href="#configure-model-components" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Configure model components</a><a class="headerlink" href="#configure-model-components" title="Link to this heading"></a></h2>
 <p>CIME-compilant components primarily use Fortran namelists to control runtime options.  Some components use
 other text-based files for runtime options.</p>
 <p>All CIME-compliant components generate their input variable files using a <code class="docutils literal notranslate"><span class="pre">buildnml</span></code> script typically located in the
@@ -195,7 +195,7 @@ to be coordinated between models in a coupled system (such as how many steps to 
 </div>
 </section>
 <section id="customizing-driver-input-variables">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Customizing driver input variables</a><a class="headerlink" href="#customizing-driver-input-variables" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Customizing driver input variables</a><a class="headerlink" href="#customizing-driver-input-variables" title="Link to this heading"></a></h2>
 <p>The driver input namelists/variables are contained in the following files:</p>
 <ul class="simple">
 <li><p>drv_in</p></li>
@@ -223,12 +223,11 @@ For example, to change the driver namelist value of <code class="docutils litera
 </div>
 </section>
 <section id="customizing-data-model-input-variable-and-stream-files">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Customizing data model input variable and stream files</a><a class="headerlink" href="#customizing-data-model-input-variable-and-stream-files" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Customizing data model input variable and stream files</a><a class="headerlink" href="#customizing-data-model-input-variable-and-stream-files" title="Link to this heading"></a></h2>
 <p>Each data model can be runtime-configured with its own namelist.</p>
 <section id="data-atmosphere-datm">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">Data Atmosphere (DATM)</a><a class="headerlink" href="#data-atmosphere-datm" title="Link to this heading"></a></h3>
-<p>DATM is discussed in detail in <span class="xref std std-ref">data atmosphere overview</span> (<strong>link currently broken</strong>).
-DATM can be user-customized by changing either its  <em>namelist input files</em> or its <em>stream files</em>.
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Data Atmosphere (DATM)</a><a class="headerlink" href="#data-atmosphere-datm" title="Link to this heading"></a></h3>
+<p>DATM can be user-customized by changing either its  <em>namelist input files</em> or its <em>stream files</em>.
 The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</strong> for multiple instances).</p>
 <ul class="simple">
 <li><p>To modify <strong>datm_in</strong> or <strong>datm_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the <strong>user_nl_datm</strong> file or the <strong>user_nl_datm_NNN</strong> file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></li>
@@ -253,9 +252,8 @@ The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</
 After calling <code class="docutils literal notranslate"><span class="pre">preview_namelists</span></code> again, your edits should appear in <strong>CaseDocs/datm.streams.txt.CORE2_NYF.GISS</strong>.</p>
 </section>
 <section id="data-ocean-docn">
-<h3><a class="toc-backref" href="#id8" role="doc-backlink">Data Ocean (DOCN)</a><a class="headerlink" href="#data-ocean-docn" title="Link to this heading"></a></h3>
-<p>DOCN is discussed in detail in <span class="xref std std-ref">data ocean overview</span> (<strong>link currently broken</strong>).
-DOCN can be user-customized by changing either its namelist input or its stream files.
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Data Ocean (DOCN)</a><a class="headerlink" href="#data-ocean-docn" title="Link to this heading"></a></h3>
+<p>DOCN can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</strong> for multiple instances).</p>
 <ul class="simple">
 <li><p>To modify <strong>docn_in</strong> or <strong>docn_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></li>
@@ -280,9 +278,8 @@ The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</
 After changing this file and calling <code class="docutils literal notranslate"><span class="pre">preview_namelists</span></code> again, your edits should appear in <strong>CaseDocs/docn.streams.txt.prescribed</strong>.</p>
 </section>
 <section id="data-sea-ice-dice">
-<h3><a class="toc-backref" href="#id9" role="doc-backlink">Data Sea-ice (DICE)</a><a class="headerlink" href="#data-sea-ice-dice" title="Link to this heading"></a></h3>
-<p>DICE is discussed in detail in <span class="xref std std-ref">data sea-ice overview</span> (<strong>link currently broken</strong>).
-DICE can be user-customized by changing either its namelist input or its stream files.
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Data Sea-ice (DICE)</a><a class="headerlink" href="#data-sea-ice-dice" title="Link to this heading"></a></h3>
+<p>DICE can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DICE is <code class="docutils literal notranslate"><span class="pre">dice_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">dice_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal notranslate"><span class="pre">user_nl_dice</span></code> (or <code class="docutils literal notranslate"><span class="pre">user_nl_dice_NNN</span></code> for multiple instances).</p>
 <ul class="simple">
 <li><p>To modify <strong>dice_in</strong> or <strong>dice_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></li>
@@ -304,9 +301,8 @@ The namelist file for DICE is <code class="docutils literal notranslate"><span c
 </ul>
 </section>
 <section id="data-land-dlnd">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">Data Land (DLND)</a><a class="headerlink" href="#data-land-dlnd" title="Link to this heading"></a></h3>
-<p>DLND is discussed in detail in <span class="xref std std-ref">data land overview</span> (<strong>link currently broken</strong>).
-DLND can be user-customized by changing either its namelist input or its stream files.
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Data Land (DLND)</a><a class="headerlink" href="#data-land-dlnd" title="Link to this heading"></a></h3>
+<p>DLND can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DLND is <code class="docutils literal notranslate"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">dlnd_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal notranslate"><span class="pre">user_nl_dlnd</span></code> (or <code class="docutils literal notranslate"><span class="pre">user_nl_dlnd_NNN</span></code> for multiple instances).</p>
 <ul class="simple">
 <li><p>To modify <strong>dlnd_in</strong> or <strong>dlnd_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></li>
@@ -328,9 +324,8 @@ The namelist file for DLND is <code class="docutils literal notranslate"><span c
 </ul>
 </section>
 <section id="data-river-drof">
-<h3><a class="toc-backref" href="#id11" role="doc-backlink">Data River (DROF)</a><a class="headerlink" href="#data-river-drof" title="Link to this heading"></a></h3>
-<p>DROF is discussed in detail in <span class="xref std std-ref">data river overview</span> (<strong>link currently broken</strong>).
-DROF can be user-customized by changing either its namelist input or its stream files.
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Data River (DROF)</a><a class="headerlink" href="#data-river-drof" title="Link to this heading"></a></h3>
+<p>DROF can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DROF is <code class="docutils literal notranslate"><span class="pre">drof_in</span></code> (or <code class="docutils literal notranslate"><span class="pre">drof_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal notranslate"><span class="pre">user_nl_drof</span></code> (or <code class="docutils literal notranslate"><span class="pre">user_nl_drof_NNN</span></code> for multiple instances).</p>
 <ul class="simple">
 <li><p>To modify <strong>drof_in</strong> or <strong>drof_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></li>
@@ -350,12 +345,16 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 </ol>
 </li>
 </ul>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>remove cesm specific docs</p>
+</div>
 </section>
 </section>
 <section id="customizing-cesm-active-component-specific-namelist-settings">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Customizing CESM active component-specific namelist settings</a><a class="headerlink" href="#customizing-cesm-active-component-specific-namelist-settings" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Customizing CESM active component-specific namelist settings</a><a class="headerlink" href="#customizing-cesm-active-component-specific-namelist-settings" title="Link to this heading"></a></h2>
 <section id="cam">
-<h3><a class="toc-backref" href="#id13" role="doc-backlink">CAM</a><a class="headerlink" href="#cam" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">CAM</a><a class="headerlink" href="#cam" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/cam/cime_config/buildnml</strong> to generate the CAM’s namelist variables.</p>
 <p>CAM-specific CIME xml variables are set in <strong>$SRCROOT/components/cam/cime_config/config_component.xml</strong> and are used by CAM’s <strong>buildnml</strong> script to generate the namelist.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cam_nml.html">CAM namelist variables</a>.</p>
@@ -367,7 +366,7 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <p>To see the result, call <code class="docutils literal notranslate"><span class="pre">preview_namelists</span></code> and verify that the new value appears in <strong>CaseDocs/atm_in</strong>.</p>
 </section>
 <section id="clm">
-<h3><a class="toc-backref" href="#id14" role="doc-backlink">CLM</a><a class="headerlink" href="#clm" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">CLM</a><a class="headerlink" href="#clm" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/clm/cime_config/buildnml</strong> to generate the CLM namelist variables.</p>
 <p>CLM-specific CIME xml variables are set in <strong>$SRCROOT/components/clm/cime_config/config_component.xml</strong> and are used by CLM’s <strong>buildnml</strong> script to generate the namelist.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/clm5_0_nml.html">CLM namelist variables</a>.</p>
@@ -375,13 +374,13 @@ The namelist file for DROF is <code class="docutils literal notranslate"><span c
 <p>To see the result, call <code class="docutils literal notranslate"><span class="pre">preview_namelists</span></code> and verify that the changes appear correctly in <strong>CaseDocs/lnd_in</strong>.</p>
 </section>
 <section id="mosart">
-<h3><a class="toc-backref" href="#id15" role="doc-backlink">MOSART</a><a class="headerlink" href="#mosart" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">MOSART</a><a class="headerlink" href="#mosart" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/mosart/cime_config/buildnml</strong> to generate the MOSART namelist variables.</p>
 <p>To modify MOSART namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_rtm</strong> file.</p>
 <p>To see the result of your change, call <code class="docutils literal notranslate"><span class="pre">preview_namelists</span></code> and verify that the changes appear correctly in <strong>CaseDocs/rof_in</strong>.</p>
 </section>
 <section id="cice">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">CICE</a><a class="headerlink" href="#cice" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">CICE</a><a class="headerlink" href="#cice" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/cice/cime_config/buildnml</strong> to generate the CICE namelist variables.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_nml.html">CICE namelist variables</a>.</p>
 <p>To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cice</strong> file.
@@ -390,7 +389,7 @@ To see the result of your change, call <code class="docutils literal notranslate
 <p>In addition, <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> creates CICE’s compile time <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html">block decomposition variables</a> in <strong>env_build.xml</strong>.</p>
 </section>
 <section id="pop2">
-<h3><a class="toc-backref" href="#id17" role="doc-backlink">POP2</a><a class="headerlink" href="#pop2" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">POP2</a><a class="headerlink" href="#pop2" title="Link to this heading"></a></h3>
 <p>CIME calls <strong>$SRCROOT/components/pop2/cime_config/buildnml</strong> to generate the POP2 namelist variables.</p>
 <p>For complete documentation of namelist settings, see <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/pop2_nml.html">POP2 namelist variables</a>.</p>
 <p>To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_pop2</strong> file.
@@ -398,7 +397,7 @@ To see the result of your change, call <code class="docutils literal notranslate
 To see the result of your change, call <code class="docutils literal notranslate"><span class="pre">preview_namelists</span></code> and verify that the changes appear correctly in <strong>CaseDocs/ocn_in</strong>.</p>
 </section>
 <section id="cism">
-<h3><a class="toc-backref" href="#id18" role="doc-backlink">CISM</a><a class="headerlink" href="#cism" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">CISM</a><a class="headerlink" href="#cism" title="Link to this heading"></a></h3>
 <p>See <a class="reference external" href="https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_nml.html">CISM namelist variables</a> for a complete description of the CISM runtime namelist variables. This includes variables that appear both in <strong>cism_in</strong> and in <strong>cism.config</strong>.</p>
 <p>To modify any of these settings, add the appropriate keyword/value pair at the end of the <strong>user_nl_cism</strong> file. (See the documentation for each file at the top of that file.)
 Note that there is no distinction between variables that will appear in <strong>cism_in</strong> and those that will appear in <strong>cism.config</strong>: simply add a new variable setting in <strong>user_nl_cism</strong>, and it will be added to the appropriate place in <strong>cism_in</strong> or <strong>cism.config</strong>.
@@ -407,14 +406,14 @@ To see the result of your change, call <code class="docutils literal notranslate
 </section>
 </section>
 <section id="setting-up-the-case">
-<h2><a class="toc-backref" href="#id19" role="doc-backlink">Setting up the Case</a><a class="headerlink" href="#setting-up-the-case" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Setting up the Case</a><a class="headerlink" href="#setting-up-the-case" title="Link to this heading"></a></h2>
 <p>Once all the configuration is done, it’s time to call <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> from <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>. This will generate the files required to build and run the case.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> is called after <code class="docutils literal notranslate"><span class="pre">case.setup</span></code>, the changes will not be reflected in the generated files. To update the files, call <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--reset</span></code>.</p>
 </div>
 <section id="tracking-changes-with-git">
-<h3><a class="toc-backref" href="#id20" role="doc-backlink">Tracking changes with Git</a><a class="headerlink" href="#tracking-changes-with-git" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Tracking changes with Git</a><a class="headerlink" href="#tracking-changes-with-git" title="Link to this heading"></a></h3>
 <p>When you set up a case, a new Git repository will be created within the <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> directory if a recent version of Git is installed. The repository will have a branch named after the case.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -431,7 +430,7 @@ To see the result of your change, call <code class="docutils literal notranslate
 </div>
 </section>
 <section id="generated-files">
-<h3><a class="toc-backref" href="#id21" role="doc-backlink">Generated files</a><a class="headerlink" href="#generated-files" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Generated files</a><a class="headerlink" href="#generated-files" title="Link to this heading"></a></h3>
 <p>The following files and directories are generated in <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>:</p>
 <table class="docutils align-default">
 <tbody>
@@ -460,7 +459,7 @@ To see the result of your change, call <code class="docutils literal notranslate
 <td><p>Directory containing any CMake macros required for the machine/compiler combination.</p></td>
 </tr>
 <tr class="row-odd"><td><p>user_nl_xxx[_NNNN]</p></td>
-<td><p>Files where all user modifications to component namelists are made. <strong>xxx</strong> is any one of the set of components targeted for the case. For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm, or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See <span class="xref std std-ref">multiple instances</span>) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will <em>not remove</em> any user_nl files. Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only new user_nl files to be added to <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></td>
+<td><p>Files where all user modifications to component namelists are made. <strong>xxx</strong> is any one of the set of components targeted for the case. For example, for a full active CESM compset, <strong>xxx</strong> is cam, clm, or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See <a class="reference internal" href="examples/multi-instance.html#ccs-examples-multi-instance"><span class="std std-ref">multiple instances</span></a>) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling <code class="docutils literal notranslate"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> will <em>not remove</em> any user_nl files. Changing the number of instances in the <strong>env_mach_pes.xml</strong> file will cause only new user_nl files to be added to <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p>software_environment.txt</p></td>
 <td><p>This file records some aspects of the computing system on which the case is built, such as the shell environment.</p></td>

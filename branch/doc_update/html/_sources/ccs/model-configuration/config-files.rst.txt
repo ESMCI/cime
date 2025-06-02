@@ -22,6 +22,8 @@ These ``config_files.xml`` are stored in ``$CIMEROOT/CIME/data/config/<model>/``
 
    Using ``MODEL_CONFIG_FILES`` allows the models configuration to live outside the CIME repository.
 
+.. _model-configuration-entry:
+
 Usage
 -----
 Then ``entry`` elements in ``config_files.xml`` are used to describe the variables that make up CIME's model configuration.

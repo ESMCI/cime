@@ -89,4 +89,4 @@ The user can define their own cmake macros by placing them in the ``$HOME/.cime`
 
 Batch System
 ------------
-The user can define their own batch system configuration by creating a ``$HOME/.cime/config_batch.xml`` file. See the :ref:`config_batch.xml<model_config_batch_def>` section for more information.
+The user can define their own batch system configuration by creating a ``$HOME/.cime/config_batch.xml`` file. See the :ref:`config_batch.xml<model-config-batch>` section for more information.

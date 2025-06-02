@@ -64,6 +64,8 @@ Example output:
       SUBMIT CMD:
         sbatch --time 00:20:00 -p debug --account e3sm --dependency=afterok:0 /gpfs/fs1/home/ac.boutte3/E3SM/cime/test1/case.st_archive --resubmit
 
+.. _ccs-inputdata:
+
 Input Data
 ----------
 All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the XML variable ``$DIN_LOC_ROOT`` to be populated with input data.
@@ -148,13 +150,13 @@ When called, the ``case.submit`` script will:
 * Load the necessary environment.
 * Confirm that locked files are consistent with the current XML files.
 * Run ``preview_namelist``, which in turn will run each component's **cime_config/buildnml** script.
-* Run :ref:`check_input_data<input_data>` to verify that the required data are present.
+* Run :ref:`check_input_data<ccs-inputdata>` to verify that the required data are present.
 * Submit the job to the batch queue, which in turn will run the ``case.run`` script.
 
 Upon successful completion of the run, ``case.run`` will:
 
 * Put timing information in **$CASEROOT/timing**.
-  See :ref:`model timing data<model-timing-data>` for details.
+  See :ref:`model timing data<ccs-timers>` for details.
 * Submit the short-term archiver script ``case.st_archive`` to the batch queue if ``$DOUT_S`` is TRUE. Short-term archiving will copy and move component history, log, diagnostic, and restart files from ``$RUNDIR`` to the short-term archive directory ``$DOUT_S_ROOT``.
 * Resubmit ``case.run`` if ``$RESUBMIT`` > 0.
 
@@ -268,7 +270,7 @@ type of run. ``$RUN_REFCASE`` and ``$RUN_REFDATE`` are required for
 branch runs. To set up a branch run, locate the restart tar file or
 restart directory for ``$RUN_REFCASE`` and ``$RUN_REFDATE`` from a
 previous run, then place those files in the ``$RUNDIR`` directory.
-See :ref:`Starting from a reference case<starting_from_a_refcase>`.
+See :ref:`Starting from a reference case<ccs-start-refcase>`.
 
 Hybrid
 ::::::
@@ -300,6 +302,8 @@ The variable ``$RUN_STARTDATE`` is the start date (in yyyy-mm-dd format)
 for either a startup run or a hybrid run. If the run is targeted to be
 a hybrid or branch run, you must specify values for ``$RUN_REFCASE`` and
 ``$RUN_REFDATE``.
+
+.. _ccs-start-refcase:
 
 Starting from a Reference Case (REFCASE)
 ````````````````````````````````````````

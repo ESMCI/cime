@@ -88,48 +88,48 @@
 <span id="system-tests"></span><h1>System Testing<a class="headerlink" href="#system-testing" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#overview" id="id9">Overview</a></p></li>
-<li><p><a class="reference internal" href="#testing-a-case" id="id10">Testing a Case</a></p>
+<li><p><a class="reference internal" href="#overview" id="id2">Overview</a></p></li>
+<li><p><a class="reference internal" href="#testing-a-case" id="id3">Testing a Case</a></p>
 <ul>
-<li><p><a class="reference internal" href="#run-a-individual-tests" id="id11">Run a individual tests</a></p></li>
-<li><p><a class="reference internal" href="#run-a-test-suite" id="id12">Run a test suite</a></p>
+<li><p><a class="reference internal" href="#run-a-individual-tests" id="id4">Run a individual tests</a></p></li>
+<li><p><a class="reference internal" href="#run-a-test-suite" id="id5">Run a test suite</a></p>
 <ul>
-<li><p><a class="reference internal" href="#xml" id="id13">XML</a></p></li>
-<li><p><a class="reference internal" href="#python" id="id14">Python</a></p>
+<li><p><a class="reference internal" href="#xml" id="id6">XML</a></p></li>
+<li><p><a class="reference internal" href="#python" id="id7">Python</a></p>
 <ul>
-<li><p><a class="reference internal" href="#format" id="id15">Format</a></p></li>
-<li><p><a class="reference internal" href="#example" id="id16">Example</a></p></li>
-<li><p><a class="reference internal" href="#listing-the-test-suites" id="id17">Listing the test suites</a></p></li>
+<li><p><a class="reference internal" href="#format" id="id8">Format</a></p></li>
+<li><p><a class="reference internal" href="#example" id="id9">Example</a></p></li>
+<li><p><a class="reference internal" href="#listing-the-test-suites" id="id10">Listing the test suites</a></p></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#test-name-syntax" id="id18">Test name syntax</a></p>
+<li><p><a class="reference internal" href="#test-name-syntax" id="id11">Test name syntax</a></p>
 <ul>
-<li><p><a class="reference internal" href="#test-type" id="id19">Test Type</a></p></li>
-<li><p><a class="reference internal" href="#modifiers" id="id20">Modifiers</a></p></li>
-<li><p><a class="reference internal" href="#test-mods" id="id21">Test Mods</a></p></li>
+<li><p><a class="reference internal" href="#test-type" id="id12">Test Type</a></p></li>
+<li><p><a class="reference internal" href="#modifiers" id="id13">Modifiers</a></p></li>
+<li><p><a class="reference internal" href="#test-mods" id="id14">Test Mods</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#testing-process" id="id22">Testing Process</a></p>
+<li><p><a class="reference internal" href="#testing-process" id="id15">Testing Process</a></p>
 <ul>
-<li><p><a class="reference internal" href="#output" id="id23">Output</a></p></li>
+<li><p><a class="reference internal" href="#output" id="id16">Output</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#baselines" id="id24">Baselines</a></p>
+<li><p><a class="reference internal" href="#baselines" id="id17">Baselines</a></p>
 <ul>
-<li><p><a class="reference internal" href="#creating-a-baseline" id="id25">Creating a baseline</a></p></li>
-<li><p><a class="reference internal" href="#comparing-a-baseline" id="id26">Comparing a baseline</a></p></li>
-<li><p><a class="reference internal" href="#managing-baselines" id="id27">Managing baselines</a></p></li>
-<li><p><a class="reference internal" href="#performance-baselines" id="id28">Performance baselines</a></p></li>
+<li><p><a class="reference internal" href="#creating-a-baseline" id="id18">Creating a baseline</a></p></li>
+<li><p><a class="reference internal" href="#comparing-a-baseline" id="id19">Comparing a baseline</a></p></li>
+<li><p><a class="reference internal" href="#managing-baselines" id="id20">Managing baselines</a></p></li>
+<li><p><a class="reference internal" href="#performance-baselines" id="id21">Performance baselines</a></p></li>
 </ul>
 </li>
 </ul>
 </nav>
 <section id="overview">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_test`</span></code> tool is a versatile and powerful utility provided by CIME for automating the creation, setup, building, and execution of system tests. It simplifies the process of running tests by allowing users to specify test configurations through a single command. The tool supports a wide range of test types, modifiers, and options, making it highly customizable to meet various testing needs.</p>
 <p>Key features of <code class="docutils literal notranslate"><span class="pre">create_test</span></code> include:</p>
 <ul class="simple">
@@ -143,12 +143,12 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">create_test</span></code> tool is essential for ensuring the reliability and correctness of the model by providing a streamlined and efficient way to conduct comprehensive system tests.</p>
 </section>
 <section id="testing-a-case">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink">Testing a Case</a><a class="headerlink" href="#testing-a-case" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Testing a Case</a><a class="headerlink" href="#testing-a-case" title="Link to this heading"></a></h2>
 <p>To run a system test(s) CIME provides <code class="docutils literal notranslate"><span class="pre">create_test</span></code>. This tool provides much of the same functionality as <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> allowing to define a non-default compiler, queue, override the output location of the test cases, etc.</p>
 <p>CIME has functionality to create baselines fors tests, and compare future runs to track changes in answers.</p>
 <p>The tool supports running single, or multiple tests. Multiple tests can be defined by just their test names on the CLI or by providing an XML or Python file.</p>
 <section id="run-a-individual-tests">
-<span id="system-testing-individual"></span><h3><a class="toc-backref" href="#id11" role="doc-backlink">Run a individual tests</a><a class="headerlink" href="#run-a-individual-tests" title="Link to this heading"></a></h3>
+<span id="system-testing-individual"></span><h3><a class="toc-backref" href="#id4" role="doc-backlink">Run a individual tests</a><a class="headerlink" href="#run-a-individual-tests" title="Link to this heading"></a></h3>
 <p>The following will run a single test case.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_test<span class="w"> </span>&lt;testname&gt;
 </pre></div>
@@ -163,13 +163,13 @@
 </div>
 </section>
 <section id="run-a-test-suite">
-<h3><a class="toc-backref" href="#id12" role="doc-backlink">Run a test suite</a><a class="headerlink" href="#run-a-test-suite" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Run a test suite</a><a class="headerlink" href="#run-a-test-suite" title="Link to this heading"></a></h3>
 <p>The following will run an entire test suite of test cases.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/create_test<span class="w"> </span>&lt;testsuite&gt;
 </pre></div>
 </div>
 <section id="xml">
-<h4><a class="toc-backref" href="#id13" role="doc-backlink">XML</a><a class="headerlink" href="#xml" title="Link to this heading"></a></h4>
+<h4><a class="toc-backref" href="#id6" role="doc-backlink">XML</a><a class="headerlink" href="#xml" title="Link to this heading"></a></h4>
 <p>A pre-defined suite of test can be run by passing the <code class="docutils literal notranslate"><span class="pre">--xml</span></code> argument to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>.</p>
 <p>This argument will cause CIME to load <code class="docutils literal notranslate"><span class="pre">testlist*.xml</span></code> files. As described in <a class="reference external" href="https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide">https://github.com/ESCOMP/ctsm/wiki/System-Testing-Guide</a>, to determine what pre-defined test suites are available and what tests they contain, you can run <code class="docutils literal notranslate"><span class="pre">./scripts/query_testlists</span></code>.</p>
 <p>Test suites are retrieved in create_test via 3 selection attributes:</p>
@@ -218,7 +218,7 @@ Testlists and testmods live in different paths for cime, drv, and components.</p
 and follow the <a class="reference internal" href="#system-testing-individual">individual</a> test instructions for create_test.</p>
 </section>
 <section id="python">
-<h4><a class="toc-backref" href="#id14" role="doc-backlink">Python</a><a class="headerlink" href="#python" title="Link to this heading"></a></h4>
+<h4><a class="toc-backref" href="#id7" role="doc-backlink">Python</a><a class="headerlink" href="#python" title="Link to this heading"></a></h4>
 <p>A suite of tests can also be provided with a python file <code class="docutils literal notranslate"><span class="pre">tests.py</span></code> placed in <code class="docutils literal notranslate"><span class="pre">$MODEL/cime_config</span></code>.</p>
 <p>To run a test suite called e3sm_developer:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">e3sm_developer</span>
@@ -230,7 +230,7 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 </div>
 <p>See <code class="docutils literal notranslate"><span class="pre">./scripts/create_test</span> <span class="pre">-h</span></code> for the full list of options.</p>
 <section id="format">
-<h5><a class="toc-backref" href="#id15" role="doc-backlink">Format</a><a class="headerlink" href="#format" title="Link to this heading"></a></h5>
+<h5><a class="toc-backref" href="#id8" role="doc-backlink">Format</a><a class="headerlink" href="#format" title="Link to this heading"></a></h5>
 <p>The following defines the format of <code class="docutils literal notranslate"><span class="pre">tests.py</span></code>. The only variable that needs to be defined is <code class="docutils literal notranslate"><span class="pre">_TESTS</span></code> which needs to be a dictionary. Each key is the name of a test suite and the value is a dictionary. See below for the description of possible values.</p>
 <table class="docutils align-default">
 <thead>
@@ -256,7 +256,7 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 <p>The format for <code class="docutils literal notranslate"><span class="pre">&lt;testname&gt;</span></code> is <code class="docutils literal notranslate"><span class="pre">TESTTYPE.GRID.COMPSET[.TESTMOD]</span></code>. The <code class="docutils literal notranslate"><span class="pre">TESTMOD</span></code> is optional.</p>
 </section>
 <section id="example">
-<h5><a class="toc-backref" href="#id16" role="doc-backlink">Example</a><a class="headerlink" href="#example" title="Link to this heading"></a></h5>
+<h5><a class="toc-backref" href="#id9" role="doc-backlink">Example</a><a class="headerlink" href="#example" title="Link to this heading"></a></h5>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_TESTS</span> <span class="o">=</span> <span class="p">{</span>
   <span class="s2">&quot;suite_a&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="s2">&quot;inherit&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;suite_b&quot;</span><span class="p">),</span>
@@ -277,7 +277,7 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 </div>
 </section>
 <section id="listing-the-test-suites">
-<h5><a class="toc-backref" href="#id17" role="doc-backlink">Listing the test suites</a><a class="headerlink" href="#listing-the-test-suites" title="Link to this heading"></a></h5>
+<h5><a class="toc-backref" href="#id10" role="doc-backlink">Listing the test suites</a><a class="headerlink" href="#listing-the-test-suites" title="Link to this heading"></a></h5>
 <p>The following tool will list the tests.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">CIME</span><span class="o">/</span><span class="n">Tools</span><span class="o">/</span><span class="n">list_e3sm_tests</span> <span class="o">-</span><span class="n">t</span> <span class="n">compsets</span> <span class="n">e3sm_developer</span>
 </pre></div>
@@ -288,7 +288,7 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 </section>
 </section>
 <section id="test-name-syntax">
-<h2><a class="toc-backref" href="#id18" role="doc-backlink">Test name syntax</a><a class="headerlink" href="#test-name-syntax" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Test name syntax</a><a class="headerlink" href="#test-name-syntax" title="Link to this heading"></a></h2>
 <p>A test name is defined by the following format, where anything enclosed in <code class="docutils literal notranslate"><span class="pre">[]</span></code> is option.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TESTTYPE</span><span class="p">[</span><span class="n">_MODIFIERS</span><span class="p">]</span><span class="o">.</span><span class="n">GRID</span><span class="o">.</span><span class="n">COMPSET</span><span class="p">[</span><span class="o">.</span><span class="n">MACHINE_COMPILER</span><span class="p">][</span><span class="o">.</span><span class="n">GROUP</span><span class="o">-</span><span class="n">TESTMODS</span><span class="p">]</span>
 </pre></div>
@@ -329,11 +329,11 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 </tbody>
 </table>
 <section id="test-type">
-<h3><a class="toc-backref" href="#id19" role="doc-backlink">Test Type</a><a class="headerlink" href="#test-type" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Test Type</a><a class="headerlink" href="#test-type" title="Link to this heading"></a></h3>
 <p>The test type defines the behavior that the case will be tested against. For example a test may exercise a models ability to restart, invariance with MPI task count, or short term archiving.</p>
 <p>CIME provides some tests out of the box, but a model may add additional test types using the <code class="docutils literal notranslate"><span class="pre">SYSTEM_TEST_DIR</span></code> variable or adding them to <code class="docutils literal notranslate"><span class="pre">cime_config/SystemTests</span></code> in any component.</p>
 <p>The following test types are provided by CIME.</p>
-<table class="docutils align-default">
+<table class="docutils align-default" id="system-testings-types">
 <thead>
 <tr class="row-odd"><th class="head"><p>TESTTYPE</p></th>
 <th class="head"><p>Description</p></th>
@@ -505,7 +505,7 @@ on the machine the test runs on and its default coupler and MPI library. It is p
 elements of the test through a test type modifier.</p>
 </section>
 <section id="modifiers">
-<h3><a class="toc-backref" href="#id20" role="doc-backlink">Modifiers</a><a class="headerlink" href="#modifiers" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Modifiers</a><a class="headerlink" href="#modifiers" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>MODIFIERS</p></th>
@@ -575,7 +575,7 @@ For PTS_MODE, compile with mpi-serial.</p></td>
 </div>
 </section>
 <section id="test-mods">
-<h3><a class="toc-backref" href="#id21" role="doc-backlink">Test Mods</a><a class="headerlink" href="#test-mods" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Test Mods</a><a class="headerlink" href="#test-mods" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_test</span></code> tool works with out-of-the-box compsets and grids.
 Sometimes you may want to run a test with modifications to a namelist or other setting without creating an entire compset. CIME provides the testmods capability for this situation.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">GROUP-TESTMODS</span></code> string is at the end of the full testname (including machine and compiler).</p>
@@ -591,7 +591,7 @@ Sometimes you may want to run a test with modifications to a namelist or other s
 <td><p>Name of the directory relative to <code class="docutils literal notranslate"><span class="pre">TESTS_MODS_DIR</span></code> that contains <code class="docutils literal notranslate"><span class="pre">TESTMODS</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>TESTMODS</p></td>
-<td><p>Name of the directory under <code class="docutils literal notranslate"><span class="pre">GROUP</span></code> that contains any combination of <a href="#id29"><span class="problematic" id="id30">`user_nl_* &lt;USER_NL_&gt;`_</span></a>, <a href="#id2"><span class="problematic" id="id4">`shell_commands &lt;SHELL_COMMANDS_&gt;`_</span></a><a href="#id2"><span class="problematic" id="id3"> &lt;SHELL_COMMANDS_&gt;</span></a>, <a href="#id5"><span class="problematic" id="id7">`user_mods &lt;USER_MODS_&gt;`_</span></a><a href="#id5"><span class="problematic" id="id6"> &lt;USER_MODS_&gt;</span></a>, or <a href="#id31"><span class="problematic" id="id32">`params.py &lt;TESTYPE_MOD_&gt;`_</span></a>.</p></td>
+<td><p>Name of the directory under <code class="docutils literal notranslate"><span class="pre">GROUP</span></code> that contains any combination of <cite>user_nl_*</cite>, <cite>shell_commands</cite>, <cite>user_mods</cite>, or <cite>params.py</cite>.</p></td>
 </tr>
 </tbody>
 </table>
@@ -618,7 +618,7 @@ directory containing the testmods would be <code class="docutils literal notrans
 </section>
 </section>
 <section id="testing-process">
-<h2><a class="toc-backref" href="#id22" role="doc-backlink">Testing Process</a><a class="headerlink" href="#testing-process" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Testing Process</a><a class="headerlink" href="#testing-process" title="Link to this heading"></a></h2>
 <p>Each test run by <code class="docutils literal notranslate"><span class="pre">create_test</span></code> includes the following mandatory steps:</p>
 <table class="docutils align-default">
 <thead>
@@ -701,7 +701,7 @@ directory containing the testmods would be <code class="docutils literal notrans
 </tbody>
 </table>
 <section id="output">
-<h3><a class="toc-backref" href="#id23" role="doc-backlink">Output</a><a class="headerlink" href="#output" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Output</a><a class="headerlink" href="#output" title="Link to this heading"></a></h3>
 <p>Lets look at the output from <code class="docutils literal notranslate"><span class="pre">./scripts/create_test</span> <span class="pre">SMS.f19_f19.A</span></code>. Here you can find each phase of the test its status and the time it took to complete.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Creating<span class="w"> </span><span class="nb">test</span><span class="w"> </span>directory<span class="w"> </span>/home/jgfouca/e3sm/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
 RUNNING<span class="w"> </span>TESTS:
@@ -745,12 +745,12 @@ This can be overridden with the <code class="docutils literal notranslate"><span
 </section>
 </section>
 <section id="baselines">
-<h2><a class="toc-backref" href="#id24" role="doc-backlink">Baselines</a><a class="headerlink" href="#baselines" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Baselines</a><a class="headerlink" href="#baselines" title="Link to this heading"></a></h2>
 <p>An important part of testing is creating, comparing, and managing baselines (sometimes called gold results). Baselines can be used to compare history files, namelist files, and performance metrics.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_test</span></code> tool can be asked to perform bit-for-bit comparisons between the files generated by the current run and the files stored in the baseline. They must be bit-for-bit identical for the baseline test to pass.</p>
 <p>Baseline testing adds an additional test criteria to the one that comes from the test type and is used as a way to guard against unintentionally changing the results from a deterministic climate model.</p>
 <section id="creating-a-baseline">
-<h3><a class="toc-backref" href="#id25" role="doc-backlink">Creating a baseline</a><a class="headerlink" href="#creating-a-baseline" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Creating a baseline</a><a class="headerlink" href="#creating-a-baseline" title="Link to this heading"></a></h3>
 <p>A baseline can be generated by passing <code class="docutils literal notranslate"><span class="pre">-g</span></code> to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>. There
 are additional options to control generating baselines.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">-</span><span class="n">g</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
@@ -758,7 +758,7 @@ are additional options to control generating baselines.:</p>
 </div>
 </section>
 <section id="comparing-a-baseline">
-<h3><a class="toc-backref" href="#id26" role="doc-backlink">Comparing a baseline</a><a class="headerlink" href="#comparing-a-baseline" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Comparing a baseline</a><a class="headerlink" href="#comparing-a-baseline" title="Link to this heading"></a></h3>
 <p>Comparing the output of a test to a baseline is achieved by passing <code class="docutils literal notranslate"><span class="pre">-c</span></code> to <code class="docutils literal notranslate"><span class="pre">create_test</span></code>.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">scripts</span><span class="o">/</span><span class="n">create_test</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span> <span class="o">-</span><span class="n">c</span> <span class="n">SMS</span><span class="o">.</span><span class="n">ne30_f19_g16_rx1</span><span class="o">.</span><span class="n">A</span>
 </pre></div>
@@ -769,7 +769,7 @@ comparison with baselines would FAIL (answers are not bit-for-bit identical to t
 as a whole would FAIL.</p>
 </section>
 <section id="managing-baselines">
-<h3><a class="toc-backref" href="#id27" role="doc-backlink">Managing baselines</a><a class="headerlink" href="#managing-baselines" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Managing baselines</a><a class="headerlink" href="#managing-baselines" title="Link to this heading"></a></h3>
 <p>If you intended to change the answers, you need to update the baseline with new files. This is referred to as “blessing” the test.
 This is done with the <code class="docutils literal notranslate"><span class="pre">./CIME/Tools/bless_test_results</span></code> tool. The tool provides the ability to bless different features of the baseline. The currently supported features are namelist files, history files, and performance metrics. The performance metrics are separated into throughput and memory usage.</p>
 <p>The following command can be used to compare a test to a baseline and bless an update to the history file.:</p>
@@ -782,7 +782,7 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 </div>
 </section>
 <section id="performance-baselines">
-<h3><a class="toc-backref" href="#id28" role="doc-backlink">Performance baselines</a><a class="headerlink" href="#performance-baselines" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Performance baselines</a><a class="headerlink" href="#performance-baselines" title="Link to this heading"></a></h3>
 <p>By default performance baselines are generated by parsing the coupler log and comparing the throughput in SYPD (Simulated Years Per Day) and the memory usage high water.</p>
 <p>This can be customized by creating a python module under <code class="docutils literal notranslate"><span class="pre">$MODEL/cime_config/customize</span></code>. There are four hooks that can be used to customize the generation and comparison.</p>
 <ul class="simple">
@@ -791,6 +791,10 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 <li><p>perf_compare_throughput_baseline</p></li>
 <li><p>perf_compare_memory_baseline</p></li>
 </ul>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>need to add api docs and link</p>
+</div>
 <p>The following pseudo code is an example of this customization.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># $DRIVER/cime_config/customize/perf_baseline.py</span>
 

@@ -99,38 +99,38 @@
            <div itemprop="articleBody">
              
   <section id="timers">
-<span id="id1"></span><h1>Timers<a class="headerlink" href="#timers" title="Link to this heading"></a></h1>
+<span id="ccs-timers"></span><h1>Timers<a class="headerlink" href="#timers" title="Link to this heading"></a></h1>
 <nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#controlling-timers" id="id2">Controlling timers</a></p>
+<li><p><a class="reference internal" href="#controlling-timers" id="id1">Controlling timers</a></p>
 <ul>
-<li><p><a class="reference internal" href="#level" id="id3">Level</a></p></li>
-<li><p><a class="reference internal" href="#detail" id="id4">Detail</a></p></li>
-<li><p><a class="reference internal" href="#find-grain-control" id="id5">Find-grain control</a></p></li>
+<li><p><a class="reference internal" href="#level" id="id2">Level</a></p></li>
+<li><p><a class="reference internal" href="#detail" id="id3">Detail</a></p></li>
+<li><p><a class="reference internal" href="#find-grain-control" id="id4">Find-grain control</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#timing-data" id="id6">Timing data</a></p>
+<li><p><a class="reference internal" href="#timing-data" id="id5">Timing data</a></p>
 <ul>
-<li><p><a class="reference internal" href="#model" id="id7">Model</a></p></li>
-<li><p><a class="reference internal" href="#component" id="id8">Component</a></p></li>
-<li><p><a class="reference internal" href="#coupler" id="id9">Coupler</a></p></li>
+<li><p><a class="reference internal" href="#model" id="id6">Model</a></p></li>
+<li><p><a class="reference internal" href="#component" id="id7">Component</a></p></li>
+<li><p><a class="reference internal" href="#coupler" id="id8">Coupler</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#advice-on-setting-your-wallclock-time" id="id10">Advice on setting your wallclock time</a></p></li>
+<li><p><a class="reference internal" href="#advice-on-setting-your-wallclock-time" id="id9">Advice on setting your wallclock time</a></p></li>
 </ul>
 </nav>
 <p>CIME includes a copy of the General Purpose Timing Library (GPTL) and timers are placed throughout the CIME driver. CIME-driven models typically
 also have GPTL timers in their code and very detailed timing information can be obtained.</p>
 <p>To enable timers, set the xml variable <code class="docutils literal notranslate"><span class="pre">CHECK_TIMING</span></code> to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> with <code class="docutils literal notranslate"><span class="pre">./xmlchange</span> <span class="pre">CHECK_TIMING=true</span></code>, this will produce files in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/timing</span></code>.</p>
 <section id="controlling-timers">
-<h2><a class="toc-backref" href="#id2" role="doc-backlink">Controlling timers</a><a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Controlling timers</a><a class="headerlink" href="#controlling-timers" title="Link to this heading"></a></h2>
 <p>User customization of timers is done via the xml variables <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code> and <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>.</p>
 <section id="level">
-<h3><a class="toc-backref" href="#id3" role="doc-backlink">Level</a><a class="headerlink" href="#level" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Level</a><a class="headerlink" href="#level" title="Link to this heading"></a></h3>
 <p>Timer level using the XML variable <code class="docutils literal notranslate"><span class="pre">TIMER_LEVEL</span></code>: This is the maximum code stack depth of enabled timers.</p>
 </section>
 <section id="detail">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Detail</a><a class="headerlink" href="#detail" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Detail</a><a class="headerlink" href="#detail" title="Link to this heading"></a></h3>
 <p>Timer detail using the XML variable <code class="docutils literal notranslate"><span class="pre">TIMER_DETAIL</span></code>: This is the maximum detail level of enabled timers.</p>
 <p>This is an integer indicating maximum detail level to profile.  This
 xml variable is used to set the namelist variable timing_detail_limit.
@@ -143,7 +143,7 @@ obtained from the namelist.  If the limit is exceeded then the timer
 is turned off.</p>
 </section>
 <section id="find-grain-control">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">Find-grain control</a><a class="headerlink" href="#find-grain-control" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Find-grain control</a><a class="headerlink" href="#find-grain-control" title="Link to this heading"></a></h3>
 <p>Further control of timers is then done via modifications of the <strong>prof_inparm namelists</strong> in the file <strong>drv_in</strong>. This is done
 via keyword-value settings in user_nl_cpl. As an example, if you want to set the namelist variable <code class="docutils literal notranslate"><span class="pre">profile_barriers</span></code> to <code class="docutils literal notranslate"><span class="pre">.true.</span></code>,
 add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
@@ -153,10 +153,10 @@ add the following line in your <strong>$CASEROOT/user_nl_cpl</strong>:</p>
 </section>
 </section>
 <section id="timing-data">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Timing data</a><a class="headerlink" href="#timing-data" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Timing data</a><a class="headerlink" href="#timing-data" title="Link to this heading"></a></h2>
 <p>Every model run produces three types of timing output that you can examine:</p>
 <section id="model">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">Model</a><a class="headerlink" href="#model" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Model</a><a class="headerlink" href="#model" title="Link to this heading"></a></h3>
 <p>The timing output can be found in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/timing/$model_timing.$CASE.$datestamp</span></code>.</p>
 <p>This is the most useful way to quickly determine timing summaries across components
 The following describes the most important parts of this timing file:</p>
@@ -239,12 +239,12 @@ the cost. Finally, the timings for the coupler are broken out at
 the bottom of the timing output file.</p>
 </section>
 <section id="component">
-<h3><a class="toc-backref" href="#id8" role="doc-backlink">Component</a><a class="headerlink" href="#component" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Component</a><a class="headerlink" href="#component" title="Link to this heading"></a></h3>
 <p>The timing output can be found in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/timing/$model_timing_stats.$date</span></code>.</p>
 <p>Provides an overall detailed timing summary for each component, including the minimum and maximum of all the model timers.</p>
 </section>
 <section id="coupler">
-<h3><a class="toc-backref" href="#id9" role="doc-backlink">Coupler</a><a class="headerlink" href="#coupler" title="Link to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Coupler</a><a class="headerlink" href="#coupler" title="Link to this heading"></a></h3>
 <p>The timing out put can be found in <code class="docutils literal notranslate"><span class="pre">$RUNDIR/cpl.log.$datestamp</span></code> or <code class="docutils literal notranslate"><span class="pre">$DOUT_S_ROOT/logs/cpl.log.$datestamp</span></code>.</p>
 <p>Contains the run time for each model day during the run and is
 output during the run. You can search for <code class="docutils literal notranslate"><span class="pre">tStamp</span></code> in the cpl.log
@@ -256,7 +256,7 @@ month.</p>
 </section>
 </section>
 <section id="advice-on-setting-your-wallclock-time">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink">Advice on setting your wallclock time</a><a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Advice on setting your wallclock time</a><a class="headerlink" href="#advice-on-setting-your-wallclock-time" title="Link to this heading"></a></h2>
 <dl>
 <dt>When you look at the <strong>$model_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt><dd><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>

@@ -30,6 +30,7 @@ CIME has functionality to create baselines fors tests, and compare future runs t
 The tool supports running single, or multiple tests. Multiple tests can be defined by just their test names on the CLI or by providing an XML or Python file.
 
 .. _system_testing-individual:
+
 Run a individual tests
 ``````````````````````
 The following will run a single test case.
@@ -207,6 +208,8 @@ CIME provides some tests out of the box, but a model may add additional test typ
 
 The following test types are provided by CIME.
 
+.. _system-testings-types:
+
 ============ =====================================================================================
 TESTTYPE     Description
 ============ =====================================================================================
@@ -368,7 +371,7 @@ Syntax part  Description
 ============ =====================================================================================
 GROUP        Name of the directory relative to ``TESTS_MODS_DIR`` that contains ``TESTMODS``.
 
-TESTMODS     Name of the directory under ``GROUP`` that contains any combination of `user_nl_* <USER_NL_>`_, `shell_commands <SHELL_COMMANDS_>`_, `user_mods <USER_MODS_>`_, or `params.py <TESTYPE_MOD_>`_.
+TESTMODS     Name of the directory under ``GROUP`` that contains any combination of `user_nl_*`, `shell_commands`, `user_mods`, or `params.py`.
 ============ =====================================================================================
 
 .. note::
@@ -531,8 +534,8 @@ This can be customized by creating a python module under ``$MODEL/cime_config/cu
 - perf_compare_throughput_baseline
 - perf_compare_memory_baseline
 
-..
-  TODO need to add api docs and link
+.. TODO:: need to add api docs and link
+
 The following pseudo code is an example of this customization.
 
 .. code-block:: python

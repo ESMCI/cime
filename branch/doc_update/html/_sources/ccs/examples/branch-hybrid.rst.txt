@@ -66,6 +66,6 @@ This requires the :ref:`ccs_examples_multi-year` to have been ran and completed 
         ./xmlchange RESUBMIT=10
         ./case.submit
 
-     .. node::
+     .. note::
 
           By default only a single job will be submitted at a time, to change this use ``./case.submit --resubmit-immediate`` which will submit all jobs at once using batch dependencies.

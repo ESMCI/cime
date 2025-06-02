@@ -27,6 +27,7 @@ This variable is used to set the directory where the cmake macros are located. T
     </entry>
 
 .. _model_config_cmake_macros_dir_def:
+
 Configuration
 -------------
 

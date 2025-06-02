@@ -178,10 +178,10 @@ Running CTest tests for __command_line_test__/__command_line_test__.
 <span id="adding-machine-support"></span><h2>How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Link to this heading"></a></h2>
 <p>The following instructions assume that you have ported CIME to your
 machine by following the instructions in
-<span class="xref std std-doc">/users_guide/porting-cime</span>.  If you have done that, you can add
-unit testing support by building pFUnit on your machine and then
-pointing to the build in your ** <em>MACH*_*COMPILER</em>.cmake** file. Those
-processes are described in the following sections.</p>
+<a class="reference internal" href="support-a-new-machine.html#ccs-supporting-new-machine"><span class="std std-ref">suppting a new machine</span></a>.  If you have
+done that, you can add unit testing support by building pFUnit on your
+machine and then pointing to the build in your ** <em>MACH*_*COMPILER</em>.cmake**
+file. Those processes are described in the following sections.</p>
 <section id="building-pfunit">
 <h3>Building pFUnit<a class="headerlink" href="#building-pfunit" title="Link to this heading"></a></h3>
 <p>Follow the instructions below to build pFUnit using the default compiler on your machine.
@@ -254,6 +254,10 @@ For a build with no MPI or openMP support (as recommended above), the block shou
 </section>
 <section id="how-to-write-a-new-unit-test">
 <h2>How to write a new unit test<a class="headerlink" href="#how-to-write-a-new-unit-test" title="Link to this heading"></a></h2>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Need to write this section. This will draw on some of the information in sections 3 and 4 of <a class="reference external" href="https://github.com/NCAR/cesm_unit_test_tutorial">https://github.com/NCAR/cesm_unit_test_tutorial</a> (though without the clm and cam stuff).</p>
+</div>
 <p>It should also introduce the role of .pf files, which are referenced several paragraphs later as if already explained.</p>
 </section>
 <section id="general-guidelines-for-writing-unit-tests">

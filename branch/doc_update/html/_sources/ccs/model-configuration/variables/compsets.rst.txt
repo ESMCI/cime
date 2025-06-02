@@ -1,4 +1,4 @@
-.. _model_config_compsets:
+.. _model-config-compsets:
 
 COMPSETS_SPEC_FILE
 ==================

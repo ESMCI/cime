@@ -394,7 +394,7 @@ processors and controls the sequencing and hardware partitioning.</p>
 <span class="w">            </span><span class="nt">&lt;/mach&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/grid&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/overrides&gt;</span>
-<span class="err">&lt;</span>/config_pes
+<span class="nt">&lt;/config_pes&gt;</span>
 </pre></div>
 </div>
 </section>
@@ -402,7 +402,7 @@ processors and controls the sequencing and hardware partitioning.</p>
 <section id="pe-settings-for-a-case">
 <span id="defining-pes"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">pe-settings for a case</a><a class="headerlink" href="#pe-settings-for-a-case" title="Link to this heading"></a></h2>
 <p>CIME looks at the xml element <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>$CIMEROOT/config/$model/config_files.xml</strong> file to determine where
-to find the supported out-of-the-box model pe-settings for the primary component (See <span class="xref std std-ref">Compsets</span> for definition of primary component.)</p>
+to find the supported out-of-the-box model pe-settings for the primary component (See <a class="reference internal" href="compsets.html#model-config-compsets"><span class="std std-ref">Compsets</span></a> for definition of primary component.)</p>
 <p>When your run <a class="reference external" href="../Tools_user/create_newcase.html">create_newcase</a>, CIME identifies the primary component and the setting of the <code class="docutils literal notranslate"><span class="pre">PES_SPEC_FILE</span></code> in the standard output.</p>
 <p>By default, each primary component has a <strong>config_pes.xml</strong> file in
 its <strong>cime_config</strong> directory.  That file specifies out-of-the-box
@@ -601,12 +601,8 @@ atmosphere model always run sequentially with the ice and land models
 for scientific reasons. As a result, running the atmosphere
 concurrently with the ice and land will result in idle processors at
 some point in the timestepping sequence.</p>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>If you need to load balance a fully coupled case, use the <span class="xref std std-ref">Load Balancing Tool</span></p>
-</div>
 <p><strong>One approach to load balancing</strong></p>
-<p>Carry out a <span class="xref std std-ref">PFS test</span>. This test is by default a
+<p>Carry out a <a class="reference internal" href="../../../system_testing.html#system-testings-types"><span class="std std-ref">PFS test</span></a>. This test is by default a
 20-day model run with restarts and history output turned off. This
 should help you find the layout that has the best load balance for the
 targeted number of processors. This provides a reasonable performance
@@ -652,7 +648,7 @@ when running with mixed active and data models.</p>
 <li><p>Keep a single component on a single node, if possible, to minimize internal component communication cost.</p></li>
 <li><p>Assume that hardware performance can vary due to contention on the interconnect, file systems, or other areas. If you are unsure of a timing result, run cases multiple times.</p></li>
 </ul>
-<p>The pe-layout and the associated timings are found in the  <span class="xref std std-ref">timing files</span> generated for your run.</p>
+<p>The pe-layout and the associated timings are found in the  <a class="reference internal" href="../../timers.html#ccs-timers"><span class="std std-ref">timing files</span></a> generated for your run.</p>
 </section>
 </section>
 

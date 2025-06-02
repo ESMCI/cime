@@ -1,4 +1,4 @@
-.. _porting:
+.. _ccs-supporting-new-machine:
 
 Support a new machine
 ==============================================
@@ -97,7 +97,7 @@ In what follows we outline the process for method (2) above:
 
    This file contains all the information you must set in order to configure a new machine to be CIME-compliant.
 
-   Fill in the contents of **$HOME/.cime/config_machines.xml** that are specific to your machine. For more details see :ref:`the config_machines.xml file <machinefile>`.
+   Fill in the contents of **$HOME/.cime/config_machines.xml** that are specific to your machine. For more details see :ref:`the config_machines.xml file <model_config>`.
 
    Check to ensure that your **config_machines.xml** file conforms to the CIME schema definition by doing the following:
    ::
@@ -110,8 +110,7 @@ In what follows we outline the process for method (2) above:
 -  If you have a batch system, you may also need to create a **$HOME/.cime/config_batch.xml** file.
    Out-of-the-box batch settings are set in **$CIME/config/$model/machines/config_batch.xml**.
 
--  Once you have defined a basic configuration for your machine in your **$HOME/.cime** xml files, run **scripts_regression_test.py** interactively. This test is found and must be run in the directory **$CIMEROOT/scripts/tests/**.
-   This performs a number of basic unit tests starting from the simplest and working toward more complicated ones. If you have problems running **scripts_regression_tests.py**, see :ref:`scripts_regression_tests`.
+-  Once you have defined a basic configuration for your machine in your **$HOME/.cime** xml files, run the :ref:`unittest <contributing-guide-running-tests>`.
 
 After running those steps correctly, you are ready to try a case at your target compset and resolution.
 
@@ -153,10 +152,10 @@ These are the recommended steps for validating a port for the CESM model:
 
 2. Carry out ensemble consistency tests:
 
-   This is described in **$CIMEROOT/tools/statistical_ensemble_test/README**.
+   This is described in ``$CIMEROOT/tools/statistical_ensemble_test/README``.
    The CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
    The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine (currently cheyenne).
-   The python ECT tools are located in the pyCECT subdirectory **$CIMEROOT/tools/statistical_ensemble_test/pyCECT.
+   The python ECT tools are located in the pyCECT subdirectory ``$CIMEROOT/tools/statistical_ensemble_test/pyCECT``.
 
    The verification tools in the CESM-ECT suite are:
 
