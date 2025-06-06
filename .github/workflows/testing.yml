@@ -142,8 +142,10 @@ jobs:
         model:
           - name: "e3sm"
             repo: E3SM-Project/e3sm
+            branch: master
           - name: "cesm"
             repo: ESCOMP/CESM
+            branch: cesm3.0-alphabranch
         driver: ["mct", "nuopc"]
         exclude:
           # exclude nuopc driver when running e3sm tests
@@ -158,6 +160,7 @@ jobs:
         with:
           repository: ${{ matrix.model.repo }}
           path: ${{ matrix.model.name }} # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          ref: ${{ matrix.model.branch }}
       - name: Check out model dependencies
         working-directory: ${{ matrix.model.name }}
         run: |
@@ -190,6 +193,10 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
+          source /opt/conda/etc/profile.d/conda.sh
+
+          conda activate ${{ matrix.model.name }}
+
           pip install -r test-requirements.txt
 
           source /entrypoint.sh
