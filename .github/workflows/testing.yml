@@ -170,10 +170,10 @@ jobs:
         driver: ["mct", "nuopc"]
         exclude:
           # exclude nuopc driver when running e3sm tests
-          - model: "e3sm"
+          - model.name: "e3sm"
             driver: "nuopc"
           # exclude mct driver when running cesm tests
-          - model: "cesm"
+          - model.name: "cesm"
             driver: "mct"
     steps:
       - name: Checkout model code
