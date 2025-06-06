@@ -120,7 +120,7 @@ jobs:
           pip install -r test-requirements.txt
 
           # GitHub runner home is different than container
-          cp -rf /root/.cime /github/home/
+          cp -rf /home/cime/.cime /github/home/
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
@@ -204,6 +204,9 @@ jobs:
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
           fi
+
+          # GitHub runner home is different than container
+          cp -rf /home/cime/.cime /github/home/
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3
