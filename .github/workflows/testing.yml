@@ -108,6 +108,7 @@ jobs:
           path: cesm # $GITHUB_WORKSPACE/${{ matrix.model.name }}
           ref: cesm3.0-alphabranch
       - name: Get ccs_config dependency
+        working-directory: cesm
         run: |
           # Need these for machine files
           ./bin/git-fleximod update ccs_config
