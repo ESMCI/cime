@@ -16,7 +16,7 @@ function fix_mct_makefiles() {
 function fix_arflags() {
     if [[ ! -e "${1}.bak" ]]; then
         echo "Fixing AR variable in ${1}"
-        
+
         sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${1}"
     fi
 }
