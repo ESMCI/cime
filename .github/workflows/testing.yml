@@ -122,6 +122,9 @@ jobs:
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
 
+          # Need these for machine files
+          ./bin/git-fleximod update ccs_config
+
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
   # Run system tests
