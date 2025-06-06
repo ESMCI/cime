@@ -101,10 +101,30 @@ jobs:
       matrix:
         python-version: ["3.8", "3.10", "3.12"]
     steps:
+      - name: Checkout model code
+        uses: actions/checkout@v4
+        with:
+          repository: ESCOMP/CESM
+          path: cesm # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          ref: cesm3.0-alphabranch
+      - name: Get ccs_config dependency
+        run: |
+          # Need these for machine files
+          ./bin/git-fleximod update ccs_config
+
+          # Remove CIME to checkout
+          rm -rf cime/
+
+          git status
+          git submodule status
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          path: cesm/cime
+          submodules: "true"
       - name: Run tests
         shell: bash
+        working-directory: cesm/cime
         env:
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
@@ -121,9 +141,6 @@ jobs:
 
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
-
-          # Need these for machine files
-          ./bin/git-fleximod update ccs_config
 
           pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
 
@@ -158,7 +175,7 @@ jobs:
           - model: "cesm"
             driver: "mct"
     steps:
-      - name: Checkout code
+      - name: Checkout model code
         uses: actions/checkout@v4
         with:
           repository: ${{ matrix.model.repo }}
