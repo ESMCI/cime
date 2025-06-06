@@ -115,7 +115,7 @@ jobs:
 
           conda activate cesm
 
-          mamba install -y ${{ matrix.python-version }}
+          mamba install -y 'python=${{ matrix.python-version }}'
 
           pip install -r test-requirements.txt
 
