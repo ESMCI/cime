@@ -183,6 +183,7 @@ jobs:
           path: ${{ matrix.model.name }} # $GITHUB_WORKSPACE/${{ matrix.model.name }}
           ref: ${{ matrix.model.branch }}
       - name: Check out model dependencies
+        shell: bash
         working-directory: ${{ matrix.model.name }}
         run: |
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
