@@ -186,6 +186,9 @@ jobs:
         shell: bash
         working-directory: ${{ matrix.model.name }}
         run: |
+          # need https for submodules
+          sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" .gitmodules
+
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             git submodule update --init --recursive
           else
