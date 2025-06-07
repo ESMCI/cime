@@ -230,6 +230,10 @@ jobs:
             fix_mct_makefiles ../externals/mct
           fi
 
+          echo ${HOME}
+          ls -la /root
+          ls -la /home/cime
+          echo `id -u`:`id -g`
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
 
