@@ -190,7 +190,7 @@ jobs:
           sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" .gitmodules
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
-            git submodule update --init --recursive
+            git submodule update --init
           else
             ./bin/git-fleximod update
           fi
