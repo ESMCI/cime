@@ -44,6 +44,8 @@ if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     fi
 
     if [[ "${USER_ID}" == "0" ]]; then
+        cp -rf /home/cime/.cime /root/
+
         exec "${@}"
     else
         echo "source /opt/conda/etc/profile.d/conda.sh; conda activate base" > /home/cime/.bashrc
