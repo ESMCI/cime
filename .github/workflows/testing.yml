@@ -239,6 +239,9 @@ jobs:
             ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
           fi
 
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
           pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3
         if: ${{ !always() }}
