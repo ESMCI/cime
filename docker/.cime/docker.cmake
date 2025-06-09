@@ -13,8 +13,8 @@ string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0")
 
 # required for grid generation tests that use make
 if (CMAKE_SOURCE_DIR MATCHES "^.*TestGridGeneration.*$")
-    string(APPEND FFLAGS " -I/opt/conda/include")
-    string(APPEND SLIBS " -L/opt/conda/lib -lnetcdf -lnetcdff")
+    string(APPEND FFLAGS " -I/opt/conda/envs/$ENV{CIME_MODEL}/include")
+    string(APPEND SLIBS " -L/opt/conda/envs/$ENV{CIME_MODEL} -lnetcdf -lnetcdff")
 endif()
 
 # DEBUGGING variables
