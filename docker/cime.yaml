@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
 # development tools
-  - cmake
+  - cmake<4.0 # some libraries still require 3.5.x
   - make
   - wget
   - curl
@@ -21,8 +21,8 @@ dependencies:
 # libraries
   - lapack
   - blas
+  # Testing hdf5 is out of scope for CIME
   # - hdf5<1.14.0=*openmpi*
-  # - libnetcdf=4.9.2=*openmpi*
   - netcdf-fortran=*=*openmpi*
   - libpnetcdf=*=*openmpi*
   - esmf=*=*openmpi*
