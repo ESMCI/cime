@@ -250,13 +250,13 @@ jobs:
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
-        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz /storage/cases/
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz /home/cime/cases /home/cime/baselines /home/cime/archive
         # How to download artifacts:
         # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: testing-logs-${{ github.run_number }}-${{ matrix.model }}-${{ matrix.driver }}
-          path: /testing-logs-${{ github.run_number}}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz
+          name: testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}
+          path: /testing-logs-${{ github.run_number}}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz
           retention-days: 4
