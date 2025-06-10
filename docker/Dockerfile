@@ -30,8 +30,6 @@ RUN mamba create -n cesm -y --file cime.yaml python=3.10 'libnetcdf>=4.9.2=*open
     && conda clean -afy \
     && rm -rf /opt/conda/pkgs/*
 
-ENV ESMFMKFILE=/opt/conda/lib/esmf.mk
-
 COPY .cime .cime
 COPY entrypoint.sh /entrypoint.sh
 
