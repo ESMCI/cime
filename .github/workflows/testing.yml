@@ -239,6 +239,8 @@ jobs:
             ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
           fi
 
+          git submodule upgrade --init --recursive
+
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
