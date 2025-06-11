@@ -17,6 +17,13 @@
     </header>
   </file>
 
+  <file name="env_postprocessing.xml">
+    <header>
+      These variables may be changed anytime during a run, they
+      control jobs that are dependent on case.run.
+    </header>
+  </file>
+
   <file name="env_case.xml">
     <header>
     These variables CANNOT BE CHANGED once a case has been created.

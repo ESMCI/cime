@@ -101,7 +101,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 "rpointer.cpl",
                 0.01,
@@ -155,7 +155,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
                 0.01,
@@ -211,7 +211,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
                 0.01,
@@ -269,7 +269,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
                 0.01,
@@ -302,7 +302,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(Path(tempdir) / "caseroot"),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
             )
@@ -332,7 +332,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(Path(tempdir) / "caseroot"),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 "rpointer.cpl.0001-01-01",
             )
@@ -362,7 +362,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(Path(tempdir) / "caseroot"),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
             )
@@ -393,7 +393,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 "rpointer.cpl",
             )
@@ -423,7 +423,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
             )
@@ -453,7 +453,7 @@ class TestUnitSystemTests(unittest.TestCase):
             case = mock.MagicMock()
             case.get_value.side_effect = (
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 "rpointer.cpl",
             )
@@ -477,21 +477,22 @@ class TestUnitSystemTests(unittest.TestCase):
 
             get_value_calls = [
                 str(caseroot),
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
                 "mct",
                 None,
                 str(run_dir),
                 "case.std",
                 str(baseline_root),
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
-                "ERIO.ne30_g16_rx1.A.docker_gnu.G.20230919_193255_z9hg2w",
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
+                "ERIO",
                 "mct",
                 str(run_dir),
                 "ERIO",
-                "ERIO.ne30_g16_rx1.A.docker_gnu",
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
                 str(baseline_root),
-                "master/ERIO.ne30_g16_rx1.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
                 str(run_dir),
                 "mct",
                 "/tmp/components/cpl",
@@ -510,7 +511,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._generate_baseline()
 
-            baseline_dir = baseline_root / "master" / "ERIO.ne30_g16_rx1.A.docker_gnu"
+            baseline_dir = baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             assert (baseline_dir / "cpl.log.gz").exists()
             assert (baseline_dir / "cpl-tput.log").exists()
             assert (baseline_dir / "cpl-mem.log").exists()

@@ -21,7 +21,7 @@ except AttributeError:
 class TestCimeCase(base.BaseTestCase):
     def test_cime_case(self):
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS_P1.f19_g16_rx1.A"], test_id=self._baseline_name
+            ["--no-build", "TESTRUNPASS_P1.f19_g16.A"], test_id=self._baseline_name
         )
 
         self.assertEqual(type(self.MACHINE.get_value("MAX_TASKS_PER_NODE")), int)
@@ -231,7 +231,7 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_cime_case_build_threaded_1(self):
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS_P1x1.f19_g16_rx1.A"],
+            ["--no-build", "TESTRUNPASS_P1x1.f19_g16.A"],
             test_id=self._baseline_name,
         )
 
@@ -249,7 +249,7 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_cime_case_build_threaded_2(self):
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS_P1x2.f19_g16_rx1.A"],
+            ["--no-build", "TESTRUNPASS_P1x2.f19_g16.A"],
             test_id=self._baseline_name,
         )
 
@@ -262,7 +262,7 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_cime_case_mpi_serial(self):
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS_Mmpi-serial_P10.f19_g16_rx1.A"],
+            ["--no-build", "TESTRUNPASS_Mmpi-serial_P10.f19_g16.A"],
             test_id=self._baseline_name,
         )
 
@@ -282,7 +282,7 @@ class TestCimeCase(base.BaseTestCase):
                 "--no-build",
                 "--force-procs=16",
                 "--force-threads=8",
-                "TESTRUNPASS.f19_g16_rx1.A",
+                "TESTRUNPASS.f19_g16.A",
             ],
             test_id=self._baseline_name,
         )
@@ -294,7 +294,7 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_cime_case_xmlchange_append(self):
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS_P1x1.f19_g16_rx1.A"],
+            ["--no-build", "TESTRUNPASS_P1x1.f19_g16.A"],
             test_id=self._baseline_name,
         )
 
@@ -318,7 +318,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
-        test_name = "ERS.f19_g16_rx1.A"
+        test_name = "ERS.f19_g16.A"
         casedir = self._create_test(
             ["--no-setup", "--machine=blues", "--non-local", test_name],
             test_id=self._baseline_name,
@@ -340,7 +340,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
-        test_name = "ERS_P64.f19_g16_rx1.A"
+        test_name = "ERS_P64.f19_g16.A"
         casedir = self._create_test(
             ["--no-setup", "--machine=blues", "--non-local", test_name],
             test_id=self._baseline_name,
@@ -362,7 +362,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
-        test_name = "ERS_P64.f19_g16_rx1.A"
+        test_name = "ERS_P64.f19_g16.A"
         casedir = self._create_test(
             [
                 "--no-setup",
@@ -390,7 +390,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
-        test_name = "ERS_P1.f19_g16_rx1.A"
+        test_name = "ERS_P1.f19_g16.A"
         casedir = self._create_test(
             [
                 "--no-setup",
@@ -418,7 +418,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             self.skipTest("Skipping walltime test. Depends on E3SM batch settings")
 
-        test_name = "ERS_P1.f19_g16_rx1.A"
+        test_name = "ERS_P1.f19_g16.A"
         casedir = self._create_test(
             ["--no-setup", "--machine=blues", "--non-local", test_name],
             test_id=self._baseline_name,
@@ -451,7 +451,7 @@ class TestCimeCase(base.BaseTestCase):
         if not self._hasbatch:
             self.skipTest("Skipping walltime test. Depends on batch system")
 
-        test_name = "ERS_P1.f19_g16_rx1.A"
+        test_name = "ERS_P1.f19_g16.A"
         casedir = self._create_test(
             ["--no-build", test_name],
             test_id=self._baseline_name,
@@ -480,7 +480,7 @@ class TestCimeCase(base.BaseTestCase):
         if not self._hasbatch:
             self.skipTest("Skipping walltime test. Depends on batch system")
 
-        test_name = "ERS_P1.f19_g16_rx1.A"
+        test_name = "ERS_P1.f19_g16.A"
         casedir = self._create_test(
             ["--no-build", "--walltime=01:00:00", test_name],
             test_id=self._baseline_name,
@@ -511,8 +511,8 @@ class TestCimeCase(base.BaseTestCase):
 
         # Frontier has 56 MAX_MPITASKS_PER_NODE so 5600 should require 100 nodes
         # which should land us in 6 hour queue
-        test_name = "SMS_P5600.f19_g16_rx1.A"
-        machine, compiler = "frontier", "gnu"
+        test_name = "SMS_P5600.f19_g16.A"
+        machine, compiler = "frontier", "craygnu"
         casedir = self._create_test(
             [
                 "--no-setup",
@@ -530,7 +530,7 @@ class TestCimeCase(base.BaseTestCase):
             "./xmlquery JOB_WALLCLOCK_TIME -N --subgroup=case.test --value",
             from_dir=casedir,
         )
-        self.assertEqual(result, "06:00:00")
+        self.assertEqual(result, "12:00:00")
 
         result = self.run_cmd_assert_result(
             "./xmlquery JOB_QUEUE -N --subgroup=case.test --value", from_dir=casedir
@@ -538,7 +538,7 @@ class TestCimeCase(base.BaseTestCase):
         self.assertEqual(result, "batch")
 
     def test_cime_case_test_custom_project(self):
-        test_name = "ERS_P1.f19_g16_rx1.A"
+        test_name = "ERS_P1.f19_g16.A"
         # have to use a machine both models know and one that doesn't put PROJECT in any key paths
         machine = self._config.test_custom_project_machine
         compiler = "gnu"
@@ -572,7 +572,7 @@ class TestCimeCase(base.BaseTestCase):
             self.skipTest("Skipping env load test - Only works on mappy")
 
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS.f19_g16_rx1.A"], test_id=self._baseline_name
+            ["--no-build", "TESTRUNPASS.f19_g16.A"], test_id=self._baseline_name
         )
 
         with Case(casedir, read_only=True) as case:
@@ -632,7 +632,7 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_xml_caching(self):
         casedir = self._create_test(
-            ["--no-build", "TESTRUNPASS.f19_g16_rx1.A"], test_id=self._baseline_name
+            ["--no-build", "TESTRUNPASS.f19_g16.A"], test_id=self._baseline_name
         )
 
         active = os.path.join(casedir, "env_run.xml")
@@ -725,7 +725,7 @@ class TestCimeCase(base.BaseTestCase):
         if self.TEST_COMPILER and "gpu" in self.TEST_COMPILER:
             self.skipTest("Skipping cprnc test for gpu compiler")
 
-        testname = "ERS_Ln7.f19_g16_rx1.A"
+        testname = "ERS_Ln7.f19_g16.A"
         casedir = self._create_test(
             [testname, "--no-build"], test_id=self._baseline_name
         )
@@ -740,7 +740,7 @@ class TestCimeCase(base.BaseTestCase):
         self._wait_for_tests(self._baseline_name, always_wait=True)
 
     def test_case_clean(self):
-        testname = "ERS_Ln7.f19_g16_rx1.A"
+        testname = "ERS_Ln7.f19_g16.A"
         casedir = self._create_test(
             [testname, "--no-build"], test_id=self._baseline_name
         )
@@ -748,3 +748,26 @@ class TestCimeCase(base.BaseTestCase):
         self.run_cmd_assert_result("./case.setup --clean", from_dir=casedir)
         self.run_cmd_assert_result("./case.setup --clean", from_dir=casedir)
         self.run_cmd_assert_result("./case.setup", from_dir=casedir)
+
+    def test_skip_run_with_existing_baseline(self):
+        test_name = "TESTRUNPASS_P1.f19_g16.A"
+
+        if self._config.test_mode == "cesm":
+            create_test_extra_args = ["--generate", "baseline", "--no-build", test_name]
+        else:
+            create_test_extra_args = ["-g", "--no-build", test_name]
+
+        orig_testroot = self._testroot
+        self._testroot = os.path.join(orig_testroot, "case0")
+        casedir_0 = self._create_test(
+            create_test_extra_args,
+            test_id=self._baseline_name,
+            expect_cases_made=True,
+        )
+        self._testroot = os.path.join(orig_testroot, "case1")
+        casedir_1 = self._create_test(
+            ["--skip-tests-with-existing-baselines"] + create_test_extra_args,
+            test_id=self._baseline_name,
+            expect_cases_made=False,
+        )
+        self._testroot = orig_testroot

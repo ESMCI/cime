@@ -260,6 +260,7 @@ def _read_cime_config_file():
         "walltime",
         "job_queue",
         "allow_baseline_overwrite",
+        "skip_tests_with_existing_baselines",
         "wait",
         "force_procs",
         "force_threads",
@@ -1366,6 +1367,39 @@ def copy_globs(globs_to_copy, output_directory, lid=None):
             )
 
 
+def copy_over_file(src_path, tgt_path):
+    """
+    Copy a file over a file that already exists
+    """
+    st = os.stat(tgt_path)
+    owner_uid = st.st_uid
+
+    # Handle read-only files if possible
+    if not os.access(tgt_path, os.W_OK):
+        if owner_uid == os.getuid():
+            # I am the owner, make writeable
+            os.chmod(tgt_path, st.st_mode | statlib.S_IWRITE)
+        else:
+            # I won't be able to copy this file
+            raise OSError(
+                "Cannot copy over file {}, it is readonly and you are not the owner".format(
+                    tgt_path
+                )
+            )
+
+    if owner_uid == os.getuid():
+        # I am the owner, copy file contents, permissions, and metadata
+        try:
+            shutil.copy2(src_path, tgt_path)
+        # ignore same file error
+        except shutil.SameFileError:
+            pass
+
+    else:
+        # I am not the owner, just copy file contents
+        shutil.copyfile(src_path, tgt_path)
+
+
 def safe_copy(src_path, tgt_path, preserve_meta=True):
     """
     A flexbile and safe copy routine. Will try to copy file and metadata, but this
@@ -1390,49 +1424,26 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
     )
 
     # Handle pre-existing file
-    if os.path.isfile(tgt_path):
-        st = os.stat(tgt_path)
-        owner_uid = st.st_uid
+    try:
+        if os.path.isfile(tgt_path):
+            copy_over_file(src_path, tgt_path)
 
-        # Handle read-only files if possible
-        if not os.access(tgt_path, os.W_OK):
-            if owner_uid == os.getuid():
-                # I am the owner, make writeable
-                os.chmod(tgt_path, st.st_mode | statlib.S_IWRITE)
-            else:
-                # I won't be able to copy this file
-                raise OSError(
-                    "Cannot copy over file {}, it is readonly and you are not the owner".format(
-                        tgt_path
-                    )
-                )
+        elif preserve_meta:
+            # We are making a new file, copy file contents, permissions, and metadata.
+            # This can fail if the underlying directory is not writable by current user.
+            shutil.copy2(src_path, tgt_path)
 
-        if owner_uid == os.getuid():
-            # I am the owner, copy file contents, permissions, and metadata
-            try:
-                shutil.copy2(
-                    src_path,
-                    tgt_path,
-                )
-            # ignore same file error
-            except shutil.SameFileError:
-                pass
         else:
-            # I am not the owner, just copy file contents
-            shutil.copyfile(src_path, tgt_path)
+            shutil.copy(src_path, tgt_path)
 
-    elif preserve_meta:
-        # We are making a new file, copy file contents, permissions, and metadata.
-        # This can fail if the underlying directory is not writable by current user.
-        shutil.copy2(
-            src_path,
-            tgt_path,
-        )
-    else:
-        shutil.copy(
-            src_path,
-            tgt_path,
-        )
+    except OSError:
+        # Some systems get weird OSErrors when using shutil copy, try an
+        # old-fashioned cp as a last resort
+        cp_path = shutil.which("cp")
+        # cp is not in PATH, we must give up and raise the original err
+        if cp_path is None:
+            raise
+        run_cmd_no_fail(f"{cp_path} -f {src_path} {tgt_path}")
 
     # If src file was executable, then the tgt file should be too
     st = os.stat(tgt_path)

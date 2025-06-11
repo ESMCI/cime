@@ -6,7 +6,7 @@ from CIME.tests import base
 class TestBuildSystem(base.BaseTestCase):
     def test_clean_rebuild(self):
         casedir = self._create_test(
-            ["--no-run", "SMS.f19_g16_rx1.A"], test_id=self._baseline_name
+            ["--no-run", "SMS.f19_g16.A"], test_id=self._baseline_name
         )
 
         # Clean a component and a sharedlib

@@ -138,6 +138,7 @@ class SystemTestsCommon(object):
             stop_option = self._case.get_value("STOP_OPTION")
 
         self._case.set_value("REST_OPTION", stop_option)
+
         # We need to make sure the run is long enough and to set REST_N to a
         # value that makes sense for all components
         maxncpl = 10000
@@ -157,6 +158,11 @@ class SystemTestsCommon(object):
                 maxncpl = ncpl
             if ncpl and minncpl < ncpl:
                 minncpl = ncpl
+
+        comp_interface = self._case.get_value("COMP_INTERFACE")
+        # mct doesn't care about maxncpl so set it to minncpl
+        if comp_interface == "mct":
+            maxncpl = minncpl
 
         ncpl_base_period = self._case.get_value("NCPL_BASE_PERIOD")
         if ncpl_base_period == "hour":
@@ -187,23 +193,35 @@ class SystemTestsCommon(object):
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
         stop_n = int(stop_n * factor // coupling_secs)
-        rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
+        if self._case.get_value("TESTCASE") == "IRT":
+            rest_n = math.ceil((stop_n // 3) * coupling_secs / factor)
+        else:
+            rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+        cal = self._case.get_value("CALENDAR")
         if not starttime:
             starttime = self._case.get_value("START_TOD")
         if not startdate:
             startdate = self._case.get_value("RUN_STARTDATE")
-        if "-" in startdate:
-            startdatetime = datetime.fromisoformat(startdate) + timedelta(
-                seconds=int(starttime)
-            )
-        else:
-            startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
-                seconds=int(starttime)
-            )
 
-        cal = self._case.get_value("CALENDAR")
+        if "-" in startdate:
+            syr, smon, sday = startdate.split("-")
+            syr = int(syr)
+            smon = int(smon)
+            sday = int(sday)
+        else:
+            startdate = int(startdate)
+            syr = int(startdate / 10000)
+            smon = int((startdate - syr * 10000) / 100)
+            sday = startdate - syr * 10000 - smon * 100
+
+        addyr = syr // 10000
+        syr = syr % 10000
+
+        startdatetime = datetime.strptime(
+            f"{syr:04d}{smon:02d}{sday:02d}", "%Y%m%d"
+        ) + timedelta(seconds=int(starttime))
 
         if stop_option == "nsteps":
             rtd = timedelta(seconds=rest_n * factor)
@@ -225,10 +243,9 @@ class SystemTestsCommon(object):
             restdatetime = restdatetime + self._leap_year_correction(
                 startdatetime, restdatetime
             )
-
-        self._rest_time = (
-            f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
-        )
+        ryr = int(restdatetime.year)
+        ryr += 10000 * addyr
+        self._rest_time = f".{ryr:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         h = restdatetime.hour
         m = restdatetime.minute
         s = restdatetime.second

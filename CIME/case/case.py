@@ -29,6 +29,7 @@ from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
 from CIME.XML.batch import Batch
 from CIME.XML.workflow import Workflow
+from CIME.XML.postprocessing import Postprocessing
 from CIME.XML.pio import PIO
 from CIME.XML.archive import Archive
 from CIME.XML.env_test import EnvTest
@@ -40,6 +41,7 @@ from CIME.XML.env_run import EnvRun
 from CIME.XML.env_archive import EnvArchive
 from CIME.XML.env_batch import EnvBatch
 from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.env_postprocessing import EnvPostprocessing
 from CIME.XML.generic_xml import GenericXML
 from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
@@ -109,6 +111,7 @@ class Case(object):
                 case_root
             ),
         )
+        self._existing_case = os.path.isdir(case_root)
 
         self._caseroot = case_root
         logger.debug("Initializing Case.")
@@ -356,6 +359,10 @@ class Case(object):
         self._env_entryid_files.append(
             EnvWorkflow(self._caseroot, read_only=self._force_read_only)
         )
+        if not self._existing_case or os.path.isfile("env_postprocessing.xml"):
+            self._env_entryid_files.append(
+                EnvPostprocessing(self._caseroot, read_only=self._force_read_only)
+            )
 
         if os.path.isfile(os.path.join(self._caseroot, "env_test.xml")):
             self._env_entryid_files.append(
@@ -429,6 +436,19 @@ class Case(object):
         if not os.path.isdir(self._caseroot):
             # do not flush if caseroot wasnt created
             return
+
+        _postprocessing_spec_file = self.get_value("POSTPROCESSING_SPEC_FILE")
+        if _postprocessing_spec_file is not None:
+            have_postprocessing = os.path.isfile(_postprocessing_spec_file)
+        else:
+            have_postprocessing = False
+        if not have_postprocessing:
+            # Remove env_postprocessing.xml from self._files
+            self._files = [
+                file
+                for file in self._files
+                if file.get_id() != "env_postprocessing.xml"
+            ]
 
         for env_file in self._files:
             env_file.write(force_write=flushall)
@@ -994,7 +1014,7 @@ class Case(object):
             if ":" in element:
                 element = element[4:]
             # ignore the possible BGC or TEST modifier
-            if element.startswith("BGC%") or element.startswith("TEST"):
+            if element.upper().startswith("BGC%") or element.upper().startswith("TEST"):
                 continue
             else:
                 element_component = element.split("%")[0].lower()
@@ -1576,6 +1596,11 @@ class Case(object):
         )
 
         workflow = Workflow(files=files)
+
+        postprocessing = Postprocessing(files=files)
+        if postprocessing.file_exists:
+            env_postprocessing = self.get_env("postprocessing")
+            env_postprocessing.add_elements_by_group(srcobj=postprocessing)
 
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
@@ -2216,6 +2241,8 @@ directory, NOT in this subdirectory."""
                     new_env_file = EnvBatch(infile=xmlfile)
                 elif ftype == "env_workflow.xml":
                     new_env_file = EnvWorkflow(infile=xmlfile)
+                elif ftype == "env_postprocessing.xml":
+                    new_env_file = EnvPostprocessing(infile=xmlfile)
                 elif ftype == "env_test.xml":
                     new_env_file = EnvTest(infile=xmlfile)
                 elif ftype == "env_archive.xml":

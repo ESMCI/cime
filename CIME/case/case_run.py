@@ -499,7 +499,7 @@ def case_run(self, skip_pnl=False, set_continue_run=False, submit_resubmits=Fals
 
         # get the most recent cpl restart pointer file
         rundir = self.get_value("RUNDIR")
-        if drv_restart_pointer:
+        if drv_restart_pointer and not self._read_only_mode:
             pattern = os.path.join(rundir, "rpointer.cpl*")
             files = sorted(glob.glob(pattern), key=os.path.getmtime)
             if files:

@@ -54,9 +54,15 @@ def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None)
                 logger.debug("adding file {}".format(f))
                 gitinterface.git_operation("add", f)
         msg = msg if msg else " no message provided"
-        gitinterface.git_operation("commit", "-m", '"' + msg + '"')
+        push = True
+        try:
+            gitinterface.git_operation("commit", "-m", '"' + msg + '"')
+        except Exception as e:
+            print(e)
+            push = False
+
         remote = gitinterface.git_operation("remote")
-        if remote:
+        if remote and push:
             with Timeout(30):
                 gitinterface.git_operation("push", remote)
 
