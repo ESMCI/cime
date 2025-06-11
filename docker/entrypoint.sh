@@ -30,25 +30,29 @@ if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
         ln -sf /home/cime/.cime/config_machines.v3.xml /home/cime/.cime/config_machines.xml
     fi
 
-    groupmod -g "${GROUP_ID}" -n cime ubuntu
-    usermod -d /home/cime -u "${USER_ID}" -g "${GROUP_ID}" -l cime ubuntu
-
-    chown -R cime:cime /home/cime
-
-    if [[ -n "${SRC_PATH}" ]] && [[ -e "${SRC_PATH}" ]]; then
-        chown -R cime:cime "${SRC_PATH}"
-
-        git config --global --add safe.directory "${SRC_PATH}"
-    fi
-
     if [[ "${USER_ID}" == "0" ]]; then
         cp -rf /home/cime/.cime /root/
 
+        git config --global --add safe.directory "*"
+
         exec "${@}"
     else
-        echo "source /opt/conda/etc/profile.d/conda.sh; conda activate base" > /home/cime/.bashrc
+        groupmod -g "${GROUP_ID}" -n cime ubuntu
+        usermod -d /home/cime -u "${USER_ID}" -g "${GROUP_ID}" -l cime ubuntu
+
+        chown -R cime:cime /home/cime
+
+        if [[ -n "${SRC_PATH}" ]] && [[ -e "${SRC_PATH}" ]]; then
+            chown -R cime:cime "${SRC_PATH}"   
+
+            git config --global --add safe.directory "*"
+        fi
+
+        {
+            echo "source /opt/conda/etc/profile.d/conda.sh"
+            echo "conda activate base"
+        } > /home/cime/.bashrc
 
         gosu "${USER_ID}" "${@}"
     fi
-
 fi
