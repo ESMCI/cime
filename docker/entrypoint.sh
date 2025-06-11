@@ -21,10 +21,6 @@ function fix_arflags() {
     fi
 }
 
-function gitmodules_ssh_to_https() {
-    sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" .gitmodules
-}
-
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
         ln -sf /home/cime/.cime/config_machines.v2.xml /home/cime/.cime/config_machines.xml
