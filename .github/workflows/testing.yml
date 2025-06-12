@@ -143,7 +143,12 @@ jobs:
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
 
-          pytest -vvv --cov=CIME --machine docker CIME/tests/test_unit*
+          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: jasonb5/cime
 
   # Run system tests
   system-testing:
@@ -243,7 +248,12 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: jasonb5/cime
       - uses: mxschmitt/action-tmate@v3
         if: ${{ !always() }}
         with:
