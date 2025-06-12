@@ -143,7 +143,7 @@ jobs:
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
+          pytest -vvv --cov=CIME --machine docker CIME/tests/test_unit*
 
   # Run system tests
   system-testing:
@@ -243,7 +243,7 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          pytest -vvv --cov=CIME --machine docker --no-teardown CIME/tests/test_sys*
       - uses: mxschmitt/action-tmate@v3
         if: ${{ !always() }}
         with:
