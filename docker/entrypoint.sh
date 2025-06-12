@@ -43,7 +43,7 @@ if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
         chown -R cime:cime /home/cime
 
         if [[ -n "${SRC_PATH}" ]] && [[ -e "${SRC_PATH}" ]]; then
-            chown -R cime:cime "${SRC_PATH}"   
+            chown -R cime:cime "${SRC_PATH}"
 
             git config --global --add safe.directory "*"
         fi
