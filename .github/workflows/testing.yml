@@ -145,7 +145,7 @@ jobs:
 
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -249,7 +249,7 @@ jobs:
 
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - uses: mxschmitt/action-tmate@v3
