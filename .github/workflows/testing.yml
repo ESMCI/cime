@@ -148,7 +148,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: jasonb5/cime
 
   # Run system tests
   system-testing:
@@ -253,7 +252,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: jasonb5/cime
       - uses: mxschmitt/action-tmate@v3
         if: ${{ !always() }}
         with:
