@@ -755,7 +755,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             create_test_extra_args = ["--generate", "baseline", "--no-build", test_name]
         else:
-            create_test_extra_args = ["-g", "--no-build", test_name]
+            create_test_extra_args = ["-g", "--no-build", "-b", "test", test_name]
 
         orig_testroot = self._testroot
         self._testroot = os.path.join(orig_testroot, "case0")
