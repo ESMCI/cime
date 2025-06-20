@@ -5,7 +5,7 @@ Interface to the config_workflow.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import expect
+from CIME.utils import expect, get_config_dir
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,9 @@ class Workflow(GenericXML):
 
         GenericXML.__init__(self, infile, schema=schema)
 
-        # Append the contents of $HOME/.cime/config_workflow.xml if it exists
+        # Append the contents of $HOME/get_config_dir()/config_workflow.xml if it exists
         # This could cause problems if node matchs are repeated when only one is expected
-        infile = os.path.join(os.environ.get("HOME"), ".cime", "config_workflow.xml")
+        infile = os.path.join(os.environ.get("HOME"), get_config_dir(), "config_workflow.xml")
         if os.path.exists(infile):
             GenericXML.read(self, infile)
 
