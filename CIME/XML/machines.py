@@ -5,7 +5,7 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import CIMEError, expect, convert_to_unknown_type, get_cime_config
+from CIME.utils import CIMEError, expect, convert_to_unknown_type, get_cime_config, get_config_dir
 
 import re
 import logging
@@ -99,14 +99,14 @@ class Machines(GenericXML):
 
         GenericXML.__init__(self, infile, schema, read_only=read_only)
 
-        # Append the contents of $HOME/.cime/config_machines.xml if it exists.
+        # Append the contents of $HOME/get_config_dir()/config_machines.xml if it exists.
         #
         # Also append the contents of a config_machines.xml file in the directory given by
         # extra_machines_dir, if present.
         #
         # This could cause problems if node matches are repeated when only one is expected.
         local_infile = os.path.join(
-            os.environ.get("HOME"), ".cime", "config_machines.xml"
+            os.environ.get("HOME"), get_config_dir(), "config_machines.xml"
         )
         logger.debug("Infile: {}".format(local_infile))
 
@@ -349,7 +349,7 @@ class Machines(GenericXML):
         if machine == "Query":
             return machine
         elif self.get_version() == 3:
-            machines_file = Path.home() / ".cime" / machine / "config_machines.xml"
+            machines_file = Path.home() / get_config_dir() / machine / "config_machines.xml"
 
             if machines_file.exists():
                 GenericXML.read(
