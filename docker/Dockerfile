@@ -20,13 +20,21 @@ RUN mkdir -p \
 
 COPY cime.yaml cime.yaml
 
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends \
+    perl libxml-libxml-perl && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN mamba install -y gosu tree
 
 RUN mamba create -n e3sm -y --file cime.yaml python=3.10 'libnetcdf=4.9.1=*openmpi*' \
+    && conda remove -n e3sm --force perl \
     && conda clean -afy \
     && rm -rf /opt/conda/pkgs/*
 
 RUN mamba create -n cesm -y --file cime.yaml python=3.10 'libnetcdf>=4.9.2=*openmpi*' \
+    && conda remove -n cesm --force perl \
     && conda clean -afy \
     && rm -rf /opt/conda/pkgs/*
 
