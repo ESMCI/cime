@@ -21,7 +21,7 @@
         {
             "label": "Docker Run (base) - E3SM",
             "type": "shell",
-            "command": "docker run -it --rm -v ${workspaceFolder}/..:/home/cime/model -e CIME_MODEL=e3sm -e USER_ID=`id -u` -e GROUP_ID=`id -g` ghcr.io/esmci/cime:dev bash",
+            "command": "docker run -it --rm -v ${workspaceFolder}/..:/home/cime/e3sm/${workspaceFolderBasename} -w /home/cime/e3sm/${workspaceFolderBasename}/cime -e CIME_MODEL=e3sm -e USER_ID=`id -u` -e GROUP_ID=`id -g` ghcr.io/esmci/cime:dev bash",
             "group": "test",
             "presentation": {
                 "reveal": "always",
@@ -32,7 +32,7 @@
                 {
             "label": "Docker Run (base) - CESM",
             "type": "shell",
-            "command": "docker run -it --rm -v ${workspaceFolder}/..:/home/cime/model -e CIME_MODEL=cesm -e USER_ID=`id -u` -e GROUP_ID=`id -g` ghcr.io/esmci/cime:dev bash",
+            "command": "docker run -it --rm -v ${workspaceFolder}/..:/home/cime/cesm/${workspaceFolderBasename} -w /home/cime/cesm/${workspaceFolderBasename}/cime -e CIME_MODEL=cesm -e USER_ID=`id -u` -e GROUP_ID=`id -g` ghcr.io/esmci/cime:dev bash",
             "group": "test",
             "presentation": {
                 "reveal": "always",
