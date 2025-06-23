@@ -5,7 +5,13 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import CIMEError, expect, convert_to_unknown_type, get_cime_config, get_config_dir
+from CIME.utils import (
+    CIMEError,
+    expect,
+    convert_to_unknown_type,
+    get_cime_config,
+    get_config_dir,
+)
 
 import re
 import logging
@@ -349,7 +355,9 @@ class Machines(GenericXML):
         if machine == "Query":
             return machine
         elif self.get_version() == 3:
-            machines_file = Path.home() / get_config_dir() / machine / "config_machines.xml"
+            machines_file = (
+                Path.home() / get_config_dir() / machine / "config_machines.xml"
+            )
 
             if machines_file.exists():
                 GenericXML.read(

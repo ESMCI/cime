@@ -27,7 +27,9 @@ class Workflow(GenericXML):
 
         # Append the contents of $HOME/get_config_dir()/config_workflow.xml if it exists
         # This could cause problems if node matchs are repeated when only one is expected
-        infile = os.path.join(os.environ.get("HOME"), get_config_dir(), "config_workflow.xml")
+        infile = os.path.join(
+            os.environ.get("HOME"), get_config_dir(), "config_workflow.xml"
+        )
         if os.path.exists(infile):
             GenericXML.read(self, infile)
 

@@ -1,6 +1,7 @@
 """
 Interface to the config_component.xml files.  This class inherits from EntryID.py
 """
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.entry_id import EntryID
