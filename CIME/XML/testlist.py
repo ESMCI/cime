@@ -35,6 +35,7 @@ Currently supported options are:
 
 - workflow: adds a workflow to the test
 """
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.generic_xml import GenericXML

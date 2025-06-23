@@ -4,10 +4,11 @@ Interface to the config_batch.xml file.  This class inherits from GenericXML.py
 The batch_system type="foo" blocks define most things. Machine-specific overrides
 can be defined by providing a batch_system MACH="mach" block.
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import expect
+from CIME.utils import expect, get_config_dir
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +46,15 @@ class Batch(GenericXML):
         self.batch_system = batch_system
         self.machine = machine
 
-        # Append the contents of $HOME/.cime/config_batch.xml if it exists.
+        # Append the contents of $HOME/get_config_dir()/config_batch.xml if it exists.
         #
         # Also append the contents of a config_batch.xml file in the directory given by
         # extra_machines_dir, if present.
         #
         # This could cause problems if node matches are repeated when only one is expected.
-        infile = os.path.join(os.environ.get("HOME"), ".cime", "config_batch.xml")
+        infile = os.path.join(
+            os.environ.get("HOME"), get_config_dir(), "config_batch.xml"
+        )
         usehome = False
         if os.path.exists(infile):
             GenericXML.read(self, infile)
