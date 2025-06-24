@@ -1,60 +1,44 @@
-ARG BASE_TAG=24.3.0-0
+ARG BASE_TAG=latest
 FROM condaforge/miniforge3:${BASE_TAG} AS base
 
-SHELL ["/bin/bash", "-c"]
+WORKDIR /home/cime
 
-# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
 RUN mkdir -p \
-    /storage/inputdata/cpl/gridmaps/oQU240 \
-    /storage/inputdata/share/domains \
-    /storage/timings && \
-    wget -O /storage/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
-    wget -O /storage/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
-    wget -O /storage/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+        /home/cime/inputdata/cpl/gridmaps/oQU240 \
+        /home/cime/inputdata/share/domains \
+        /home/cime/timings \
+        /home/cime/cases \
+        /home/cime/archive \
+        /home/cime/baselines \
+        /home/cime/tools \
+    && wget -O /home/cime/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
+        https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
+    && wget -O /home/cime/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
+        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
+    && wget -O /home/cime/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
+        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 
-COPY cime.yaml /cime.yaml
+COPY cime.yaml cime.yaml
 
-RUN mamba env update -f /cime.yaml && \
-    rm -rf /opt/conda/pkgs/* && \
-    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-    ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends \
+    perl libxml-libxml-perl && \
+    rm -rf /var/lib/apt/lists/*
 
-ARG PNETCDF_VERSION=1.12.3
-ENV PNETCDF_VERSION=${PNETCDF_VERSION}
+RUN mamba install -y gosu tree
 
-# Build pnetcdf
-RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
-            https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz && \
-            mkdir "${PWD}/pnetcdf" && \
-            tar -xvf "${PWD}/pnetcdf.tar.gz" -C "${PWD}/pnetcdf" --strip-components=1 && \
-            rm -rf "${PWD}/pnetcdf.tar.gz" && \
-            cd "${PWD}/pnetcdf" && \
-            source /opt/conda/etc/profile.d/conda.sh && \
-            conda activate base && \
-            ./configure --prefix /opt/conda --disable-cxx --enable-shared \
-            MPICC=/opt/conda/bin/mpicc \
-            MPICXX=/opt/conda/bin/mpicxx \
-            MPIF77=/opt/conda/bin/mpif77 \
-            MPIF90=/opt/conda/bin/mpif90 && \
-            make -j4 && \
-            make install && \
-            rm -rf "${PWD}/pnetcdf"
+RUN mamba create -n e3sm -y --file cime.yaml python=3.10 'libnetcdf=4.9.1=*openmpi*' \
+    && conda remove -n e3sm --force perl \
+    && conda clean -afy \
+    && rm -rf /opt/conda/pkgs/*
 
-ARG CIME_BRANCH=master
-ARG CIME_REPO=https://github.com/esmci/cime
+RUN mamba create -n cesm -y --file cime.yaml python=3.10 'libnetcdf>=4.9.2=*openmpi*' \
+    && conda remove -n cesm --force perl \
+    && conda clean -afy \
+    && rm -rf /opt/conda/pkgs/*
 
-# Separate layer, it's most likely to change
-RUN git clone -b ${CIME_BRANCH} ${CIME_REPO} /src/cime
-
-# General variables
-ENV USER=root
-ENV LOGNAME=root
-ENV ESMFMKFILE=/opt/conda/lib/esmf.mk
-ENV SRC_PATH=/src
-
-WORKDIR /src
-
-COPY .cime /root/.cime
+COPY .cime .cime
 COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
