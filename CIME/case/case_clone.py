@@ -167,6 +167,12 @@ def create_clone(
         # lock env_case.xml in new case
         lock_file("env_case.xml", newcaseroot)
 
+        # if any other xml files exist in case directory copy them
+        files = glob.glob(cloneroot + "/*.xml")
+        for item in files:
+            if not os.path.exists(os.path.join(newcaseroot, os.path.basename(item))):
+                safe_copy(item, newcaseroot)
+
         # apply user_mods if appropriate
         newcase_root = newcase.get_value("CASEROOT")
         if user_mods_dirs is not None:
