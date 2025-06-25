@@ -168,7 +168,7 @@ def create_clone(
         lock_file("env_case.xml", newcaseroot)
 
         # if any other xml files exist in case directory copy them
-        files = glob.glob(cloneroot + "/*.xml")
+        files = glob.glob(os.path.join(cloneroot, "*.xml"))
         for item in files:
             if not os.path.exists(os.path.join(newcaseroot, os.path.basename(item))):
                 safe_copy(item, newcaseroot)
