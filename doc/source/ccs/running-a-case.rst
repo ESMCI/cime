@@ -189,6 +189,25 @@ Below is an example of status messages:
   2017-02-14 16:20:58: st_archive success
   ---------------------------------------------------
 
+Node failure and MPI recovery
+-----------------------------
+The CCS is capable of recovering from node failures and MPI errors.
+
+Node failures
+`````````````
+In order for CCS to recover from node failures, there a few settings that need to be configured. These settings are machine specific and defined in ``config_machines.xml``.
+
+- ``NODE_FAIL_REGEX`` - Regular expression used to identify node failures from the model run output.
+- ``ALLOCATE_SPARE_NODES`` - If set to ``true``, then 10% extra nodes will be allocated for the run. This will be a minimum of 1 and a maximum of 10.
+- ``RESUBMIT_SETS_CONTINUE_RUN`` - If set to ``true``, then a resubmit will continue the run otherwise the run will start over.
+
+MPI errors
+``````````
+The following settings are use to control how CCS handles MPI errors, these are machine specific and defined in ``config_machines.xml``.
+
+- ``MPIRUN_RETRY_REGEX`` - Regular expression used to identify MPI errors from the model run output.
+- ``MPIRUN_RETRY_COUNT`` - Number of times to retry the MPI run before giving up.
+
 Troubleshooting Failures
 ------------------------
 There are several places to look for information if a job fails.
