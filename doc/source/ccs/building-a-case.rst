@@ -11,43 +11,6 @@ Several directories full of source code must be built all with the same compiler
 The **case.build** script performs all build operations (setting dependencies, invoking Make/CMake,
 creating the executable).
 
-Build Process
--------------
-The ``case.build`` command generates the utility, component libraries and the model executable. Each utility 
-and component build has a log file generated named in the form: **$component.bldlog.$datestamp**. These are 
-located in ``$EXEROOT`` which can be retrieved using ``./xmlquery EXEROOT``. If the logs are compressed 
-(as indicated by a .gz file extension), the build ran successfully.
-
-Invoking ``case.build`` creates the following directory structure in ``$EXEROOT`` if the Intel compiler is used:
-
-::
-
-    atm/
-    cpl/
-    esp/
-    glc/
-    ice/
-    intel/
-    lib/
-    lnd/
-    ocn/
-    rof/
-    wav/
-
-Except for **intel/** and **lib/**, each directory contains an **obj/** subdirectory for the target model component's compiled object files.
-
-The *mct*, *pio*, *gptl*, and *csm_share* libraries are placed in a directory tree that reflects their dependencies. See the **bldlog** for a given component to locate the library.
-
-Special **include** modules are placed in **lib/include**. The model executable (**cesm.exe** or **e3sm.exe**, for example) is placed directly in ``$EXEROOT``.
-
-Component namelists, component logs, output data sets, and restart files are placed in ``$RUNDIR``.
-
-.. important::
-
-    It is important to note that ``$RUNDIR`` and ``$EXEROOT`` are independent variables that are set in the ``$CASEROOT/env_run.xml`` file.
-
-    The default values for ``$RUNDIR`` and ``$EXEROOT`` respectively are ``$CIME_OUTPUT_ROOT/$CASE/run`` and ``$CIME_OUTPUT_ROOT/$CASE/bld``. Changing the ``$CIME_OUTPUT_ROOT`` variable will change the location of the run and build directories.
-
 Configuring the Build
 ---------------------
 You do not need to change the default build settings to create the executable, but it may be useful to change them to make optimal use of the system. CIME provides the :ref:`xmlquery <ccs_xmlquery>` and :ref:`xmlchange <ccs_xmlchange>` commands to view and modify the build settings.
@@ -67,13 +30,73 @@ Below are some variables that affect the build process and output.
 
 Building the Model
 ------------------
-After calling ``case.setup``, running ``case.build`` will:
+Running ``case.build`` will:
 
 1. Create the component namelists in ``$RUNDIR`` and ``$CASEROOT/CaseDocs``.
-2. Create the necessary compiled libraries used by coupler and component models ``mct``, ``pio``, ``gptl``, and ``csm_share``.
-   The libraries will be placed in a path below ``$SHAREDLIBROOT``.
-3. Create the necessary compiled libraries for each component model. These are placed in ``$EXEROOT/bld/lib``.
-4. Create the model executable ``$MODEL.exe``, which is placed in ``$EXEROOT``.
+2. Build the shared libraries, utilities (e.g. ``cprnc``) and place them in ``$SHAREDLIBROOT``.
+3. Build the components and model executables, which is placed in ``$EXEROOT``.
+
+Each utility, component, and the model will generate a log file in the form ``$name.bldlog.$datestamp`` in the ``$EXEROOT`` directory.
+If the logs are compressed (as indicated by a .gz file extension), the build ran successfully.
+
+.. note::
+
+    The following is just an example and can vary based on the model, compiler, and compset.
+
+Running ``case.build`` typically results in a directory structure similar to the following in ``$EXEROOT``.
+
+.. code-block:: shell
+
+    .
+    ├── atm
+    │   └── obj
+    ├── cpl
+    │   └── obj
+    ├── esp
+    │   └── obj
+    ├── glc
+    │   └── obj
+    ├── iac
+    │   └── obj
+    ├── ice
+    │   └── obj
+    ├── lib
+    │   └── include
+    ├── lnd
+    │   └── obj
+    ├── ocn
+    │   └── obj
+    ├── oneapi-ifx
+    │   └── mpich
+    │       └── nodebug
+    │           └── nothreads
+    │               ├── gptl
+    │               ├── include
+    │               ├── lib
+    │               ├── mct
+    │               └── spio
+    ├── rof
+    │   └── obj
+    └── wav
+        └── obj
+
+In this example, the model is built with the Intel oneAPI compiler and uses MPICH for parallel communication (denoted by the ``oneapi-ifx`` and ``mpich`` directories). The ``nodebug`` and ``nothreads`` directories indicate that the build is not using debugging flags or threading.
+
+The directories under ``oneapi-ifx/mpich/nodebug/nothreads`` contains the external libraries used by the model.
+
+The ``lib/include`` directory contains special include modules.
+
+The model executable is placed directly in the ``$EXEROOT`` directory, which is typically named after the model (e.g., **cesm.exe** or **e3sm.exe**).
+
+In the ``$EXEROOT`` directory is where you'll find the build logs for each component, external library, and the model executable.
+
+Component namelists, component logs, output data sets, and restart files are placed in ``$RUNDIR``.
+
+.. important::
+
+    It is important to note that ``$RUNDIR`` and ``$EXEROOT`` are independent variables that are set in the ``$CASEROOT/env_run.xml`` file.
+
+    The default values for ``$RUNDIR`` and ``$EXEROOT`` respectively are ``$CIME_OUTPUT_ROOT/$CASE/run`` and ``$CIME_OUTPUT_ROOT/$CASE/bld``. Changing the ``$CIME_OUTPUT_ROOT`` variable will change the location of the run and build directories.
 
 Rebuilding the Model
 --------------------
