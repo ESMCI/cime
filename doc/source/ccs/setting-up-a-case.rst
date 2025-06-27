@@ -47,6 +47,12 @@ Variables can be printed without being resolved by using the ``--no-resolve`` op
 
     ./xmlquery --no-resolve HIST_N
 
+The output of a variable can be printed without a newline using the ``--value`` option.
+
+.. code-block:: bash
+
+    ./xmlquery --value HIST_N
+
 .. _ccs_xmlchange:
 
 Modifying
