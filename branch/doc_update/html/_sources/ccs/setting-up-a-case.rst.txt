@@ -16,17 +16,42 @@ Querying
 `````````
 CIME provides the ``xmlquery`` command to view the configuration of a case. The configuration is a collection of variables stored in XML files. These variables are grouped together when defined in the model's configuration.
 
-The following will list all of the current configuration.
+The following will list the variables, resolving any references to other variables.
 
 .. code-block:: bash
 
     ./xmlquery --listall
+
+To print detailed information about variables, including their description, type, valid values, and defaults using the ``--full`` option:
+
+.. code-block:: bash
+
+    ./xmlquery --listall --full
 
 To view a specific group, replace ``<group>`` with the desired group name.
 
 .. code-block:: bash
 
     ./xmlquery --subgroup <group> --listall
+
+You can search for partial matches using the ``-p`` or ``--partial`` option (can take a regex) and replacing ``<search_string>`` with the string you want to search for. This will return all variables that contain the search string in their name or value.
+
+.. code-block:: bash
+
+    # e.g. ./xmlquery --partial STOP, ./xmlquery --partial 'STOP_(N|O)'
+    ./xmlquery --partial <search_string>
+
+Variables can be printed without being resolved by using the ``--no-resolve`` option.
+
+.. code-block:: bash
+
+    ./xmlquery --no-resolve HIST_N
+
+The output of a variable can be printed without a newline using the ``--value`` option.
+
+.. code-block:: bash
+
+    ./xmlquery --value HIST_N
 
 .. _ccs_xmlchange:
 
