@@ -879,6 +879,10 @@ endif
 ifdef COSP_LIBDIR
   ifeq ($(CIME_MODEL),cesm)
     ULIBDEP += $(COSP_LIBDIR)/libcosp.a
+    # Additionally include RTTOV if asked via CAM_CONFIG_OPTS.
+    ifeq ($(findstring -rttov,$(CAM_CONFIG_OPTS)),-rttov)
+      ULIBDEP += $(COSP_LIBDIR)/librttov_wrapper.a $(COSP_LIBDIR)/librttov_mw_scatt.a $(COSP_LIBDIR)/librttov_brdf_atlas.a $(COSP_LIBDIR)/librttov_emis_atlas.a  $(COSP_LIBDIR)/librttov_other.a $(COSP_LIBDIR)/librttov_parallel.a $(COSP_LIBDIR)/librttov_coef_io.a $(COSP_LIBDIR)/librttov_hdf.a $(COSP_LIBDIR)/librttov_main.a
+    endif
   endif
 endif
 
