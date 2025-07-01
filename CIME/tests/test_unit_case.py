@@ -111,7 +111,7 @@ class TestCase(unittest.TestCase):
         assert hist_n == "$STOP_N", hist_n
 
         env.get_type_info.return_value = None
-        env.get_resolved_value.return_value = 5
+        env.get_resolved_value.return_value = "5"
 
         # test that get_resolved_value cannot resolve the reference
         hist_n = case.get_value("HIST_N")
@@ -122,11 +122,11 @@ class TestCase(unittest.TestCase):
         with mock.patch.object(
             case, "get_resolved_value", wraps=case.get_resolved_value
         ) as grv:
-            grv.return_value = 5
+            grv.return_value = "5"
 
             hist_n = case.get_value("HIST_N")
 
-        assert hist_n == 5, hist_n
+        assert hist_n == "5", hist_n
 
         # test that get_resolved_value can resolve the reference and convert to type
         env.get_type_info.return_value = "real"
