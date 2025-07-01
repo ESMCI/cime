@@ -82,10 +82,82 @@ class TestCaseSubmit(unittest.TestCase):
             )
 
 
+def mock_case(func):
+    @mock.patch("CIME.case.case.Case.read_xml")
+    def wrapper(self, *args, **kwargs):
+        with tempfile.TemporaryDirectory() as tempdir:
+            with Case(f"{tempdir}/case", read_only=False) as case:
+                func(self, *args, **kwargs, tempdir=tempdir, case=case)
+
+    return wrapper
+
+
 class TestCase(unittest.TestCase):
     def setUp(self):
         self.srcroot = os.path.abspath(cime_utils.get_src_root())
         self.tempdir = tempfile.TemporaryDirectory()
+
+    @mock_case
+    def test_get_value_reference(self, _, tempdir, case):
+        env = mock.MagicMock()
+
+        # mock an env file with HIST_N=$STOP_N
+        env.get_value.return_value = "$STOP_N"
+        # set the case to have one env file
+        case._files = [env]
+
+        hist_n = case.get_value("HIST_N", resolved=False)
+
+        assert hist_n == "$STOP_N", hist_n
+
+        env.get_type_info.return_value = None
+        env.get_resolved_value.return_value = 5
+
+        # test that get_resolved_value cannot resolve the reference
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == "$STOP_N", hist_n
+
+        # test that get_resolved_value can resolve the reference
+        with mock.patch.object(
+            case, "get_resolved_value", wraps=case.get_resolved_value
+        ) as grv:
+            grv.return_value = 5
+
+            hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+        # test that get_resolved_value can resolve the reference and convert to type
+        env.get_type_info.return_value = "real"
+
+        with mock.patch.object(
+            case, "get_resolved_value", wraps=case.get_resolved_value
+        ) as grv:
+            grv.return_value = "5"
+
+            hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5 and isinstance(hist_n, float), hist_n
+
+    @mock_case
+    def test_get_value(self, _, tempdir, case):
+        env = mock.MagicMock()
+
+        # mock an env file with HIST_N=2
+        env.get_value.return_value = 2
+        # set the case to have one env file
+        case._files = [env]
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 2, hist_n
+
+    @mock_case
+    def test_get_value_no_files(self, _, tempdir, case):
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == None, hist_n
 
     @mock.patch("CIME.case.case.Case.read_xml")
     def test_fix_sys_argv_quotes(self, read_xml):
