@@ -114,9 +114,10 @@ class TestCase(unittest.TestCase):
         env.get_resolved_value.return_value = "5"
 
         # test that get_resolved_value cannot resolve the reference
-        hist_n = case.get_value("HIST_N")
-
-        assert hist_n == "$STOP_N", hist_n
+        with self.assertRaisesRegex(
+            cime_utils.CIMEError, "Could not resolve variable HIST_N"
+        ):
+            case.get_value("HIST_N")
 
         # test that get_resolved_value can resolve the reference
         with mock.patch.object(

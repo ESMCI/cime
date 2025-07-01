@@ -483,6 +483,7 @@ class Case(object):
         return []
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
+        # TODO this needs to be moved into either create_test or create_newcase
         if item == "GPU_ENABLED":
             if not self.gpu_enabled:
                 if (
@@ -492,7 +493,6 @@ class Case(object):
                     self.gpu_enabled = True
             return "true" if self.gpu_enabled else "false"
 
-        result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
             result = env_file.get_value(
@@ -501,15 +501,26 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
+                    # Try to resolve using the current subgroup
                     result = self.get_resolved_value(result, subgroup=subgroup)
+
+                    # If that didn't work, try to resolve without a subgroup
+                    if "$" in result:
+                        result = self.get_resolved_value(result)
+
+                    # If still not resolved, we have a problem
+                    expect(
+                        "$" not in result, "Could not resolve variable {}".format(item)
+                    )
+
                     vtype = env_file.get_type_info(item)
+
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
 
                 return result
 
-        # Return empty result
-        return result
+        return None
 
     def get_record_fields(self, variable, field):
         """get_record_fields gets individual requested field from an entry_id file
