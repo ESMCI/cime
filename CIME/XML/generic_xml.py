@@ -2,6 +2,7 @@
 Common interface to XML files, this is an abstract class and is expected to
 be used by other XML interface modules and not directly.
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.utils import safe_copy, get_src_root
 
@@ -399,10 +400,12 @@ class GenericXML(object):
         )
         expect(
             child,
-            err_msg
-            if err_msg
-            else "Expected one child, found None with name '{}' and attribs '{}' in file {}".format(
-                name, attributes, self.filename
+            (
+                err_msg
+                if err_msg
+                else "Expected one child, found None with name '{}' and attribs '{}' in file {}".format(
+                    name, attributes, self.filename
+                )
             ),
         )
         return child
@@ -419,10 +422,12 @@ class GenericXML(object):
 
         expect(
             len(children) <= 1,
-            err_msg
-            if err_msg
-            else "Multiple matches for name '{}' and attribs '{}' in file {}".format(
-                name, attributes, self.filename
+            (
+                err_msg
+                if err_msg
+                else "Multiple matches for name '{}' and attribs '{}' in file {}".format(
+                    name, attributes, self.filename
+                )
             ),
         )
         return children[0] if children else None
