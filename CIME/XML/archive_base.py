@@ -139,21 +139,28 @@ class ArchiveBase(GenericXML):
         for ext in extensions:
             if ext.endswith("$") and has_suffix:
                 ext = ext[:-1]
-            string = model + r"\d?_?(\d{4})?(_d\d{2})?\.?" + ext
+
+            # Build the regex that will identify history files
+            re_string = model  # We expect the model name to be in the filename
+            re_string += (
+                r"\d?_?(\d{4})?(_d\d{2})?"  # Need this for potential DART files?
+            )
+            re_string += r"\." + ext  # We expect a dot to precede the extension
+
             if has_suffix:
-                if not suffix in string:
-                    string += r"\." + suffix + "$"
+                if not suffix in re_string:
+                    re_string += r"\." + suffix + "$"
 
-                if not string.endswith("$"):
-                    string += "$"
+                if not re_string.endswith("$"):
+                    re_string += "$"
 
-            logger.debug("Regex is {}".format(string))
-            pfile = re.compile(string)
+            logger.debug("Regex is {}".format(re_string))
+            regex = re.compile(re_string)
             hist_files.extend(
                 [
                     f
                     for f in os.listdir(from_dir)
-                    if pfile.search(f)
+                    if regex.search(f)
                     and (
                         (f.startswith(casename) or f.startswith(model))
                         and not f.endswith("cprnc.out")
