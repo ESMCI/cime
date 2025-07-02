@@ -53,7 +53,7 @@ MACRO_PRESERVE_ENV = [
 ]
 
 
-def mock_case():
+def mock_case(*pargs, **pkwargs):
     def outer(func):
         @mock.patch("CIME.case.case.Case.read_xml")
         def wrapper(self, *args, **kwargs):
