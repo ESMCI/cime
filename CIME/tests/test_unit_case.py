@@ -7,7 +7,8 @@ import tempfile
 
 from CIME.case import case_submit
 from CIME.case import Case
-from CIME import utils as cime_utils
+from CIME import utils
+from CIME.tests.utils import mock_case
 
 
 def make_valid_case(path):
@@ -82,22 +83,12 @@ class TestCaseSubmit(unittest.TestCase):
             )
 
 
-def mock_case(func):
-    @mock.patch("CIME.case.case.Case.read_xml")
-    def wrapper(self, *args, **kwargs):
-        with tempfile.TemporaryDirectory() as tempdir:
-            with Case(f"{tempdir}/case", read_only=False) as case:
-                func(self, *args, **kwargs, tempdir=tempdir, case=case)
-
-    return wrapper
-
-
 class TestCase(unittest.TestCase):
     def setUp(self):
-        self.srcroot = os.path.abspath(cime_utils.get_src_root())
+        self.srcroot = os.path.abspath(utils.get_src_root())
         self.tempdir = tempfile.TemporaryDirectory()
 
-    @mock_case
+    @mock_case()
     def test_get_value_reference(self, _, tempdir, case):
         env = mock.MagicMock()
 
@@ -115,7 +106,7 @@ class TestCase(unittest.TestCase):
 
         # test that get_resolved_value cannot resolve the reference
         with self.assertRaisesRegex(
-            cime_utils.CIMEError, "Could not resolve variable HIST_N"
+            utils.CIMEError, "Could not resolve variable HIST_N"
         ):
             case.get_value("HIST_N")
 

@@ -7,10 +7,12 @@ import sys
 import time
 import contextlib
 from collections.abc import Iterable
+from unittest import mock
 
 from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
+from CIME.case import Case
 
 MACRO_PRESERVE_ENV = [
     "ADDR2LINE",
@@ -49,6 +51,19 @@ MACRO_PRESERVE_ENV = [
     "STRINGS",
     "STRIP",
 ]
+
+
+def mock_case():
+    def outer(func):
+        @mock.patch("CIME.case.case.Case.read_xml")
+        def wrapper(self, *args, **kwargs):
+            with tempfile.TemporaryDirectory() as tempdir:
+                with Case(f"{tempdir}/case", read_only=False) as case:
+                    func(self, *args, **kwargs, tempdir=tempdir, case=case)
+
+        return wrapper
+
+    return outer
 
 
 @contextlib.contextmanager
