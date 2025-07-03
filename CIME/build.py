@@ -1045,18 +1045,18 @@ def _case_build_impl(
     t1 = time.time()
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
     logs = []
+    expect(
+        not (sharedlib_only and model_only),
+        "Contradiction: both sharedlib_only and model_only",
+    )
+    expect(
+        not (dry_run and not model_only),
+        "Dry-run is only for model builds, please build sharedlibs first",
+    )
 
     if os.path.exists(exeroot) and not os.access(exeroot, os.W_OK):
         logger.warning("EXEROOT is not writable")
     else:
-        expect(
-            not (sharedlib_only and model_only),
-            "Contradiction: both sharedlib_only and model_only",
-        )
-        expect(
-            not (dry_run and not model_only),
-            "Dry-run is only for model builds, please build sharedlibs first",
-        )
         logger.info("Building case in directory {}".format(caseroot))
         logger.info("sharedlib_only is {}".format(sharedlib_only))
         logger.info("model_only is {}".format(model_only))

@@ -50,6 +50,12 @@ def create_dirs(self):
         if os.access(dir_, os.W_OK):
             with open(os.path.join(dir_, "CASEROOT"), "w+") as fd:
                 fd.write(caseroot + "\n")
+        else:
+            logger.warning(
+                "Write permission is missing for directory '{}'. Skipping creation of 'CASEROOT' file.".format(
+                    dir_
+                )
+            )
 
 
 def create_namelists(self, component=None):
