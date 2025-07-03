@@ -1696,6 +1696,7 @@ class Case(object):
             os.path.join(toolsdir, "xmlchange"),
             os.path.join(toolsdir, "xmlquery"),
             os.path.join(toolsdir, "pelayout"),
+            os.path.join(toolsdir, "wait_for_tests"),
         )
         try:
             for exefile in exefiles:
