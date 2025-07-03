@@ -2,6 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Build documentation",
+            "type": "shell",
+            "command": "source ${workspaceFolder}/.venv/bin/activate && sphinx-autobuild --ignore generated/ . _build/html",
+            "options": {
+                "cwd": "${workspaceFolder}/doc/source"
+            }
+        },
+	{
             "label": "Docker Build (base)",
             "type": "shell",
             "command": "docker build -t ghcr.io/esmci/cime:dev --target base .",
