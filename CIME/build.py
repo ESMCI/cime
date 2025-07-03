@@ -1042,208 +1042,211 @@ def _case_build_impl(
     dry_run,
 ):
     ###############################################################################
-
     t1 = time.time()
-
-    expect(
-        not (sharedlib_only and model_only),
-        "Contradiction: both sharedlib_only and model_only",
-    )
-    expect(
-        not (dry_run and not model_only),
-        "Dry-run is only for model builds, please build sharedlibs first",
-    )
-    logger.info("Building case in directory {}".format(caseroot))
-    logger.info("sharedlib_only is {}".format(sharedlib_only))
-    logger.info("model_only is {}".format(model_only))
-
-    expect(os.path.isdir(caseroot), "'{}' is not a valid directory".format(caseroot))
-    os.chdir(caseroot)
-
-    expect(
-        os.path.exists(get_batch_script_for_job(case.get_primary_job())),
-        "ERROR: must invoke case.setup script before calling build script ",
-    )
-
-    cimeroot = case.get_value("CIMEROOT")
-
-    comp_classes = case.get_values("COMP_CLASSES")
-
-    check_lockedfiles(case, skip="env_batch")
-
-    # Retrieve relevant case data
-    # This environment variable gets set for cesm Make and
-    # needs to be unset before building again.
-    if "MODEL" in os.environ:
-        del os.environ["MODEL"]
-    build_threaded = case.get_build_threaded()
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
-    incroot = os.path.abspath(case.get_value("INCROOT"))
-    libroot = os.path.abspath(case.get_value("LIBROOT"))
-    multi_driver = case.get_value("MULTI_DRIVER")
-    complist = []
-    ninst = 1
-    comp_interface = case.get_value("COMP_INTERFACE")
-    for comp_class in comp_classes:
-        if comp_class == "CPL":
-            config_dir = None
-            if multi_driver:
-                ninst = case.get_value("NINST_MAX")
-        else:
-            config_dir = os.path.dirname(
-                case.get_value("CONFIG_{}_FILE".format(comp_class))
-            )
-            if multi_driver:
-                ninst = 1
-            else:
-                ninst = case.get_value("NINST_{}".format(comp_class))
-
-        comp = case.get_value("COMP_{}".format(comp_class))
-        if comp_interface == "nuopc" and comp in (
-            "satm",
-            "slnd",
-            "sesp",
-            "sglc",
-            "srof",
-            "sice",
-            "socn",
-            "swav",
-            "siac",
-        ):
-            continue
-        thrds = case.get_value("NTHRDS_{}".format(comp_class))
-        expect(
-            ninst is not None,
-            "Failed to get ninst for comp_class {}".format(comp_class),
-        )
-        complist.append((comp_class.lower(), comp, thrds, ninst, config_dir))
-        os.environ["COMP_{}".format(comp_class)] = comp
-
-    compiler = case.get_value("COMPILER")
-    mpilib = case.get_value("MPILIB")
-    debug = case.get_value("DEBUG")
-    ninst_build = case.get_value("NINST_BUILD")
-    smp_value = case.get_value("SMP_VALUE")
-    clm_use_petsc = case.get_value("CLM_USE_PETSC")
-    mpaso_use_petsc = case.get_value("MPASO_USE_PETSC")
-    cism_use_trilinos = case.get_value("CISM_USE_TRILINOS")
-    mali_use_albany = case.get_value("MALI_USE_ALBANY")
-    mach = case.get_value("MACH")
-
-    # Load some params into env
-    os.environ["BUILD_THREADED"] = stringify_bool(build_threaded)
-    cime_model = get_model()
-
-    # TODO need some other method than a flag.
-    if cime_model == "e3sm" and mach == "titan" and compiler == "pgiacc":
-        case.set_value("CAM_TARGET", "preqx_acc")
-
-    # This is a timestamp for the build , not the same as the testid,
-    # and this case may not be a test anyway. For a production
-    # experiment there may be many builds of the same case.
-    lid = get_timestamp("%y%m%d-%H%M%S")
-    os.environ["LID"] = lid
-
-    # Set the overall USE_PETSC variable to TRUE if any of the
-    # *_USE_PETSC variables are TRUE.
-    # For now, there is just the one CLM_USE_PETSC variable, but in
-    # the future there may be others -- so USE_PETSC will be true if
-    # ANY of those are true.
-
-    use_petsc = bool(clm_use_petsc) or bool(mpaso_use_petsc)
-    case.set_value("USE_PETSC", use_petsc)
-
-    # Set the overall USE_TRILINOS variable to TRUE if any of the
-    # *_USE_TRILINOS variables are TRUE.
-    # For now, there is just the one CISM_USE_TRILINOS variable, but in
-    # the future there may be others -- so USE_TRILINOS will be true if
-    # ANY of those are true.
-
-    use_trilinos = False if cism_use_trilinos is None else cism_use_trilinos
-    case.set_value("USE_TRILINOS", use_trilinos)
-
-    # Set the overall USE_ALBANY variable to TRUE if any of the
-    # *_USE_ALBANY variables are TRUE.
-    # For now, there is just the one MALI_USE_ALBANY variable, but in
-    # the future there may be others -- so USE_ALBANY will be true if
-    # ANY of those are true.
-
-    use_albany = stringify_bool(mali_use_albany)
-    case.set_value("USE_ALBANY", use_albany)
-
-    # Load modules
-    case.load_env()
-
-    sharedpath = _build_checks(
-        case,
-        build_threaded,
-        comp_interface,
-        debug,
-        compiler,
-        mpilib,
-        complist,
-        ninst_build,
-        smp_value,
-        model_only,
-        buildlist,
-    )
-
     logs = []
 
-    if not model_only:
-        logs = _build_libraries(
-            case,
-            exeroot,
-            sharedpath,
-            caseroot,
-            cimeroot,
-            libroot,
-            lid,
-            compiler,
-            buildlist,
-            comp_interface,
-            complist,
+    if os.path.exists(exeroot) and not os.access(exeroot, os.W_OK):
+        logger.warning("EXEROOT is not writable")
+    else:
+        expect(
+            not (sharedlib_only and model_only),
+            "Contradiction: both sharedlib_only and model_only",
+        )
+        expect(
+            not (dry_run and not model_only),
+            "Dry-run is only for model builds, please build sharedlibs first",
+        )
+        logger.info("Building case in directory {}".format(caseroot))
+        logger.info("sharedlib_only is {}".format(sharedlib_only))
+        logger.info("model_only is {}".format(model_only))
+
+        expect(
+            os.path.isdir(caseroot), "'{}' is not a valid directory".format(caseroot)
+        )
+        os.chdir(caseroot)
+
+        expect(
+            os.path.exists(get_batch_script_for_job(case.get_primary_job())),
+            "ERROR: must invoke case.setup script before calling build script ",
         )
 
-    if not sharedlib_only:
-        if config.build_model_use_cmake:
-            logs.extend(
-                _build_model_cmake(
-                    exeroot,
-                    complist,
-                    lid,
-                    buildlist,
-                    comp_interface,
-                    sharedpath,
-                    separate_builds,
-                    ninja,
-                    dry_run,
-                    case,
+        cimeroot = case.get_value("CIMEROOT")
+
+        comp_classes = case.get_values("COMP_CLASSES")
+
+        check_lockedfiles(case, skip="env_batch")
+
+        # Retrieve relevant case data
+        # This environment variable gets set for cesm Make and
+        # needs to be unset before building again.
+        if "MODEL" in os.environ:
+            del os.environ["MODEL"]
+        build_threaded = case.get_build_threaded()
+        incroot = os.path.abspath(case.get_value("INCROOT"))
+        libroot = os.path.abspath(case.get_value("LIBROOT"))
+        multi_driver = case.get_value("MULTI_DRIVER")
+        complist = []
+        ninst = 1
+        comp_interface = case.get_value("COMP_INTERFACE")
+        for comp_class in comp_classes:
+            if comp_class == "CPL":
+                config_dir = None
+                if multi_driver:
+                    ninst = case.get_value("NINST_MAX")
+            else:
+                config_dir = os.path.dirname(
+                    case.get_value("CONFIG_{}_FILE".format(comp_class))
                 )
+                if multi_driver:
+                    ninst = 1
+                else:
+                    ninst = case.get_value("NINST_{}".format(comp_class))
+
+            comp = case.get_value("COMP_{}".format(comp_class))
+            if comp_interface == "nuopc" and comp in (
+                "satm",
+                "slnd",
+                "sesp",
+                "sglc",
+                "srof",
+                "sice",
+                "socn",
+                "swav",
+                "siac",
+            ):
+                continue
+            thrds = case.get_value("NTHRDS_{}".format(comp_class))
+            expect(
+                ninst is not None,
+                "Failed to get ninst for comp_class {}".format(comp_class),
             )
-        else:
-            os.environ["INSTALL_SHAREDPATH"] = os.path.join(
-                exeroot, sharedpath
-            )  # for MPAS makefile generators
-            logs.extend(
-                _build_model(
-                    build_threaded,
-                    exeroot,
-                    incroot,
-                    complist,
-                    lid,
-                    caseroot,
-                    cimeroot,
-                    compiler,
-                    buildlist,
-                    comp_interface,
-                )
+            complist.append((comp_class.lower(), comp, thrds, ninst, config_dir))
+            os.environ["COMP_{}".format(comp_class)] = comp
+
+        compiler = case.get_value("COMPILER")
+        mpilib = case.get_value("MPILIB")
+        debug = case.get_value("DEBUG")
+        ninst_build = case.get_value("NINST_BUILD")
+        smp_value = case.get_value("SMP_VALUE")
+        clm_use_petsc = case.get_value("CLM_USE_PETSC")
+        mpaso_use_petsc = case.get_value("MPASO_USE_PETSC")
+        cism_use_trilinos = case.get_value("CISM_USE_TRILINOS")
+        mali_use_albany = case.get_value("MALI_USE_ALBANY")
+        mach = case.get_value("MACH")
+
+        # Load some params into env
+        os.environ["BUILD_THREADED"] = stringify_bool(build_threaded)
+        cime_model = get_model()
+
+        # TODO need some other method than a flag.
+        if cime_model == "e3sm" and mach == "titan" and compiler == "pgiacc":
+            case.set_value("CAM_TARGET", "preqx_acc")
+
+        # This is a timestamp for the build , not the same as the testid,
+        # and this case may not be a test anyway. For a production
+        # experiment there may be many builds of the same case.
+        lid = get_timestamp("%y%m%d-%H%M%S")
+        os.environ["LID"] = lid
+
+        # Set the overall USE_PETSC variable to TRUE if any of the
+        # *_USE_PETSC variables are TRUE.
+        # For now, there is just the one CLM_USE_PETSC variable, but in
+        # the future there may be others -- so USE_PETSC will be true if
+        # ANY of those are true.
+
+        use_petsc = bool(clm_use_petsc) or bool(mpaso_use_petsc)
+        case.set_value("USE_PETSC", use_petsc)
+
+        # Set the overall USE_TRILINOS variable to TRUE if any of the
+        # *_USE_TRILINOS variables are TRUE.
+        # For now, there is just the one CISM_USE_TRILINOS variable, but in
+        # the future there may be others -- so USE_TRILINOS will be true if
+        # ANY of those are true.
+
+        use_trilinos = False if cism_use_trilinos is None else cism_use_trilinos
+        case.set_value("USE_TRILINOS", use_trilinos)
+
+        # Set the overall USE_ALBANY variable to TRUE if any of the
+        # *_USE_ALBANY variables are TRUE.
+        # For now, there is just the one MALI_USE_ALBANY variable, but in
+        # the future there may be others -- so USE_ALBANY will be true if
+        # ANY of those are true.
+
+        use_albany = stringify_bool(mali_use_albany)
+        case.set_value("USE_ALBANY", use_albany)
+
+        # Load modules
+        case.load_env()
+
+        sharedpath = _build_checks(
+            case,
+            build_threaded,
+            comp_interface,
+            debug,
+            compiler,
+            mpilib,
+            complist,
+            ninst_build,
+            smp_value,
+            model_only,
+            buildlist,
+        )
+
+        if not model_only:
+            logs = _build_libraries(
+                case,
+                exeroot,
+                sharedpath,
+                caseroot,
+                cimeroot,
+                libroot,
+                lid,
+                compiler,
+                buildlist,
+                comp_interface,
+                complist,
             )
 
-        if not buildlist:
-            # in case component build scripts updated the xml files, update the case object
-            case.read_xml()
-            # Note, doing buildlists will never result in the system thinking the build is complete
+        if not sharedlib_only:
+            if config.build_model_use_cmake:
+                logs.extend(
+                    _build_model_cmake(
+                        exeroot,
+                        complist,
+                        lid,
+                        buildlist,
+                        comp_interface,
+                        sharedpath,
+                        separate_builds,
+                        ninja,
+                        dry_run,
+                        case,
+                    )
+                )
+            else:
+                os.environ["INSTALL_SHAREDPATH"] = os.path.join(
+                    exeroot, sharedpath
+                )  # for MPAS makefile generators
+                logs.extend(
+                    _build_model(
+                        build_threaded,
+                        exeroot,
+                        incroot,
+                        complist,
+                        lid,
+                        caseroot,
+                        cimeroot,
+                        compiler,
+                        buildlist,
+                        comp_interface,
+                    )
+                )
+
+            if not buildlist:
+                # in case component build scripts updated the xml files, update the case object
+                case.read_xml()
+                # Note, doing buildlists will never result in the system thinking the build is complete
 
     post_build(
         case,
