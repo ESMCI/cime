@@ -371,20 +371,19 @@ foreach $f (sort keys %file_modules) {
         $f =~ /(.+)\./;
 	$file = $1;
     }
-    $target = $obj_dir."$file.o";
-    print "$target : $f @{$file_modules{$f}} @{$file_includes{$f}} $additional_file \n";
+    my $target = $obj_dir."$file.o";
+    print join(" ", grep { defined } ("$target :", $f, @{$file_modules{$f}}, @{$file_includes{$f}}, $additional_file))."\n";
 }
 
 print "# The following section relates each module to the corresponding file.\n";
 $target = mangle_modfile("%");
-print "$target : \n";
+print "$target :\n";
 print "\t\@\:\n";
 
 foreach $mod (sort keys %modules_used) {
     my $mod_fname = $obj_dir.mangle_modfile($mod);
     my $obj_fname = $obj_dir.$module_files{$mod}.".o";
     print "$mod_fname : $obj_fname\n";
-
 }
 
 #--------------------------------------------------------------------------------------
