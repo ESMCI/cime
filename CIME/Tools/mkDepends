@@ -476,16 +476,18 @@ sub find_file {
 
 sub rm_duplicates {
 
-# Return a list with duplicates removed.
+# Return a list with duplicates removed, preserving the original order.
 
-    my ($in) = @_;       # input arrary reference
-    my @out = ();
-    my $i;
-    my %h = ();
-    foreach $i (@$in) {
-	$h{$i} = '';
+    my ($in) = @_;
+    my @out  = ();
+    my %seen = ();
+
+    for my $item (@$in) {
+        unless ($seen{$item}++) {
+            push @out, $item;
+        }
     }
-    @out = keys %h;
+
     return \@out;
 }
 
