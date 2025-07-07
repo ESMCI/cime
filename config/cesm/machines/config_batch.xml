@@ -362,7 +362,7 @@
     </submit_args>
     <directives>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>
-      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=235MB</directive>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}:mem=235GB</directive>
     </directives>
     <queues>
       <queue walltimemax="12:00:00" nodemin="1" nodemax="2488" >main</queue>
