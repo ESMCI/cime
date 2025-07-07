@@ -8,11 +8,13 @@ import time
 import contextlib
 from collections.abc import Iterable
 from unittest import mock
+import xml.etree.ElementTree as ET
 
 from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
 from CIME.case import Case
+from CIME.XML.entry_id import EntryID
 
 MACRO_PRESERVE_ENV = [
     "ADDR2LINE",
@@ -52,14 +54,109 @@ MACRO_PRESERVE_ENV = [
     "STRIP",
 ]
 
+test_env_xml = """<?xml version="1.0"?>
+<file id="env_test.xml" version="2.0">
+    <header>These are the variables specific to a test case.</header>
+    <group id="test_group">
+        <entry id="test_entry" value="none">
+            <type>char</type>
+            <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,pbspro,lsf,slurm,cobalt,cobalt_theta,slurm_single_node,none</valid_values>
+            <desc>The batch system type to use for this machine.</desc>
+        </entry>
+    </group>
+</file>
+"""
 
-def mock_case(*pargs, **pkwargs):
+
+class TestEnv(EntryID):
+    def __init__(self):
+        super().__init__(read_only=False)
+
+        self.read_fd(io.StringIO(test_env_xml))
+
+    def new_group(self, name):
+        return self.make_child("group", attributes={"id": name})
+
+    def new_entry(
+        self,
+        name,
+        value=None,
+        subgroup=None,
+        etype="char",
+        valid_values=None,
+        desc=None,
+    ):
+        root_node = None
+
+        if subgroup is not None:
+            try:
+                root_node = self.get_child("group", {"id": subgroup})
+            except Exception:
+                root_node = self.new_group(subgroup)
+
+        if value is None:
+            value = "none"
+
+        entry = self.make_child(
+            "entry", attributes={"id": name, "value": value}, root=root_node
+        )
+
+        self.make_child("type", text=etype, root=entry)
+
+        return entry
+
+    def remove_entry(self, name=None, value=None, subgroup=None):
+        root = None
+        attributes = {}
+
+        if name is not None:
+            attributes["id"] = name
+
+        if value is not None:
+            attributes["value"] = value
+
+        if subgroup is not None:
+            root = self.get_optional_child("group", attributes={"id": subgroup})
+
+        for x in self.get_children("entry", attributes=attributes, root=root):
+            self.remove_child(x, root=root)
+
+    def remove_group(self, gid=None):
+        if gid is None:
+            attributes = {}
+        else:
+            attributes = {"id": gid}
+
+        for x in self.get_children("group", attributes=attributes):
+            self.remove_child(x)
+
+    def __str__(self):
+        return ET.tostring(self.root.xml_element, encoding="unicode", method="xml")
+
+
+def mock_case(*args, **kwargs):
     def outer(func):
+        # patch "read_xml" function since the source file usually doesn't exist
         @mock.patch("CIME.case.case.Case.read_xml")
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self, read_xml, *args, **kwargs):
             with tempfile.TemporaryDirectory() as tempdir:
-                with Case(f"{tempdir}/case", read_only=False) as case:
-                    func(self, *args, **kwargs, tempdir=tempdir, case=case)
+                caseroot = f"{tempdir}/case"
+                with Case(caseroot, read_only=False) as case:
+                    env = TestEnv()
+
+                    case._files = [env]
+
+                    case._env_entryid_files = [env]
+
+                    func(
+                        self,
+                        *args,
+                        **kwargs,
+                        case_read_xml=read_xml,
+                        test_env=env,
+                        caseroot=caseroot,
+                        case=case,
+                    )
 
         return wrapper
 
