@@ -89,48 +89,48 @@ class TestCase(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory()
 
     @mock_case()
-    def test_get_value_reference(self, _, tempdir, case):
-        env = mock.MagicMock()
+    def test_get_value_reference(self, case, caseroot, case_read_xml, test_env):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "$STOP_N", subgroup="test1", etype="integer")
 
-        # mock an env file with HIST_N=$STOP_N
-        env.get_value.return_value = "$STOP_N"
-        # set the case to have one env file
-        case._files = [env]
-
+        # request no resolve
         hist_n = case.get_value("HIST_N", resolved=False)
 
-        assert hist_n == "$STOP_N", hist_n
+        assert hist_n == "$STOP_N"
 
-        env.get_type_info.return_value = None
-        env.get_resolved_value.return_value = "5"
-
-        # test that get_resolved_value cannot resolve the reference
+        # referenced variable exists nowhere
         with self.assertRaisesRegex(
-            utils.CIMEError, "Could not resolve variable HIST_N"
+            utils.CIMEError, "ERROR: Could not resolve variable HIST_N"
         ):
             case.get_value("HIST_N")
 
-        # test that get_resolved_value can resolve the reference
-        with mock.patch.object(
-            case, "get_resolved_value", wraps=case.get_resolved_value
-        ) as grv:
-            grv.return_value = "5"
+        # referenced variable exists in different subgroup
+        test_env.new_group("test2")
+        test_env.new_entry("STOP_N", "5", subgroup="test2", etype="integer")
 
-            hist_n = case.get_value("HIST_N")
+        hist_n = case.get_value("HIST_N")
 
-        assert hist_n == "5", hist_n
+        assert hist_n == 5, hist_n
 
-        # test that get_resolved_value can resolve the reference and convert to type
-        env.get_type_info.return_value = "real"
+        test_env.remove_group("test2")
 
-        with mock.patch.object(
-            case, "get_resolved_value", wraps=case.get_resolved_value
-        ) as grv:
-            grv.return_value = "5"
+        # referenced variable exists in same subgroup
+        test_env.new_entry("STOP_N", "5", subgroup="test1", etype="integer")
 
-            hist_n = case.get_value("HIST_N")
+        hist_n = case.get_value("HIST_N")
 
-        assert hist_n == 5 and isinstance(hist_n, float), hist_n
+        assert hist_n == 5, hist_n
+
+        test_env.remove_entry(name="STOP_N", subgroup="test1")
+
+        # referenced variable exists in same subgroup with different type
+        # will convert real to integer, since HIST_N is of integer type
+        test_env.new_entry("STOP_N", "5", subgroup="test1", etype="real")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+        assert isinstance(hist_n, int)
 
     @mock_case
     def test_get_value(self, _, tempdir, case):
