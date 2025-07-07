@@ -132,21 +132,16 @@ class TestCase(unittest.TestCase):
         assert hist_n == 5, hist_n
         assert isinstance(hist_n, int)
 
-    @mock_case
-    def test_get_value(self, _, tempdir, case):
-        env = mock.MagicMock()
-
-        # mock an env file with HIST_N=2
-        env.get_value.return_value = 2
-        # set the case to have one env file
-        case._files = [env]
+    @mock_case()
+    def test_get_value(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "2", etype="integer")
 
         hist_n = case.get_value("HIST_N")
 
         assert hist_n == 2, hist_n
 
-    @mock_case
-    def test_get_value_no_files(self, _, tempdir, case):
+    @mock_case(empty_env=True)
+    def test_get_value_no_files(self, case, **kwargs):
         hist_n = case.get_value("HIST_N")
 
         assert hist_n == None, hist_n
