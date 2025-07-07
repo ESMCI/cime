@@ -134,7 +134,7 @@ class TestEnv(EntryID):
         return ET.tostring(self.root.xml_element, encoding="unicode", method="xml")
 
 
-def mock_case(*args, **kwargs):
+def mock_case(*args, empty_env=False, **kwargs):
     def outer(func):
         # patch "read_xml" function since the source file usually doesn't exist
         @mock.patch("CIME.case.case.Case.read_xml")
@@ -144,9 +144,10 @@ def mock_case(*args, **kwargs):
                 with Case(caseroot, read_only=False) as case:
                     env = TestEnv()
 
-                    case._files = [env]
+                    if not empty_env:
+                        case._files = [env]
 
-                    case._env_entryid_files = [env]
+                        case._env_entryid_files = [env]
 
                     func(
                         self,
