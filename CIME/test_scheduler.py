@@ -988,6 +988,11 @@ class TestScheduler(object):
                 case.set_value("GMAKE_J", self._proc_pool)
                 self._model_build_cost = self._proc_pool
 
+            # Izumi nag compiler needs DEBUG=TRUE
+            if compiler == "nag" and case.get_value("MACH") == "izumi":
+                debug_val = case.get_value("DEBUG")
+                expect(debug_val == True, "Izumi nag tests need DEBUG=TRUE, not {}".format(debug_val))
+
         return True, ""
 
     ###########################################################################
