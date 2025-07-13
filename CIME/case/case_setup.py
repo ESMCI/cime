@@ -424,7 +424,7 @@ def _case_setup_impl(
 
         # Record env information
         env_module = case.get_env("mach_specific")
-        if mach == "zeus" or "juno":
+        if mach in ("zeus", "juno", "cassandra"):
             overrides = env_module.get_overrides_nodes(case)
             logger.debug("Updating nodes {}".format(overrides))
         env_module.make_env_mach_specific_file("sh", case)
