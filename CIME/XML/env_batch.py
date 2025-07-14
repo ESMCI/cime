@@ -16,6 +16,7 @@ from CIME.utils import (
     get_logging_options,
     format_time,
     add_flag_to_cmd,
+    get_config_dir,
 )
 from collections import OrderedDict
 import stat, re, math
@@ -632,7 +633,7 @@ class EnvBatch(EnvBase):
                     check_paths = [case.get_value("BATCH_SPEC_FILE")]
 
                     user_config_path = os.path.join(
-                        pathlib.Path().home(), ".cime", "config_batch.xml"
+                        pathlib.Path().home(), get_config_dir(), "config_batch.xml"
                     )
 
                     if os.path.exists(user_config_path):

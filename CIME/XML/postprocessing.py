@@ -5,7 +5,7 @@ Interface to the config_postprocessing.xml file.  This class inherits from Entry
 from CIME.XML.standard_module_setup import *
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
-from CIME.utils import expect
+from CIME.utils import expect, get_config_dir
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +31,10 @@ class Postprocessing(EntryID):
 
         EntryID.__init__(self, infile, schema=schema)
 
-        # Append the contents of $HOME/.cime/config_postprocessing.xml if it exists
+        # Append the contents of $HOME/get_config_dir()/config_postprocessing.xml if it exists
         # This could cause problems if node matchs are repeated when only one is expected
         infile = os.path.join(
-            os.environ.get("HOME"), ".cime", "config_postprocessing.xml"
+            os.environ.get("HOME"), get_config_dir(), "config_postprocessing.xml"
         )
         if os.path.exists(infile):
             EntryID.read(self, infile)
