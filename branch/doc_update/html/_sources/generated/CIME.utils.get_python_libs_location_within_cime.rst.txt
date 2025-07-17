@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_python\_libs\_location\_within\_cime
-====================================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_python_libs_location_within_cime

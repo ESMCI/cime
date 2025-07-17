@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.gunzip\_existing\_file
-=================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: gunzip_existing_file

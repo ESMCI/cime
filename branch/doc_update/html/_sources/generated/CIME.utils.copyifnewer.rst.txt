@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.copyifnewer
-======================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: copyifnewer

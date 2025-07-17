@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.namelist.get\_fortran\_name\_only
-======================================
-
-.. currentmodule:: CIME.namelist
-
-.. autofunction:: get_fortran_name_only
