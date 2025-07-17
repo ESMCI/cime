@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.deprecate\_action
+============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: deprecate_action

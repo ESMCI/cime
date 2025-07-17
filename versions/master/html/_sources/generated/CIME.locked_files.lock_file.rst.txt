@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.locked\_files.lock\_file
+=============================
+
+.. currentmodule:: CIME.locked_files
+
+.. autofunction:: lock_file

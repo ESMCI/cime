@@ -7,10 +7,11 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CIME documentation &mdash; CIME master documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3d7e66fe" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -23,7 +24,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="What is CIME?" href="what_cime/index.html" /> 
+    <link rel="next" title="Case Control System (CCS)" href="ccs/index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,19 +46,17 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="what_cime/index.html">What is CIME?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users_guide/index.html">Using the Case Control System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="users_guide/index.html#configuring-the-case-control-system">Configuring the Case Control System</a></li>
-<li class="toctree-l1"><a class="reference internal" href="build_cpl/index.html">Building a Coupled Model with CIME</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc_tools/index.html">Miscellaneous Tools</a></li>
-</ul>
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="glossary/index.html">Glossary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tools_user/index.html">User Tools</a></li>
-<li class="toctree-l1"><a class="reference internal" href="xml_files/index.html">XML Files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CIME_api/modules.html">CIME</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Tools_api/modules.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ccs/index.html">Case Control System (CCS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
         </div>
@@ -87,155 +86,35 @@
   <section id="cime-documentation">
 <h1>CIME documentation<a class="headerlink" href="#cime-documentation" title="Link to this heading"></a></h1>
 <p>The Common Infrastructure for Modeling the Earth (CIME - pronounced
-“SEAM”) provides a Case Control System for configuring, compiling and executing
-Earth system models, data and stub model components, a driver and associated tools
-and libraries.</p>
-<section id="table-of-contents">
-<h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="what_cime/index.html">What is CIME?</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="what_cime/index.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="what_cime/index.html#development">Development</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="users_guide/index.html">Using the Case Control System</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/introduction-and-overview.html">1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/create-a-case.html">2. Creating a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/setting-up-a-case.html">3. Setting up a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/building-a-case.html">4. Building a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/running-a-case.html">5. Running a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/cloning-a-case.html">6. Cloning a Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/cime-change-namelist.html">7. Customizing your input variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/cime-config.html">8. CIME user config directory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/cime-customize.html">9. CIME config and hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/testing.html">10. Testing Cases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/troubleshooting.html">11. Troubleshooting</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="users_guide/index.html#configuring-the-case-control-system">Configuring the Case Control System</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/cime-internals.html">1. Main Configuration File</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/components.html">2. Components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/compsets.html">3. Component sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/grids.html">4. Model grids</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/machine.html">5. Defining the machine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/pes-threads.html">6. Controlling processors and threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/porting-cime.html">7. Porting and validating CIME on a new platform</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/unit_testing.html">8. Fortran Unit Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/multi-instance.html">9. Multi-instance component functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/workflows.html">10. Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/cime-dir.html">11. Directory content</a></li>
-<li class="toctree-l2"><a class="reference internal" href="users_guide/index.html#indices-and-tables">Indices and tables</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="build_cpl/index.html">Building a Coupled Model with CIME</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="build_cpl/introduction.html">1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build_cpl/adding-components.html">2. Adding components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="build_cpl/index.html#indices-and-tables">Indices and tables</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="misc_tools/index.html">Miscellaneous Tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="misc_tools/ect.html">1. CESM-ECT (CESM Ensemble Consistency Test):</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc_tools/load-balancing-tool.html">2. CIME Load Balancing Tool</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc_tools/index.html#indices-and-tables">Indices and tables</a></li>
-</ul>
-</li>
-</ul>
-</div>
+“SEAM”) provides two core features; a Case Control System (CCS) for configuring, compiling and executing
+Earth System Models, and a framework for system testing an Earth System Model.</p>
+<section id="case-control-system-ccs">
+<h2>Case Control System (CCS)<a class="headerlink" href="#case-control-system-ccs" title="Link to this heading"></a></h2>
+<p>There are three components that make the Case Control System.</p>
+<ol class="arabic simple">
+<li><p>XML files that describe the models, model configuration (components, grids, input-data, etc) and machines.</p></li>
+<li><p>Python module that provides tools for users to create cases, configure their model, build and submit jobs.</p></li>
+<li><p>Addition stand-alone tools useful for Earth System Modeling.</p></li>
+</ol>
+<section id="model-configuration">
+<h3>Model configuration<a class="headerlink" href="#model-configuration" title="Link to this heading"></a></h3>
+<p>Every model that uses CIME will need to provide it’s own configuration.</p>
+<p>To add or update a model, review the <a class="reference internal" href="ccs/model-configuration/index.html#model-config"><span class="std std-ref">model configuration</span></a> documentation.</p>
 </section>
-<section id="appendices">
-<h2>Appendices<a class="headerlink" href="#appendices" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="glossary/index.html">Glossary</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="glossary/index.html#general">General</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glossary/index.html#coupling">Coupling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glossary/index.html#files-and-directories">Files and Directories</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glossary/index.html#development">Development</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glossary/index.html#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="glossary/index.html#miscellaneous">Miscellaneous</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Tools_user/index.html">User Tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/advanced-py-prof.html">advanced-py-prof</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/archive_metadata.html">archive_metadata</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/bld_diff.html">bld_diff</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/bless_test_results.html">bless_test_results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.build.html">case.build</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.cmpgen_namelists.html">case.cmpgen_namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.qstatus.html">case.qstatus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.setup.html">case.setup</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case.submit.html">case.submit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/case_diff.html">case_diff</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_case.html">check_case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_input_data.html">check_input_data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/check_lockedfiles.html">check_lockedfiles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/cime_bisect.html">cime_bisect</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/code_checker.html">code_checker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/compare_namelists.html">compare_namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/compare_test_results.html">compare_test_results</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_baseline.html">component_compare_baseline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_copy.html">component_compare_copy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_compare_test.html">component_compare_test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/component_generate_baseline.html">component_generate_baseline</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/concat_daily_hist.csh.html">concat_daily_hist.csh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/create_clone.html">create_clone</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/create_newcase.html">create_newcase</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/create_test.html">create_test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/cs.status.html">cs.status</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/e3sm_check_env.html">e3sm_check_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/generate_cylc_workflow.py.html">generate_cylc_workflow.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/getTiming.html">getTiming</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/get_case_env.html">get_case_env</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/get_standard_makefile_args.html">get_standard_makefile_args</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/jenkins_generic_job.html">jenkins_generic_job</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/list_e3sm_tests.html">list_e3sm_tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/mkDepends.html">mkDepends</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/mkSrcfiles.html">mkSrcfiles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/mvsource.html">mvsource</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/normalize_cases.html">normalize_cases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/pelayout.html">pelayout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/preview_namelists.html">preview_namelists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/preview_run.html">preview_run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/query_config.html">query_config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/query_testlists.html">query_testlists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/save_provenance.html">save_provenance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/simple-py-prof.html">simple-py-prof</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/simple_compare.html">simple_compare</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/testreporter.py.html">testreporter.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/wait_for_tests.html">wait_for_tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmlchange.html">xmlchange</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmlquery.html">xmlquery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Tools_user/xmltestentry.html">xmltestentry</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="xml_files/index.html">XML Files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="xml_files/e3sm.html">E3SM Coupled Model XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="xml_files/cesm.html">CESM Coupled Model XML Files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="xml_files/common.html">Common XML Files</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="CIME_api/modules.html">CIME</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="CIME_api/CIME.html">CIME package</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="Tools_api/modules.html">Tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Tools_api/Tools.html">Tools package</a></li>
-</ul>
-</li>
-</ul>
-</div>
 </section>
-<section id="python-module-indices-and-search">
-<h2>Python Module Indices and Search<a class="headerlink" href="#python-module-indices-and-search" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
-<p>CIME is developed by the
-<a class="reference external" href="https://climatemodeling.science.energy.gov/projects/energy-exascale-earth-system-model">E3SM</a> and
-<a class="reference external" href="http://www.cesm.ucar.edu/">CESM</a> projects.</p>
+<section id="system-testing">
+<h2>System Testing<a class="headerlink" href="#system-testing" title="Link to this heading"></a></h2>
+<p>CIME provides tooling to run system testing on an Earth System Model. Each test type is defined to exercise a specific behavior
+of the model. The tooling provides the ability to create and compare baselines as well as reporting the results of testing.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CIME does <strong>not</strong> contain the source code for any Earth System Model drivers or components. It is typically included alongside the source code of a host model. However, CIME does include pointers to external repositories that contain drivers, data models and other test components. These external components can be easily assembled to facilitate end-to-end system tests of the CIME infrastructure, which are defined in the CIME repository.</p>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<p>CIME is developed by the <a class="reference external" href="https://eesm.science.energy.gov/projects/energy-exascale-earth-system-model-e3sm">E3SM</a> and <a class="reference external" href="https://www.cesm.ucar.edu/">CESM</a> projects.</p>
 </section>
 </section>
 
@@ -243,13 +122,13 @@ and libraries.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="what_cime/index.html" class="btn btn-neutral float-right" title="What is CIME?" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ccs/index.html" class="btn btn-neutral float-right" title="Case Control System (CCS)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.</p>
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
