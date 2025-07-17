@@ -12,18 +12,18 @@ def create_cs_status(test_root, test_id, extra_args="", filename=None):
     """Create a test suite-specific cs.status file from the template
 
     Arguments:
-    test_root (string): path to test root; the file will be put here. If
-        this directory doesn't exist, it is created.
-    test_id (string): test id for this test suite. This can contain
-        shell wildcards if you want this one cs.status file to work
-        across multiple test suites. However, be careful not to make
-        this too general: for example, ending this with '*' will pick up
-        the *.ref1 directories for ERI and other tests, which is NOT
-        what you want.
-    extra_args (string): extra arguments to the cs.status command
-        (If there are multiple arguments, these should be in a space-delimited string.)
-    filename (string): name of the generated cs.status file. If not
-        given, this will be built from the test_id.
+        test_root (string): path to test root; the file will be put here. If
+            this directory doesn't exist, it is created.
+        test_id (string): test id for this test suite. This can contain
+            shell wildcards if you want this one cs.status file to work
+            across multiple test suites. However, be careful not to make
+            this too general: for example, ending this with '*' will pick up
+            the *.ref1 directories for ERI and other tests, which is NOT
+            what you want.
+        extra_args (string): extra arguments to the cs.status command
+            (If there are multiple arguments, these should be in a space-delimited string.)
+        filename (string): name of the generated cs.status file. If not
+            given, this will be built from the test_id.
     """
     cime_root = CIME.utils.get_cime_root()
     tools_path = os.path.join(cime_root, "CIME", "Tools")

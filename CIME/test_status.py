@@ -7,6 +7,8 @@ TestStatus objects are only modifiable via the set_status method and this
 is only allowed if the object is being accessed within the context of a
 context manager. Example:
 
+.. code-block:: python
+
     with TestStatus(test_dir=caseroot) as ts:
         ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
@@ -16,11 +18,12 @@ required (core phases).
 
 Additional important design decisions:
 1) In order to ensure that incomplete tests are always left in a PEND
-   state, updating a core phase to a PASS state will automatically set the next
-   core state to PEND.
+state, updating a core phase to a PASS state will automatically set the next
+core state to PEND.
 2) If the user repeats a core state, that invalidates all subsequent state. For
-   example, if a user rebuilds their case, then any of the post-run states like the
-   RUN state are no longer valid.
+example, if a user rebuilds their case, then any of the post-run states like the
+RUN state are no longer valid.
+
 """
 
 from CIME.XML.standard_module_setup import *
@@ -289,9 +292,9 @@ class TestStatus(object):
         Args:
             prefix: string printed at the start of each line
             skip_passes: if True, do not output lines that have a PASS status
-            skip_phase_list: list of phases (from the phases given by
-                ALL_PHASES) for which we skip output
+            skip_phase_list: list of phases (from the phases given by ALL_PHASES) for which we skip output
             xfails: object of type ExpectedFails, giving expected failures for this test
+
         """
         if skip_phase_list is None:
             skip_phase_list = []

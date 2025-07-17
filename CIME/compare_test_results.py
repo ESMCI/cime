@@ -8,18 +8,15 @@ from CIME.test_utils import get_test_status_files
 
 import os, logging
 
-###############################################################################
+
 def append_status_cprnc_log(msg, logfile_name, test_dir):
-    ###############################################################################
     try:
         append_status(msg, logfile_name, caseroot=test_dir)
     except IOError:
         pass
 
 
-###############################################################################
 def compare_namelists(case, baseline_name, baseline_root, logfile_name):
-    ###############################################################################
     log_lvl = logging.getLogger().getEffectiveLevel()
     logging.disable(logging.CRITICAL)
     success = case.case_cmpgen_namelists(
@@ -32,9 +29,7 @@ def compare_namelists(case, baseline_name, baseline_root, logfile_name):
     return success
 
 
-###############################################################################
 def compare_history(case, baseline_name, baseline_root, log_id):
-    ###############################################################################
     real_user = case.get_value("REALUSER")
     with EnvironmentContext(USER=real_user):
         baseline_full_dir = os.path.join(
@@ -54,7 +49,6 @@ def compare_history(case, baseline_name, baseline_root, log_id):
         return result, comments
 
 
-###############################################################################
 def compare_test_results(
     baseline_name,
     baseline_root,
@@ -65,9 +59,7 @@ def compare_test_results(
     namelists_only=False,
     hist_only=False,
 ):
-    ###############################################################################
-    """
-    Compares with baselines for all matching tests
+    """Compares with baselines for all matching tests
 
     Outputs results for each test to stdout (one line per test); possible status
     codes are: PASS, FAIL, SKIP. (A SKIP denotes a test that did not make it to
@@ -75,8 +67,8 @@ def compare_test_results(
     baseline comparisons in this case.)
 
     In addition, creates files named compare.log.BASELINE_NAME.TIMESTAMP in each
-    test directory, which contain more detailed output. Also creates
-    *.cprnc.out.BASELINE_NAME.TIMESTAMP files in each run directory.
+    test directory, which contain more detailed output. Also creates "*.cprnc.out.BASELINE_NAME.TIMESTAMP
+    files in each run directory.
 
     Returns True if all tests generated either PASS or SKIP results, False if
     there was at least one FAIL result.
