@@ -82,9 +82,10 @@ class TestEnv(EntryID):
         name,
         value=None,
         subgroup=None,
-        etype="char",
+        etype="integer",
         valid_values=None,
         desc=None,
+        default_value=None,
     ):
         root_node = None
 
@@ -102,6 +103,18 @@ class TestEnv(EntryID):
         )
 
         self.make_child("type", text=etype, root=entry)
+
+        if valid_values:
+            if isinstance(valid_values, (list, tuple)):
+                valid_values = ",".join(valid_values)
+
+            self.make_child("valid_values", text=",".join(valid_values), root=entry)
+
+        if desc:
+            self.make_child("desc", text=desc, root=entry)
+
+        if default_value:
+            self.make_child("default_value", text=default_value, root=entry)
 
         return entry
 
@@ -134,7 +147,10 @@ class TestEnv(EntryID):
         return ET.tostring(self.root.xml_element, encoding="unicode", method="xml")
 
 
-def mock_case(*args, empty_env=False, **kwargs):
+def mock_case(*args, empty_env=False, filename=None, **kwargs):
+    if filename is None:
+        filename = "env_test.xml"
+
     def outer(func):
         # patch "read_xml" function since the source file usually doesn't exist
         @mock.patch("CIME.case.case.Case.read_xml")
@@ -143,6 +159,7 @@ def mock_case(*args, empty_env=False, **kwargs):
                 caseroot = f"{tempdir}/case"
                 with Case(caseroot, read_only=False) as case:
                     env = TestEnv()
+                    env.filename = f"{os.getcwd()}/{filename}"
 
                     if not empty_env:
                         case._files = [env]

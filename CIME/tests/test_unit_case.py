@@ -89,9 +89,95 @@ class TestCase(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory()
 
     @mock_case()
-    def test_get_value_reference(self, case, caseroot, case_read_xml, test_env):
+    def test_set_value_namespaced_reference(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "2")
+
+        case.set_value("HIST_N", "$STOP_N")
+
+        assert case.get_value("HIST_N", resolved=False) == "$STOP_N"
+
+        case.set_value("HIST_N", "$test1::STOP_N")
+
+        assert case.get_value("HIST_N", resolved=False) == "$test1::STOP_N"
+
+        with self.assertRaisesRegex(
+            utils.CIMEError,
+            r"ERROR: Value '\$test1::test2::STOP_N' is not valid, a namespaced reference must be in the form \$SUBGROUP::VARIABLE",
+        ):
+            case.set_value("HIST_N", "$test1::test2::STOP_N")
+
+    @mock_case()
+    def test_set_value(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "2")
+
+        case.set_value("HIST_N", "5")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+    @mock_case()
+    def test_get_values_namespaced_reference(self, case, test_env, **kwargs):
         test_env.new_group("test1")
-        test_env.new_entry("HIST_N", "$STOP_N", subgroup="test1", etype="integer")
+        test_env.new_entry("HIST_N", "2, $test2::STOP_N", subgroup="test1")
+
+        test_env.new_group("test2")
+        test_env.new_entry("STOP_N", "4", subgroup="test2")
+
+        outputs = case.get_values("HIST_N")
+
+        assert outputs == [2, 4]
+
+    @mock_case()
+    def test_get_values_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "2, $STOP_N", subgroup="test1")
+
+        test_env.new_entry("STOP_N", "4", subgroup="test1")
+
+        outputs = case.get_values("HIST_N")
+
+        assert outputs == [2, 4]
+
+    @mock_case()
+    def test_get_values(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "2, 4, 6, 8", subgroup="test1")
+
+        outputs = case.get_values("HIST_N")
+
+        assert outputs == [2, 4, 6, 8]
+
+    @mock_case()
+    def test_get_value_namespaced_reference_invalid(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "$test1::test2::STOP_N")
+
+        with self.assertRaisesRegex(
+            utils.CIMEError,
+            r"Variable 'HIST_N' with '\$test1::test2::STOP_N' from '.*' is not valid, the format must be \$VAR or \$SUBGROUP::VAR",
+        ):
+            case.get_value("HIST_N")
+
+    @mock_case()
+    def test_get_value_namespaced_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "$test3::STOP_N", subgroup="test1")
+        test_env.new_entry("STOP_N", "2", subgroup="test1")
+
+        test_env.new_group("test2")
+        test_env.new_entry("STOP_N", "-2", subgroup="test2")
+
+        test_env.new_group("test3")
+        test_env.new_entry("STOP_N", "5", subgroup="test3")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+    @mock_case()
+    def test_get_value_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "$STOP_N", subgroup="test1")
 
         # request no resolve
         hist_n = case.get_value("HIST_N", resolved=False)
@@ -106,7 +192,7 @@ class TestCase(unittest.TestCase):
 
         # referenced variable exists in different subgroup
         test_env.new_group("test2")
-        test_env.new_entry("STOP_N", "5", subgroup="test2", etype="integer")
+        test_env.new_entry("STOP_N", "5", subgroup="test2")
 
         hist_n = case.get_value("HIST_N")
 
@@ -115,7 +201,7 @@ class TestCase(unittest.TestCase):
         test_env.remove_group("test2")
 
         # referenced variable exists in same subgroup
-        test_env.new_entry("STOP_N", "5", subgroup="test1", etype="integer")
+        test_env.new_entry("STOP_N", "5", subgroup="test1")
 
         hist_n = case.get_value("HIST_N")
 
@@ -134,7 +220,7 @@ class TestCase(unittest.TestCase):
 
     @mock_case()
     def test_get_value(self, case, test_env, **kwargs):
-        test_env.new_entry("HIST_N", "2", etype="integer")
+        test_env.new_entry("HIST_N", "2")
 
         hist_n = case.get_value("HIST_N")
 
