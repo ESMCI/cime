@@ -998,25 +998,6 @@ class TestScheduler(object):
             test, "./case.setup", SETUP_PHASE, from_dir=test_dir
         )
 
-        # It's OK for this command to fail with baseline diffs but not catastrophically
-        if rv[0]:
-            env = os.environ.copy()
-            env["PYTHONPATH"] = f"{get_cime_root()}:{get_tools_path()}"
-            cmdstat, output, _ = run_cmd(
-                "./case.cmpgen_namelists",
-                combine_output=True,
-                from_dir=test_dir,
-                env=env,
-            )
-            try:
-                expect(
-                    cmdstat in [0, TESTS_FAILED_ERR_CODE],
-                    "Fatal error in case.cmpgen_namelists: {}".format(output),
-                )
-            except Exception:
-                self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
-                raise
-
         if self._single_exe:
             with Case(self._get_test_dir(test), read_only=False) as case:
                 tests = Tests()
@@ -1046,12 +1027,32 @@ class TestScheduler(object):
                 )
 
         test_dir = self._get_test_dir(test)
-        return self._shell_cmd_for_phase(
+        result = self._shell_cmd_for_phase(
             test,
             "./case.build --sharedlib-only",
             SHAREDLIB_BUILD_PHASE,
             from_dir=test_dir,
         )
+
+        # It's OK for this command to fail with baseline diffs but not catastrophically
+        env = os.environ.copy()
+        env["PYTHONPATH"] = f"{get_cime_root()}:{get_tools_path()}"
+        cmdstat, output, _ = run_cmd(
+            "./case.cmpgen_namelists",
+            combine_output=True,
+            from_dir=test_dir,
+            env=env,
+        )
+        try:
+            expect(
+                cmdstat in [0, TESTS_FAILED_ERR_CODE],
+                "Fatal error in case.cmpgen_namelists: {}".format(output),
+            )
+        except Exception:
+            self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+            raise
+
+        return result
 
     ###########################################################################
     def _get_build_group(self, test):
