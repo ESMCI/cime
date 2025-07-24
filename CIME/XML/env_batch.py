@@ -214,6 +214,7 @@ class EnvBatch(EnvBase):
             tasks_per_node,
             thread_count,
             ngpus_per_node,
+            mem_per_task,
         ) = self._env_workflow.get_job_specs(case, job)
 
         overrides = {}
@@ -237,7 +238,8 @@ class EnvBatch(EnvBase):
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
-        mem_per_task = case.get_value("MEM_PER_TASK")
+        if not mem_per_task:
+            mem_per_task = case.get_value("MEM_PER_TASK")
         max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
         expect(
             max_tasks_per_node > 0,
@@ -325,7 +327,6 @@ class EnvBatch(EnvBase):
         for job, jsect in batch_jobs:
             if job not in known_jobs:
                 continue
-
             walltime = (
                 case.get_value("USER_REQUESTED_WALLTIME", subgroup=job)
                 if case.get_value("USER_REQUESTED_WALLTIME", subgroup=job)
