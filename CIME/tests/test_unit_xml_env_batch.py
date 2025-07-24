@@ -267,8 +267,9 @@ class FakeCaseWWorkflow(FakeCase):
         self, item, attribute=None, subgroup="PRIMARY", resolved=True
     ):
         print(item)
-        expect(isinstance(item, str), "item must be a string")
-        expect(("$" not in item), "$ not allowed in item for this fake")
+        expect(not item or isinstance(item, str), "item, if defined, must be a string")
+        if item:
+            expect(("$" not in item), "$ not allowed in item for this fake")
         return item
 
     def get_mpirun_cmd(self, job, overrides):
