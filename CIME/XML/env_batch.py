@@ -347,9 +347,6 @@ class EnvBatch(EnvBase):
                     job, walltime, force_queue, walltime_format
                 )
             )
-            task_count = (
-                jsect["task_count"] if "task_count" in jsect else case.total_tasks
-            )
 
             if "walltime" in jsect and walltime is None:
                 walltime = jsect["walltime"]
@@ -360,13 +357,15 @@ class EnvBatch(EnvBase):
 
             if "task_count" in jsect:
                 # job is using custom task_count, need to compute a node_count based on this
-                val = jsect["task_count"]
-                if "$" in val:
-                    val = case.get_resolved_value(jsect["task_count"])
+                task_count = jsect["task_count"]
+                if "$" in task_count:
+                    task_count = case.get_resolved_value(jsect["task_count"])
+                task_count = int(task_count)
                 node_count = int(
-                    math.ceil(float(val) / float(case.tasks_per_node))
+                    math.ceil(float(task_count) / float(case.tasks_per_node))
                 )
             else:
+                task_count = case.total_tasks
                 node_count = case.num_nodes
 
             queue = self.select_best_queue(
