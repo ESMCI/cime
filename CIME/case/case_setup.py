@@ -254,7 +254,7 @@ def _case_setup_impl(
 
     # Remove batch scripts
     if reset or clean:
-        # clean setup-generated files
+        # clean setup and build generated files
         batch_script = get_batch_script_for_job(case.get_primary_job())
         files_to_clean = [
             batch_script,
