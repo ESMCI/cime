@@ -197,6 +197,9 @@ XML_WORKFLOW = b"""<?xml version="1.0"?>
     <entry id="tasks_per_node" value="1">
       <type>char</type>
     </entry>
+    <entry id="mem_per_task" value="10">
+      <type>char</type>
+    </entry>
  </group>
 </file>"""
 
