@@ -121,6 +121,16 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
+        sc_file = os.path.join(caseroot,"shell_commands")
+        if os.path.isfile(sc_file):
+            with open(sc_file, 'r') as fp:
+                for line in fp:
+                    match = re.search(r'REST_N\s*=\s*(\d+)', line)
+                    if match:
+                        self._rest_n = int(match.group(1))
+                        
+            
+        
         # Does the model support this variable?
         self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
 
@@ -193,12 +203,16 @@ class SystemTestsCommon(object):
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
         stop_n = int(stop_n * factor // coupling_secs)
-        if self._case.get_value("TESTCASE") == "IRT":
-            rest_n = math.ceil((stop_n // 3) * coupling_secs / factor)
+        if self._rest_n:
+            rest_n = self._rest_n
         else:
-            rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
+            if self._case.get_value("TESTCASE") == "IRT":
+                rest_n = math.ceil((stop_n // 3) * coupling_secs / factor)
+            else:
+                rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
         expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
         expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+
         cal = self._case.get_value("CALENDAR")
         if not starttime:
             starttime = self._case.get_value("START_TOD")
