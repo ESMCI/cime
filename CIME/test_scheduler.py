@@ -167,6 +167,20 @@ def _order_tests_by_runtime(tests, baseline_root):
 
 
 ###############################################################################
+def _run_cmpgen_namelists(test_dir):
+    ###############################################################################
+    env = os.environ.copy()
+    env["PYTHONPATH"] = f"{get_cime_root()}:{get_tools_path()}"
+    cmdstat, output, _ = run_cmd(
+        "./case.cmpgen_namelists",
+        combine_output=True,
+        from_dir=test_dir,
+        env=env,
+    )
+    return cmdstat, output
+
+
+###############################################################################
 class TestScheduler(object):
     ###############################################################################
 
@@ -998,6 +1012,12 @@ class TestScheduler(object):
             test, "./case.setup", SETUP_PHASE, from_dir=test_dir
         )
 
+        # cmpgen_namelists is called again with checks later in _setup_phase(). This call is
+        # necessary for the correct behavior of --skip-tests-with-existing-baselines, and we don't
+        # need to check it for errors.
+        if rv[0]:
+            _run_cmpgen_namelists(test_dir)
+
         if self._single_exe:
             with Case(self._get_test_dir(test), read_only=False) as case:
                 tests = Tests()
@@ -1037,12 +1057,7 @@ class TestScheduler(object):
         # It's OK for this command to fail with baseline diffs but not catastrophically
         env = os.environ.copy()
         env["PYTHONPATH"] = f"{get_cime_root()}:{get_tools_path()}"
-        cmdstat, output, _ = run_cmd(
-            "./case.cmpgen_namelists",
-            combine_output=True,
-            from_dir=test_dir,
-            env=env,
-        )
+        cmdstat, output = _run_cmpgen_namelists(test_dir)
         try:
             expect(
                 cmdstat in [0, TESTS_FAILED_ERR_CODE],
