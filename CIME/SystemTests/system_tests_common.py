@@ -121,16 +121,14 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
-        sc_file = os.path.join(caseroot,"shell_commands")
+        sc_file = os.path.join(caseroot, "shell_commands")
         if os.path.isfile(sc_file):
-            with open(sc_file, 'r') as fp:
+            with open(sc_file, "r") as fp:
                 for line in fp:
-                    match = re.search(r'REST_N\s*=\s*(\d+)', line)
+                    match = re.search(r"REST_N\s*=\s*(\d+)", line)
                     if match:
                         self._rest_n = int(match.group(1))
-                        
-            
-        
+
         # Does the model support this variable?
         self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
 
