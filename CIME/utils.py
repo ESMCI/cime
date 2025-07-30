@@ -2319,6 +2319,7 @@ def ls_sorted_by_mtime(path):
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
     return list(sorted(os.listdir(path), key=mtime))
 
+
 def ls_sorted_by_fname(path):
     """return list of path sorted by name oldest first"""
     return list(sorted(os.listdir(path)))
