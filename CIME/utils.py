@@ -2320,6 +2320,11 @@ def ls_sorted_by_mtime(path):
     return list(sorted(os.listdir(path), key=mtime))
 
 
+def ls_sorted_by_fname(path):
+    """return list of path sorted by name oldest first"""
+    return list(sorted(os.listdir(path)))
+
+
 def get_lids(case):
     model = case.get_value("MODEL")
     rundir = case.get_value("RUNDIR")
