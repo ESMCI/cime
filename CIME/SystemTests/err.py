@@ -6,7 +6,7 @@ ERR tests short term archiving and restart capabilities
 import glob, os
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.restart_tests import RestartTest
-from CIME.utils import safe_copy, ls_sorted_by_fpath
+from CIME.utils import safe_copy, ls_sorted_by_fname
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class ERR(RestartTest):
     def _case_two_custom_prerun_action(self):
         dout_s_root = self._case1.get_value("DOUT_S_ROOT")
         rest_root = os.path.abspath(os.path.join(dout_s_root, "rest"))
-        restart_list = ls_sorted_by_fpath(rest_root)
+        restart_list = ls_sorted_by_fname(rest_root)
         rest_cnt = len(restart_list)
         expect(rest_cnt >= 1, "No restart files found in {}".format(rest_root))
         rest_dir = restart_list[max(1, rest_cnt // 2)]
