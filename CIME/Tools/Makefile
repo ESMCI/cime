@@ -565,11 +565,11 @@ ifdef MPAS_LIBDIR
 .PHONY: libmpas
 # The CASEROOT, COMPILER and MACH are added so that the Depends file could be visible to
 # the MPAS dycore.
-# The GPUFLAGS is added so that the GPU flags defined in ccs_config_cesm could also be
+# The OPENACC_GPU_FLAGS is added so that the GPU flags defined in ccs_config_cesm could also be
 # used to build the MPAS dycore if needed.
 libmpas: cam_abortutils.o physconst.o
 	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" \
-	FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
+	FFLAGS='$(FREEFLAGS) $(FFLAGS)' OPENACC_GPU_FLAGS='$(OPENACC_GPU_FLAGS)' \
 	CASEROOT='$(CASEROOT)' COMPILER='$(COMPILER)' MACH='$(MACH)' \
 	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
 
