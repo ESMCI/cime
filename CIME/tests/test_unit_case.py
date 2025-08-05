@@ -116,6 +116,12 @@ class TestCase(unittest.TestCase):
 
         assert hist_n == 5, hist_n
 
+        case.set_value("HIST_N", 10)
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 10, hist_n
+
     @mock_case()
     def test_get_values_namespaced_reference(self, case, test_env, **kwargs):
         test_env.new_group("test1")
