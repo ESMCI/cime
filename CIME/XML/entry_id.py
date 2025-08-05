@@ -313,7 +313,7 @@ class EntryID(GenericXML):
         )
         node = self.get_optional_child("entry", {"id": vid}, root=root)
         if node is not None:
-            val = self._set_value(node, value, vid, subgroup, ignore_type)
+            val = self._set_value(node, value, vid, None, ignore_type)
         return val
 
     def get_values(self, vid, attribute=None, resolved=True, subgroup=None):
