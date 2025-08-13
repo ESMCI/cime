@@ -39,6 +39,7 @@ class ERR(RestartTest):
         rest_root = os.path.abspath(os.path.join(dout_s_root, "rest"))
         restart_list = ls_sorted_by_fname(rest_root)
         rest_cnt = len(restart_list)
+        expect(rest_cnt >= 1, "No restart files found in {}".format(rest_root))
         rest_dir = restart_list[max(0, rest_cnt // 2)]
         self._case.restore_from_archive(rest_dir=os.path.join(rest_root, rest_dir))
         logger.info("Setting restart to {}".format(rest_dir))
