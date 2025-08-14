@@ -238,7 +238,7 @@ class EnvBatch(EnvBase):
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
-        if not mem_per_task:
+        if mem_per_task is None:
             mem_per_task = case.get_value("MEM_PER_TASK")
         max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
         expect(
@@ -327,6 +327,7 @@ class EnvBatch(EnvBase):
         for job, jsect in batch_jobs:
             if job not in known_jobs:
                 continue
+
             walltime = (
                 case.get_value("USER_REQUESTED_WALLTIME", subgroup=job)
                 if case.get_value("USER_REQUESTED_WALLTIME", subgroup=job)
