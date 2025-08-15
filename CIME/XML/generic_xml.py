@@ -116,8 +116,6 @@ class GenericXML(object):
                     root=root,
                     attributes={"id": os.path.basename(infile), "version": "2.0"},
                 )
-            if type(root).__name__ != "Element":
-                print(f" datatype is  {type(root.xml_element).__name__}")
             self.tree = ET.ElementTree(root.xml_element)
 
             self._FILEMAP[infile] = self.CacheEntry(self.tree, self.root, 0.0)
