@@ -116,8 +116,7 @@ class GenericXML(object):
                     root=root,
                     attributes={"id": os.path.basename(infile), "version": "2.0"},
                 )
-
-            self.tree = ET.ElementTree(root)
+            self.tree = ET.ElementTree(root.xml_element)
 
             self._FILEMAP[infile] = self.CacheEntry(self.tree, self.root, 0.0)
 
