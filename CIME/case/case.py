@@ -495,7 +495,9 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
-                    result = self._resolve_variable(item, result, env_file)
+                    result = self._resolve_variable(
+                        item, result, env_file, subgroup=subgroup
+                    )
 
                 return result
 
