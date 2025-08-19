@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.expect
+=================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: expect

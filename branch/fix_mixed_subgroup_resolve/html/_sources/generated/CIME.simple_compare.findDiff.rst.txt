@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.simple\_compare.findDiff
+=============================
+
+.. currentmodule:: CIME.simple_compare
+
+.. autofunction:: findDiff

@@ -1,0 +1,23 @@
+..
+  class.rst
+
+CIME.utils.SharedArea
+=====================
+
+.. currentmodule:: CIME.utils
+
+.. autoclass:: SharedArea
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~SharedArea.__init__
+        
+    

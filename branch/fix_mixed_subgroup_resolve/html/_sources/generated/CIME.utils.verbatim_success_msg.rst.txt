@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.verbatim\_success\_msg
+=================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: verbatim_success_msg
