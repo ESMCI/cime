@@ -750,6 +750,9 @@ def _build_libraries(
         ufs_driver = os.environ.get("UFS_DRIVER")
         if ufs_driver:
             logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
+
+         # This is a bit hacky. The host model should define whatever
+         # shared libs it might need.
         if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
             libs = []
         elif case.get_value("MODEL") == "cesm":
@@ -765,7 +768,7 @@ def _build_libraries(
             libs.insert(0, mpilib)
 
         if uses_kokkos(case) and comp_interface != "nuopc":
-            libs.append("kokkos")
+            libs.append("ekat")
 
         # Build shared code of CDEPS nuopc data models
         build_script = {}
