@@ -745,7 +745,7 @@ def _build_libraries(
     for l in complist:
         if "cpl" in l:
             cpl_in_complist = True
-    if libs is None:
+    if libs is None or len(libs) < 1:
         mpilib = case.get_value("MPILIB")
         ufs_driver = os.environ.get("UFS_DRIVER")
         if ufs_driver:
