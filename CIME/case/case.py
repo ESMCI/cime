@@ -508,6 +508,10 @@ class Case(object):
                 if resolved and isinstance(result, str):
                     result = self.get_resolved_value(result, subgroup=subgroup)
 
+                    if "$" in result:
+                        # last ditch effort to get variable from any group
+                        result = self.get_resolved_value(result)
+
                     # If still not resolved, we have a problem
                     expect(
                         "$" not in result, "Could not resolve variable {}".format(item)
