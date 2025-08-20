@@ -771,7 +771,6 @@ def _build_libraries(
             libs.append("ekat")
 
         # Build shared code of CDEPS nuopc data models
-        build_script = {}
         if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != "nems"):
             libs.append("CDEPS")
 
