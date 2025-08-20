@@ -123,7 +123,7 @@ class TestCase(unittest.TestCase):
         assert hist_n == 10, hist_n
 
     @mock_case()
-    def test_get_values_namespaced_reference(self, case, test_env, **kwargs):
+    def test_get_values_group_reference(self, case, test_env, **kwargs):
         test_env.new_group("test1")
         test_env.new_entry("HIST_N", "2, $test2::STOP_N", subgroup="test1")
 
@@ -155,17 +155,54 @@ class TestCase(unittest.TestCase):
         assert outputs == [2, 4, 6, 8]
 
     @mock_case()
-    def test_get_value_namespaced_reference_invalid(self, case, test_env, **kwargs):
+    def test_get_value_group_reference_invalid(self, case, test_env, **kwargs):
         test_env.new_entry("HIST_N", "$test1::test2::STOP_N")
 
         with self.assertRaisesRegex(
             utils.CIMEError,
-            r"Variable 'HIST_N' with '\$test1::test2::STOP_N' from '.*' is not valid, the format must be \$VAR or \$SUBGROUP::VAR",
+            r"ERROR: Could not resolve variable HIST_N",
         ):
             case.get_value("HIST_N")
 
     @mock_case()
-    def test_get_value_namespaced_reference(self, case, test_env, **kwargs):
+    def test_get_value_nested_group_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_group("test2")
+        test_env.new_group("test3")
+
+        test_env.new_entry(
+            "BATCH_COMMAND_FLAGS", "-q $JOB_QUEUE", subgroup="test1", etype="char"
+        )
+        test_env.new_entry(
+            "BATCH_COMMAND_FLAGS",
+            "$test3::BATCH_COMMAND_FLAGS -d -t",
+            subgroup="test2",
+            etype="char",
+        )
+        test_env.new_entry(
+            "BATCH_COMMAND_FLAGS", "-q $JOB_QUEUE", subgroup="test3", etype="char"
+        )
+
+        test_env.new_entry("JOB_QUEUE", "failover", subgroup="test1", etype="char")
+        test_env.new_entry("JOB_QUEUE", "priority", subgroup="test2", etype="char")
+        test_env.new_entry("JOB_QUEUE", "limited", subgroup="test3", etype="char")
+
+        assert case.get_value("BATCH_COMMAND_FLAGS", subgroup="test1") == "-q failover"
+        assert (
+            case.get_value("BATCH_COMMAND_FLAGS", subgroup="test2")
+            == "-q limited -d -t"
+        )
+        assert case.get_value("BATCH_COMMAND_FLAGS", subgroup="test3") == "-q limited"
+
+        case.set_value("BATCH_COMMAND_FLAGS", "-q $test2::JOB_QUEUE", subgroup="test3")
+
+        assert (
+            case.get_value("BATCH_COMMAND_FLAGS", subgroup="test2")
+            == "-q priority -d -t"
+        )
+
+    @mock_case()
+    def test_get_value_group_reference(self, case, test_env, **kwargs):
         test_env.new_group("test1")
         test_env.new_entry("HIST_N", "$test3::STOP_N", subgroup="test1")
         test_env.new_entry("STOP_N", "2", subgroup="test1")

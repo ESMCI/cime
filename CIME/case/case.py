@@ -14,7 +14,7 @@ from CIME.XML.standard_module_setup import *
 from CIME import utils
 from CIME.config import Config
 from CIME.status import append_status
-from CIME.utils import CIMEError, expect, get_cime_root
+from CIME.utils import expect, get_cime_root
 from CIME.utils import convert_to_type, get_model, set_model
 from CIME.utils import get_project, get_charge_account, check_name
 from CIME.utils import get_current_commit, safe_copy, get_cime_default_driver
@@ -465,7 +465,18 @@ class Case(object):
                 if resolved:
                     for result in results:
                         if isinstance(result, str):
-                            result = self._resolve_variable(item, result, env_file)
+                            result = self.get_resolved_value(result, subgroup=subgroup)
+
+                            # If still not resolved, we have a problem
+                            expect(
+                                "$" not in result,
+                                "Could not resolve variable {}".format(item),
+                            )
+
+                            vtype = env_file.get_type_info(item)
+
+                            if vtype is not None and vtype != "char":
+                                result = convert_to_type(result, vtype, item)
 
                         new_results.append(result)
                 else:
@@ -495,45 +506,21 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
-                    result = self._resolve_variable(
-                        item, result, env_file, subgroup=subgroup
+                    result = self.get_resolved_value(result, subgroup=subgroup)
+
+                    # If still not resolved, we have a problem
+                    expect(
+                        "$" not in result, "Could not resolve variable {}".format(item)
                     )
+
+                    vtype = env_file.get_type_info(item)
+
+                    if vtype is not None and vtype != "char":
+                        result = convert_to_type(result, vtype, item)
 
                 return result
 
         return None
-
-    def _resolve_variable(self, name, value, env_file, subgroup=None):
-        _value = value
-
-        if "::" in _value:
-            try:
-                subgroup, _value = _value.split("::")
-            except ValueError:
-                raise CIMEError(
-                    f"Variable {name!r} with {value!r} from {env_file.filename!r} is not valid, the format must be $VAR or $SUBGROUP::VAR"
-                ) from None
-
-            subgroup = subgroup.replace("$", "")
-
-            _value = f"${_value}"
-
-        # Try to resolve using the current subgroup
-        resolved_value = self.get_resolved_value(_value, subgroup=subgroup)
-
-        # If that didn't work, try to resolve without a subgroup
-        if "$" in resolved_value:
-            resolved_value = self.get_resolved_value(resolved_value)
-
-        # If still not resolved, we have a problem
-        expect("$" not in resolved_value, "Could not resolve variable {}".format(name))
-
-        vtype = env_file.get_type_info(name)
-
-        if vtype is not None and vtype != "char":
-            resolved_value = convert_to_type(resolved_value, vtype, name)
-
-        return resolved_value
 
     def get_record_fields(self, variable, field):
         """get_record_fields gets individual requested field from an entry_id file

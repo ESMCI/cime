@@ -74,6 +74,24 @@ class TestEnv(EntryID):
 
         self.read_fd(io.StringIO(test_env_xml))
 
+    def get_type_info(self, vid):
+        gnodes = self.get_children("group")
+        type_info = None
+        for gnode in gnodes:
+            nodes = self.get_children("entry", {"id": vid}, root=gnode)
+            for node in nodes:
+                new_type_info = self._get_type_info(node)
+                if type_info is None:
+                    type_info = new_type_info
+                else:
+                    expect(
+                        type_info == new_type_info,
+                        "Inconsistent type_info for entry id={} {} {}".format(
+                            vid, new_type_info, type_info
+                        ),
+                    )
+        return type_info
+
     def new_group(self, name):
         return self.make_child("group", attributes={"id": name})
 

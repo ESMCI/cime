@@ -394,7 +394,7 @@ class EntryID(GenericXML):
             val = self.get_default_value(node)
 
         if resolved:
-            val = self.get_resolved_value(val)
+            val = self.get_resolved_value(val, subgroup=subgroup)
 
         return val
 
