@@ -292,6 +292,21 @@ class TestCimeCase(base.BaseTestCase):
 
             self.assertEqual(case.get_value("NTHRDS_CPL"), 8)
 
+    def test_cime_case_get_resolved_value(self):
+        casedir = self._create_test(
+            [
+                "--no-build",
+                "--force-procs=16",
+                "--force-threads=8",
+                "TESTRUNPASS.f19_g16.A",
+            ],
+            test_id=self._baseline_name,
+        )
+        with Case(casedir, read_only=False) as case:
+            case.set_value("JOB_WALLCLOCK_TIME", "$CASE", subgroup="case.test")
+        with Case(casedir, read_only=True) as case:
+            self.assertEqual(case.get_value("JOB_WALLCLOCK_TIME", subgroup="case.test"), case.get_value("CASE"))
+
     def test_cime_case_xmlchange_append(self):
         casedir = self._create_test(
             ["--no-build", "TESTRUNPASS_P1x1.f19_g16.A"],
