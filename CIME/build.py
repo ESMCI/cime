@@ -738,14 +738,16 @@ def _build_libraries(
         if not os.path.exists(shared_item):
             os.makedirs(shared_item)
 
-    libs = case.get_values("CASE_SUPPORT_LIBRARIES")
+    libs = list(dict.fromkeys(case.get_values("CASE_SUPPORT_LIBRARIES")))
     logger.info(f"libs from case_support_libraries {libs}")
     build_script = {}
     cpl_in_complist = False
     for l in complist:
         if "cpl" in l:
             cpl_in_complist = True
-    if libs is None or len(libs) < 1:
+    # The libs variable should include a list of required support libraries.
+    # The following block is provided for backward compatibility.
+    if len(libs) < 1:
         mpilib = case.get_value("MPILIB")
         ufs_driver = os.environ.get("UFS_DRIVER")
         if ufs_driver:
