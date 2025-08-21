@@ -63,6 +63,18 @@ The ``xmlchange`` command is used to modify the configuration of a case. The fol
     
     ./xmlchange <variable>=<value>
 
+The `value` can be literal or a reference to another value. When using a reference, it must be prefixed with `$`.
+
+.. code-block:: bash
+
+    ./xmlchange <variable>=$<variable>
+
+The reference can also define the `subgroup`. This is usful when a variable exists under multiple subgroups and a specific one needs to be referenced. The `subgroup` and `variable` are delimited with `::`.
+
+.. code-block:: bash
+
+    ./xmlchange <variable>=$<subgroup>::<variable>
+
 Some variables can exist in multiple groups. To change a variable in a specific group, use the ``--subgroup`` option.
 
 .. code-block:: bash

@@ -1,10 +1,34 @@
 .. _model_config_build_lib:
 
-BUILD_LIB_FILE
+CASE_SUPPORT_LIBRARIES
 ==============
 
 .. contents::
     :local:
+
+Overview
+--------
+This variable is a list of support libraries that should be built by the case.
+It is defined by the driver and component buildnml scripts and is used with BUILD_LIB_FILE to
+locate required buildlib scripts.  It is a list of libraries which will be built in list order so
+it is important that dependent libraries are identified.
+
+Entry
+-----
+The CASE_SUPPORT_LIBRARIES variable should be defined in the drivers config_component.xml file as
+
+.. code-block:: xml
+
+   <entry id="CASE_SUPPORT_LIBRARIES">
+     <type>char</type>
+     <default_value></default_value>
+     <group>build_def</group>
+     <file>env_build.xml</file>
+     <desc>Support libraries required</desc>
+   </entry>
+
+BUILD_LIB_FILE
+==============
 
 Overview
 --------
@@ -36,8 +60,11 @@ Each ``value`` corresponds to a library that can be built. The ``lib`` attribute
         <desc> path to buildlib script for the given library </desc>
     </entry>
 
+
 Build library
 --------------
+The ``buildnml`` script for a given component can modify the case variable ``CASE_SUPPORT_LIBRARIES`` and add a list of libraries needed by the given component, the list should be in order of dependancies with dependent libraries listed after those they depend upon.  
+
 Implementing a ``buildlib`` for a component is as simple as creating a python file and defining a single function; *buildlib*.
 
 Below are the arguments for the ``buildlib`` function.
