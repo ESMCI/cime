@@ -83,6 +83,7 @@ CIME.utils
                     is_comp_standalone
                     is_last_process_complete
                     is_python_executable
+                    ls_sorted_by_fname
                     ls_sorted_by_mtime
                     match_any
                     model_log

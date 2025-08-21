@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.utils.get_template_path &mdash; CIME master documentation</title>
+  <title>CIME.utils.ls_sorted_by_fname &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.utils.get_time_in_seconds" href="CIME.utils.get_time_in_seconds.html" />
-    <link rel="prev" title="CIME.utils.get_src_root" href="CIME.utils.get_src_root.html" /> 
+    <link rel="next" title="CIME.utils.ls_sorted_by_mtime" href="CIME.utils.ls_sorted_by_mtime.html" />
+    <link rel="prev" title="CIME.utils.is_python_executable" href="CIME.utils.is_python_executable.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -147,10 +147,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_schema_path.html">CIME.utils.get_schema_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_scripts_root.html">CIME.utils.get_scripts_root</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_src_root.html">CIME.utils.get_src_root</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.utils.get_template_path</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.get_template_path"><code class="docutils literal notranslate"><span class="pre">get_template_path()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_template_path.html">CIME.utils.get_template_path</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_time_in_seconds.html">CIME.utils.get_time_in_seconds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_timestamp.html">CIME.utils.get_timestamp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.get_tools_path.html">CIME.utils.get_tools_path</a></li>
@@ -165,7 +162,10 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.is_comp_standalone.html">CIME.utils.is_comp_standalone</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.is_last_process_complete.html">CIME.utils.is_last_process_complete</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.is_python_executable.html">CIME.utils.is_python_executable</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.utils.ls_sorted_by_fname.html">CIME.utils.ls_sorted_by_fname</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.utils.ls_sorted_by_fname</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.ls_sorted_by_fname"><code class="docutils literal notranslate"><span class="pre">ls_sorted_by_fname()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.ls_sorted_by_mtime.html">CIME.utils.ls_sorted_by_mtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.match_any.html">CIME.utils.match_any</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.model_log.html">CIME.utils.model_log</a></li>
@@ -225,9 +225,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
           <li class="breadcrumb-item"><a href="CIME.utils.html">CIME.utils</a></li>
-      <li class="breadcrumb-item active">CIME.utils.get_template_path</li>
+      <li class="breadcrumb-item active">CIME.utils.ls_sorted_by_fname</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.utils.get_template_path.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.utils.ls_sorted_by_fname.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -235,12 +235,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cime-utils-get-template-path">
-<h1>CIME.utils.get_template_path<a class="headerlink" href="#cime-utils-get-template-path" title="Link to this heading"></a></h1>
+  <section id="cime-utils-ls-sorted-by-fname">
+<h1>CIME.utils.ls_sorted_by_fname<a class="headerlink" href="#cime-utils-ls-sorted-by-fname" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.get_template_path">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">get_template_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.get_template_path" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="CIME.utils.ls_sorted_by_fname">
+<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">ls_sorted_by_fname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.ls_sorted_by_fname" title="Link to this definition"></a></dt>
+<dd><p>return list of path sorted by name oldest first</p>
+</dd></dl>
 
 </section>
 
@@ -248,8 +249,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.utils.get_src_root.html" class="btn btn-neutral float-left" title="CIME.utils.get_src_root" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.utils.get_time_in_seconds.html" class="btn btn-neutral float-right" title="CIME.utils.get_time_in_seconds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.utils.is_python_executable.html" class="btn btn-neutral float-left" title="CIME.utils.is_python_executable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.utils.ls_sorted_by_mtime.html" class="btn btn-neutral float-right" title="CIME.utils.ls_sorted_by_mtime" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

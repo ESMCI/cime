@@ -175,6 +175,14 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span>&lt;variable&gt;<span class="o">=</span>&lt;value&gt;
 </pre></div>
 </div>
+<p>The <cite>value</cite> can be literal or a reference to another value. When using a reference, it must be prefixed with <cite>$</cite>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span>&lt;variable&gt;<span class="o">=</span>$&lt;variable&gt;
+</pre></div>
+</div>
+<p>The reference can also define the <cite>subgroup</cite>. This is usful when a variable exists under multiple subgroups and a specific one needs to be referenced. The <cite>subgroup</cite> and <cite>variable</cite> are delimited with <cite>::</cite>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span>&lt;variable&gt;<span class="o">=</span>$&lt;subgroup&gt;::&lt;variable&gt;
+</pre></div>
+</div>
 <p>Some variables can exist in multiple groups. To change a variable in a specific group, use the <code class="docutils literal notranslate"><span class="pre">--subgroup</span></code> option.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./xmlchange<span class="w"> </span><span class="nv">JOB_WALLCLOCK_TIME</span><span class="o">=</span><span class="m">0</span>:30<span class="w"> </span>--subgroup<span class="w"> </span><span class="k">case</span>.run
 </pre></div>
