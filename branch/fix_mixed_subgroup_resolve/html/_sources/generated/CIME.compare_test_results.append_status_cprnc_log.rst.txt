@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.compare\_test\_results.append\_status\_cprnc\_log
-======================================================
-
-.. currentmodule:: CIME.compare_test_results
-
-.. autofunction:: append_status_cprnc_log
