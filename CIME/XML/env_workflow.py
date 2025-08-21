@@ -77,7 +77,6 @@ class EnvWorkflow(EnvBase):
         type_info = None
         for gnode in gnodes:
             nodes = self.get_children("entry", {"id": vid}, root=gnode)
-            type_info = None
             for node in nodes:
                 new_type_info = self._get_type_info(node)
                 if type_info is None:
