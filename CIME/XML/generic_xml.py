@@ -683,7 +683,8 @@ class GenericXML(object):
             # so the pylint should not be flagging this
             # pylint: disable=assignment-from-none
             ref = self.get_value(var, subgroup=subgroup)
-
+            if ref is None:
+                ref = self.get_value(var)
             if ref is not None:
                 logger.debug("resolve: " + str(ref))
                 item_data = item_data.replace(
