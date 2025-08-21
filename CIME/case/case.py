@@ -1624,8 +1624,10 @@ class Case(object):
             env_postprocessing.add_elements_by_group(srcobj=postprocessing)
             # Add cupid related fields to env_mach_pes.xml
             env_mach_pes = self.get_env("mach_pes")
-            env_mach_pes.add_elements_by_group(srcobj=postprocessing)
-
+            if env_mach_pes.get_value("CUPID_NTASKS") is None:
+                env_mach_pes.unlock()
+                env_mach_pes.add_elements_by_group(srcobj=postprocessing)
+                env_mach_pes.lock()
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)
