@@ -63,6 +63,7 @@ PHASES = [
     RUN_PHASE,
 ]  # Order matters
 
+
 ###############################################################################
 def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads):
     ###############################################################################
@@ -130,6 +131,8 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
 
 
 _TIME_CACHE = {}
+
+
 ###############################################################################
 def _get_time_est(test, baseline_root, as_int=False, use_cache=False, raw=False):
     ###############################################################################
@@ -885,7 +888,6 @@ class TestScheduler(object):
         if case_opts is not None:
             logger.debug("case_opts are {} ".format(case_opts))
             for opt in case_opts:  # pylint: disable=not-an-iterable
-
                 logger.debug("case_opt is {}".format(opt))
                 if opt == "D":
                     envtest.set_test_parameter("DEBUG", "TRUE")
@@ -1001,6 +1003,14 @@ class TestScheduler(object):
             if self._model_build_cost > self._proc_pool:
                 case.set_value("GMAKE_J", self._proc_pool)
                 self._model_build_cost = self._proc_pool
+
+            # Izumi nag compiler needs DEBUG=TRUE
+            if compiler == "nag" and case.get_value("MACH") == "izumi":
+                debug_val = case.get_value("DEBUG")
+                expect(
+                    debug_val == True,
+                    "Izumi nag tests need DEBUG=TRUE, not {}".format(debug_val),
+                )
 
         return True, ""
 
