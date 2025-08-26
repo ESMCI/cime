@@ -59,7 +59,31 @@ schema            Path to a schema file that will be used to validate the conten
 
 Variables
 :::::::::
-These variables will define values or reference additional files to make up a models configuration.
+These variables define literal values.
+
+MODEL
+.....
+This variable defines the name of the Model.
+
+Entry
+'''''
+The following is an example entry for ``MODEL`` in ``config_files.xml``.
+
+Only a single value is required.
+
+.. code-block:: xml
+   
+   <entry id="MODEL">
+      <type>char</type>
+      <default_value>e3sm</default_value>
+      <group>case_der</group>
+      <file>env_case.xml</file>
+      <desc>model system name</desc>
+   </entry>
+
+Reference Variables
+:::::::::::::::::::
+These variables reference files containing additional variables.
 
 .. toctree::
    :maxdepth: 1
@@ -77,7 +101,6 @@ These variables will define values or reference additional files to make up a mo
    variables/grids.rst
    variables/inputdata.rst
    variables/machine.rst
-   variables/model.rst
    variables/namelist-definition.rst
    variables/pes.rst
    variables/pio.rst
