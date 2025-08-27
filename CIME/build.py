@@ -748,6 +748,10 @@ def _build_libraries(
     # The libs variable should include a list of required support libraries.
     # The following block is provided for backward compatibility.
     if len(libs) < 1:
+        logger.warning(
+            "The model is using a deprecated method of determining support "
+            "libraries, please migrate to 'CASE_SUPPORT_LIBRARIES' variable."
+        )
         mpilib = case.get_value("MPILIB")
         ufs_driver = os.environ.get("UFS_DRIVER")
         if ufs_driver:
