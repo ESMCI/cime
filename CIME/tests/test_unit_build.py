@@ -8,12 +8,17 @@ from pathlib import Path
 from CIME import build
 from .utils import mock_case
 
+
 class TestBuild(unittest.TestCase):
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_case_support_libraries(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_case_support_libraries(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -22,14 +27,18 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            ["gptl", "mct"], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                ["gptl", "mct"],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -57,9 +66,13 @@ class TestBuild(unittest.TestCase):
     @mock.patch.dict(os.environ, {"UFS_DRIVER": "nems"})
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_ufs_driver(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_ufs_driver(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -68,19 +81,23 @@ class TestBuild(unittest.TestCase):
         buildlist = ["cpl"]
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "e3sm", # MODEL
-            "e3sm", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "e3sm",  # MODEL
+                "e3sm",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -106,9 +123,13 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_cesm_model(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_cesm_model(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -117,19 +138,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "cesm", # MODEL
-            "cesm", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "cesm",  # MODEL
+                "cesm",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -158,9 +183,13 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_other_model(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_other_model(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -169,19 +198,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "new", # MODEL
-            "new", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "new",  # MODEL
+                "new",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -211,9 +244,13 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_mpi_serial(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_mpi_serial(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -222,19 +259,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "mpi-serial", # MPILIB
-            "e3sm", # MODEL
-            "e3sm", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "mpi-serial",  # MPILIB
+                "e3sm",  # MODEL
+                "e3sm",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -265,9 +306,13 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_use_kokkos(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_use_kokkos(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = True
 
         exeroot = os.path.join(caseroot, "bld")
@@ -276,19 +321,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "e3sm", # MODEL
-            "e3sm", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "e3sm",  # MODEL
+                "e3sm",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -319,9 +368,13 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_nuopc(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_nuopc(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -330,19 +383,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "e3sm", # MODEL
-            "e3sm", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "e3sm",  # MODEL
+                "e3sm",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -373,9 +430,13 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
-    def test__build_libraries_fms(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
+    def test__build_libraries_fms(
+        self, Files, _, uses_kokkos, case, caseroot, **kwargs
+    ):
         uses_kokkos.return_value = False
 
         exeroot = os.path.join(caseroot, "bld")
@@ -384,19 +445,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "e3sm", # MODEL
-            "e3sm", # MODEL
-            "mom", # COMP_OCN
-            "fv3", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "e3sm",  # MODEL
+                "e3sm",  # MODEL
+                "mom",  # COMP_OCN
+                "fv3",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
@@ -427,8 +492,10 @@ class TestBuild(unittest.TestCase):
 
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro") # no need for makefile macros
-    @mock.patch("CIME.build.Files") # used to check expected behavior by checking libs variable
+    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
+    @mock.patch(
+        "CIME.build.Files"
+    )  # used to check expected behavior by checking libs variable
     def test__build_libraries(self, Files, _, uses_kokkos, case, caseroot, **kwargs):
         uses_kokkos.return_value = False
 
@@ -438,19 +505,23 @@ class TestBuild(unittest.TestCase):
         buildlist = []
         complist = []
 
-        case.get_values = mock.MagicMock(side_effect=[
-            [], # CASE_SUPPORT_LIBRARIES
-        ])
+        case.get_values = mock.MagicMock(
+            side_effect=[
+                [],  # CASE_SUPPORT_LIBRARIES
+            ]
+        )
 
-        case.get_value = mock.MagicMock(side_effect=[
-            "openmpi", # MPILIB
-            "e3sm", # MODEL
-            "e3sm", # MODEL
-            "", # COMP_OCN
-            "", # CAM_DYCORE
-            "", # SHAREDLIBROOT
-            False, # TEST
-        ])
+        case.get_value = mock.MagicMock(
+            side_effect=[
+                "openmpi",  # MPILIB
+                "e3sm",  # MODEL
+                "e3sm",  # MODEL
+                "",  # COMP_OCN
+                "",  # CAM_DYCORE
+                "",  # SHAREDLIBROOT
+                False,  # TEST
+            ]
+        )
 
         build._build_libraries(
             case,
