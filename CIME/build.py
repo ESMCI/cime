@@ -764,7 +764,6 @@ def _build_libraries(
         else:
             libs = ["gptl", "mct", "pio", "csm_share"]
 
-
         libs.append("FTorch")
 
         if mpilib == "mpi-serial":
@@ -772,7 +771,7 @@ def _build_libraries(
 
         if uses_kokkos(case) and comp_interface != "nuopc":
             libs.append("ekat")
-  
+
         # Build shared code of CDEPS nuopc data models
         if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != "nems"):
             libs.append("CDEPS")

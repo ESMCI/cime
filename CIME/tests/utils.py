@@ -165,7 +165,7 @@ class TestEnv(EntryID):
         return ET.tostring(self.root.xml_element, encoding="unicode", method="xml")
 
 
-def mock_case(*args, empty_env=False, filename=None, **kwargs):
+def mock_case(*args, empty_env=False, filename=None, mock_set_value=False, **kwargs):
     if filename is None:
         filename = "env_test.xml"
 
@@ -176,6 +176,8 @@ def mock_case(*args, empty_env=False, filename=None, **kwargs):
             with tempfile.TemporaryDirectory() as tempdir:
                 caseroot = f"{tempdir}/case"
                 with Case(caseroot, read_only=False) as case:
+                    case.flush = lambda: None
+
                     env = TestEnv()
                     env.filename = f"{os.getcwd()}/{filename}"
 
@@ -183,6 +185,9 @@ def mock_case(*args, empty_env=False, filename=None, **kwargs):
                         case._files = [env]
 
                         case._env_entryid_files = [env]
+
+                    if mock_set_value:
+                        case.set_value = mock.MagicMock()
 
                     func(
                         self,
