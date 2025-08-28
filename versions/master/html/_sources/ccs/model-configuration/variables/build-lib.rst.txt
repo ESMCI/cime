@@ -36,6 +36,7 @@ Each ``value`` corresponds to a library that can be built. The ``lib`` attribute
         <desc> path to buildlib script for the given library </desc>
     </entry>
 
+
 Build library
 --------------
 Implementing a ``buildlib`` for a component is as simple as creating a python file and defining a single function; *buildlib*.
