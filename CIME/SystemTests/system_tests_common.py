@@ -1306,9 +1306,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case, **kwargs):
-        FakeTest.__init__(self, case, **kwargs)
-        raise RuntimeError("Exception from init")
+    def build_phase(self, sharedlib_only=False, model_only=False):
+        raise RuntimeError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):
