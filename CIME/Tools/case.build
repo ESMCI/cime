@@ -230,8 +230,9 @@ def _main_func(description):
                 )
                 with TestStatus(test_dir=caseroot) as ts:
                     ts.set_status(
-                        phase_to_fail, TEST_FAIL_STATUS,
-                        comments="failed to construct test object during build"
+                        phase_to_fail,
+                        TEST_FAIL_STATUS,
+                        comments="failed to construct test object during build",
                     )
                 raise
 

@@ -131,8 +131,9 @@ def _main_func(description):
                 phase_to_fail = SETUP_PHASE
                 with TestStatus(test_dir=caseroot) as ts:
                     ts.set_status(
-                        phase_to_fail, TEST_FAIL_STATUS,
-                        comments="failed to construct test object during setup"
+                        phase_to_fail,
+                        TEST_FAIL_STATUS,
+                        comments="failed to construct test object during setup",
                     )
                 raise
 
@@ -151,6 +152,7 @@ def _main_func(description):
                 keep=keep,
                 disable_git=disable_git,
             )
+
 
 if __name__ == "__main__":
     _main_func(__doc__)
