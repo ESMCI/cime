@@ -139,6 +139,7 @@ def _main_func(description):
 
             test.setup_phase(
                 clean=clean,
+                test_mode=test_mode,
                 reset=reset,
                 keep=keep,
                 disable_git=disable_git,
