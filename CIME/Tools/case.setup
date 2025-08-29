@@ -17,7 +17,10 @@ To rerun after making changes to env_mach_pes.xml or env_mach_specific.xml, run:
 """
 
 from standard_script_setup import *
+
 from CIME.case import Case
+from CIME.test_status import *
+from CIME.utils import find_system_test
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -112,14 +115,42 @@ def _main_func(description):
         non_local,
     ) = parse_command_line(sys.argv, description)
     with Case(caseroot, read_only=False, record=True, non_local=non_local) as case:
-        case.case_setup(
-            clean=clean,
-            test_mode=test_mode,
-            reset=reset,
-            keep=keep,
-            disable_git=disable_git,
-        )
+        testname = case.get_value("TESTCASE")
 
+        if testname is not None:
+            logging.warning(
+                "Setting up test for {} in directory {}".format(testname, caseroot)
+            )
+            try:
+                # The following line can throw exceptions if the testname is
+                # not found or the test constructor throws. We need to be
+                # sure to leave TestStatus in the appropriate state if that
+                # happens.
+                test = find_system_test(testname, case)(case)
+            except BaseException:
+                phase_to_fail = SETUP_PHASE
+                with TestStatus(test_dir=caseroot) as ts:
+                    ts.set_status(
+                        phase_to_fail, TEST_FAIL_STATUS,
+                        comments="failed to construct test object during setup"
+                    )
+                raise
+
+            test.setup_phase(
+                clean=clean,
+                reset=reset,
+                keep=keep,
+                disable_git=disable_git,
+            )
+
+        else:
+            case.case_setup(
+                clean=clean,
+                test_mode=test_mode,
+                reset=reset,
+                keep=keep,
+                disable_git=disable_git,
+            )
 
 if __name__ == "__main__":
     _main_func(__doc__)
