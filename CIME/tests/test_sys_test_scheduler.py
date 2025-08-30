@@ -294,7 +294,7 @@ class TestTestScheduler(base.BaseTestCase):
                     test_status.TEST_FAIL_STATUS,
                 )
                 self.assertTrue(
-                    "Exception from init" in data,
+                    "Exception from build" in data,
                     "Broken test did not report build error:\n%s" % data,
                 )
             elif test_name == run_fail_test:
