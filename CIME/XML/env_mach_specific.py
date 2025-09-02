@@ -1,6 +1,7 @@
 """
 Interface to the env_mach_specific.xml file.  This class inherits from EnvBase
 """
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
@@ -10,6 +11,7 @@ import string, resource, platform
 from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
+
 
 # Is not of type EntryID but can use functions from EntryID (e.g
 # get_type) otherwise need to implement own functions and make GenericXML parent class
