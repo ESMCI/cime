@@ -7,14 +7,10 @@ import sys
 import time
 import contextlib
 from collections.abc import Iterable
-from unittest import mock
-import xml.etree.ElementTree as ET
 
 from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
-from CIME.case import Case
-from CIME.XML.entry_id import EntryID
 
 MACRO_PRESERVE_ENV = [
     "ADDR2LINE",
@@ -202,7 +198,6 @@ def mock_case(*args, empty_env=False, filename=None, mock_set_value=False, **kwa
         return wrapper
 
     return outer
-
 
 @contextlib.contextmanager
 def chdir(path):

@@ -650,7 +650,7 @@ class GenericXML(object):
         True
         """
         logger.debug("raw_value {}".format(raw_value))
-        reference_re = re.compile(r"\${?(?:(.*)::)?(\w+)}?")
+        reference_re = re.compile(r"\${?(\w+)}?")
         env_ref_re = re.compile(r"\$ENV\{(\w+)\}")
         shell_ref_re = re.compile(r"\$SHELL\{([^}]+)\}")
         math_re = re.compile(r"\s[+-/*]\s")
@@ -677,17 +677,12 @@ class GenericXML(object):
             item_data = item_data.replace(s.group(), run_cmd_no_fail(shell_cmd))
 
         for m in reference_re.finditer(item_data):
-            _subgroup, var = m.groups()
-
-            logger.debug("find: {} in group {}".format(var, _subgroup))
-
-            if _subgroup is None:
-                _subgroup = subgroup
-
+            var = m.groups()[0]
+            logger.debug("find: {}".format(var))
             # The overridden versions of this method do not simply return None
             # so the pylint should not be flagging this
             # pylint: disable=assignment-from-none
-            ref = self.get_value(var, subgroup=_subgroup)
+            ref = self.get_value(var, subgroup=subgroup)
 
             if ref is not None:
                 logger.debug("resolve: " + str(ref))
