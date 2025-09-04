@@ -131,8 +131,10 @@ class SystemTestsCompareN(SystemTestsCommon):
         self._cases[0] = self._case
         self._caseroots = self._get_caseroots()
 
-        if not dry_run:
-            self._setup_cases_if_not_yet_done()
+        if os.path.exists(self._caseroots[-1]):
+            for i in range(1, self.N):
+                caseroot_i = self._caseroots[i]
+                self._cases[i] = self._case_from_existing_caseroot(caseroot_i)
 
         self._multisubmit = (
             multisubmit and self._cases[0].get_value("BATCH_SYSTEM") != "none"
@@ -186,6 +188,8 @@ class SystemTestsCompareN(SystemTestsCommon):
         # created via clone, not a with statement, so it's not in a writeable state,
         # so we need to use a with statement here to put it in a writeable state.
         config = Config.instance()
+
+        self._setup_cases_if_not_yet_done()
 
         for i in range(1, self.N):
             with self._cases[i]:
