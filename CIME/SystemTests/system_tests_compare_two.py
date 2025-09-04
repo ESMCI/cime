@@ -69,7 +69,6 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         multisubmit=False,
         ignore_fieldlist_diffs=False,
         case_two_keep_init_generated_files=False,
-        dry_run=False,
         **kwargs
     ):
         """

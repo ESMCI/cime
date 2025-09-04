@@ -60,7 +60,6 @@ class SystemTestsCompareN(SystemTestsCommon):
         run_descriptions=None,
         multisubmit=False,
         ignore_fieldlist_diffs=False,
-        dry_run=False,
         **kwargs
     ):
         """
