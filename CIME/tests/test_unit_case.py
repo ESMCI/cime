@@ -108,6 +108,7 @@ class TestCase(unittest.TestCase):
 
     @mock_case()
     def test_set_value(self, case, test_env, **kwargs):
+        test_env.new_entry("BUFFER", etype="char")
         test_env.new_entry("HIST_N", "2")
 
         case.set_value("HIST_N", "5")
@@ -121,6 +122,10 @@ class TestCase(unittest.TestCase):
         hist_n = case.get_value("HIST_N")
 
         assert hist_n == 10, hist_n
+
+        case.set_value("BUFFER", "a::unique::value")
+
+        assert case.get_value("BUFFER") == "a::unique::value"
 
     @mock_case()
     def test_get_values_group_reference(self, case, test_env, **kwargs):
