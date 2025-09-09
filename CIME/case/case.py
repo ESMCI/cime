@@ -628,7 +628,8 @@ class Case(object):
             "Case must be opened with read_only=False and can only be modified within a context manager",
         )
 
-        if isinstance(value, str):
+        # Only validate references e.g. $<variable> or $<subgroup>::<variable>
+        if isinstance(value, str) and value.startswith("$"):
             expect(
                 len(value.split("::")) <= 2,
                 f"Value {value!r} is not valid, a namespaced reference must be in the form $SUBGROUP::VARIABLE",
