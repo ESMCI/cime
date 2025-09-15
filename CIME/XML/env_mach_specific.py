@@ -282,7 +282,6 @@ class EnvMachSpecific(EnvBase):
         modules_to_load = self._get_modules_for_case(case, job=job)
         envs_to_set = self._get_envs_for_case(case, job=job)
         resources = self._get_resources_for_case(case)
-        filename = ".env_mach_specific.{}".format(shell)
         if modules_to_load is not None:
             if module_system == "module":
                 lines.extend(self._get_module_commands(modules_to_load, shell))
@@ -331,7 +330,6 @@ class EnvMachSpecific(EnvBase):
                     res_name = RESOURCE_MAP[name][tuple_idx]
                     lines.append(f"{lcmd} {res_name} {val}")
 
-
         return "\n".join(lines) + "\n"
 
     def make_env_mach_specific_file(self, shell, case, output_dir=""):
@@ -342,6 +340,7 @@ class EnvMachSpecific(EnvBase):
         case: case object
         output_dir: string - path to output directory (if empty string, uses current directory)
         """
+        filename = ".env_mach_specific.{}".format(shell)
         with open(os.path.join(output_dir, filename), "w") as fd:
             fd.write(self._make_env_mach_specific_file_impl(shell, case))
 
