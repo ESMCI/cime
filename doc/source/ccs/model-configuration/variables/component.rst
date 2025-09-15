@@ -32,7 +32,6 @@ There will be multiple ``entry`` elements, one for each component supported by t
 
 Schema Definition
 -----------------
-
 The configuration is stored in ``config_component.xml`` under the components ``cime_config`` directory e.g. ``mosart/cime_config/config_component.xml``.
 This file will store multiple variables for the component defined using :ref:`*entry*<model-configuration-entry>` elements.
 Example contents of ``config_component.xml``.
@@ -71,9 +70,46 @@ help                Help text for the component.
             </help>
     </entry_id>
 
+Define support libraries
+------------------------
+This variable is a list of support libraries that should be built by the case.
+It is defined by the driver and component buildnml scripts and is used with ``BUILD_LIB_FILE`` to
+locate required buildlib scripts.  It is a list of libraries which will be built in list order so
+it is important that dependent libraries are identified.
+
+The ``CASE_SUPPORT_LIBRARIES`` variable should be defined in the drivers ``config_component.xml`` file as
+
+.. code-block:: xml
+
+   <entry id="CASE_SUPPORT_LIBRARIES">
+        <type>char</type>
+        <default_value></default_value>
+        <values>
+            <value cime_model="cesm">gptl,pio,csm_share,FTorch,CDEPS</value>
+        </values>
+        <group>build_def</group>
+        <file>env_build.xml</file>
+        <desc>Support libraries required</desc>
+   </entry>
+
+The components ``buildnml`` script can modify the variable and add a list of libraries needed by the given component.
+The list should be ordered so that a library comes after all of the libraries it depends on.
+
+The following is a small example of a ``buildnml`` script modifying ``CASE_SUPPORT_LIBRARIES``.
+
+.. code-block:: python
+    
+    def buildnml(case, caseroot, component):
+        ...
+        libs = case.get_value("CASE_SUPPORT_LIBRARIES")
+        mpilib = case.get_value("MPILIB")
+        if mpilib == "mpi-serial":
+            libs.insert(0, mpilib)
+        case.set_value("CASE_SUPPORT_LIBRARIES", ",".join(libs))
+        ...
+
 Triggering a rebuild
 --------------------
-
 It's the responsibility of a component to define which settings will require a component to be rebuilt.
 
 These triggers can be defined as follows.

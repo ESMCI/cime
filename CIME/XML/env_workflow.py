@@ -77,7 +77,6 @@ class EnvWorkflow(EnvBase):
         type_info = None
         for gnode in gnodes:
             nodes = self.get_children("entry", {"id": vid}, root=gnode)
-            type_info = None
             for node in nodes:
                 new_type_info = self._get_type_info(node)
                 if type_info is None:
@@ -109,6 +108,11 @@ class EnvWorkflow(EnvBase):
         thread_count = case.get_resolved_value(
             self.get_value("thread_count", subgroup=job)
         )
+        mem_per_task = case.get_resolved_value(
+            self.get_value("mem_per_task", subgroup=job)
+        )
+        if mem_per_task:
+            mem_per_task = int(mem_per_task)
         max_gpus_per_node = case.get_value("MAX_GPUS_PER_NODE")
         ngpus_per_node = case.get_value("NGPUS_PER_NODE")
         num_nodes = None
@@ -130,6 +134,7 @@ class EnvWorkflow(EnvBase):
             tasks_per_node,
             thread_count,
             ngpus_per_node,
+            mem_per_task,
         )
 
     # pylint: disable=arguments-differ

@@ -738,41 +738,53 @@ def _build_libraries(
         if not os.path.exists(shared_item):
             os.makedirs(shared_item)
 
-    mpilib = case.get_value("MPILIB")
-    ufs_driver = os.environ.get("UFS_DRIVER")
+    libs = list(dict.fromkeys(case.get_values("CASE_SUPPORT_LIBRARIES")))
+    logger.info(f"libs from case_support_libraries {libs}")
+    build_script = {}
     cpl_in_complist = False
     for l in complist:
         if "cpl" in l:
             cpl_in_complist = True
-    if ufs_driver:
-        logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
-    if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
-        libs = []
-    elif case.get_value("MODEL") == "cesm":
-        libs = ["gptl", "pio", "csm_share"]
-    elif case.get_value("MODEL") == "e3sm":
-        libs = ["gptl", "mct", "spio", "csm_share"]
-    else:
-        libs = ["gptl", "mct", "pio", "csm_share"]
+    # The libs variable should include a list of required support libraries.
+    # The following block is provided for backward compatibility.
+    if len(libs) < 1:
+        logger.warning(
+            "The model is using a deprecated method of determining support "
+            "libraries, please migrate to 'CASE_SUPPORT_LIBRARIES' variable."
+        )
+        mpilib = case.get_value("MPILIB")
+        ufs_driver = os.environ.get("UFS_DRIVER")
+        if ufs_driver:
+            logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
 
-    libs.append("FTorch")
+        # This is a bit hacky. The host model should define whatever
+        # shared libs it might need.
+        if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
+            libs = []
+        elif case.get_value("MODEL") == "cesm":
+            libs = ["gptl", "pio", "csm_share"]
+        elif case.get_value("MODEL") == "e3sm":
+            libs = ["gptl", "mct", "spio", "csm_share"]
+        else:
+            libs = ["gptl", "mct", "pio", "csm_share"]
 
-    if mpilib == "mpi-serial":
-        libs.insert(0, mpilib)
+        libs.append("FTorch")
 
-    if uses_kokkos(case) and comp_interface != "nuopc":
-        libs.append("kokkos")
+        if mpilib == "mpi-serial":
+            libs.insert(0, mpilib)
 
-    # Build shared code of CDEPS nuopc data models
-    build_script = {}
-    if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != "nems"):
-        libs.append("CDEPS")
+        if uses_kokkos(case) and comp_interface != "nuopc":
+            libs.append("ekat")
 
-    ocn_model = case.get_value("COMP_OCN")
+        # Build shared code of CDEPS nuopc data models
+        if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != "nems"):
+            libs.append("CDEPS")
 
-    atm_dycore = case.get_value("CAM_DYCORE")
-    if ocn_model == "mom" or (atm_dycore and atm_dycore == "fv3"):
-        libs.append("FMS")
+        ocn_model = case.get_value("COMP_OCN")
+
+        atm_dycore = case.get_value("CAM_DYCORE")
+        if ocn_model == "mom" or (atm_dycore and atm_dycore == "fv3"):
+            libs.append("FMS")
 
     files = Files(comp_interface=comp_interface)
     for lib in libs:

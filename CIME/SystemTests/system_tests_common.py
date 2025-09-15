@@ -341,6 +341,54 @@ class SystemTestsCommon(object):
             self._case.case_setup(reset=True, test_mode=True)
             fix_single_exe_case(self._case)
 
+    def setup(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the setup phase. setup_phase is the extension point
+        that subclasses should use.
+        """
+        self.setup_phase(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_phase(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        This is the default setup phase implementation, it just does an individual setup.
+        This is the subclass' extension point if they need to define a custom setup
+        phase.
+
+        PLEASE THROW EXCEPTION ON FAIL
+        """
+        self.setup_indv(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_indv(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Perform an individual setup
+        """
+        self._case.case_setup(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
     def build(
         self,
         sharedlib_only=False,
@@ -1258,9 +1306,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case, **kwargs):
-        FakeTest.__init__(self, case, **kwargs)
-        raise RuntimeError("Exception from init")
+    def build_phase(self, sharedlib_only=False, model_only=False):
+        raise RuntimeError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):
