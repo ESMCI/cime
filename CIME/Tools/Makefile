@@ -119,11 +119,19 @@ endif
 FTORCH_DIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch/
 ifneq "$(wildcard $(FTORCH_DIR) )" ""
   INCLDIR  += -I$(FTORCH_DIR)/modules -I$(FTORCH_DIR)
-  SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  ifeq ($(strip $(COMPILER)),nag)
+    SLIBS  +=  -Wl,-Wl,,-rpath=$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  else
+    SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  endif
 endif
 ifeq ($(strip $(USE_FTORCH)), TRUE)
   CPPDEFS  += -DUSE_FTORCH
-  SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  ifeq ($(strip $(COMPILER)),nag)
+    SLIBS  +=  -Wl,-Wl,,-rpath=$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  else
+    SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  endif
 endif
 
 ifdef FSTDLIB_PKGCONFIG
