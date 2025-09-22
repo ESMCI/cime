@@ -680,7 +680,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
 ###############################################################################
 def normalized_dict_compare(keyname, data1, data2, case):
     ###############################################################################
-    """
+    r"""
     Recursively compare contents of dicts, normalize values (but not keys)
 
     >>> data1 = {'averaging_type': 'average', 'fields': {'physics_gll': {'field_names': ['T_mid', 'tracers', 'horiz_winds', 'p_int', 'pseudo_density', 'p_mid']}}, 'filename_prefix': 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.G.20250922_110259_eeywbj.scream.phys.h', 'output_control': {'frequency': 9, 'frequency_units': 'nsteps', 'skip_t0_output': False}, 'skip_t0_output': False}
@@ -689,7 +689,7 @@ def normalized_dict_compare(keyname, data1, data2, case):
     ''
     >>> data2 = {'averaging_type': 'average', 'fields': {'physics_gll': {'field_names': ['T_mid', 'p_int', 'tracers', 'horiz_winds', 'pseudo_density', 'p_mid']}}, 'filename_prefix': 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.C.20250922_110260_easdfa.scream.phys.h', 'output_control': {'frequency': 8, 'frequency_units': 'nsteps', 'skip_t0_output': False}, 'skip_t0_output': False}
     >>> normalized_dict_compare("top-level", data1, data2, 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2')
-    'frequency had mismatched values, baseline=9, case=8\\n'
+    'frequency had mismatched values, baseline=9, case=8\n'
     >>>
     """
     # if data1 and data2 aren't even the same type, we must stop
@@ -820,7 +820,7 @@ def compare_namelist_files(gold_file, compare_file, case=None):
     expect(os.path.exists(gold_file), "File not found: {}".format(gold_file))
     expect(os.path.exists(compare_file), "File not found: {}".format(compare_file))
 
-    if gold_file.endswith(".yaml"):
+    if gold_file.endswith(".yaml") or gold_file.endswith(".yml"):
         comments = _compare_yamls(gold_file, compare_file, case)
     else:
         gold_namelists = _parse_namelists(open(gold_file, "r").readlines(), gold_file)
