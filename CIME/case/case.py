@@ -2483,6 +2483,10 @@ directory, NOT in this subdirectory."""
                             gridfile = um_config_grids
                             found_um_config_grids = True
 
+            # Special handling for default cases without CUPiD checkout
+            if workflowid == "default" and not os.path.exists(os.path.join(srcroot, "tools", "CUPiD", "cime_config")):
+                workflowid = "default-no-cupid"
+
             # Configure the Case
             self.configure(
                 compset_name,
