@@ -112,7 +112,14 @@ class EnvWorkflow(EnvBase):
             self.get_value("mem_per_task", subgroup=job)
         )
         if mem_per_task:
-            mem_per_task = int(mem_per_task)
+            if "$" in mem_per_task:
+                logger.warning(
+                    "Could not resolve {} using a value of 10".format(mem_per_task)
+                )
+                mem_per_task = 10
+            else:
+                mem_per_task = int(mem_per_task)
+
         max_gpus_per_node = case.get_value("MAX_GPUS_PER_NODE")
         ngpus_per_node = case.get_value("NGPUS_PER_NODE")
         num_nodes = None
@@ -120,8 +127,12 @@ class EnvWorkflow(EnvBase):
             max_gpus_per_node = 0
             ngpus_per_node = 0
         if task_count is not None and tasks_per_node is not None:
-            task_count = int(task_count)
-            num_nodes = int(math.ceil(float(task_count) / float(tasks_per_node)))
+            if "$" in task_count:
+                task_count = 1
+                num_nodes = 1
+            else:
+                task_count = int(task_count)
+                num_nodes = int(math.ceil(float(task_count) / float(tasks_per_node)))
             tasks_per_node = task_count // num_nodes
         if not thread_count:
             thread_count = 1
