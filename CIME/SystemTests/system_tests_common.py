@@ -208,12 +208,6 @@ class SystemTestsCommon(object):
                 stop_n, stop_n_coupling_intervals
             ),
         )
-        expect(
-            stop_n_coupling_intervals > 2,
-            "ERROR: STOP_N value {:d} ({:d} coupling intervals) too short".format(
-                stop_n, stop_n_coupling_intervals
-            ),
-        )
 
         if self._rest_n:
             rest_n = self._rest_n
@@ -226,6 +220,15 @@ class SystemTestsCommon(object):
                 rest_n = math.ceil(
                     (stop_n_coupling_intervals // 2 + 1) * coupling_secs / factor
                 )
+
+        # Note that the error message here refers to STOP_N being too short, because
+        # that's the typical root cause of this problem
+        expect(
+            rest_n > 0 and rest_n < stop_n,
+            "ERROR: STOP_N value {:d} too short: results in REST_N = {:d}".format(
+                stop_n, rest_n
+            ),
+        )
 
         cal = self._case.get_value("CALENDAR")
         if not starttime:
