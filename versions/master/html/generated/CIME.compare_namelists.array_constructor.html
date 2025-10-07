@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.compare_test_results &mdash; CIME master documentation</title>
+  <title>CIME.compare_namelists.array_constructor &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.compare_test_results.append_status_cprnc_log" href="CIME.compare_test_results.append_status_cprnc_log.html" />
-    <link rel="prev" title="CIME.compare_namelists.Strings" href="CIME.compare_namelists.Strings.html" /> 
+    <link rel="next" title="CIME.compare_namelists.compare_namelist_files" href="CIME.compare_namelists.compare_namelist_files.html" />
+    <link rel="prev" title="CIME.compare_namelists" href="CIME.compare_namelists.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -76,14 +76,22 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.code_checker.html">CIME.code_checker</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">CIME.compare_test_results</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.append_status_cprnc_log.html">CIME.compare_test_results.append_status_cprnc_log</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.compare_history.html">CIME.compare_test_results.compare_history</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.compare_namelists.html">CIME.compare_test_results.compare_namelists</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.compare_test_results.compare_test_results.html">CIME.compare_test_results.compare_test_results</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.compare_namelists.array_constructor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.compare_namelists.array_constructor"><code class="docutils literal notranslate"><span class="pre">array_constructor()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.compare_namelist_files.html">CIME.compare_namelists.compare_namelist_files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.is_namelist_file.html">CIME.compare_namelists.is_namelist_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.normalized_dict_compare.html">CIME.compare_namelists.normalized_dict_compare</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Array.html">CIME.compare_namelists.Array</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Bools.html">CIME.compare_namelists.Bools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Floats.html">CIME.compare_namelists.Floats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Ints.html">CIME.compare_namelists.Ints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Strings.html">CIME.compare_namelists.Strings</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.compare_test_results.html">CIME.compare_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.config.html">CIME.config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.cs_status_creator.html">CIME.cs_status_creator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.cs_status.html">CIME.cs_status</a></li>
@@ -124,9 +132,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">CIME.compare_test_results</li>
+          <li class="breadcrumb-item"><a href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
+      <li class="breadcrumb-item active">CIME.compare_namelists.array_constructor</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.compare_test_results.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.compare_namelists.array_constructor.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -134,33 +143,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-CIME.compare_test_results">
-<span id="cime-compare-test-results"></span><h1>CIME.compare_test_results<a class="headerlink" href="#module-CIME.compare_test_results" title="Link to this heading"></a></h1>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.compare_test_results.append_status_cprnc_log.html#CIME.compare_test_results.append_status_cprnc_log" title="CIME.compare_test_results.append_status_cprnc_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_status_cprnc_log</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.compare_test_results.compare_history.html#CIME.compare_test_results.compare_history" title="CIME.compare_test_results.compare_history"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_history</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.compare_test_results.compare_namelists.html#CIME.compare_test_results.compare_namelists" title="CIME.compare_test_results.compare_namelists"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_namelists</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.compare_test_results.compare_test_results.html#CIME.compare_test_results.compare_test_results" title="CIME.compare_test_results.compare_test_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compare_test_results</span></code></a></p></td>
-<td><p>Compares with baselines for all matching tests</p></td>
-</tr>
-</tbody>
-</table>
+  <section id="cime-compare-namelists-array-constructor">
+<h1>CIME.compare_namelists.array_constructor<a class="headerlink" href="#cime-compare-namelists-array-constructor" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.compare_namelists.array_constructor">
+<span class="sig-prename descclassname"><span class="pre">CIME.compare_namelists.</span></span><span class="sig-name descname"><span class="pre">array_constructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/compare_namelists.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.compare_namelists.array_constructor" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.compare_namelists.Strings.html" class="btn btn-neutral float-left" title="CIME.compare_namelists.Strings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.compare_test_results.append_status_cprnc_log.html" class="btn btn-neutral float-right" title="CIME.compare_test_results.append_status_cprnc_log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.compare_namelists.html" class="btn btn-neutral float-left" title="CIME.compare_namelists" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.compare_namelists.compare_namelist_files.html" class="btn btn-neutral float-right" title="CIME.compare_namelists.compare_namelist_files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

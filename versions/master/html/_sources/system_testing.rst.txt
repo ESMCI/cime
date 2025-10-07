@@ -219,13 +219,6 @@ TESTTYPE     Description
               | Compare component history files '.base' and '.rest' at day 11 with cprnc
               |    PASS if they are identical.
 
-   ERS2      Exact restart from startup  (default 6 days + 5 days).
-
-              | Do an 11-day initial test without making restarts. (file suffix: base)
-              | Do an 11-day restart test stopping at day 6 with a restart,
-                then resuming from restart at day 6. (file suffix: rest)
-              | Compare component history files ".base" and ".rest" at day 11.
-
    ERT       Longer version of ERS. Exact restart from startup, default 2 months + 1 month (ERS with info DBUG = 1).
 
    IRT       Exact restart from startup, (default 4 days + 7 days) with restart from interim file.

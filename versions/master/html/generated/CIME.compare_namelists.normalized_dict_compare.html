@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.compare_namelists.is_namelist_file &mdash; CIME master documentation</title>
+  <title>CIME.compare_namelists.normalized_dict_compare &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.compare_namelists.normalized_dict_compare" href="CIME.compare_namelists.normalized_dict_compare.html" />
-    <link rel="prev" title="CIME.compare_namelists.compare_namelist_files" href="CIME.compare_namelists.compare_namelist_files.html" /> 
+    <link rel="next" title="CIME.compare_namelists.Array" href="CIME.compare_namelists.Array.html" />
+    <link rel="prev" title="CIME.compare_namelists.is_namelist_file" href="CIME.compare_namelists.is_namelist_file.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -79,11 +79,11 @@
 <li class="toctree-l2 current"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.array_constructor.html">CIME.compare_namelists.array_constructor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.compare_namelist_files.html">CIME.compare_namelists.compare_namelist_files</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.compare_namelists.is_namelist_file</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.compare_namelists.is_namelist_file"><code class="docutils literal notranslate"><span class="pre">is_namelist_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.is_namelist_file.html">CIME.compare_namelists.is_namelist_file</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.compare_namelists.normalized_dict_compare</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.compare_namelists.normalized_dict_compare"><code class="docutils literal notranslate"><span class="pre">normalized_dict_compare()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.normalized_dict_compare.html">CIME.compare_namelists.normalized_dict_compare</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Array.html">CIME.compare_namelists.Array</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Bools.html">CIME.compare_namelists.Bools</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.compare_namelists.Floats.html">CIME.compare_namelists.Floats</a></li>
@@ -133,9 +133,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
           <li class="breadcrumb-item"><a href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
-      <li class="breadcrumb-item active">CIME.compare_namelists.is_namelist_file</li>
+      <li class="breadcrumb-item active">CIME.compare_namelists.normalized_dict_compare</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.compare_namelists.is_namelist_file.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.compare_namelists.normalized_dict_compare.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -143,12 +143,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cime-compare-namelists-is-namelist-file">
-<h1>CIME.compare_namelists.is_namelist_file<a class="headerlink" href="#cime-compare-namelists-is-namelist-file" title="Link to this heading"></a></h1>
+  <section id="cime-compare-namelists-normalized-dict-compare">
+<h1>CIME.compare_namelists.normalized_dict_compare<a class="headerlink" href="#cime-compare-namelists-normalized-dict-compare" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="CIME.compare_namelists.is_namelist_file">
-<span class="sig-prename descclassname"><span class="pre">CIME.compare_namelists.</span></span><span class="sig-name descname"><span class="pre">is_namelist_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/compare_namelists.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.compare_namelists.is_namelist_file" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="CIME.compare_namelists.normalized_dict_compare">
+<span class="sig-prename descclassname"><span class="pre">CIME.compare_namelists.</span></span><span class="sig-name descname"><span class="pre">normalized_dict_compare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keyname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/compare_namelists.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.compare_namelists.normalized_dict_compare" title="Link to this definition"></a></dt>
+<dd><p>Recursively compare contents of dicts, normalize values (but not keys)</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;averaging_type&#39;</span><span class="p">:</span> <span class="s1">&#39;average&#39;</span><span class="p">,</span> <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;physics_gll&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;field_names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;T_mid&#39;</span><span class="p">,</span> <span class="s1">&#39;tracers&#39;</span><span class="p">,</span> <span class="s1">&#39;horiz_winds&#39;</span><span class="p">,</span> <span class="s1">&#39;p_int&#39;</span><span class="p">,</span> <span class="s1">&#39;pseudo_density&#39;</span><span class="p">,</span> <span class="s1">&#39;p_mid&#39;</span><span class="p">]}},</span> <span class="s1">&#39;filename_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.G.20250922_110259_eeywbj.scream.phys.h&#39;</span><span class="p">,</span> <span class="s1">&#39;output_control&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s1">&#39;frequency_units&#39;</span><span class="p">:</span> <span class="s1">&#39;nsteps&#39;</span><span class="p">,</span> <span class="s1">&#39;skip_t0_output&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span> <span class="s1">&#39;skip_t0_output&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;averaging_type&#39;</span><span class="p">:</span> <span class="s1">&#39;average&#39;</span><span class="p">,</span> <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;physics_gll&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;field_names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;T_mid&#39;</span><span class="p">,</span> <span class="s1">&#39;p_int&#39;</span><span class="p">,</span> <span class="s1">&#39;tracers&#39;</span><span class="p">,</span> <span class="s1">&#39;horiz_winds&#39;</span><span class="p">,</span> <span class="s1">&#39;pseudo_density&#39;</span><span class="p">,</span> <span class="s1">&#39;p_mid&#39;</span><span class="p">]}},</span> <span class="s1">&#39;filename_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.C.20250922_110260_easdfa.scream.phys.h&#39;</span><span class="p">,</span> <span class="s1">&#39;output_control&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s1">&#39;frequency_units&#39;</span><span class="p">:</span> <span class="s1">&#39;nsteps&#39;</span><span class="p">,</span> <span class="s1">&#39;skip_t0_output&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span> <span class="s1">&#39;skip_t0_output&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normalized_dict_compare</span><span class="p">(</span><span class="s2">&quot;top-level&quot;</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="s1">&#39;ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2&#39;</span><span class="p">)</span>
+<span class="go">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;averaging_type&#39;</span><span class="p">:</span> <span class="s1">&#39;average&#39;</span><span class="p">,</span> <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;physics_gll&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;field_names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;T_mid&#39;</span><span class="p">,</span> <span class="s1">&#39;p_int&#39;</span><span class="p">,</span> <span class="s1">&#39;tracers&#39;</span><span class="p">,</span> <span class="s1">&#39;horiz_winds&#39;</span><span class="p">,</span> <span class="s1">&#39;pseudo_density&#39;</span><span class="p">,</span> <span class="s1">&#39;p_mid&#39;</span><span class="p">]}},</span> <span class="s1">&#39;filename_prefix&#39;</span><span class="p">:</span> <span class="s1">&#39;ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.C.20250922_110260_easdfa.scream.phys.h&#39;</span><span class="p">,</span> <span class="s1">&#39;output_control&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;frequency&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;frequency_units&#39;</span><span class="p">:</span> <span class="s1">&#39;nsteps&#39;</span><span class="p">,</span> <span class="s1">&#39;skip_t0_output&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span> <span class="s1">&#39;skip_t0_output&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normalized_dict_compare</span><span class="p">(</span><span class="s2">&quot;top-level&quot;</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="s1">&#39;ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2&#39;</span><span class="p">)</span>
+<span class="go">&#39;frequency had mismatched values, baseline=9, case=8\n&#39;</span>
+<span class="gp">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
 
 </section>
 
@@ -156,8 +167,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.compare_namelists.compare_namelist_files.html" class="btn btn-neutral float-left" title="CIME.compare_namelists.compare_namelist_files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.compare_namelists.normalized_dict_compare.html" class="btn btn-neutral float-right" title="CIME.compare_namelists.normalized_dict_compare" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.compare_namelists.is_namelist_file.html" class="btn btn-neutral float-left" title="CIME.compare_namelists.is_namelist_file" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.compare_namelists.Array.html" class="btn btn-neutral float-right" title="CIME.compare_namelists.Array" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

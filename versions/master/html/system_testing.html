@@ -354,34 +354,22 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 </dl>
 </td>
 </tr>
-<tr class="row-odd"><td><p>ERS2</p></td>
-<td><p>Exact restart from startup  (default 6 days + 5 days).</p>
-<blockquote>
-<div><div class="line-block">
-<div class="line">Do an 11-day initial test without making restarts. (file suffix: base)</div>
-<div class="line">Do an 11-day restart test stopping at day 6 with a restart,
-then resuming from restart at day 6. (file suffix: rest)</div>
-<div class="line">Compare component history files “.base” and “.rest” at day 11.</div>
-</div>
-</div></blockquote>
-</td>
-</tr>
-<tr class="row-even"><td><p>ERT</p></td>
+<tr class="row-odd"><td><p>ERT</p></td>
 <td><p>Longer version of ERS. Exact restart from startup, default 2 months + 1 month (ERS with info DBUG = 1).</p></td>
 </tr>
-<tr class="row-odd"><td><p>IRT</p></td>
+<tr class="row-even"><td><p>IRT</p></td>
 <td><p>Exact restart from startup, (default 4 days + 7 days) with restart from interim file.</p></td>
 </tr>
-<tr class="row-even"><td><p>ERIO</p></td>
+<tr class="row-odd"><td><p>ERIO</p></td>
 <td><p>Exact restart from startup with different IO file types, (default 6 days + 5 days).</p></td>
 </tr>
-<tr class="row-odd"><td><p>ERR</p></td>
+<tr class="row-even"><td><p>ERR</p></td>
 <td><p>Exact restart from startup with resubmit, (default 4 days + 3 days).</p></td>
 </tr>
-<tr class="row-even"><td><p>ERRI</p></td>
+<tr class="row-odd"><td><p>ERRI</p></td>
 <td><p>Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</p></td>
 </tr>
-<tr class="row-odd"><td><p>ERI</p></td>
+<tr class="row-even"><td><p>ERI</p></td>
 <td><dl class="simple">
 <dt>Hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</dt><dd><dl class="simple">
 <dt>ref1case</dt><dd><p>Do an initial run for 3 days writing restarts at day 3.
@@ -406,7 +394,7 @@ Short term archiving is off.</p>
 </dl>
 </td>
 </tr>
-<tr class="row-even"><td><p>ERP</p></td>
+<tr class="row-odd"><td><p>ERP</p></td>
 <td><dl class="simple">
 <dt>PES counts hybrid (OPENMP/MPI) restart bit-for-bit test from startup, (default 6 days + 5 days).</dt><dd><p>Initial PES set up out of the box
 Do an 11-day initial test - write a restart at day 6.     (file suffix base)
@@ -418,7 +406,7 @@ This is just like an ERS test but the tasks/threading counts are modified on res
 </dl>
 </td>
 </tr>
-<tr class="row-odd"><td><p>PEA</p></td>
+<tr class="row-even"><td><p>PEA</p></td>
 <td><dl class="simple">
 <dt>Single PE bit-for-bit test (default 5 days)</dt><dd><p>Do an initial run on 1 PE with mpi library.     (file suffix: base)
 Do the same run on 1 PE with mpiserial library. (file suffix: mpiserial)
@@ -427,7 +415,7 @@ Compare base and mpiserial.</p>
 </dl>
 </td>
 </tr>
-<tr class="row-even"><td><p>PEM</p></td>
+<tr class="row-odd"><td><p>PEM</p></td>
 <td><dl class="simple">
 <dt>Modified PE counts for MPI(NTASKS) bit-for-bit test (default 5 days)</dt><dd><p>Do an initial run with default PE layout                                     (file suffix: base)
 Do another initial run with modified PE layout (NTASKS_XXX =&gt; NTASKS_XXX/2)  (file suffix: modpes)
@@ -436,7 +424,7 @@ Compare base and modpes.</p>
 </dl>
 </td>
 </tr>
-<tr class="row-odd"><td><p>PET</p></td>
+<tr class="row-even"><td><p>PET</p></td>
 <td><dl class="simple">
 <dt>Modified threading OPENMP bit-for-bit test (default 5 days)</dt><dd><p>Do an initial run where all components are threaded by default. (file suffix: base)
 Do another initial run with NTHRDS=1 for all components.        (file suffix: single_thread)
@@ -445,19 +433,19 @@ Compare base and single_thread.</p>
 </dl>
 </td>
 </tr>
-<tr class="row-even"><td><p>PFS</p></td>
+<tr class="row-odd"><td><p>PFS</p></td>
 <td><p>Performance test setup. History and restart output is turned off. (default 20 days)</p></td>
 </tr>
-<tr class="row-odd"><td><p>ICP</p></td>
+<tr class="row-even"><td><p>ICP</p></td>
 <td><p>CICE performance test.</p></td>
 </tr>
-<tr class="row-even"><td><p>OCP</p></td>
+<tr class="row-odd"><td><p>OCP</p></td>
 <td><p>POP performance test. (default 10 days)</p></td>
 </tr>
-<tr class="row-odd"><td><p>MCC</p></td>
+<tr class="row-even"><td><p>MCC</p></td>
 <td><p>Multi-driver validation vs single-driver (both multi-instance). (default 5 days)</p></td>
 </tr>
-<tr class="row-even"><td><p>NCK</p></td>
+<tr class="row-odd"><td><p>NCK</p></td>
 <td><dl class="simple">
 <dt>Multi-instance validation vs single instance - sequential PE for instances (default length)</dt><dd><p>Do an initial run test with NINST 1. (file suffix: base)
 Do an initial run test with NINST 2. (file suffix: multiinst for both _0001 and _0002)
@@ -466,20 +454,20 @@ Compare base and _0001 and _0002.</p>
 </dl>
 </td>
 </tr>
-<tr class="row-odd"><td><p>REP</p></td>
+<tr class="row-even"><td><p>REP</p></td>
 <td><p>Reproducibility: Two identical initial runs are bit-for-bit. (default 5 days)</p></td>
 </tr>
-<tr class="row-even"><td><p>SBN</p></td>
+<tr class="row-odd"><td><p>SBN</p></td>
 <td><p>Smoke build-namelist test (just run preview_namelist and check_input_data).</p></td>
 </tr>
-<tr class="row-odd"><td><p>SMS</p></td>
+<tr class="row-even"><td><p>SMS</p></td>
 <td><dl class="simple">
 <dt>Smoke test (default 5 days)</dt><dd><p>Do a 5-day initial test that runs to completion without error. (file suffix: base)</p>
 </dd>
 </dl>
 </td>
 </tr>
-<tr class="row-even"><td><p>SEQ</p></td>
+<tr class="row-odd"><td><p>SEQ</p></td>
 <td><dl class="simple">
 <dt>Different sequencing bit-for-bit test. (default 10 days)</dt><dd><p>Do an initial run test with out-of-box PE-layout. (file suffix: base)
 Do a second run where all root pes are at pe-0.   (file suffix: seq)
@@ -488,10 +476,10 @@ Compare base and seq.</p>
 </dl>
 </td>
 </tr>
-<tr class="row-odd"><td><p>DAE</p></td>
+<tr class="row-even"><td><p>DAE</p></td>
 <td><p>Data assimilation test, default 1 day, two DA cycles, no data modification.</p></td>
 </tr>
-<tr class="row-even"><td><p>PRE</p></td>
+<tr class="row-odd"><td><p>PRE</p></td>
 <td><dl class="simple">
 <dt>Pause-resume test: by default a bit-for-bit test of pause-resume cycling.</dt><dd><p>Default 5 hours, five pause/resume cycles, no data modification.</p>
 </dd>
