@@ -171,7 +171,7 @@ class EnvMachSpecific(EnvBase):
 
     def _set_resources_for_case(self, case):
         resource_nodes = self.get_children("resource_limits")
-        if resource_nodes is not None:
+        if resource_nodes:
             expect(
                 platform.system() != "Darwin",
                 "Mac OS does not support setting resource limits",
