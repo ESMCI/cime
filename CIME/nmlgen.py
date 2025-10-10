@@ -99,7 +99,7 @@ class NamelistGenerator(object):
         self._namelist = Namelist()
 
         # entries for which we should potentially call add_default (variables that do not
-        # set skip_default_entry)
+        # set skip_default_entry, per_stream_entry or multi_variable_entry)
         self._default_nodes = []
 
     # Define __enter__ and __exit__ so that we can use this as a context manager
@@ -117,8 +117,11 @@ class NamelistGenerator(object):
         skip_entry_loop=False,
         skip_default_for_groups=None,
         set_group_name=None,
+        multi_variable_mappings=None,
     ):
-        """Return array of names of all definition nodes
+        """
+        Return array of names of all definition nodes for which defaults are automatically
+        added (excluding nodes that don't have defaults automatically added)
 
         infiles should be a list of file paths, each one giving namelist settings that
         take precedence over the default values. Often there will be only one file in this
@@ -129,6 +132,15 @@ class NamelistGenerator(object):
         groups. This is often paired with later conditional calls to
         add_defaults_for_group.
 
+        If multi_variable_mappings is provided, it should be a dictionary mapping ids in
+        the namelist definition file to a list of final names in the namelist. There must
+        be an entry in this dictionary for any namelist_definition entry that has the
+        multi_variable_entry attribute set to true. (The mapping can be an empty list for
+        a variable that will not have any appearances in the final namelist.) Note that
+        any variable in this list will *not* appear in the list of names for which
+        defaults are automatically added; instead, add_default will need to be called
+        explicitly for each of the final names.
+
         """
         if skip_default_for_groups is None:
             skip_default_for_groups = []
@@ -137,7 +149,9 @@ class NamelistGenerator(object):
         self.new_instance()
 
         # Determine the array of entry nodes that will be acted upon
-        self._default_nodes = self._definition.set_nodes(skip_groups=skip_groups)
+        self._default_nodes = self._definition.set_nodes(
+            skip_groups=skip_groups, multi_variable_mappings=multi_variable_mappings
+        )
 
         # Add attributes to definition object
         self._definition.add_attributes(config)
@@ -176,8 +190,8 @@ class NamelistGenerator(object):
     def add_defaults_for_group(self, group):
         """Call add_default for namelist variables in the given group
 
-        This still skips variables that have attributes of skip_default_entry or
-        per_stream_entry.
+        This still skips variables that have attributes of skip_default_entry,
+        per_stream_entry or multi_variable_entry.
 
         This must be called after init_defaults. It is often paired with use of
         skip_default_for_groups in the init_defaults call.

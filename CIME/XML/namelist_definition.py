@@ -89,44 +89,80 @@ class NamelistDefinition(EntryID):
         super(NamelistDefinition, self).__init__(infile, schema=schema)
 
         self._attributes = {}
-        self._entry_nodes = []
-        self._entry_ids = []
+        self._var_names = []
         self._valid_values = {}
         self._entry_types = {}
         self._group_names = CaseInsensitiveDict({})
         self._nodes = {}
 
-    def set_node_values(self, name, node):
-        self._entry_nodes.append(node)
-        self._entry_ids.append(name)
-        self._nodes[name] = node
-        self._entry_types[name] = self._get_type(node)
-        self._valid_values[name] = self._get_valid_values(node)
-        self._group_names[name] = self.get_group_name(node)
+    def _set_node_values(self, names, node):
+        # names is a list of names; typically it has a single item, the "id", but not
+        # always: in the case of a multi_variable_entry, it will be a list of all of the
+        # names mapped to by this entry
+        for name in names:
+            self._var_names.append(name)
+            self._nodes[name] = node
+            self._entry_types[name] = self._get_type(node)
+            self._valid_values[name] = self._get_valid_values(node)
+            self._group_names[name] = self.get_group_name(node)
 
-    def set_nodes(self, skip_groups=None):
+    def set_nodes(self, skip_groups=None, multi_variable_mappings=None):
         """
-        populates the object data types for all nodes that are not part of the skip_groups array
-        returns nodes that do not have attributes of `skip_default_entry` or `per_stream_entry`
+        Populates the object data types for all nodes that are not part of the skip_groups
+        array.
+
+        If multi_variable_mappings is provided, it should be a dictionary mapping ids in
+        the namelist definition file to a list of final names in the namelist. There must
+        be an entry in this dictionary for any namelist_definition entry that has the
+        multi_variable_entry attribute set to true. (The mapping can be an empty list for
+        a variable that will not have any appearances in the final namelist.)
+
+        Returns nodes that do not have attributes of `skip_default_entry`,
+        `per_stream_entry` or `multi_variable_entry`.
         """
+        if multi_variable_mappings is None:
+            multi_variable_mappings = {}
         default_nodes = []
         for node in self.get_children("entry"):
-            name = self.get(node, "id")
+            this_id = self.get(node, "id")
             skip_default_entry = self.get(node, "skip_default_entry") == "true"
             per_stream_entry = self.get(node, "per_stream_entry") == "true"
+            multi_variable_entry = self.get(node, "multi_variable_entry") == "true"
+            self._check_multi_variable_validity(
+                this_id, multi_variable_mappings, multi_variable_entry, per_stream_entry
+            )
+
+            # The reason we need add_default False for a multi_variable_entry is that the
+            # returned default_nodes are just the nodes themselves, without the mappings
+            # in multi_variable_mappings - so users of these default_nodes examine their
+            # ids, which is problematic for a multi_variable_entry. The implication is
+            # that add_default will need to be called explicitly for the final names in a
+            # multi_variable_entry.
+            add_default = (
+                not skip_default_entry
+                and not per_stream_entry
+                and not multi_variable_entry
+            )
+
+            if multi_variable_entry:
+                # Note that we have already confirmed that id is in
+                # multi_variable_mappings via _check_multi_variable_validity
+                names = multi_variable_mappings[this_id]
+            else:
+                names = [this_id]
 
             if skip_groups:
                 group_name = self.get_group_name(node)
 
                 if not group_name in skip_groups:
-                    self.set_node_values(name, node)
+                    self._set_node_values(names, node)
 
-                    if not skip_default_entry and not per_stream_entry:
+                    if add_default:
                         default_nodes.append(node)
             else:
-                self.set_node_values(name, node)
+                self._set_node_values(names, node)
 
-                if not skip_default_entry and not per_stream_entry:
+                if add_default:
                     default_nodes.append(node)
 
         return default_nodes
@@ -160,6 +196,30 @@ class NamelistDefinition(EntryID):
             valid_values = valid_values.split(",")
         return valid_values
 
+    @staticmethod
+    def _check_multi_variable_validity(
+        this_id, multi_variable_mappings, multi_variable_entry, per_stream_entry
+    ):
+        if multi_variable_entry:
+            # We could probably make this combination work, but currently it probably
+            # won't work correctly because get_per_stream_entries has
+            # `entries.append(self.get(node, "id"))` rather than taking into account the
+            # mapping of a single id to multiple names in the final namelist.
+            expect(
+                not per_stream_entry,
+                f"Cannot have both multi_variable_entry and per_stream_entry for {this_id}",
+            )
+            expect(
+                this_id in multi_variable_mappings,
+                f"{this_id} has the multi_variable_entry attribute but does not appear in multi_variable_mappings",
+            )
+
+        if this_id in multi_variable_mappings:
+            expect(
+                multi_variable_entry,
+                f"{this_id} appears in multi_variable_mappings but does not have the multi_variable_entry attribute",
+            )
+
     def get_group(self, name):
         return self._group_names[name]
 
@@ -174,9 +234,6 @@ class NamelistDefinition(EntryID):
     def get_attributes(self):
         """Return this object's attributes dictionary"""
         return self._attributes
-
-    def get_entry_nodes(self):
-        return self._entry_nodes
 
     def get_per_stream_entries(self):
         entries = []
@@ -386,7 +443,7 @@ class NamelistDefinition(EntryID):
         case insensitve match"""
 
         expect(
-            name in self._entry_ids,
+            name in self._var_names,
             (variable_template + " is not in the namelist definition.").format(
                 str(name)
             ),
@@ -394,7 +451,7 @@ class NamelistDefinition(EntryID):
 
     def _user_modifiable_in_variable_definition(self, name):
         # Is name user modifiable?
-        node = self.get_optional_child("entry", attributes={"id": name})
+        node = self._nodes[name]
         user_modifiable_only_by_xml = self.get(node, "modify_via_xml")
         if user_modifiable_only_by_xml is not None:
             expect(
