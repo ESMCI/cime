@@ -7,6 +7,16 @@ from CIME.XML.namelist_definition import NamelistDefinition
 
 
 class TestXMLNamelistDefinition(unittest.TestCase):
+    @staticmethod
+    def _create_namelist_definition_from_string(string):
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(string.encode())
+            temp.flush()
+
+            nmldef = NamelistDefinition(temp.name)
+
+        return nmldef
+
     def test_set_nodes(self):
         test_data = """<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="http://www.cgd.ucar.edu/~cam/namelist/namelist_definition.xsl"?>
@@ -22,11 +32,7 @@ class TestXMLNamelistDefinition(unittest.TestCase):
     </entry>
 </entry_id>"""
 
-        with tempfile.NamedTemporaryFile() as temp:
-            temp.write(test_data.encode())
-            temp.flush()
-
-            nmldef = NamelistDefinition(temp.name)
+        nmldef = self._create_namelist_definition_from_string(test_data)
 
         nmldef.set_nodes()
 
