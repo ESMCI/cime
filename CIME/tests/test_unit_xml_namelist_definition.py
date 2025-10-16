@@ -17,7 +17,7 @@ class TestXMLNamelistDefinition(unittest.TestCase):
         <category>test</category>
     </entry>
     <entry id="test2">
-        <type>char</type>
+        <type>real</type>
         <category>test</category>
     </entry>
 </entry_id>"""
@@ -28,14 +28,14 @@ class TestXMLNamelistDefinition(unittest.TestCase):
 
             nmldef = NamelistDefinition(temp.name)
 
-            nmldef.set_nodes()
+        nmldef.set_nodes()
 
-            assert len(nmldef._entry_nodes) == 2
-            assert nmldef._entry_ids == ["test1", "test2"]
-            assert len(nmldef._nodes) == 2
-            assert nmldef._entry_types == {"test1": "char", "test2": "char"}
-            assert nmldef._valid_values == {"test1": None, "test2": None}
-            assert nmldef._group_names == {"test1": None, "test2": None}
+        assert len(nmldef._entry_nodes) == 2
+        assert nmldef._entry_ids == ["test1", "test2"]
+        assert nmldef._nodes.keys() == {"test1", "test2"}
+        assert nmldef._entry_types == {"test1": "char", "test2": "real"}
+        assert nmldef._valid_values == {"test1": None, "test2": None}
+        assert nmldef._group_names == {"test1": None, "test2": None}
 
 
 if __name__ == "__main__":
