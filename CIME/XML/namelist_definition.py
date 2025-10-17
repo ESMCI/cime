@@ -387,7 +387,26 @@ class NamelistDefinition(EntryID):
 
     def _expect_variable_in_definition(self, name, variable_template):
         """Used to get a better error message for an unexpected variable.
-        case insensitve match"""
+
+        This version is case-sensitive. See _get_actual_varname_case for a version that is
+        case-insensitive.
+        """
+
+        expect(
+            name in self._entry_ids,
+            (variable_template + " is not in the namelist definition.").format(
+                str(name)
+            ),
+        )
+
+    def _get_varname_actual_case(self, name, variable_template):
+        """
+        Given a name of a variable with possible case mismatches, return the name with the
+        correct case (i.e., the correct mix of lowercase and uppercase).
+
+        This also gives a nice error message for an unexpected variable (as in
+        _expect_variable_in_definition)
+        """
 
         expect(
             name.lower() in self._entry_ids_lower_to_actual,
@@ -395,6 +414,8 @@ class NamelistDefinition(EntryID):
                 str(name)
             ),
         )
+
+        return self._entry_ids_lower_to_actual[name.lower()]
 
     def _user_modifiable_in_variable_definition(self, name):
         # Is name user modifiable?
@@ -488,19 +509,23 @@ class NamelistDefinition(EntryID):
         variable_template = self._generate_variable_template(filename)
         groups = {}
         for variable_name in dict_:
-            variable_actual_case = self._entry_ids_lower_to_actual[
-                variable_name.lower()
-            ]
-            qualified_varname = get_fortran_name_only(variable_actual_case)
-            self._expect_variable_in_definition(qualified_varname, variable_template)
-            group_name = self.get_group(qualified_varname)
+            qualified_varname = get_fortran_name_only(variable_name)
+            qualified_varname_actual_case = self._get_varname_actual_case(
+                qualified_varname, variable_template
+            )
+            # In contrast to qualified_varname_actual_case, variable_name_actual_case
+            # includes any extra stuff such as the array section
+            variable_name_actual_case = variable_name.replace(
+                qualified_varname, qualified_varname_actual_case, 1
+            )
+            group_name = self.get_group(qualified_varname_actual_case)
             expect(
                 group_name is not None,
-                "No group found for var {}".format(variable_actual_case),
+                "No group found for var {}".format(variable_name),
             )
             if group_name not in groups:
                 groups[group_name] = collections.OrderedDict()
-            groups[group_name][variable_actual_case] = dict_[variable_name]
+            groups[group_name][variable_name_actual_case] = dict_[variable_name]
         return Namelist(groups)
 
     def get_input_pathname(self, name):
