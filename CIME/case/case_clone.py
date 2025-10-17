@@ -84,8 +84,8 @@ def create_clone(
                 os.makedirs(cime_output_root)
 
         # determine if will use clone executable or not
+        orig_exeroot = self.get_value("EXEROOT")
         if keepexe:
-            orig_exeroot = self.get_value("EXEROOT")
             newcase.set_value("EXEROOT", orig_exeroot)
             newcase.set_value("BUILD_COMPLETE", "TRUE")
             orig_bld_complete = self.get_value("BUILD_COMPLETE")
@@ -98,6 +98,13 @@ def create_clone(
                 )
         else:
             newcase.set_value("BUILD_COMPLETE", "FALSE")
+            new_exeroot = newcase.get_value("EXEROOT")
+            new_rundir = newcase.get_value("RUNDIR")
+            orig_rundir = self.get_value("RUNDIR")
+            if new_exeroot == orig_exeroot:
+                exeroot = "$CIME_OUTPUT_ROOT/$CASE/bld"
+            if new_rundir == orig_rundir:
+                rundir = "$CIME_OUTPUT_ROOT/$CASE/run"
 
         # set machdir
         if mach_dir is not None:
