@@ -150,5 +150,6 @@ class TestXMLNamelistDefinition(unittest.TestCase):
         assert "MyTestVar(3)" in nml_vars
         assert nml_vars["MyTestVar(3)"] == "1.2"
 
+
 if __name__ == "__main__":
     unittest.main()
