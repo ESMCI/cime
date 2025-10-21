@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.run\_bld\_cmd\_ensure\_logging
+=========================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: run_bld_cmd_ensure_logging

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_scripts\_root
+=============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_scripts_root

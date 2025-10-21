@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_project
+=======================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_project

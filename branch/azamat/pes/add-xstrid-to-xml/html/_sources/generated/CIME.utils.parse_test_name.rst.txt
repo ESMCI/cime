@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.parse\_test\_name
+============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: parse_test_name
