@@ -25,6 +25,7 @@ class Pes(GenericXML):
         opes_nthrds = {}
         opes_rootpe = {}
         opes_pstrid = {}
+        opes_excl_stride= {}
         oother_settings = {}
         other_settings = {}
         append = {}
@@ -41,6 +42,7 @@ class Pes(GenericXML):
                 opes_nthrds,
                 opes_rootpe,
                 opes_pstrid,
+                opes_excl_stride,
                 oother_settings,
                 append,
                 ocomments,
@@ -60,6 +62,7 @@ class Pes(GenericXML):
             pes_nthrds,
             pes_rootpe,
             pes_pstrid,
+            pes_excl_stride,
             other_settings,
             os_append,
             comments,
@@ -68,6 +71,7 @@ class Pes(GenericXML):
         pes_nthrds.update(opes_nthrds)
         pes_rootpe.update(opes_rootpe)
         pes_pstrid.update(opes_pstrid)
+        pes_excl_stride.update(opes_excl_stride)
         other_settings.update(oother_settings)
         os_append.update(append)
         if ocomments is not None:
@@ -80,6 +84,8 @@ class Pes(GenericXML):
                 pes_rootpe[i] = 0
             for i in iter(pes_pstrid):
                 pes_pstrid[i] = 0
+            for i in iter(pes_excl_stride):
+                pes_pstrid[i] = 0
 
         logger.info("Pes setting: grid          is {} ".format(grid))
         logger.info("Pes setting: compset       is {} ".format(compset))
@@ -87,6 +93,7 @@ class Pes(GenericXML):
         logger.info("Pes setting: threads     is {} ".format(pes_nthrds))
         logger.info("Pes setting: rootpe      is {} ".format(pes_rootpe))
         logger.info("Pes setting: pstrid      is {} ".format(pes_pstrid))
+        logger.info("Pes setting: excl_stride is {} ".format(pes_excl_stride))
         logger.info("Pes other settings: {}".format(other_settings))
         logger.info("Pes other settings append: {}".format(os_append))
         if comments is not None:
@@ -97,6 +104,7 @@ class Pes(GenericXML):
             pes_nthrds,
             pes_rootpe,
             pes_pstrid,
+            pes_excl_stride,
             other_settings,
             os_append,
             comments,
@@ -110,7 +118,8 @@ class Pes(GenericXML):
         compset_choice = None
         pesize_choice = None
         max_points = -1
-        pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, other_settings, append = (
+        pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, pes_excl_stride, other_settings, append = (
+            {},
             {},
             {},
             {},
@@ -173,6 +182,11 @@ class Pes(GenericXML):
                                                 pes_pstrid[
                                                     self.name(child).upper()
                                                 ] = int(self.text(child))
+                                        elif "excl_stride" in vid:
+                                            for child in self.get_children(root=node):
+                                                pes_excl_stride[
+                                                    self.name(child).upper()
+                                                ] = int(self.text(child))
                                         # if the value is already upper case its something else we are trying to set
                                         else:
                                             other_settings[vid] = self.text(node)
@@ -231,6 +245,9 @@ class Pes(GenericXML):
                 elif "pstrid" in vid:
                     for child in self.get_children(root=node):
                         pes_pstrid[self.name(child).upper()] = int(self.text(child))
+                elif "excl_stride" in vid:
+                    for child in self.get_children(root=node):
+                        pes_excl_stride[self.name(child).upper()] = int(self.text(child))
                 # if the value is already upper case its something else we are trying to set
                 elif vid == self.name(node):
                     text = self.text(node).strip()
@@ -250,6 +267,7 @@ class Pes(GenericXML):
             pes_nthrds,
             pes_rootpe,
             pes_pstrid,
+            pes_excl_stride,
             other_settings,
             append,
             comment,
