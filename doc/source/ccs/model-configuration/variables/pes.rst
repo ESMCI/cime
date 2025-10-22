@@ -326,6 +326,8 @@ following meanings:
      -  The global MPI task of the component root task; if negative, indicates nodes rather than tasks. The root processor for each component is set relative to the MPI global communicator.
    * - PSTRID
      - The stride of MPI tasks across the global set of pes (for now set to 1). This variable is currently not used and is a placeholder for future development.
+   * - EXCL_STRIDE
+     - Stride of MPI tasks owned exclusively by a component. If 0, exclusivity is disabled.
    * - NINST
      -  The number of component instances, which are spread evenly across NTASKS.
    * - COST_PER_NODE
