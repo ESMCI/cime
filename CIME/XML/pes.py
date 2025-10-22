@@ -1,6 +1,7 @@
 """
 Interface to the config_pes.xml file.  This class inherits from GenericXML.py
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
@@ -25,7 +26,7 @@ class Pes(GenericXML):
         opes_nthrds = {}
         opes_rootpe = {}
         opes_pstrid = {}
-        opes_excl_stride= {}
+        opes_excl_stride = {}
         oother_settings = {}
         other_settings = {}
         append = {}
@@ -118,7 +119,15 @@ class Pes(GenericXML):
         compset_choice = None
         pesize_choice = None
         max_points = -1
-        pes_ntasks, pes_nthrds, pes_rootpe, pes_pstrid, pes_excl_stride, other_settings, append = (
+        (
+            pes_ntasks,
+            pes_nthrds,
+            pes_rootpe,
+            pes_pstrid,
+            pes_excl_stride,
+            other_settings,
+            append,
+        ) = (
             {},
             {},
             {},
@@ -164,24 +173,24 @@ class Pes(GenericXML):
                                             comment = self.text(node)
                                         elif "ntasks" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_ntasks[
-                                                    self.name(child).upper()
-                                                ] = int(self.text(child))
+                                                pes_ntasks[self.name(child).upper()] = (
+                                                    int(self.text(child))
+                                                )
                                         elif "nthrds" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_nthrds[
-                                                    self.name(child).upper()
-                                                ] = int(self.text(child))
+                                                pes_nthrds[self.name(child).upper()] = (
+                                                    int(self.text(child))
+                                                )
                                         elif "rootpe" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_rootpe[
-                                                    self.name(child).upper()
-                                                ] = int(self.text(child))
+                                                pes_rootpe[self.name(child).upper()] = (
+                                                    int(self.text(child))
+                                                )
                                         elif "pstrid" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_pstrid[
-                                                    self.name(child).upper()
-                                                ] = int(self.text(child))
+                                                pes_pstrid[self.name(child).upper()] = (
+                                                    int(self.text(child))
+                                                )
                                         elif "excl_stride" in vid:
                                             for child in self.get_children(root=node):
                                                 pes_excl_stride[
@@ -247,7 +256,9 @@ class Pes(GenericXML):
                         pes_pstrid[self.name(child).upper()] = int(self.text(child))
                 elif "excl_stride" in vid:
                     for child in self.get_children(root=node):
-                        pes_excl_stride[self.name(child).upper()] = int(self.text(child))
+                        pes_excl_stride[self.name(child).upper()] = int(
+                            self.text(child)
+                        )
                 # if the value is already upper case its something else we are trying to set
                 elif vid == self.name(node):
                     text = self.text(node).strip()

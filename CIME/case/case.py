@@ -1094,9 +1094,9 @@ class Case(object):
         )
         drv_comp_model_specific = Component(drv_config_file_model_specific, "CPL")
 
-        self._component_description[
-            "forcing"
-        ] = drv_comp_model_specific.get_forcing_description(self._compsetname)
+        self._component_description["forcing"] = (
+            drv_comp_model_specific.get_forcing_description(self._compsetname)
+        )
         logger.info(
             "Compset forcing is {}".format(self._component_description["forcing"])
         )
@@ -1295,7 +1295,11 @@ class Case(object):
             nthrds = pes_nthrds[nthrds_str] if nthrds_str in pes_nthrds else 1
             rootpe = pes_rootpe[rootpe_str] if rootpe_str in pes_rootpe else 0
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
-            excl_stride = pes_excl_stride[excl_stride_str] if excl_stride_str in pes_excl_stride else 0
+            excl_stride = (
+                pes_excl_stride[excl_stride_str]
+                if excl_stride_str in pes_excl_stride
+                else 0
+            )
 
             totaltasks.append((ntasks + rootpe) * nthrds)
             mach_pes_obj.set_value(ntasks_str, ntasks)
