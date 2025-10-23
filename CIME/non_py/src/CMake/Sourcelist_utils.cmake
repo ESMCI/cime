@@ -29,6 +29,24 @@
 #
 #==========================================================================
 #
+# remove_source_file
+#
+# Arguments:
+#    file_to_remove - Name of source file to remove from the list
+#    source_list_name - Name of variable containing list of sources
+#
+# Given the name of a file to remove, finds this file in the list given by
+# source_list_name and removes it from the list. file_to_remove can just be
+# the base file name, without a path (or it can contain just a subpath of
+# the full path), whereas the source list can contain the full path; the
+# base name will be searched for in the list of full paths.
+#
+# If the given file is not found, the function returns without doing
+# anything (no error is issued in this case). If the given file is found
+# multiple times, all instances are removed.
+#
+#==========================================================================
+#
 # declare_generated_dependencies.
 #
 # Arguments:
@@ -114,6 +132,23 @@ After searching in list: ${${all_sources}}")
   set(${source_list_name} "${${source_list_name}}" PARENT_SCOPE)
 
 endfunction(extract_sources)
+
+# Given the name of a file to remove, finds this file in the list given by
+# source_list_name and removes it from the list. file_to_remove can just be
+# the base file name, without a path (or it can contain just a subpath of
+# the full path), whereas the source list can contain the full path; the
+# base name will be searched for in the list of full paths.
+function(remove_source_file file_to_remove source_list_name)
+   set(source_list_final "${${source_list_name}}")
+   foreach (sourcefile ${${source_list_name}})
+      string(REGEX MATCH ${file_to_remove} match_found ${sourcefile})
+      if(match_found)
+         list(REMOVE_ITEM source_list_final ${sourcefile})
+      endif()
+   endforeach()
+
+   set(${source_list_name} "${source_list_final}" PARENT_SCOPE)
+endfunction(remove_source_file)
 
 # Handles dependencies between files generated in one directory and a
 # target in another.
