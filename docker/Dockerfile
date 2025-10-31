@@ -1,5 +1,5 @@
-ARG BASE_TAG=latest
-FROM condaforge/miniforge3:${BASE_TAG} AS base
+ARG BASE_TAG=5e88cdc957318a7ad805d94a58379c01c16d7d3f9c203da42d1760b960b5cf03
+FROM quay.io/condaforge/miniforge3@sha256:${BASE_TAG} AS base
 
 WORKDIR /home/cime
 
