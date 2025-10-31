@@ -3,14 +3,13 @@ FROM quay.io/condaforge/miniforge3@sha256:${BASE_TAG} AS base
 
 WORKDIR /home/cime
 
+RUN userdel ubuntu \
+    && groupadd -g 1000 cime \
+    && useradd -g 1000 -m -u 1000 cime
+
 RUN mkdir -p \
         /home/cime/inputdata/cpl/gridmaps/oQU240 \
         /home/cime/inputdata/share/domains \
-        /home/cime/timings \
-        /home/cime/cases \
-        /home/cime/archive \
-        /home/cime/baselines \
-        /home/cime/tools \
     && wget -O /home/cime/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
     && wget -O /home/cime/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
