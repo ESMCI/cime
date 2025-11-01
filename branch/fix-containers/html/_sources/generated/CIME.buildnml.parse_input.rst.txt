@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.buildnml.parse\_input
+==========================
+
+.. currentmodule:: CIME.buildnml
+
+.. autofunction:: parse_input

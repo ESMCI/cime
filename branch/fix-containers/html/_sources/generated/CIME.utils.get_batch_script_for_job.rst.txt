@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_batch\_script\_for\_job
+=======================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_batch_script_for_job

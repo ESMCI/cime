@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.aprun.get\_aprun\_cmd\_for\_case
+=====================================
+
+.. currentmodule:: CIME.aprun
+
+.. autofunction:: get_aprun_cmd_for_case

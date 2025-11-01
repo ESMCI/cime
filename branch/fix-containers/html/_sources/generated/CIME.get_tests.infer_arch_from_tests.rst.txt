@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.infer\_arch\_from\_tests
+========================================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: infer_arch_from_tests
