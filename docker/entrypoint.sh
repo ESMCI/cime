@@ -90,6 +90,6 @@ if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
             fix_permissions "${SRC_PATH}"
         fi
 
-        gosu "${USER_ID}":${GROUP_ID}" "${@}"
+        gosu "${USER_ID}":"${GROUP_ID}" "${@}"
     fi
 fi
