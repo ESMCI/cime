@@ -260,6 +260,47 @@ class TestCimeCase(base.BaseTestCase):
             build_threaded = case.get_build_threaded()
             self.assertTrue(build_threaded)
 
+
+    def test_cime_case_build_threaded_3(self):
+        casedir = self._create_test(
+            ["--no-build", "ERP_P1x2.f19_g16.A"],
+            test_id=self._baseline_name,
+        )
+
+        with Case(casedir, read_only=False) as case:
+            build_threaded = case.get_value("BUILD_THREADED")
+            self.assertTrue(build_threaded)
+
+            build_threaded = case.get_build_threaded()
+            self.assertTrue(build_threaded)
+
+            testname = case.get_value("TESTCASE")
+            self.assertTrue(testname is not None)
+
+            test = find_system_test(testname, case)(case)
+            case2 = test._case2
+            self.assertTrue(case2.get_build_threaded())
+
+    def test_cime_case_build_threaded_4(self):
+        casedir = self._create_test(
+            ["--no-build", "ERP_P1x1.f19_g16.A"],
+            test_id=self._baseline_name,
+        )
+
+        with Case(casedir, read_only=False) as case:
+            build_threaded = case.get_value("BUILD_THREADED")
+            self.assertFalse(build_threaded)
+
+            build_threaded = case.get_build_threaded()
+            self.assertFalse(build_threaded)
+
+            testname = case.get_value("TESTCASE")
+            self.assertTrue(testname is not None)
+
+            test = find_system_test(testname, case)(case)
+            case2 = test._case2
+            self.assertFalse(case2.get_build_threaded())
+
     def test_cime_case_mpi_serial(self):
         casedir = self._create_test(
             ["--no-build", "TESTRUNPASS_Mmpi-serial_P10.f19_g16.A"],
