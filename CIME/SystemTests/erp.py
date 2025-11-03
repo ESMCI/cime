@@ -41,6 +41,9 @@ class ERP(RestartTest):
                 self._case.set_value("NTASKS_{}".format(comp), int(ntasks / 2))
                 self._case.set_value("ROOTPE_{}".format(comp), int(rootpe / 2))
 
+        if self._case1.get_build_threaded():
+            self._case.set_value("FORCE_BUILD_SMP", True) # We want SMP on even if threads==1
+
         RestartTest._case_two_setup(self)
 
     def _case_one_custom_postrun_action(self):
