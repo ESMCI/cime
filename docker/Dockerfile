@@ -19,11 +19,13 @@ RUN mkdir -p \
 
 COPY cime.yaml cime.yaml
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get install -y --no-install-recommends \
-    perl libxml-libxml-perl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive \
+        apt-get install -y --no-install-recommends \
+        vim \
+        perl \
+        libxml-libxml-perl \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mamba install -y gosu tree
 

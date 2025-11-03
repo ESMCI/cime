@@ -10,7 +10,6 @@ dependencies:
   - subversion
   - m4
   - pkg-config
-  - vim
   - rsync
   - openssh
   - tree
