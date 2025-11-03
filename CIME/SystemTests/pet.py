@@ -38,7 +38,5 @@ class PET(SystemTestsCompareTwo):
         # Do a run with all threads set to 1
         for comp in self._case.get_values("COMP_CLASSES"):
             self._case.set_value("NTHRDS_{}".format(comp), 1)
-            orig_nthreads = self._case1.get_value("NTHRDS_{}".format(comp))
-
 
         self._case.set_value("FORCE_BUILD_SMP", True) # We want SMP on even if threads==1
