@@ -11,6 +11,7 @@ from CIME import utils
 from CIME.tests import base
 from CIME.case.case import Case
 from CIME.XML.env_run import EnvRun
+from CIME.utils import find_system_test
 
 try:
     collectionsAbc = collections.abc
@@ -260,10 +261,9 @@ class TestCimeCase(base.BaseTestCase):
             build_threaded = case.get_build_threaded()
             self.assertTrue(build_threaded)
 
-
     def test_cime_case_build_threaded_3(self):
         casedir = self._create_test(
-            ["--no-build", "ERP_P1x2.f19_g16.A"],
+            ["--no-run", "ERP_P1x2.f19_g16.A"],
             test_id=self._baseline_name,
         )
 
@@ -283,7 +283,7 @@ class TestCimeCase(base.BaseTestCase):
 
     def test_cime_case_build_threaded_4(self):
         casedir = self._create_test(
-            ["--no-build", "ERP_P1x1.f19_g16.A"],
+            ["--no-run", "ERP_P1x1.f19_g16.A"],
             test_id=self._baseline_name,
         )
 

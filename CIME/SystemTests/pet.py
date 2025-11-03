@@ -39,4 +39,6 @@ class PET(SystemTestsCompareTwo):
         for comp in self._case.get_values("COMP_CLASSES"):
             self._case.set_value("NTHRDS_{}".format(comp), 1)
 
-        self._case.set_value("FORCE_BUILD_SMP", True) # We want SMP on even if threads==1
+        self._case.set_value(
+            "FORCE_BUILD_SMP", True
+        )  # We want SMP on even if threads==1
