@@ -109,6 +109,16 @@ requires genf90.pl to be in the user's path.""",
     )
 
     parser.add_argument(
+        "--mpilib",
+        default="mpi-serial",
+        help="""MPI Library to use in build.
+                        If not specified, use mpi-serial.
+                        Note that we don't fully support running parallel tests,
+                        but this option allows use of an mpi-based software stack
+                        rather than requiring an mpi-serial-based software stack."""
+    )
+
+    parser.add_argument(
         "--test-spec-dir",
         default=".",
         help="""Location where tests are specified.
@@ -161,6 +171,7 @@ override the command provided by Machines.""",
         args.machine,
         args.machines_dir,
         args.make_j,
+        args.mpilib,
         args.test_spec_dir,
         args.ctest_args,
         args.use_openmp,
@@ -300,6 +311,7 @@ def _main():
         machine,
         machines_dir,
         make_j,
+        mpilib,
         test_spec_dir,
         ctest_args,
         use_openmp,
@@ -359,12 +371,10 @@ def _main():
     # Functions to perform various stages of build.
     # =================================================
 
-    # In the switch from pFUnit3 to pFUnit4, we have dropped support for MPI for now
-    # because it seems like the way this is done differs for pFUnit4 and we weren't
-    # leveraging the parallel capabilities of pFUnit anyway. So we force mpilib =
-    # "mpi-serial" and use_mpiserial = True for now until we need to generalize this.
-    mpilib = "mpi-serial"
-    use_mpiserial = True
+    # Note that we currently only have partial support for a real MPI library: We allow
+    # use of something other than mpi-serial in order to find the appropriate software
+    # stack and do the build, but we don't currently support running parallel tests.
+    use_mpiserial = (mpilib == "mpi-serial")
 
     if compiler is None:
         compiler = machobj.get_default_compiler()
