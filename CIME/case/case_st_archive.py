@@ -644,7 +644,7 @@ def _archive_restarts_date_comp(
                     srcfile = os.path.join(rundir, histfile)
                     destfile = os.path.join(archive_restdir, histfile)
                     expect(
-                        os.path.exists(srcfile),
+                        os.path.exists(srcfile) or os.path.islink(srcfile),
                         "history restart file {} for last date does not exist ".format(
                             srcfile
                         ),
@@ -662,7 +662,7 @@ def _archive_restarts_date_comp(
                     srcfile = os.path.join(rundir, rfile)
                     destfile = os.path.join(archive_restdir, rfile)
                     expect(
-                        os.path.exists(srcfile),
+                        os.path.exists(srcfile) or os.path.islink(srcfile),
                         "restart file {} does not exist ".format(srcfile),
                     )
                     logger.info(
@@ -678,7 +678,7 @@ def _archive_restarts_date_comp(
                         srcfile = os.path.join(rundir, histfile)
                         destfile = os.path.join(archive_restdir, histfile)
                         expect(
-                            os.path.exists(srcfile),
+                            os.path.exists(srcfile) or os.path.islink(srcfile),
                             "hist file {} does not exist ".format(srcfile),
                         )
                         logger.info("copying {} to {}".format(srcfile, destfile))
