@@ -35,6 +35,13 @@ class FUNIT(SystemTestsCommon):
         """
         return get_cime_root()
 
+    def get_extra_run_tests_args(self):
+        """
+        Override this to return a string containing extra command-line arguments to
+        run_tests.py
+        """
+        return ""
+
     def run_phase(self):
 
         rundir = self._case.get_value("RUNDIR")
@@ -51,8 +58,9 @@ class FUNIT(SystemTestsCommon):
                 get_cime_root(), "scripts", "fortran_unit_testing", "run_tests.py"
             )
         )
-        args = "--build-dir {} --test-spec-dir {} --machine {}".format(
-            exeroot, test_spec_dir, mach
+        extra_args = self.get_extra_run_tests_args()
+        args = "--build-dir {} --test-spec-dir {} --machine {} {}".format(
+            exeroot, test_spec_dir, mach, extra_args
         )
 
         stat = run_cmd(
