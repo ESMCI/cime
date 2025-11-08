@@ -2276,6 +2276,11 @@ def find_system_test(testname, case):
             )
             if tdir is not None:
                 tdir = os.path.abspath(tdir)
+                if tdir in fdir:
+                    # This can happen if multiple SYSTEM_TESTS_DIRs resolve to the same
+                    # path; in this case, we just want to handle the first occurrence and
+                    # skip the rest.
+                    continue
                 system_test_file = os.path.join(tdir, "{}.py".format(testname.lower()))
                 if os.path.isfile(system_test_file):
                     fdir.append(tdir)
