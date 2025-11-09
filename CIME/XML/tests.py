@@ -22,13 +22,20 @@ class Tests(GenericXML):
                 files = Files()
             infile = files.get_value("CONFIG_TESTS_FILE")
         GenericXML.__init__(self, infile)
-        # append any component specific config_tests.xml files
+
+        # Append any component-specific config_tests.xml files. We take care to only add a
+        # given file once, since adding a given file multiple times creates a "multiple
+        # matches" error. (This can happen if multiple CONFIG_TESTS_FILEs resolve to the
+        # same path.)
+        files_added = set()
         for comp in files.get_components("CONFIG_TESTS_FILE"):
             if comp is None:
                 continue
             infile = files.get_value("CONFIG_TESTS_FILE", attribute={"component": comp})
-            if os.path.isfile(infile):
+            infile_abspath = os.path.abspath(infile)
+            if os.path.isfile(infile) and infile_abspath not in files_added:
                 self.read(infile)
+                files_added.add(infile_abspath)
 
     def support_single_exe(self, case):
         """Checks if case supports --single-exe.
