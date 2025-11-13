@@ -5,8 +5,8 @@ run
 *.log
 
 # queueing system output files
-run.*.o\d+
-st_archive.*.o\d+
+*.o\d+
+*.o\d+
 
 #python files
 __pycache__/
