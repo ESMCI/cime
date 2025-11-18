@@ -90,7 +90,9 @@ class ERI(SystemTestsCommon):
         start_1_year, start_1_month, start_1_day = [
             int(item) for item in start_1.split("-")
         ]
-        start_2_year = start_1_year + 2
+        # KDR The default start date is a leap day, so 2-29 2 years later doesn't exist; run failure.
+        # start_2_year = start_1_year + 2
+        start_2_year = start_1_year + 4
         start_2 = "{:04d}-{:02d}-{:02d}".format(
             start_2_year, start_1_month, start_1_day
         )
