@@ -63,6 +63,7 @@ PHASES = [
     RUN_PHASE,
 ]  # Order matters
 
+
 ###############################################################################
 def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads):
     ###############################################################################
@@ -130,6 +131,8 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
 
 
 _TIME_CACHE = {}
+
+
 ###############################################################################
 def _get_time_est(test, baseline_root, as_int=False, use_cache=False, raw=False):
     ###############################################################################
@@ -698,7 +701,9 @@ class TestScheduler(object):
             if "--driver nuopc" in create_newcase_cmd or (
                 "--driver" not in create_newcase_cmd and driver == "nuopc"
             ):
-                expect(False, "_N option not supported by nuopc driver, use _C# instead")
+                expect(
+                    False, "_N option not supported by nuopc driver, use _C# instead"
+                )
 
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "
