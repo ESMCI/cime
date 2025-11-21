@@ -31,36 +31,36 @@ _CIME_TESTS = {
     "cime_tiny": {
         "time": "0:10:00",
         "tests": (
-            "ERS.f19_g16_rx1.A",
-            "NCK.f19_g16_rx1.A",
+            "ERS.f19_g16.A",
+            "NCK.f19_g16.A",
         ),
     },
     "cime_test_only_pass": {
         "time": "0:10:00",
         "tests": (
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P1.ne30_g16_rx1.A",
-            "TESTRUNPASS_P1.f45_g37_rx1.A",
+            "TESTRUNPASS_P1.f19_g16.A",
+            "TESTRUNPASS_P1.ne30_g16.A",
+            "TESTRUNPASS_P1.f45_g37.A",
         ),
     },
     "cime_test_only_slow_pass": {
         "time": "0:10:00",
         "tests": (
-            "TESTRUNSLOWPASS_P1.f19_g16_rx1.A",
-            "TESTRUNSLOWPASS_P1.ne30_g16_rx1.A",
-            "TESTRUNSLOWPASS_P1.f45_g37_rx1.A",
+            "TESTRUNSLOWPASS_P1.f19_g16.A",
+            "TESTRUNSLOWPASS_P1.ne30_g16.A",
+            "TESTRUNSLOWPASS_P1.f45_g37.A",
         ),
     },
     "cime_test_only": {
         "time": "0:10:00",
         "tests": (
-            "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-            "TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
-            "TESTRUNFAIL_P1.f19_g16_rx1.A",
-            "TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
-            "TESTRUNFAILEXC_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
-            "TESTTESTDIFF_P1.f19_g16_rx1.A",
+            "TESTBUILDFAIL_P1.f19_g16.A",
+            "TESTBUILDFAILEXC_P1.f19_g16.A",
+            "TESTRUNFAIL_P1.f19_g16.A",
+            "TESTRUNSTARCFAIL_P1.f19_g16.A",
+            "TESTRUNFAILEXC_P1.f19_g16.A",
+            "TESTRUNPASS_P1.f19_g16.A",
+            "TESTTESTDIFF_P1.f19_g16.A",
             "TESTMEMLEAKFAIL_P1.f09_g16.X",
             "TESTMEMLEAKPASS_P1.f09_g16.X",
         ),
@@ -68,26 +68,26 @@ _CIME_TESTS = {
     "cime_test_all": {
         "inherit": "cime_test_only",
         "time": "0:10:00",
-        "tests": "TESTRUNDIFF_P1.f19_g16_rx1.A",
+        "tests": "TESTRUNDIFF_P1.f19_g16.A",
     },
     "cime_test_share": {
         "time": "0:10:00",
         "share": True,
         "tests": (
-            "SMS_P2.f19_g16_rx1.A",
-            "SMS_P4.f19_g16_rx1.A",
-            "SMS_P8.f19_g16_rx1.A",
-            "SMS_P16.f19_g16_rx1.A",
+            "SMS_P2.f19_g16.A",
+            "SMS_P4.f19_g16.A",
+            "SMS_P8.f19_g16.A",
+            "SMS_P16.f19_g16.A",
         ),
     },
     "cime_test_share2": {
         "time": "0:10:00",
         "share": True,
         "tests": (
-            "SMS_P2.f19_g16_rx1.X",
-            "SMS_P4.f19_g16_rx1.X",
-            "SMS_P8.f19_g16_rx1.X",
-            "SMS_P16.f19_g16_rx1.X",
+            "SMS_P2.f19_g16.X",
+            "SMS_P4.f19_g16.X",
+            "SMS_P8.f19_g16.X",
+            "SMS_P16.f19_g16.X",
         ),
     },
     "cime_test_perf": {
@@ -106,14 +106,14 @@ _CIME_TESTS = {
     },
     "cime_test_repeat": {
         "tests": (
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P2.ne30_g16_rx1.A",
-            "TESTRUNPASS_P4.f45_g37_rx1.A",
+            "TESTRUNPASS_P1.f19_g16.A",
+            "TESTRUNPASS_P2.ne30_g16.A",
+            "TESTRUNPASS_P4.f45_g37.A",
         )
     },
     "cime_test_time": {
         "time": "0:13:00",
-        "tests": ("TESTRUNPASS_P69.f19_g16_rx1.A.testmod",),
+        "tests": ("TESTRUNPASS_P69.f19_g16.A.testmod",),
     },
     "cime_test_multi_inherit": {
         "inherit": ("cime_test_repeat", "cime_test_only_pass", "cime_test_all")
@@ -121,22 +121,22 @@ _CIME_TESTS = {
     "cime_developer": {
         "time": "0:15:00",
         "tests": (
-            "NCK_Ld3.f45_g37_rx1.A",
+            "NCK_Ld3.f45_g37.A",
             "ERI_Ln9.f09_g16.X",
             "ERIO_Ln11.f09_g16.X",
-            "SEQ_Ln9.f19_g16_rx1.A",
-            "ERS.ne30_g16_rx1.A.drv-y100k",
-            "IRT_N2_Vmct_Ln9.f19_g16_rx1.A",
-            "ERR_Ln9.f45_g37_rx1.A",
-            "ERP_Ln9.f45_g37_rx1.A",
-            "SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A",
+            "SEQ_Ln9.f19_g16.A",
+            "ERS.ne30_g16.A",
+            "IRT_N2_Vmct_Ln9.f19_g16.A",
+            "ERR_Ln9.f45_g37.A",
+            "ERP_Ln9.f45_g37.A",
+            "SMS_D_Ln9_Mmpi-serial.f19_g16.A",
             "PET_Ln9_P4.f19_f19.A",
             "PEM_Ln9_P4.f19_f19.A",
             "SMS_Ln3.T42_T42.S",
             "PRE.f19_f19.ADESP",
             "PRE.f19_f19.ADESP_TEST",
-            "MCC_P1.f19_g16_rx1.A",
-            "LDSTA.f45_g37_rx1.A",
+            "MCC_P1.f19_g16.A",
+            "LDSTA.f45_g37.A",
         ),
     },
 }
@@ -274,9 +274,9 @@ def get_build_groups(tests):
     Given a list of tests, return a list of lists, with each list representing
     a group of tests that can share executables.
 
-    >>> tests = ["SMS_P2.f19_g16_rx1.A.melvin_gnu", "SMS_P4.f19_g16_rx1.A.melvin_gnu", "SMS_P2.f19_g16_rx1.X.melvin_gnu", "SMS_P4.f19_g16_rx1.X.melvin_gnu", "TESTRUNSLOWPASS_P1.f19_g16_rx1.A.melvin_gnu", "TESTRUNSLOWPASS_P1.ne30_g16_rx1.A.melvin_gnu"]
+    >>> tests = ["SMS_P2.f19_g16.A.melvin_gnu", "SMS_P4.f19_g16.A.melvin_gnu", "SMS_P2.f19_g16.X.melvin_gnu", "SMS_P4.f19_g16.X.melvin_gnu", "TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu", "TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu"]
     >>> get_build_groups(tests)
-    [('SMS_P2.f19_g16_rx1.A.melvin_gnu', 'SMS_P4.f19_g16_rx1.A.melvin_gnu'), ('SMS_P2.f19_g16_rx1.X.melvin_gnu', 'SMS_P4.f19_g16_rx1.X.melvin_gnu'), ('TESTRUNSLOWPASS_P1.f19_g16_rx1.A.melvin_gnu',), ('TESTRUNSLOWPASS_P1.ne30_g16_rx1.A.melvin_gnu',)]
+    [('SMS_P2.f19_g16.A.melvin_gnu', 'SMS_P4.f19_g16.A.melvin_gnu'), ('SMS_P2.f19_g16.X.melvin_gnu', 'SMS_P4.f19_g16.X.melvin_gnu'), ('TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu',), ('TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu',)]
     """
     build_groups = []  # list of tuples ([tests], set(suites))
 
@@ -322,9 +322,9 @@ def is_perf_test(test):
 
     >>> is_perf_test("SMS_P2.T42_T42.S.melvin_gnu")
     True
-    >>> is_perf_test("SMS_P2.f19_g16_rx1.X.melvin_gnu")
+    >>> is_perf_test("SMS_P2.f19_g16.X.melvin_gnu")
     False
-    >>> is_perf_test("PFS_P2.f19_g16_rx1.X.melvin_gnu")
+    >>> is_perf_test("PFS_P2.f19_g16.X.melvin_gnu")
     True
     """
     # Get a list of performance suites
@@ -346,17 +346,17 @@ def infer_arch_from_tests(testargs):
     """
     Return a tuple (machine, [compilers]) that can be inferred from the test args
 
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A"])
     (None, [])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu9", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu9", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu9', 'gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.mappy_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu", "NCK.f19_g16.A.mappy_gnu"])
     Traceback (most recent call last):
         ...
     CIME.utils.CIMEError: ERROR: Must have consistent machine 'melvin' != 'mappy'
@@ -404,19 +404,19 @@ def get_full_test_names(testargs, machine, compiler):
     Testargs can be categories or test names and support the NOT symbol '^'
 
     >>> get_full_test_names(["cime_tiny"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu']
+    ['ERS.f19_g16.A.melvin_gnu', 'NCK.f19_g16.A.melvin_gnu']
 
-    >>> get_full_test_names(["cime_tiny", "PEA_P1_M.f45_g37_rx1.A"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
+    >>> get_full_test_names(["cime_tiny", "PEA_P1_M.f45_g37.A"], "melvin", "gnu")
+    ['ERS.f19_g16.A.melvin_gnu', 'NCK.f19_g16.A.melvin_gnu', 'PEA_P1_M.f45_g37.A.melvin_gnu']
 
-    >>> get_full_test_names(['ERS.f19_g16_rx1.A', 'NCK.f19_g16_rx1.A', 'PEA_P1_M.f45_g37_rx1.A'], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
+    >>> get_full_test_names(['ERS.f19_g16.A', 'NCK.f19_g16.A', 'PEA_P1_M.f45_g37.A'], "melvin", "gnu")
+    ['ERS.f19_g16.A.melvin_gnu', 'NCK.f19_g16.A.melvin_gnu', 'PEA_P1_M.f45_g37.A.melvin_gnu']
 
-    >>> get_full_test_names(["cime_tiny", "^NCK.f19_g16_rx1.A"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu']
+    >>> get_full_test_names(["cime_tiny", "^NCK.f19_g16.A"], "melvin", "gnu")
+    ['ERS.f19_g16.A.melvin_gnu']
 
     >>> get_full_test_names(["cime_test_multi_inherit"], "melvin", "gnu")
-    ['TESTBUILDFAILEXC_P1.f19_g16_rx1.A.melvin_gnu', 'TESTBUILDFAIL_P1.f19_g16_rx1.A.melvin_gnu', 'TESTMEMLEAKFAIL_P1.f09_g16.X.melvin_gnu', 'TESTMEMLEAKPASS_P1.f09_g16.X.melvin_gnu', 'TESTRUNDIFF_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNFAILEXC_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNFAIL_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P1.f45_g37_rx1.A.melvin_gnu', 'TESTRUNPASS_P1.ne30_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P2.ne30_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P4.f45_g37_rx1.A.melvin_gnu', 'TESTRUNSTARCFAIL_P1.f19_g16_rx1.A.melvin_gnu', 'TESTTESTDIFF_P1.f19_g16_rx1.A.melvin_gnu']
+    ['TESTBUILDFAILEXC_P1.f19_g16.A.melvin_gnu', 'TESTBUILDFAIL_P1.f19_g16.A.melvin_gnu', 'TESTMEMLEAKFAIL_P1.f09_g16.X.melvin_gnu', 'TESTMEMLEAKPASS_P1.f09_g16.X.melvin_gnu', 'TESTRUNDIFF_P1.f19_g16.A.melvin_gnu', 'TESTRUNFAILEXC_P1.f19_g16.A.melvin_gnu', 'TESTRUNFAIL_P1.f19_g16.A.melvin_gnu', 'TESTRUNPASS_P1.f19_g16.A.melvin_gnu', 'TESTRUNPASS_P1.f45_g37.A.melvin_gnu', 'TESTRUNPASS_P1.ne30_g16.A.melvin_gnu', 'TESTRUNPASS_P2.ne30_g16.A.melvin_gnu', 'TESTRUNPASS_P4.f45_g37.A.melvin_gnu', 'TESTRUNSTARCFAIL_P1.f19_g16.A.melvin_gnu', 'TESTTESTDIFF_P1.f19_g16.A.melvin_gnu']
     """
     expect(machine is not None, "Must define a machine")
     expect(compiler is not None, "Must define a compiler")
@@ -462,10 +462,10 @@ def get_full_test_names(testargs, machine, compiler):
 def get_recommended_test_time(test_full_name):
     ###############################################################################
     """
-    >>> get_recommended_test_time("ERS.f19_g16_rx1.A.melvin_gnu")
+    >>> get_recommended_test_time("ERS.f19_g16.A.melvin_gnu")
     '0:10:00'
 
-    >>> get_recommended_test_time("TESTRUNPASS_P69.f19_g16_rx1.A.melvin_gnu.testmod")
+    >>> get_recommended_test_time("TESTRUNPASS_P69.f19_g16.A.melvin_gnu.testmod")
     '0:13:00'
 
     >>> get_recommended_test_time("PET_Ln20.ne30_ne30.FC5.sandiatoss3_intel.cam-outfrq9s")

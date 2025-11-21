@@ -100,9 +100,9 @@ class EnvBatch(EnvBase):
 
     def get_type_info(self, vid):
         gnodes = self.get_children("group")
+        type_info = None
         for gnode in gnodes:
             nodes = self.get_children("entry", {"id": vid}, root=gnode)
-            type_info = None
             for node in nodes:
                 new_type_info = self._get_type_info(node)
                 if type_info is None:
@@ -214,44 +214,49 @@ class EnvBatch(EnvBase):
             tasks_per_node,
             thread_count,
             ngpus_per_node,
+            mem_per_task,
         ) = self._env_workflow.get_job_specs(case, job)
 
         overrides = {}
 
         if total_tasks:
-            overrides["total_tasks"] = total_tasks
+            overrides["total_tasks"] = int(total_tasks)
             overrides["num_nodes"] = num_nodes
             overrides["tasks_per_node"] = tasks_per_node
             if thread_count:
                 overrides["thread_count"] = thread_count
-                total_tasks = total_tasks * thread_count
+                total_tasks = int(total_tasks) * int(thread_count)
             else:
-                total_tasks = total_tasks * case.thread_count
+                total_tasks = int(total_tasks) * case.thread_count
         else:
             # Total PES accounts for threads as well as mpi tasks
             total_tasks = case.get_value("TOTALPES")
             thread_count = case.thread_count
         if int(total_tasks) < case.get_value("MAX_TASKS_PER_NODE"):
-            overrides["max_tasks_per_node"] = int(total_tasks)
+            overrides["max_tasks_per_node"] = total_tasks
 
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
-        try:
+        if mem_per_task is None:
             mem_per_task = case.get_value("MEM_PER_TASK")
-            max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
-            mem_per_node = total_tasks
-
-            if mem_per_node < mem_per_task:
-                mem_per_node = mem_per_task
-            elif mem_per_node > max_mem_per_node:
-                mem_per_node = max_mem_per_node
+        max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
+        expect(
+            max_tasks_per_node > 0,
+            "Error MAX_TASKS_PER_NODE not set or set incorrectly",
+        )
+        max_mem_per_node = case.get_value("MAX_MEM_PER_NODE")
+        if mem_per_task and total_tasks <= max_tasks_per_node:
+            # Use memory per task until about a 10th of the node and then use the fraction of total memory
+            mem_per_node = total_tasks * mem_per_task
+            mem_per_node = min(mem_per_node, max_mem_per_node)
+            if total_tasks > max_tasks_per_node / 10:
+                mem_per_node = int(
+                    float(total_tasks) / float(max_tasks_per_node) * max_mem_per_node
+                )
             overrides["mem_per_node"] = mem_per_node
-        except TypeError:
-            # ignore this, the variables are not defined for this machine
-            pass
-        except Exception as error:
-            print("An exception occured:", error)
+        elif max_mem_per_node:
+            overrides["mem_per_node"] = max_mem_per_node
 
         overrides["ngpus_per_node"] = ngpus_per_node
         overrides["mpirun"] = case.get_mpirun_cmd(job=job, overrides=overrides)
@@ -343,9 +348,6 @@ class EnvBatch(EnvBase):
                     job, walltime, force_queue, walltime_format
                 )
             )
-            task_count = (
-                int(jsect["task_count"]) if "task_count" in jsect else case.total_tasks
-            )
 
             if "walltime" in jsect and walltime is None:
                 walltime = jsect["walltime"]
@@ -356,10 +358,20 @@ class EnvBatch(EnvBase):
 
             if "task_count" in jsect:
                 # job is using custom task_count, need to compute a node_count based on this
-                node_count = int(
-                    math.ceil(float(task_count) / float(case.tasks_per_node))
-                )
+                task_count = jsect["task_count"]
+                if "$" in task_count:
+                    task_count = case.get_resolved_value(jsect["task_count"])
+                if "$" in task_count:
+                    logger.warning("Could not resolve {}, using 1".format(task_count))
+                    task_count = 1
+                    node_count = 1
+                else:
+                    task_count = int(task_count)
+                    node_count = int(
+                        math.ceil(float(task_count) / float(case.tasks_per_node))
+                    )
             else:
+                task_count = case.total_tasks
                 node_count = case.num_nodes
 
             queue = self.select_best_queue(
@@ -1421,10 +1433,24 @@ class EnvBatch(EnvBase):
                 other_pnode = None
 
             for node1 in self.get_children(root=self_pnode):
-                for node2 in other.scan_children(
+                other_children = other.scan_children(
                     node1.name, attributes=node1.attrib, root=other_pnode
-                ):
-                    yield node1, node2
+                )
+                real_other_children = []
+                if not node1.attrib:
+                    # Only keep elements that had no attributes. If node1 has no attributes
+                    # scan_children will return ALL elements with matching name.
+                    for other_child in other_children:
+                        if node1.attrib == other_child.attrib:
+                            real_other_children.append(other_child)
+                else:
+                    real_other_children = other_children
+
+                expect(
+                    len(real_other_children) == 1,
+                    "Multiple matches in zip for single node",
+                )
+                yield node1, real_other_children[0]
 
     def _compare_arg(self, index, arg1, arg2):
         try:

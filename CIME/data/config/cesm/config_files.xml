@@ -55,6 +55,15 @@
     <schema>$CIMEROOT/CIME/data/config/xml_schemas/config_batch.xsd</schema>
   </entry>
 
+  <entry id="POSTPROCESSING_SPEC_FILE">
+    <type>char</type>
+    <default_value>$SRCROOT/tools/CUPiD/cime_config/config_tool.xml</default_value>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc>file containing postprocessing XML configuration (for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/CIME/data/config/xml_schemas/entry_id.xsd</schema>
+  </entry>
+
   <entry id="WORKFLOW_SPEC_FILE">
     <type>char</type>
     <default_value>$SRCROOT/ccs_config/machines/config_workflow.xml</default_value>
@@ -155,6 +164,7 @@
       <value component="pop"                          >$SRCROOT/components/pop/</value>
       <value component="mom"                          >$SRCROOT/components/mom/</value>
       <value component="nemo"                         >$SRCROOT/components/nemo/</value>
+      <value component="mpaso"                        >$SRCROOT/components/mpas-ocean/</value>
       <value component="blom"                         >$SRCROOT/components/blom/</value>
       <value component="docn"   >$SRCROOT/components/cdeps/docn</value>
       <value component="socn"   >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/socn</value>
@@ -202,6 +212,7 @@
     <values>
       <value component="cice5"                       >$SRCROOT/components/cice5/</value>
       <value component="cice"                        >$SRCROOT/components/cice/</value>
+      <value component="mpassi"                      >$SRCROOT/components/mpas-seaice/</value>
       <value component="dice"  >$SRCROOT/components/cdeps/dice</value>
       <value component="sice"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/sice</value>
       <value component="xice"  >$CIMEROOT/CIME/non_py/src/components/xcpl_comps_$COMP_INTERFACE/xice</value>
@@ -282,9 +293,11 @@
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
+      <value component="mpassi"    >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
+      <value component="mpaso"     >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/config_compsets.xml</value>
       <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/config_compsets.xml</value>
     </values>
@@ -305,9 +318,11 @@
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_pes.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
+      <value component="mpassi"    >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
+      <value component="mpaso"     >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/config_pes.xml</value>
       <value component="ww3"       >$COMP_ROOT_DIR_WAV/cime_config/config_pes.xml</value>
     </values>
@@ -335,9 +350,11 @@
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_archive.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_archive.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
+      <value component="mpassi"    >$COMP_ROOT_DIR_ICE/cime_config/config_archive.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
+      <value component="mpaso"     >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/config_archive.xml</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/config_archive.xml</value>
@@ -361,6 +378,7 @@
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
+      <value component="mpassi"    >$COMP_ROOT_DIR_ICE/cime_config/SystemTests</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/SystemTests</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/SystemTests</value>
@@ -384,9 +402,11 @@
       <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/testdefs/testlist_slim.xml</value>
       <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_cice.xml</value>
+      <value component="mpassi"    >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testlist_mpassi.xml</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_pop.xml</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_mom.xml</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_nemo.xml</value>
+      <value component="mpaso"     >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_mpaso.xml</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testlist_blom.xml</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_rtm.xml</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testlist_mosart.xml</value>
@@ -418,11 +438,13 @@
       <value component="slim"      >$COMP_ROOT_DIR_LND/cime_config/testdefs/testmods_dirs</value>
       <value component="cice5"     >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
+      <value component="mpassi"    >$COMP_ROOT_DIR_ICE/cime_config/testdefs/testmods_dirs</value>
       <value component="rtm"       >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
       <value component="mosart"    >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
       <value component="mizuroute" >$COMP_ROOT_DIR_ROF/cime_config/testdefs/testmods_dirs</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
       <value component="mom"       >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
+      <value component="mpaso"     >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
       <value component="nemo"      >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
       <value component="blom"      >$COMP_ROOT_DIR_OCN/cime_config/testdefs/testmods_dirs</value>
       <value component="datm"  >$SRCROOT/components/cdeps/datm/cime_config/testdefs/testmods_dirs</value>
@@ -450,12 +472,14 @@
       <value component="slim"     >$COMP_ROOT_DIR_LND/cime_config/usermods_dirs</value>
       <value component="cice5"    >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
       <value component="cice"     >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
+      <value component="mpassi"   >$COMP_ROOT_DIR_ICE/cime_config/usermods_dirs</value>
       <value component="rtm"      >$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
       <value component="mosart"   >$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
       <value component="mizuroute">$COMP_ROOT_DIR_ROF/cime_config/usermods_dirs</value>
       <value component="pop"      >$COMP_ROOT_DIR_OCN/cime_config/usermods_dirs</value>
       <value component="mom"      >$COMP_ROOT_DIR_OCN/cime_config/usermods_dirs</value>
       <value component="nemo"     >$COMP_ROOT_DIR_OCN/cime_config/usermods_dirs</value>
+      <value component="mpaso"    >$COMP_ROOT_DIR_OCN/cime_config/usermods_dirs</value>
       <value component="blom"     >$COMP_ROOT_DIR_OCN/cime_config/usermods_dirs</value>
     </values>
     <group>case_last</group>
@@ -483,10 +507,12 @@
       <value component="cism" >$COMP_ROOT_DIR_GLC/bld/namelist_files/namelist_definition_cism.xml</value>
       <value component="cice5">$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
       <value component="cice" >$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_cice.xml</value>
+      <value component="mpassi" >$COMP_ROOT_DIR_ICE/cime_config/namelist_definition_mpassi.xml</value>
       <value component="clm"  >$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_ctsm.xml</value>
       <value component="pop"  >$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_pop.xml</value>
       <value component="mom"  >$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_mom.xml</value>
       <value component="nemo" >$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_nemo.xml</value>
+      <value component="mpaso">$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_mpaso.xml</value>
       <value component="blom" >$COMP_ROOT_DIR_OCN/bld/namelist_files/namelist_definition_blom.xml</value>
       -->
       <value component="slim" >$COMP_ROOT_DIR_LND/bld/namelist_files/namelist_definition_slim.xml</value>
@@ -638,6 +664,7 @@
   <entry id="BUILD_LIB_FILE">
     <type>char</type>
     <values>
+      <value lib="FTorch">$SRCROOT/libraries/FTorch/buildlib</value>
       <value lib="FMS">$SRCROOT/libraries/FMS/buildlib</value>
       <value lib="CDEPS">$SRCROOT/components/cdeps/cime_config/buildlib</value>
       <value lib="CMEPS">$SRCROOT/components/cmeps/cime_config/buildlib</value>

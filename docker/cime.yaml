@@ -2,29 +2,39 @@ name: base
 channels:
   - conda-forge
 dependencies:
-  - cmake
+# development tools
+  - cmake<4.0 # some libraries still require 3.5.x
   - make
   - wget
   - curl
   - subversion
   - m4
   - pkg-config
-  - pytest
-  - pytest-cov
-  - pyyaml
   - vim
   - rsync
   - openssh
+  - tree
+# python packages
+  - pytest
+  - pytest-cov
+  - pyyaml
+# libraries
   - lapack
   - blas
-  - libnetcdf=4.9.2=*openmpi*
+  # Testing hdf5 is out of scope for CIME
+  # - hdf5<1.14.0=*openmpi*
   - netcdf-fortran=*=*openmpi*
+  - libpnetcdf=*=*openmpi*
   - esmf=*=*openmpi*
-  - gcc_linux-64=12.*
-  - gxx_linux-64=12.*
-  - gfortran_linux-64=12.*
-  - openmpi-mpifort
-  - gcc
-  - gxx
-  - gfortran
+  - openmpi
+  - gcc_linux-64
+  - gxx_linux-64
+  - gfortran_linux-64
+  - gcc=12.*
+  - gxx=12.*
+  - gfortran=12.*
+  - compilers
+  - c-compiler
+  - cxx-compiler
+  - fortran-compiler
 prefix: /opt/conda

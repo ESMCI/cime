@@ -121,6 +121,14 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
+        sc_file = os.path.join(caseroot, "shell_commands")
+        if os.path.isfile(sc_file):
+            with open(sc_file, "r") as fp:
+                for line in fp:
+                    match = re.search(r"REST_N\s*=\s*(\d+)", line)
+                    if match:
+                        self._rest_n = int(match.group(1))
+
         # Does the model support this variable?
         self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
 
@@ -138,6 +146,7 @@ class SystemTestsCommon(object):
             stop_option = self._case.get_value("STOP_OPTION")
 
         self._case.set_value("REST_OPTION", stop_option)
+
         # We need to make sure the run is long enough and to set REST_N to a
         # value that makes sense for all components
         maxncpl = 10000
@@ -157,6 +166,11 @@ class SystemTestsCommon(object):
                 maxncpl = ncpl
             if ncpl and minncpl < ncpl:
                 minncpl = ncpl
+
+        comp_interface = self._case.get_value("COMP_INTERFACE")
+        # mct doesn't care about maxncpl so set it to minncpl
+        if comp_interface == "mct":
+            maxncpl = minncpl
 
         ncpl_base_period = self._case.get_value("NCPL_BASE_PERIOD")
         if ncpl_base_period == "hour":
@@ -186,24 +200,59 @@ class SystemTestsCommon(object):
             factor = 315360000
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
-        stop_n = int(stop_n * factor // coupling_secs)
-        rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
-        expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
-        expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+
+        stop_n_coupling_intervals = int(stop_n * factor // coupling_secs)
+        expect(
+            stop_n_coupling_intervals > 0,
+            "Bad STOP_N: {:d} ({:d} coupling intervals)".format(
+                stop_n, stop_n_coupling_intervals
+            ),
+        )
+
+        if self._rest_n:
+            rest_n = self._rest_n
+        else:
+            if self._case.get_value("TESTCASE") == "IRT":
+                rest_n = math.ceil(
+                    (stop_n_coupling_intervals // 3) * coupling_secs / factor
+                )
+            else:
+                rest_n = math.ceil(
+                    (stop_n_coupling_intervals // 2 + 1) * coupling_secs / factor
+                )
+
+        # Note that the error message here refers to STOP_N being too short, because
+        # that's the typical root cause of this problem
+        expect(
+            rest_n > 0 and rest_n < stop_n,
+            "ERROR: STOP_N value {:d} too short: results in REST_N = {:d}".format(
+                stop_n, rest_n
+            ),
+        )
+
+        cal = self._case.get_value("CALENDAR")
         if not starttime:
             starttime = self._case.get_value("START_TOD")
         if not startdate:
             startdate = self._case.get_value("RUN_STARTDATE")
-        if "-" in startdate:
-            startdatetime = datetime.fromisoformat(startdate) + timedelta(
-                seconds=int(starttime)
-            )
-        else:
-            startdatetime = datetime.strptime(startdate, "%Y%m%d") + timedelta(
-                seconds=int(starttime)
-            )
 
-        cal = self._case.get_value("CALENDAR")
+        if "-" in startdate:
+            syr, smon, sday = startdate.split("-")
+            syr = int(syr)
+            smon = int(smon)
+            sday = int(sday)
+        else:
+            startdate = int(startdate)
+            syr = int(startdate / 10000)
+            smon = int((startdate - syr * 10000) / 100)
+            sday = startdate - syr * 10000 - smon * 100
+
+        addyr = syr // 10000
+        syr = syr % 10000
+
+        startdatetime = datetime.strptime(
+            f"{syr:04d}{smon:02d}{sday:02d}", "%Y%m%d"
+        ) + timedelta(seconds=int(starttime))
 
         if stop_option == "nsteps":
             rtd = timedelta(seconds=rest_n * factor)
@@ -225,10 +274,9 @@ class SystemTestsCommon(object):
             restdatetime = restdatetime + self._leap_year_correction(
                 startdatetime, restdatetime
             )
-
-        self._rest_time = (
-            f".{restdatetime.year:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
-        )
+        ryr = int(restdatetime.year)
+        ryr += 10000 * addyr
+        self._rest_time = f".{ryr:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
         h = restdatetime.hour
         m = restdatetime.minute
         s = restdatetime.second
@@ -311,6 +359,54 @@ class SystemTestsCommon(object):
             self._case.set_initial_test_values()
             self._case.case_setup(reset=True, test_mode=True)
             fix_single_exe_case(self._case)
+
+    def setup(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the setup phase. setup_phase is the extension point
+        that subclasses should use.
+        """
+        self.setup_phase(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_phase(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        This is the default setup phase implementation, it just does an individual setup.
+        This is the subclass' extension point if they need to define a custom setup
+        phase.
+
+        PLEASE THROW EXCEPTION ON FAIL
+        """
+        self.setup_indv(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_indv(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Perform an individual setup
+        """
+        self._case.case_setup(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
 
     def build(
         self,
@@ -1229,9 +1325,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case, **kwargs):
-        FakeTest.__init__(self, case, **kwargs)
-        raise RuntimeError("Exception from init")
+    def build_phase(self, sharedlib_only=False, model_only=False):
+        raise RuntimeError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):

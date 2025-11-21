@@ -33,7 +33,8 @@ class Compsets(GenericXML):
         for node in nodes:
             alias = self.get_element_text("alias", root=node)
             lname = self.get_element_text("lname", root=node)
-            if alias == name or lname == name:
+            # Users may include case for clarity, but comparisons are case insensitive.
+            if alias.upper() == name.upper() or lname.upper() == name.upper():
                 science_support_nodes = self.get_children("science_support", root=node)
                 for snode in science_support_nodes:
                     science_support.append(self.get(snode, "grid"))

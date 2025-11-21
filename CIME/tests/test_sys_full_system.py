@@ -47,7 +47,7 @@ class TestFullSystem(base.BaseTestCase):
                 "PRE.f19_f19.ADESP_TEST",
                 "PRE.f19_f19.ADESP",
                 "DAE.ww3a.ADWAV",
-                "IRT_N2_Vmct_Ln9.f19_g16_rx1.A",
+                "IRT_N2_Vmct_Ln9.f19_g16.A",
             ]
         tests = get_tests.get_test_suite(
             "cime_developer",

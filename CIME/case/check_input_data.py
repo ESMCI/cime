@@ -149,7 +149,7 @@ def _download_if_in_repo(
             os.makedirs(full_path + ".tmp")
         isdirectory = True
     elif not os.path.exists(os.path.dirname(full_path)):
-        os.makedirs(os.path.dirname(full_path))
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     # Use umask to make sure files are group read/writable. As long as parent directories
     # have +s, then everything should work.
@@ -482,16 +482,15 @@ def _check_input_data_impl(
                         # rel_path, and so cannot download the file. If it already exists, we can
                         # proceed
                         if not os.path.exists(full_path):
-                            print(
-                                "Model {} missing file {} = '{}'".format(
-                                    model, description, full_path
-                                )
+                            msg = "Model {} missing file {} = '{}'".format(
+                                model, description, full_path
                             )
                             # Data download path must be DIN_LOC_ROOT, DIN_LOC_IC or RUNDIR
 
                             rundir = case.get_value("RUNDIR")
                             if download:
                                 if full_path.startswith(rundir):
+                                    print(msg)
                                     filepath = os.path.dirname(full_path)
                                     if not os.path.exists(filepath):
                                         logger.info(
@@ -508,12 +507,15 @@ def _check_input_data_impl(
                                     )
                                     no_files_missing = success
                                 else:
+                                    # Ensure that msg and warning text are together in TestStatus.log
                                     logger.warning(
-                                        "    Cannot download file since it lives outside of the input_data_root '{}'".format(
+                                        msg
+                                        + "\n    Cannot download file since it lives outside of the input_data_root '{}'".format(
                                             input_data_root
                                         )
                                     )
                             else:
+                                print(msg)
                                 no_files_missing = False
                         else:
                             logger.debug("  Found input file: '{}'".format(full_path))

@@ -196,6 +196,7 @@ class TestScheduler(object):
         save_timing=False,
         queue=None,
         allow_baseline_overwrite=False,
+        skip_tests_with_existing_baselines=False,
         output_root=None,
         force_procs=None,
         force_threads=None,
@@ -227,6 +228,7 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
+        self._skip_tests_with_existing_baselines = skip_tests_with_existing_baselines
         self._single_exe = single_exe
         if self._single_exe:
             self._allow_pnl = True
@@ -348,6 +350,8 @@ class TestScheduler(object):
                     self._baseline_root, self._baseline_gen_name
                 )
                 existing_baselines = []
+                if skip_tests_with_existing_baselines:
+                    tests_to_skip = []
                 for test_name in test_names:
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
@@ -357,11 +361,21 @@ class TestScheduler(object):
                                 clear_folder(os.path.join(test_baseline, "CaseDocs"))
                             else:
                                 clear_folder(test_baseline)
+                        elif skip_tests_with_existing_baselines:
+                            tests_to_skip.append(test_name)
                 expect(
-                    allow_baseline_overwrite or len(existing_baselines) == 0,
+                    allow_baseline_overwrite
+                    or len(existing_baselines) == 0
+                    or skip_tests_with_existing_baselines,
                     "Baseline directories already exists {}\n"
-                    "Use -o to avoid this error".format(existing_baselines),
+                    "Use -o or --skip-tests-with-existing-baselines to avoid this error".format(
+                        existing_baselines
+                    ),
                 )
+                if skip_tests_with_existing_baselines:
+                    test_names = [
+                        test for test in test_names if test not in tests_to_skip
+                    ]
 
         if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
@@ -1122,6 +1136,11 @@ class TestScheduler(object):
     ###########################################################################
     def _get_procs_needed(self, test, phase, threads_in_flight=None, no_batch=False):
         ###########################################################################
+        """
+        Return the number of processors/cores needed to run phase of test.
+
+        Returns None if the phase of this test is currently ineligible to run.
+        """
         # For build pools, we must wait for the first case to complete XML, SHAREDLIB,
         # and MODEL_BUILD phases before the other cases can do those phases
         is_first_test, first_test, _ = self._get_build_group(test)
@@ -1134,7 +1153,7 @@ class TestScheduler(object):
             ]
             if phase in build_group_dep_phases:
                 if self._get_test_status(first_test, phase=phase) == TEST_PEND_STATUS:
-                    return self._proc_pool + 1
+                    return None  # None indicates job is ineligible to run
                 else:
                     return 1
 
@@ -1150,7 +1169,7 @@ class TestScheduler(object):
                 # them all in parallel
                 for _, _, running_phase in threads_in_flight.values():
                     if running_phase == SHAREDLIB_BUILD_PHASE:
-                        return self._proc_pool + 1
+                        return None
 
             return 1
         elif phase == MODEL_BUILD_PHASE:
@@ -1261,6 +1280,73 @@ class TestScheduler(object):
             self._consumer(test, RUN_PHASE, self._run_phase)
 
     ###########################################################################
+    def _producer_indv_test_launch(self, test, threads_in_flight):
+        ###########################################################################
+        """
+        Launch the next phase of test if possible. Return True if launched
+        """
+        test_phase, test_status = self._get_test_data(test)
+        expect(test_status != TEST_PEND_STATUS, test)
+        next_phase = self._phases[self._phases.index(test_phase) + 1]
+        procs_needed = self._get_procs_needed(test, next_phase, threads_in_flight)
+
+        if procs_needed is None:
+            # This test cannot run now so skip
+            return False
+
+        elif procs_needed > self._proc_pool:
+            # This test is asking for more than we can ever provide
+            # This should only ever happen for RUN_PHASE
+            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool (self._proc_pool)"
+            expect(next_phase == RUN_PHASE, msg)
+
+            # CIME phase won't be run, so we need to update TEST_STATUS ourselves
+            self._update_test_status_file(test, SUBMIT_PHASE, TEST_PASS_STATUS)
+            self._update_test_status_file(test, RUN_PHASE, TEST_FAIL_STATUS)
+
+            # Update our internal state that this test failed
+            self._update_test_status(test, next_phase, TEST_PEND_STATUS)
+            self._update_test_status(test, next_phase, TEST_FAIL_STATUS)
+
+            logger.warning(msg)
+            self._log_output(test, msg)
+
+            # We did run the phase in some sense in that we instantly failed it
+            return True
+
+        elif procs_needed <= self._procs_avail:
+            # We can run this test!
+            self._procs_avail -= procs_needed
+
+            # Necessary to print this way when multiple threads printing
+            logger.info(
+                f"Starting {next_phase} for test {test} with {procs_needed} procs"
+            )
+
+            self._update_test_status(test, next_phase, TEST_PEND_STATUS)
+            phase_method = getattr(self, f"_{next_phase.lower()}_phase")
+            new_thread = threading.Thread(
+                target=self._consumer,
+                args=(test, next_phase, phase_method),
+            )
+            threads_in_flight[test] = (new_thread, procs_needed, next_phase)
+            new_thread.start()
+
+            logger.debug("  Current workload:")
+            total_procs = 0
+            for the_test, the_data in threads_in_flight.items():
+                logger.debug(f"    {the_test}: {the_data[2]} -> {the_data[1]}")
+                total_procs += the_data[1]
+
+            logger.debug(f"    Total procs in use: {total_procs}")
+
+            return True
+
+        else:
+            # There aren't enough free procs to run this phase, so skip
+            return False
+
+    ###########################################################################
     def _producer(self):
         ###########################################################################
         threads_in_flight = {}  # test-name -> (thread, procs, phase)
@@ -1277,81 +1363,14 @@ class TestScheduler(object):
                     if len(threads_in_flight) == self._parallel_jobs:
                         break
 
+                    # Check if this test is already running a phase. If so, we can't
+                    # launch a new phase now.
                     if test not in threads_in_flight:
-                        test_phase, test_status = self._get_test_data(test)
-                        expect(test_status != TEST_PEND_STATUS, test)
-                        next_phase = self._phases[self._phases.index(test_phase) + 1]
-                        procs_needed = self._get_procs_needed(
-                            test, next_phase, threads_in_flight
+                        launched = self._producer_indv_test_launch(
+                            test, threads_in_flight
                         )
-
-                        if procs_needed <= self._procs_avail:
-                            self._procs_avail -= procs_needed
-
-                            # Necessary to print this way when multiple threads printing
-                            logger.info(
-                                "Starting {} for test {} with {:d} procs".format(
-                                    next_phase, test, procs_needed
-                                )
-                            )
-
-                            self._update_test_status(test, next_phase, TEST_PEND_STATUS)
-                            new_thread = threading.Thread(
-                                target=self._consumer,
-                                args=(
-                                    test,
-                                    next_phase,
-                                    getattr(
-                                        self, "_{}_phase".format(next_phase.lower())
-                                    ),
-                                ),
-                            )
-                            threads_in_flight[test] = (
-                                new_thread,
-                                procs_needed,
-                                next_phase,
-                            )
-                            new_thread.start()
+                        if launched:
                             num_threads_launched_this_iteration += 1
-
-                            logger.debug("  Current workload:")
-                            total_procs = 0
-                            for the_test, the_data in threads_in_flight.items():
-                                logger.debug(
-                                    "    {}: {} -> {}".format(
-                                        the_test, the_data[2], the_data[1]
-                                    )
-                                )
-                                total_procs += the_data[1]
-
-                            logger.debug(
-                                "    Total procs in use: {}".format(total_procs)
-                            )
-                        else:
-                            if not threads_in_flight:
-                                msg = "Phase '{}' for test '{}' required more processors, {:d}, than this machine can provide, {:d}".format(
-                                    next_phase, test, procs_needed, self._procs_avail
-                                )
-                                logger.warning(msg)
-                                self._update_test_status(
-                                    test, next_phase, TEST_PEND_STATUS
-                                )
-                                self._update_test_status(
-                                    test, next_phase, TEST_FAIL_STATUS
-                                )
-                                self._log_output(test, msg)
-                                if next_phase == RUN_PHASE:
-                                    self._update_test_status_file(
-                                        test, SUBMIT_PHASE, TEST_PASS_STATUS
-                                    )
-                                    self._update_test_status_file(
-                                        test, next_phase, TEST_FAIL_STATUS
-                                    )
-                                else:
-                                    self._update_test_status_file(
-                                        test, next_phase, TEST_FAIL_STATUS
-                                    )
-                                num_threads_launched_this_iteration += 1
 
             if not work_to_do:
                 break

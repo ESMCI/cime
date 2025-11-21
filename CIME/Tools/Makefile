@@ -116,6 +116,24 @@ ifdef USER_INCLDIR
   INCLDIR += $(USER_INCLDIR)
 endif
 
+FTORCH_DIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch/
+ifneq "$(wildcard $(FTORCH_DIR) )" ""
+  INCLDIR  += -I$(FTORCH_DIR)/modules -I$(FTORCH_DIR)
+  ifeq ($(strip $(COMPILER)),nag)
+    SLIBS  +=  -Wl,-Wl,,-rpath=$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  else
+    SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  endif
+endif
+ifeq ($(strip $(USE_FTORCH)), TRUE)
+  CPPDEFS  += -DUSE_FTORCH
+  ifeq ($(strip $(COMPILER)),nag)
+    SLIBS  +=  -Wl,-Wl,,-rpath=$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  else
+    SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  endif
+endif
+
 ifdef FSTDLIB_PKGCONFIG
   STDLIB_INC  := `pkg-config --cflags fortran_stdlib`
   STDLIB_LIBS := `pkg-config --libs fortran_stdlib`
@@ -569,7 +587,6 @@ endif
 
 endif
 
-
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
 ifeq ($(NETCDF_SEPARATE), FALSE)
    ifeq (,$(findstring $(LIB_NETCDF),$(SLIBS)))
@@ -731,6 +748,7 @@ CMAKE_ENV_VARS += CC=$(CC) \
 		  FC=$(FC) \
 		  LDFLAGS="$(LDFLAGS)"
 
+F90_LDFLAGS += $(FFLAGS)
 
 # We declare GLCMakefile to be a phony target so that cmake is
 # always rerun whenever invoking 'make GLCMakefile'; this is
@@ -743,6 +761,10 @@ GLCMakefile:
 $(PIO_LIBDIR)/Makefile:
 	cd $(PIO_LIBDIR); \
 	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(PIO_SRC_DIR)
+
+FTMakefile:
+	cd $(FTORCH_DIR)
+	$(CMAKE_ENV_VARS) cmake $(CMAKE_OPTS) $(FTORCH_SRC_DIR)
 
 #-------------------------------------------------------------------------------
 # Build & include dependency files
@@ -847,6 +869,10 @@ endif
 ifdef COSP_LIBDIR
   ifeq ($(CIME_MODEL),cesm)
     ULIBDEP += $(COSP_LIBDIR)/libcosp.a
+    # Additionally include RTTOV if asked via CAM_CONFIG_OPTS.
+    ifeq ($(findstring -rttov,$(CAM_CONFIG_OPTS)),-rttov)
+      ULIBDEP += $(COSP_LIBDIR)/librttov_wrapper.a $(COSP_LIBDIR)/librttov_mw_scatt.a $(COSP_LIBDIR)/librttov_brdf_atlas.a $(COSP_LIBDIR)/librttov_emis_atlas.a  $(COSP_LIBDIR)/librttov_other.a $(COSP_LIBDIR)/librttov_parallel.a $(COSP_LIBDIR)/librttov_coef_io.a $(COSP_LIBDIR)/librttov_hdf.a $(COSP_LIBDIR)/librttov_main.a
+    endif
   endif
 endif
 

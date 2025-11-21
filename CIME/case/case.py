@@ -29,6 +29,7 @@ from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
 from CIME.XML.batch import Batch
 from CIME.XML.workflow import Workflow
+from CIME.XML.postprocessing import Postprocessing
 from CIME.XML.pio import PIO
 from CIME.XML.archive import Archive
 from CIME.XML.env_test import EnvTest
@@ -40,6 +41,7 @@ from CIME.XML.env_run import EnvRun
 from CIME.XML.env_archive import EnvArchive
 from CIME.XML.env_batch import EnvBatch
 from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.env_postprocessing import EnvPostprocessing
 from CIME.XML.generic_xml import GenericXML
 from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
@@ -109,6 +111,7 @@ class Case(object):
                 case_root
             ),
         )
+        self._existing_case = os.path.isdir(case_root)
 
         self._caseroot = case_root
         logger.debug("Initializing Case.")
@@ -356,6 +359,10 @@ class Case(object):
         self._env_entryid_files.append(
             EnvWorkflow(self._caseroot, read_only=self._force_read_only)
         )
+        if not self._existing_case or os.path.isfile("env_postprocessing.xml"):
+            self._env_entryid_files.append(
+                EnvPostprocessing(self._caseroot, read_only=self._force_read_only)
+            )
 
         if os.path.isfile(os.path.join(self._caseroot, "env_test.xml")):
             self._env_entryid_files.append(
@@ -430,6 +437,19 @@ class Case(object):
             # do not flush if caseroot wasnt created
             return
 
+        _postprocessing_spec_file = self.get_value("POSTPROCESSING_SPEC_FILE")
+        if _postprocessing_spec_file is not None:
+            have_postprocessing = os.path.isfile(_postprocessing_spec_file)
+        else:
+            have_postprocessing = False
+        if not have_postprocessing:
+            # Remove env_postprocessing.xml from self._files
+            self._files = [
+                file
+                for file in self._files
+                if file.get_id() != "env_postprocessing.xml"
+            ]
+
         for env_file in self._files:
             env_file.write(force_write=flushall)
 
@@ -441,19 +461,24 @@ class Case(object):
             )
             if len(results) > 0:
                 new_results = []
+
                 if resolved:
                     for result in results:
                         if isinstance(result, str):
-                            result = self.get_resolved_value(result)
+                            result = self.get_resolved_value(result, subgroup=subgroup)
+
+                            # If still not resolved, we have a problem
+                            expect(
+                                "$" not in result,
+                                "Could not resolve variable {}".format(item),
+                            )
+
                             vtype = env_file.get_type_info(item)
-                            if vtype is not None or vtype != "char":
+
+                            if vtype is not None and vtype != "char":
                                 result = convert_to_type(result, vtype, item)
 
-                            new_results.append(result)
-
-                        else:
-                            new_results.append(result)
-
+                        new_results.append(result)
                 else:
                     new_results = results
 
@@ -463,6 +488,7 @@ class Case(object):
         return []
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
+        # TODO this needs to be moved into either create_test or create_newcase
         if item == "GPU_ENABLED":
             if not self.gpu_enabled:
                 if (
@@ -472,7 +498,6 @@ class Case(object):
                     self.gpu_enabled = True
             return "true" if self.gpu_enabled else "false"
 
-        result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
             result = env_file.get_value(
@@ -482,14 +507,24 @@ class Case(object):
             if result is not None:
                 if resolved and isinstance(result, str):
                     result = self.get_resolved_value(result, subgroup=subgroup)
+
+                    if "$" in result:
+                        # last ditch effort to get variable from any group
+                        result = self.get_resolved_value(result)
+
+                    # If still not resolved, we have a problem
+                    expect(
+                        "$" not in result, "Could not resolve variable {}".format(item)
+                    )
+
                     vtype = env_file.get_type_info(item)
+
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
 
                 return result
 
-        # Return empty result
-        return result
+        return None
 
     def get_record_fields(self, variable, field):
         """get_record_fields gets individual requested field from an entry_id file
@@ -592,6 +627,13 @@ class Case(object):
             "Cannot modify case, read_only. "
             "Case must be opened with read_only=False and can only be modified within a context manager",
         )
+
+        # Only validate references e.g. $<variable> or $<subgroup>::<variable>
+        if isinstance(value, str) and value.startswith("$"):
+            expect(
+                len(value.split("::")) <= 2,
+                f"Value {value!r} is not valid, a namespaced reference must be in the form $SUBGROUP::VARIABLE",
+            )
 
         if item == "CASEROOT":
             self._caseroot = value
@@ -994,7 +1036,7 @@ class Case(object):
             if ":" in element:
                 element = element[4:]
             # ignore the possible BGC or TEST modifier
-            if element.startswith("BGC%") or element.startswith("TEST"):
+            if element.upper().startswith("BGC%") or element.upper().startswith("TEST"):
                 continue
             else:
                 element_component = element.split("%")[0].lower()
@@ -1577,6 +1619,16 @@ class Case(object):
 
         workflow = Workflow(files=files)
 
+        postprocessing = Postprocessing(files=files)
+        if postprocessing.file_exists:
+            env_postprocessing = self.get_env("postprocessing")
+            env_postprocessing.add_elements_by_group(srcobj=postprocessing)
+            # Add cupid related fields to env_mach_pes.xml
+            env_mach_pes = self.get_env("mach_pes")
+            if env_mach_pes.get_value("CUPID_NTASKS") is None:
+                env_mach_pes.unlock()
+                env_mach_pes.add_elements_by_group(srcobj=postprocessing)
+                env_mach_pes.lock()
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)
@@ -2216,6 +2268,8 @@ directory, NOT in this subdirectory."""
                     new_env_file = EnvBatch(infile=xmlfile)
                 elif ftype == "env_workflow.xml":
                     new_env_file = EnvWorkflow(infile=xmlfile)
+                elif ftype == "env_postprocessing.xml":
+                    new_env_file = EnvPostprocessing(infile=xmlfile)
                 elif ftype == "env_test.xml":
                     new_env_file = EnvTest(infile=xmlfile)
                 elif ftype == "env_archive.xml":
