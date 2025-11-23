@@ -677,12 +677,12 @@ class TestScheduler(object):
                     create_newcase_cmd += " --mpilib {}".format(mpilib)
                     logger.debug(" MPILIB set to {}".format(mpilib))
                 elif case_opt.startswith("N"):
-                    expect(ncpl == 1, "Cannot combine _C# and _N options")
+                    expect(ncpl == 1, "Cannot combine _C and _N options")
                     ninst = case_opt[1:]
                     create_newcase_cmd += " --ninst {}".format(ninst)
                     logger.debug(" NINST set to {}".format(ninst))
-                elif case_opt.startswith("C") and not case_opt.startswith("CG"):
-                    expect(ninst == 1, "Cannot combine _C# and _N options")
+                elif case_opt.startswith("C"):
+                    expect(ninst == 1, "Cannot combine _C and _N options")
                     ncpl = case_opt[1:]
                     create_newcase_cmd += " --ninst {} --multi-driver".format(ncpl)
                     logger.debug(" NCPL set to {}".format(ncpl))
@@ -701,9 +701,7 @@ class TestScheduler(object):
             if "--driver nuopc" in create_newcase_cmd or (
                 "--driver" not in create_newcase_cmd and driver == "nuopc"
             ):
-                expect(
-                    False, "_N option not supported by nuopc driver, use _C# instead"
-                )
+                expect(False, "_N option not supported by nuopc driver, use _C instead")
 
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "
@@ -886,7 +884,7 @@ class TestScheduler(object):
                     envtest.set_test_parameter("USE_ESMF_LIB", "TRUE")
                     logger.debug(" USE_ESMF_LIB set to TRUE")
 
-                elif opt == "CG":
+                elif opt == "cG":
                     envtest.set_test_parameter("CALENDAR", "GREGORIAN")
                     logger.debug(" CALENDAR set to {}".format(opt))
 
