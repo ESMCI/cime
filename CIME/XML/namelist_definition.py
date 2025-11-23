@@ -96,6 +96,9 @@ class NamelistDefinition(EntryID):
         self._group_names = CaseInsensitiveDict({})
         self._nodes = {}
 
+        # Dictionary mapping lowercase names to their actual case (e.g., foobar -> FooBar)
+        self._entry_ids_lower_to_actual = {}
+
     def set_node_values(self, name, node):
         self._entry_nodes.append(node)
         self._entry_ids.append(name)
@@ -103,6 +106,7 @@ class NamelistDefinition(EntryID):
         self._entry_types[name] = self._get_type(node)
         self._valid_values[name] = self._get_valid_values(node)
         self._group_names[name] = self.get_group_name(node)
+        self._entry_ids_lower_to_actual[name.lower()] = name
 
     def set_nodes(self, skip_groups=None):
         """
@@ -215,7 +219,7 @@ class NamelistDefinition(EntryID):
         # NOTE(wjs, 2021-06-04) In the following call, replacement_for_none='' may not
         # actually be needed, but I'm setting it to maintain some old logic, to be safe.
         value = super(NamelistDefinition, self).get_value_match(
-            vid.lower(),
+            vid,
             attributes=all_attributes,
             exact_match=exact_match,
             entry_node=entry_node,
@@ -383,7 +387,10 @@ class NamelistDefinition(EntryID):
 
     def _expect_variable_in_definition(self, name, variable_template):
         """Used to get a better error message for an unexpected variable.
-        case insensitve match"""
+
+        This version is case-sensitive. See _get_actual_varname_case for a version that is
+        case-insensitive.
+        """
 
         expect(
             name in self._entry_ids,
@@ -391,6 +398,24 @@ class NamelistDefinition(EntryID):
                 str(name)
             ),
         )
+
+    def _get_varname_actual_case(self, name, variable_template):
+        """
+        Given a name of a variable with possible case mismatches, return the name with the
+        correct case (i.e., the correct mix of lowercase and uppercase).
+
+        This also gives a nice error message for an unexpected variable (as in
+        _expect_variable_in_definition)
+        """
+
+        expect(
+            name.lower() in self._entry_ids_lower_to_actual,
+            (variable_template + " is not in the namelist definition.").format(
+                str(name)
+            ),
+        )
+
+        return self._entry_ids_lower_to_actual[name.lower()]
 
     def _user_modifiable_in_variable_definition(self, name):
         # Is name user modifiable?
@@ -474,6 +499,9 @@ class NamelistDefinition(EntryID):
         to look up the namelist group associated with each variable, and uses
         this information to create a true `Namelist` object.
 
+        The case (lowercase vs. uppercase) of variables in the input does not need to
+        match the case in the namelist definition file.
+
         The optional `filename` argument can be used to assist in error
         reporting when the namelist comes from a specific, known file.
         """
@@ -481,16 +509,23 @@ class NamelistDefinition(EntryID):
         variable_template = self._generate_variable_template(filename)
         groups = {}
         for variable_name in dict_:
-            variable_lc = variable_name.lower()
-            qualified_varname = get_fortran_name_only(variable_lc)
-            self._expect_variable_in_definition(qualified_varname, variable_template)
-            group_name = self.get_group(qualified_varname)
+            qualified_varname = get_fortran_name_only(variable_name)
+            qualified_varname_actual_case = self._get_varname_actual_case(
+                qualified_varname, variable_template
+            )
+            # In contrast to qualified_varname_actual_case, variable_name_actual_case
+            # includes any extra stuff such as the array section
+            variable_name_actual_case = variable_name.replace(
+                qualified_varname, qualified_varname_actual_case, 1
+            )
+            group_name = self.get_group(qualified_varname_actual_case)
             expect(
-                group_name is not None, "No group found for var {}".format(variable_lc)
+                group_name is not None,
+                "No group found for var {}".format(variable_name),
             )
             if group_name not in groups:
                 groups[group_name] = collections.OrderedDict()
-            groups[group_name][variable_lc] = dict_[variable_name]
+            groups[group_name][variable_name_actual_case] = dict_[variable_name]
         return Namelist(groups)
 
     def get_input_pathname(self, name):
@@ -516,5 +551,5 @@ class NamelistDefinition(EntryID):
         if attribute is not None:
             all_attributes.update(attribute)
 
-        value = self.get_value_match(item.lower(), all_attributes, True)
+        value = self.get_value_match(item, all_attributes, True)
         return value
