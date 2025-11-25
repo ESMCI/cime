@@ -15,7 +15,7 @@ echo "SKIP_ENTRYPOINT: ${SKIP_ENTRYPOINT}"
 function download_inputdata() {
     mkdir -p /home/cime/inputdata/cpl/gridmaps/oQU240 \
         /home/cime/inputdata/cpl/gridmaps/gx1v6 \
-        /home/cime/inputdata/share/domains 
+        /home/cime/inputdata/share/domains
 
     wget -O /home/cime/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.n

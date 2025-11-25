@@ -78,4 +78,3 @@ WORKDIR /home/cime
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/bash" ]
-
