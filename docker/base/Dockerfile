@@ -72,10 +72,9 @@ RUN groupadd -g 1000 cime \
 COPY .cime /home/cime/.cime
 COPY entrypoint.sh /entrypoint.sh
 
-RUN SKIP_ENTRYPOINT=true bash -c "source /entrypoint.sh && download_inputdata"
+RUN SKIP_SETUP=true bash -c "source /entrypoint.sh && download_inputdata"
 
 WORKDIR /home/cime
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/bash" ]
-
