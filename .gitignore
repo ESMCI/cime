@@ -8,6 +8,11 @@ _build/
 dist/
 .coverage
 
+# Ignore env directories
+.venv
+.env
+.spack-env
+
 # Ignore emacs backup files
 *~
 

@@ -12,6 +12,19 @@ echo "GROUP_ID: ${GROUP_ID}"
 echo "HOME_DIR: ${HOME_DIR}"
 echo "SKIP_ENTRYPOINT: ${SKIP_ENTRYPOINT}"
 
+function download_inputdata() {
+    mkdir -p /home/cime/inputdata/cpl/gridmaps/oQU240 \
+        /home/cime/inputdata/cpl/gridmaps/gx1v6 \
+        /home/cime/inputdata/share/domains 
+
+    wget -O /home/cime/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
+        https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.n
+    wget -O /home/cime/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
+        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
+    wget -O /home/cime/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
+        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+}
+
 # Only required by E3SM for mct
 function fix_mct_makefiles() {
     fix_arflags "${1}/mct/Makefile"
@@ -23,7 +36,7 @@ function fix_arflags() {
     if [[ ! -e "${1}.bak" ]]; then
         echo "Fixing AR variable in ${1}"
 
-        sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${1}"
+        sed -i".bak" "s/\$(AR)/\$(AR) cq/g" "${1}"
     fi
 }
 
@@ -49,41 +62,37 @@ function fix_permissions() {
     chown -R "${USER_ID}":"${GROUP_ID}" "${1}"
 }
 
-if [[ "${USER_ID}" == "0" ]]; then
-    export USER=root
-    export LOGNAME=root
+if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
+    if [[ "${USER_ID}" == "0" ]]; then
+        export USER=root
+        export LOGNAME=root
 
-    echo "Copying /home/.cime -> ${HOME_DIR}/"
+        echo "Copying /home/.cime -> ${HOME_DIR}/"
 
-    cp -ef /home/cime/.cime "${HOME_DIR}/"
-else
-    export USER=cime
-    export LOGNAME=cime
+        cp -ef /home/cime/.cime "${HOME_DIR}/"
+    else
+        export USER=cime
+        export LOGNAME=cime
 
-    echo "Updating cime uid/gid to ${USER_ID}:${GROUP_ID}"
+        echo "Updating cime uid/gid to ${USER_ID}:${GROUP_ID}"
 
-    # update the uid/gid for cime
-    groupmod -g "${GROUP_ID}" cime
-    usermod -u "${USER_ID}" cime
-fi
+        # update the uid/gid for cime
+        groupmod -g "${GROUP_ID}" cime
+        usermod -u "${USER_ID}" cime
+    fi
 
-link_config_machines
+    link_config_machines
 
-git config --global --add safe.directory "*"
+    git config --global --add safe.directory "*"
 
-cat << EOF > "${HOME_DIR}/.bashrc"
-source /opt/conda/etc/profile.d/conda.sh
-conda activate base
-
-if [[ -n "\${CIME_MODEL}" ]]; then
-    conda activate "\${CIME_MODEL}"
-fi
+    cat << EOF > "${HOME_DIR}/.bashrc"
+source /opt/spack-environment/activate.sh
 EOF
 
-if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     if [[ "${USER_ID}" == "0" ]]; then
         exec "${@}"
     else
+        fix_permissions /opt
         fix_permissions /home/cime
 
         if [[ -n "${SRC_PATH}" && -e "${SRC_PATH}" ]]; then

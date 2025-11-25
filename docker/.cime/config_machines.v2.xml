@@ -19,7 +19,7 @@
     <CCSM_CPRNC>/home/cime/tools/cprnc</CCSM_CPRNC>
     <GMAKE>make</GMAKE>
     <GMAKE_J>4</GMAKE_J>
-    <TESTS>e3sm_developer</TESTS>
+    <TESTS>cime_developer</TESTS>
     <BATCH_SYSTEM>none</BATCH_SYSTEM>
     <SUPPORTED_BY>boutte3@llnl.gov</SUPPORTED_BY>
     <MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
@@ -35,13 +35,15 @@
     <RUNDIR>$CASEROOT/run</RUNDIR>
     <EXEROOT>$CASEROOT/bld</EXEROOT>
     <environment_variables>
+      <env name="HDF5_USE_FILE_LOCKING">FALSE</env>
+      <env name="HDF5_ROOT">/opt/view</env>
+      <env name="NETCDF_C_PATH">/opt/view</env>
+      <env name="NETCDF_FORTRAN_PATH">/opt/view</env>
+    </environment_variables>
+    <environment_variables mpilib="openmpi">
       <env name="OMPI_ALLOW_RUN_AS_ROOT">1</env>
       <env name="OMPI_ALLOW_RUN_AS_ROOT_CONFIRM">1</env>
-      <env name="HDF5_ROOT">/opt/conda/envs/e3sm</env>
-      <env name="HDF5_USE_FILE_LOCKING">FALSE</env>
-      <env name="NETCDF_C_PATH">/opt/conda/envs/e3sm</env>
-      <env name="NETCDF_FORTRAN_PATH">/opt/conda/envs/e3sm</env>
-      <env name="PNETCDF_PATH">/opt/conda/envs/e3sm</env>
+      <env name="PNETCDF_PATH">/opt/view</env>
     </environment_variables>
   </machine>
 </config_machines>

@@ -1,0 +1,17 @@
+{% extends "container/Dockerfile" %}
+{% block final_stage %}
+{{ super() }}
+
+RUN groupadd -g 1000 cime \
+    && useradd -g 1000 -m -u 1000 cime \
+    && update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-11 100 \
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 100
+
+COPY .cime /home/cime/.cime
+COPY entrypoint.sh /entrypoint.sh
+
+RUN SKIP_ENTRYPOINT=true bash -c "source /entrypoint.sh && download_inputdata"
+
+WORKDIR /home/cime
+
+{% endblock %}

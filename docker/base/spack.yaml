@@ -1,0 +1,40 @@
+spack:
+  specs:
+  - hdf5@1.10.7+cxx+fortran+hl
+  - netcdf-c@4.7.4+parallel-netcdf
+  - netcdf-fortran@4.5.3
+  - parallel-netcdf@1.11.0
+  - intel-oneapi-mkl@2022.1.0+gfortran
+  - openmpi@4.1.6
+
+  config:
+    template_dirs:
+    - ./../templates
+
+  container:
+    images:
+      build: spack/ubuntu-jammy:develop
+      final: ubuntu:22.04
+
+    os_packages:
+      command: apt
+      build:
+      - gcc-11
+      - g++-11
+      - gfortran-11
+      final:
+      - vim
+      - python3
+      - python3-venv
+      - cmake
+      - make
+      - gosu
+      - wget
+      - curl
+      - subversion
+      - git
+      - gcc-11
+      - g++-11
+      - gfortran-11
+
+    template: container/default
