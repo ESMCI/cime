@@ -92,6 +92,8 @@ EOF
     if [[ "${USER_ID}" == "0" ]]; then
         exec "${@}"
     else
+        mkdir /home/cime/{timings,cases,archive,baselines,tools}
+
         fix_permissions /opt
         fix_permissions /home/cime
 
