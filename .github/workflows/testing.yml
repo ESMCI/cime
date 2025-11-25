@@ -146,6 +146,8 @@ jobs:
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
         run: |
+          uv venv
+          source .venv/bin/activate
           uv pip install -r test-requirements.txt
 
           # GitHub runner home is different than container
@@ -235,6 +237,8 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
+          uv venv
+          source .venv/bin/activate
           uv pip install -r test-requirements.txt
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
