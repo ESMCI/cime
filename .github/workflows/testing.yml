@@ -144,12 +144,11 @@ jobs:
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: "ubuntu-latest"
+          SKIP_ENTRYPOINT: "true"
         run: |
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
-
-          SKIP_COMMAND="true" source /entrypoint.sh
 
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
@@ -236,26 +235,15 @@ jobs:
           CIME_MODEL: ${{ matrix.model.name }}
           CIME_DRIVER: ${{ matrix.driver }}
           CIME_TEST_PLATFORM: ubuntu-latest
+          SKIP_SETUP: "true"
         run: |
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
 
-          SKIP_COMMAND="true" source /entrypoint.sh
+          USER_ID=`id -u` GROUP_ID=`id -g` SKIP_COMMAND="true" source /entrypoint.sh
 
-          if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
-            fix_mct_makefiles ../externals/mct
-          fi
-
-          # GitHub runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
-
-          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            ln -sf /github/home/.cime/config_machines.v2.xml /github/home/.cime/config_machines.xml
-          else
-            ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
-          fi
-
+          # Required for testing that uses case git feature
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
