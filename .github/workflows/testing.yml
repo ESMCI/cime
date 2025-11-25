@@ -61,9 +61,9 @@ jobs:
             type=sha,format=long
       - name: Build and push
         uses: docker/build-push-action@v6
-        working-directory: docker/
         with:
-          file: base/Dockerfile
+          context: docker/
+          file: docker/base/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
