@@ -146,7 +146,7 @@ jobs:
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
         run: |
-          pip install -r test-requirements.txt
+          uv pip install -r test-requirements.txt
 
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
@@ -235,7 +235,7 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
-          pip install -r test-requirements.txt
+          uv pip install -r test-requirements.txt
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
