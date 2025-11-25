@@ -134,7 +134,7 @@ jobs:
           path: cesm/cime
           submodules: "true"
       - name: Install uv
-        uses: astral-sh/setup-uv@6
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run tests
@@ -223,7 +223,7 @@ jobs:
           path: /home/cime/inputdata
           key: inputdata-2
       - name: Install uv
-        uses: astral-sh/setup-uv@6
+        uses: astral-sh/setup-uv@v6
         with:
           python-version: 3.12
       - name: Run tests
