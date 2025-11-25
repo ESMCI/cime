@@ -4,13 +4,15 @@ export USER_ID=${USER_ID:-1000}
 export GROUP_ID=${GROUP_ID:-1000}
 
 HOME_DIR="$(getent passwd ${USER_ID} | cut -d':' -f6)"
-SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
+SKIP_SETUP="${SKIP_SETUP:-false}"
+SKIP_EXEC="${SKIP_EXEC:-false}"
 
 echo "Container configuration"
 echo "USER_ID: ${USER_ID}"
 echo "GROUP_ID: ${GROUP_ID}"
 echo "HOME_DIR: ${HOME_DIR}"
-echo "SKIP_ENTRYPOINT: ${SKIP_ENTRYPOINT}"
+echo "SKIP_SETUP: ${SKIP_SETUP}"
+echo "SKIP_COMMAND: ${SKIP_COMMAND}"
 
 function download_inputdata() {
     mkdir -p /home/cime/inputdata/cpl/gridmaps/oQU240 \
@@ -62,7 +64,9 @@ function fix_permissions() {
     chown -R "${USER_ID}":"${GROUP_ID}" "${1}"
 }
 
-if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
+if [[ "${SKIP_SETUP}" == "false" ]]; then
+    mkdir -p ${HOME}/{timings,cases,archive,baselines,tools}
+
     if [[ "${USER_ID}" == "0" ]]; then
         export USER=root
         export LOGNAME=root
@@ -90,10 +94,8 @@ source /opt/spack-environment/activate.sh
 EOF
 
     if [[ "${USER_ID}" == "0" ]]; then
-        exec "${@}"
+        [[ "${SKIP_COMMAND}" == "false" ]] && exec "${@}"
     else
-        mkdir /home/cime/{timings,cases,archive,baselines,tools}
-
         fix_permissions /opt
         fix_permissions /home/cime
 
@@ -101,6 +103,6 @@ EOF
             fix_permissions "${SRC_PATH}"
         fi
 
-        gosu "${USER_ID}":"${GROUP_ID}" "${@}"
+        [[ "${SKIP_COMMAND}" ]] && gosu "${USER_ID}":"${GROUP_ID}" "${@}"
     fi
 fi

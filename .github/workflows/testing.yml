@@ -144,11 +144,12 @@ jobs:
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: "ubuntu-latest"
-          SKIP_ENTRYPOINT: "true"
         run: |
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
+
+          SKIP_COMMAND="true" source /entrypoint.sh
 
           # GitHub runner home is different than container
           cp -rf /home/cime/.cime /github/home/
@@ -235,11 +236,12 @@ jobs:
           CIME_MODEL: ${{ matrix.model.name }}
           CIME_DRIVER: ${{ matrix.driver }}
           CIME_TEST_PLATFORM: ubuntu-latest
-          SKIP_ENTRYPOINT: "true"
         run: |
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
+
+          SKIP_COMMAND="true" source /entrypoint.sh
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
