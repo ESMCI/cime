@@ -133,6 +133,10 @@ jobs:
         with:
           path: cesm/cime
           submodules: "true"
+      - name: Install uv
+        uses: astral-sh/setup-uv@6
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Run tests
         shell: bash
         working-directory: cesm/cime
@@ -142,12 +146,6 @@ jobs:
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
         run: |
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate cesm
-
-          mamba install -y 'python=${{ matrix.python-version }}'
-
           pip install -r test-requirements.txt
 
           # GitHub runner home is different than container
@@ -224,6 +222,10 @@ jobs:
         with:
           path: /home/cime/inputdata
           key: inputdata-2
+      - name: Install uv
+        uses: astral-sh/setup-uv@6
+        with:
+          python-version: 3.12
       - name: Run tests
         shell: bash
         working-directory: ${{ matrix.model.name }}/cime
@@ -233,13 +235,7 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate ${{ matrix.model.name }}
-
           pip install -r test-requirements.txt
-
-          source /entrypoint.sh
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
