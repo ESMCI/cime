@@ -241,6 +241,7 @@ jobs:
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
 
+          set -x
           unset SKIP_SETUP
           USER_ID=`id -u` GROUP_ID=`id -g` SKIP_COMMAND="true" source /entrypoint.sh
 
