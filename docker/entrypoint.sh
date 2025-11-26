@@ -65,7 +65,8 @@ function fix_permissions() {
 }
 
 if [[ "${SKIP_SETUP}" == "false" ]]; then
-    mkdir -p ${HOME}/{timings,cases,archive,baselines,tools}
+    # will always be /home/cime due to config_machines.xml
+    mkdir -p /home/cime/{timings,cases,archive,baselines,tools}
 
     if [[ "${USER_ID}" == "0" ]]; then
         export USER=root
@@ -73,7 +74,7 @@ if [[ "${SKIP_SETUP}" == "false" ]]; then
 
         echo "Copying /home/.cime -> ${HOME_DIR}/"
 
-        cp -ef /home/cime/.cime "${HOME_DIR}/"
+        cp -rf /home/cime/.cime "${HOME_DIR}/"
     else
         export USER=cime
         export LOGNAME=cime
