@@ -95,7 +95,7 @@ source /opt/spack-environment/activate.sh
 EOF
 
     if [[ "${USER_ID}" == "0" ]]; then
-        [[ "${SKIP_COMMAND}" == "false" ]] && exec "${@}" || exit 0
+        [[ "${SKIP_COMMAND}" == "false" ]] && exec "${@}" || true
     else
         fix_permissions /opt
         fix_permissions /home/cime
@@ -104,6 +104,6 @@ EOF
             fix_permissions "${SRC_PATH}"
         fi
 
-        [[ "${SKIP_COMMAND}" ]] && gosu "${USER_ID}":"${GROUP_ID}" "${@}" || exit 0
+        [[ "${SKIP_COMMAND}" ]] && gosu "${USER_ID}":"${GROUP_ID}" "${@}" || true
     fi
 fi
