@@ -44,17 +44,18 @@ function fix_arflags() {
 
 function link_config_machines() {
     local src_path="/home/cime/.cime"
+    local dst_path="${1}"
 
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-        echo "Linking E3SM ${src_path}/config_machines.v2.xml -> ${HOME_DIR}/.cime/config_machines.xml"
+        echo "Linking E3SM ${src_path}/config_machines.v2.xml -> ${dst_path}/.cime/config_machines.xml"
 
-        ln -sf "${src_path}/config_machines.v2.xml" "${HOME_DIR}/.cime/config_machines.xml"
+        ln -sf "${src_path}/config_machines.v2.xml" "${dst_path}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
         export ESMFMKFILE=/opt/conda/envs/cesm/lib/esmf.mk
 
-        echo "Link CESM ${src_path}/config_machines.v3.xml -> ${HOME_DIR}/.cime/config_machines.xml"
+        echo "Link CESM ${src_path}/config_machines.v3.xml -> ${dst_path}/.cime/config_machines.xml"
 
-        ln -sf "${src_path}/config_machines.v3.xml" "${HOME_DIR}/.cime/config_machines.xml"
+        ln -sf "${src_path}/config_machines.v3.xml" "${dst_path}/.cime/config_machines.xml"
     fi
 }
 
@@ -74,7 +75,11 @@ if [[ "${SKIP_SETUP}" == "false" ]]; then
 
         echo "Copying /home/.cime -> ${HOME_DIR}/"
 
-        cp -rf /home/cime/.cime "${HOME_DIR}/"
+        if [[ "${GITHUB_ACTIONS:-false}" == "true" ]]; then
+            cp -rf /home/cime/.cime "${HOME}/"
+        else
+            cp -rf /home/cime/.cime "${HOME_DIR}/"
+        fi
     else
         export USER=cime
         export LOGNAME=cime
@@ -86,7 +91,11 @@ if [[ "${SKIP_SETUP}" == "false" ]]; then
         usermod -u "${USER_ID}" cime
     fi
 
-    link_config_machines
+    if [[ "${GITHUB_ACTIONS:-false}" == "true" ]]; then
+        link_config_machines ${HOME}
+    else
+        link_config_machines ${HOME_DIR}
+    fi
 
     git config --global --add safe.directory "*"
 

@@ -150,8 +150,9 @@ jobs:
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
 
-          # GitHub runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
+          set -x
+          unset SKIP_SETUP
+          USER_ID=`id -u` GROUP_ID=`id -g` SKIP_COMMAND="true" source /entrypoint.sh
 
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
@@ -244,11 +245,6 @@ jobs:
           set -x
           unset SKIP_SETUP
           USER_ID=`id -u` GROUP_ID=`id -g` SKIP_COMMAND="true" source /entrypoint.sh
-
-          # Github runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
-
-          echo "$HOME"
 
           # Required for testing that uses case git feature
           git config --global user.name "${{ github.actor }}"
