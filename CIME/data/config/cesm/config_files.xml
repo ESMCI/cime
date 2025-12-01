@@ -112,6 +112,7 @@
     <values>
       <value>$CIMEROOT/CIME/data/config/config_tests.xml</value>
       <!-- component specific config_tests files -->
+      <value component="allactive">$SRCROOT/cime_config/config_tests.xml</value>
       <value component="clm">$COMP_ROOT_DIR_LND/cime_config/config_tests.xml</value>
       <value component="slim">$COMP_ROOT_DIR_LND/cime_config/config_tests.xml</value>
       <value component="cam">$COMP_ROOT_DIR_ATM/cime_config/config_tests.xml</value>
@@ -371,6 +372,7 @@
     <type>char</type>
     <values>
       <value component="any"       >$CIMEROOT/CIME/SystemTests</value>
+      <value component="allactive" >$SRCROOT/cime_config/SystemTests</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/SystemTests</value>
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/SystemTests</value>
       <value component="pop"       >$COMP_ROOT_DIR_OCN/cime_config/SystemTests</value>
