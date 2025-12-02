@@ -25,7 +25,7 @@ spack:
       final:
       - vim
       - python3
-      - python3-venv
+      - python3-pip
       - cmake
       - make
       - gosu

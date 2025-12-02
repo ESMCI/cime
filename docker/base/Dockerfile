@@ -60,7 +60,7 @@ RUN { \
 
 
 RUN apt-get -yqq update && apt-get -yqq upgrade \
- && apt-get -yqq install vim python3 python3-venv cmake make gosu wget curl subversion git libxml2-utils gcc-11 g++-11 gfortran-11 \
+ && apt-get -yqq install vim python3 python3-pip cmake make gosu wget curl subversion git libxml2-utils gcc-11 g++-11 gfortran-11 \
  && rm -rf /var/lib/apt/lists/*
 
 
@@ -72,9 +72,12 @@ RUN groupadd -g 1000 cime \
 COPY .cime /home/cime/.cime
 COPY entrypoint.sh /entrypoint.sh
 
-RUN SKIP_SETUP=true bash -c "source /entrypoint.sh && download_inputdata"
+RUN SKIP_SETUP=true bash -c "source /entrypoint.sh && download_inputdata" \
+    && pip install uv \
+    && uv python install 3.10
 
 WORKDIR /home/cime
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "/bin/bash" ]
+

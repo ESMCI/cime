@@ -5,7 +5,7 @@ export GROUP_ID=${GROUP_ID:-1000}
 
 HOME_DIR="$(getent passwd ${USER_ID} | cut -d':' -f6)"
 SKIP_SETUP="${SKIP_SETUP:-false}"
-SKIP_EXEC="${SKIP_EXEC:-false}"
+SKIP_COMMAND="${SKIP_COMMAND:-false}"
 
 echo "Container configuration"
 echo "USER_ID: ${USER_ID}"
