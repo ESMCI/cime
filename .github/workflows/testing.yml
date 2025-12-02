@@ -238,10 +238,6 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_SETUP: "true"
         run: |
-          uv venv
-          source .venv/bin/activate
-          uv pip install -r test-requirements.txt
-
           set -x
           unset SKIP_SETUP
           USER_ID=`id -u` GROUP_ID=`id -g` SKIP_COMMAND="true" source /entrypoint.sh
@@ -251,6 +247,10 @@ jobs:
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
           source /opt/spack-environment/activate.sh
+
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r test-requirements.txt
 
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Upload coverage reports to Codecov
