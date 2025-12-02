@@ -250,6 +250,8 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
+          source /opt/spack-environment/activate.sh
+
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
