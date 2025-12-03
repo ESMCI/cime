@@ -691,6 +691,15 @@ class TestScheduler(object):
                     create_newcase_cmd += " --pecount {}".format(pesize)
                 elif case_opt.startswith("V"):
                     driver = case_opt[1:]
+                elif case_opt.startswith("cG"):
+                    # Need to examine the long name.
+                    # spinup cases are 1850, 2000, 2010
+                    # not HIST, SSP###
+                    spinup_po = re.compile('([\d]{1,4})')
+                    spinup = spinup_po.match(compset)
+                    expect(spinup == None,
+                        "Gregorian calendar (_cG) cannot be used with spinup compset \n  {}".format(compset)
+                    )
 
         create_newcase_cmd += " --driver {}".format(driver)
 
