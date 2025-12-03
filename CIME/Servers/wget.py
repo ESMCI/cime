@@ -26,8 +26,10 @@ class WGET(GenericServer):
             args += "--password {} ".format(passwd)
 
         try:
-            err,_,errstr = run_cmd("wget {} --spider {}".format(args, address), timeout=60)
-        except RuntimeError as e:
+            err, _, errstr = run_cmd(
+                "wget {} --spider {}".format(args, address), timeout=60
+            )
+        except RuntimeError:
             logger.warning(
                 "Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .(location 1) ".format(
                     address
@@ -38,9 +40,7 @@ class WGET(GenericServer):
             logger.warning("spider mode disabled, server otherwise okay")
         elif err:
             logger.warning(
-                "Could not connect to repo '{0}'\n{1}".format(
-                    address, errstr
-                )
+                "Could not connect to repo '{0}'\n{1}".format(address, errstr)
             )
             return None
 
