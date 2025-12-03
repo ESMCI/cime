@@ -695,7 +695,7 @@ class TestScheduler(object):
                     # Need to examine the long name.
                     # spinup cases are 1850, 2000, 2010
                     # not HIST, SSP###
-                    spinup_po = re.compile('([\d]{1,4})')
+                    spinup_po = re.compile(r'([\d]{1,4})')
                     spinup = spinup_po.match(compset)
                     expect(spinup == None,
                         "Gregorian calendar (_cG) cannot be used with spinup compset \n  {}".format(compset)
