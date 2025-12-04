@@ -31,13 +31,13 @@ class WGET(GenericServer):
             )
         except RuntimeError:
             logger.warning(
-                "Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .(location 1) ".format(
+                "Could not connect to repo '{0}'\nThis is most likely either a proxy, or network issue .".format(
                     address
                 )
             )
             return None
         if "Connecting to " in errstr and "... connected" in errstr:
-            logger.warning("spider mode disabled, server otherwise okay")
+            logger.warning("Connection established with nonzero code %s", err)
         elif err:
             logger.warning(
                 "Could not connect to repo '{0}'\n{1}".format(address, errstr)
