@@ -36,7 +36,7 @@ class WGET(GenericServer):
                 )
             )
             return None
-        if "connected" in errstr:
+        if "Connecting to " in errstr and "... connected" in errstr:
             logger.warning("spider mode disabled, server otherwise okay")
         elif err:
             logger.warning(
