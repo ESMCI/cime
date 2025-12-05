@@ -314,7 +314,7 @@ MODIFIERS    Description
 ============ =====================================================================================
    _C#       Set number of instances to # and use the multi driver (can't use with _N).
 
-   _CG       CALENDAR set to "GREGORIAN".
+   _cG       CALENDAR set to "GREGORIAN".
 
    _D        XML variable DEBUG set to "TRUE".
 
