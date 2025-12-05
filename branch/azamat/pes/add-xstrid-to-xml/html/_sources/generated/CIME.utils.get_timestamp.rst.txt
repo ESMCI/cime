@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_timestamp
-=========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_timestamp

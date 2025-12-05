@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.hist\_utils.get\_ts\_synopsis
-==================================
-
-.. currentmodule:: CIME.hist_utils
-
-.. autofunction:: get_ts_synopsis

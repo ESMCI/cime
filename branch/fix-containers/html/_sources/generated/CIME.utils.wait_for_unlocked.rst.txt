@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.wait\_for\_unlocked
-==============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: wait_for_unlocked
