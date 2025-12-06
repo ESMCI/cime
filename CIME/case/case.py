@@ -1094,9 +1094,9 @@ class Case(object):
         )
         drv_comp_model_specific = Component(drv_config_file_model_specific, "CPL")
 
-        self._component_description[
-            "forcing"
-        ] = drv_comp_model_specific.get_forcing_description(self._compsetname)
+        self._component_description["forcing"] = (
+            drv_comp_model_specific.get_forcing_description(self._compsetname)
+        )
         logger.info(
             "Compset forcing is {}".format(self._component_description["forcing"])
         )
@@ -1204,6 +1204,7 @@ class Case(object):
         pes_nthrds = {}
         pes_rootpe = {}
         pes_pstrid = {}
+        pes_excl_stride = {}
         other = {}
         append = {}
         comment = None
@@ -1233,6 +1234,7 @@ class Case(object):
                 pes_nthrds,
                 pes_rootpe,
                 pes_pstrid,
+                pes_excl_stride,
                 other,
                 append,
                 comment,
@@ -1287,17 +1289,24 @@ class Case(object):
             nthrds_str = "NTHRDS_{}".format(comp_class)
             rootpe_str = "ROOTPE_{}".format(comp_class)
             pstrid_str = "PSTRID_{}".format(comp_class)
+            excl_stride_str = "EXCL_STRIDE_{}".format(comp_class)
 
             ntasks = pes_ntasks[ntasks_str] if ntasks_str in pes_ntasks else 1
             nthrds = pes_nthrds[nthrds_str] if nthrds_str in pes_nthrds else 1
             rootpe = pes_rootpe[rootpe_str] if rootpe_str in pes_rootpe else 0
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
+            excl_stride = (
+                pes_excl_stride[excl_stride_str]
+                if excl_stride_str in pes_excl_stride
+                else 0
+            )
 
             totaltasks.append((ntasks + rootpe) * nthrds)
             mach_pes_obj.set_value(ntasks_str, ntasks)
             mach_pes_obj.set_value(nthrds_str, nthrds)
             mach_pes_obj.set_value(rootpe_str, rootpe)
             mach_pes_obj.set_value(pstrid_str, pstrid)
+            mach_pes_obj.set_value(excl_stride_str, excl_stride)
 
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
