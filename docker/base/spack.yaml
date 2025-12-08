@@ -6,6 +6,7 @@ spack:
   - parallel-netcdf@1.11.0
   - intel-oneapi-mkl@2022.1.0+gfortran
   - openmpi@4.1.6
+  - esmf
 
   config:
     template_dirs:

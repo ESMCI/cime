@@ -18,6 +18,7 @@ set -o noclobber \
 &&   echo '  - parallel-netcdf@1.11.0' \
 &&   echo '  - intel-oneapi-mkl@2022.1.0+gfortran' \
 &&   echo '  - openmpi@4.1.6' \
+&&   echo '  - esmf' \
 &&   echo '  config:' \
 &&   echo '    template_dirs:' \
 &&   echo '    - ./../templates' \

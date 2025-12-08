@@ -51,8 +51,6 @@ function link_config_machines() {
 
         ln -sf "${src_path}/config_machines.v2.xml" "${dst_path}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
-        export ESMFMKFILE=/opt/conda/envs/cesm/lib/esmf.mk
-
         echo "Link CESM ${src_path}/config_machines.v3.xml -> ${dst_path}/.cime/config_machines.xml"
 
         ln -sf "${src_path}/config_machines.v3.xml" "${dst_path}/.cime/config_machines.xml"
