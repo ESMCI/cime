@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.filter\_unicode
+==========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: filter_unicode

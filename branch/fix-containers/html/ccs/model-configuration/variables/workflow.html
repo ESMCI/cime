@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WORKFLOW_SPEC_FILE &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=30d551ce"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Support a new machine" href="../support-a-new-machine.html" />
+    <link rel="prev" title="USER_MODS_DIR" href="user-mods.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Case Control System (CCS)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../query-configuration.html">Query configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user-config.html">User Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../creating-a-case.html">Creating a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../setting-up-a-case.html">Setting up a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building-a-case.html">Building a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../running-a-case.html">Running a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../cloning-a-case.html">Cloning a Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../timers.html">Timers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">Model Configuration</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../config-files.html">Config Files</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="archive.html">ARCHIVE_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="batch.html">BATCH_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build-lib.html">BUILD_LIB_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="casefile-headers.html">CASEFILE_HEADERS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmake-macros-dir.html">CMAKE_MACROS_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compsets.html">COMPSETS_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="comp-root-dir.html">COMP_ROOT_DIR_*</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component.html">CONFIG_*_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="component_model_specific.html">CONFIG_CPL_FILE_MODEL_SPECIFIC</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests.html">CONFIG_TESTS_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="grids.html">GRIDS_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inputdata.html">INPUTDATA_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="machine.html">MACHINE_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="namelist-definition.html">NAMELIST_DEFINITION_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pes.html">PES_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pio.html">PIO_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="system-tests.html">SYSTEM_TESTS_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-mods.html">TESTS_MODS_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tests-spec.html">TESTS_SPEC_FILE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="user-mods.html">USER_MODS_DIR</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">WORKFLOW_SPEC_FILE</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../support-a-new-machine.html">Support a new machine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fortran-unit-testing.html">Fortran Unit Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../customize-cime.html">Customize CIME</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Case Control System (CCS)</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Model Configuration</a></li>
+          <li class="breadcrumb-item"><a href="../config-files.html">Config Files</a></li>
+      <li class="breadcrumb-item active">WORKFLOW_SPEC_FILE</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/ccs/model-configuration/variables/workflow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="workflow-spec-file">
+<span id="model-config-workflow"></span><h1>WORKFLOW_SPEC_FILE<a class="headerlink" href="#workflow-spec-file" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#entry" id="id2">Entry</a></p></li>
+<li><p><a class="reference internal" href="#schema-definition" id="id3">Schema Definition</a></p></li>
+</ul>
+</nav>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Provides CIME with a models various <code class="docutils literal notranslate"><span class="pre">workflows</span></code>.</p>
+</section>
+<section id="entry">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Entry</a><a class="headerlink" href="#entry" title="Link to this heading"></a></h2>
+<p>This is an example entry for <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;WORKFLOW_SPEC_FILE&quot;</span><span class="nt">&gt;</span>
+<span class="w">   </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
+<span class="w">   </span><span class="nt">&lt;default_value&gt;</span>$SRCROOT/cime_config/machines/config_workflow.xml<span class="nt">&lt;/default_value&gt;</span>
+<span class="w">   </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
+<span class="w">   </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
+<span class="w">   </span><span class="nt">&lt;desc&gt;</span>file<span class="w"> </span>containing<span class="w"> </span>workflow<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
+<span class="w">   </span><span class="nt">&lt;schema&gt;</span>$CIMEROOT/CIME/data/config/xml_schemas/config_workflow.xsd<span class="nt">&lt;/schema&gt;</span>
+<span class="nt">&lt;/entry&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="schema-definition">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Schema Definition</a><a class="headerlink" href="#schema-definition" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Element/Attributes</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>workflow_jobs</p></td>
+<td><p>Describe jobs in a workflow.</p></td>
+</tr>
+<tr class="row-odd"><td><p>id</p></td>
+<td><p>Workflow identifier.</p></td>
+</tr>
+<tr class="row-even"><td><p>prepend</p></td>
+<td><p>Workflow to prepend to current workflow.</p></td>
+</tr>
+<tr class="row-odd"><td><p>append</p></td>
+<td><p>Workflow to append to current workflow.</p></td>
+</tr>
+<tr class="row-even"><td><p>job</p></td>
+<td><p>Describe the job.</p></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>Name of the job.</p></td>
+</tr>
+<tr class="row-even"><td><p>template</p></td>
+<td><p>Template file for job submission.</p></td>
+</tr>
+<tr class="row-odd"><td><p>hidden</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>dependency</p></td>
+<td><p>Job dependencies.</p></td>
+</tr>
+<tr class="row-odd"><td><p>prereq</p></td>
+<td><p>Job pre-requirements.</p></td>
+</tr>
+<tr class="row-even"><td><p>runtime_parameters</p></td>
+<td><p>Describe runtime parameters for the job.</p></td>
+</tr>
+<tr class="row-odd"><td><p>MACH</p></td>
+<td><p>Which machine these runtime parameters should be used on.</p></td>
+</tr>
+<tr class="row-even"><td><p>task_count</p></td>
+<td><p>Task count for the job.</p></td>
+</tr>
+<tr class="row-odd"><td><p>tasks_per_node</p></td>
+<td><p>Number of tasks per node.</p></td>
+</tr>
+<tr class="row-even"><td><p>walltime</p></td>
+<td><p>Walltime for the job.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_workflow.xsd config_workflow on 2025-02-11 --&gt;</span>
+
+<span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
+<span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="nt">&lt;config_workflow</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;id&#39; is required,&#39;prepend&#39; is optional,&#39;append&#39; is optional--&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">    </span><span class="nt">&lt;workflow_jobs</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">prepend=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">append=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!-- Occurences min: 1 max: Unlimited--&gt;</span>
+<span class="w">    </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;template&gt;&lt;/template&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;hidden&gt;&lt;/hidden&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;dependency&gt;&lt;/dependency&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 1 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;prereq&gt;&lt;/prereq&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;MACH&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: Unlimited--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;runtime_parameters</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;task_count&gt;&lt;/task_count&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;tasks_per_node&gt;&lt;/tasks_per_node&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;walltime&gt;&lt;/walltime&gt;</span>
+<span class="w">        </span><span class="nt">&lt;/runtime_parameters&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/job&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/workflow_jobs&gt;</span>
+<span class="nt">&lt;/config_workflow&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="user-mods.html" class="btn btn-neutral float-left" title="USER_MODS_DIR" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../support-a-new-machine.html" class="btn btn-neutral float-right" title="Support a new machine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../../../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

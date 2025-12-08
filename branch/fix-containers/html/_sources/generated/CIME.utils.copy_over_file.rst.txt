@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.copy\_over\_file
+===========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: copy_over_file

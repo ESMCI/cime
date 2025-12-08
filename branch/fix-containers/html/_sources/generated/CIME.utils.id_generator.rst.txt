@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.id\_generator
+========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: id_generator
