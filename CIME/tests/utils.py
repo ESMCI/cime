@@ -227,6 +227,28 @@ def mock_case(
         return outer
 
 
+def mock_env(cls, content=None):
+    """Mocks an environment class.
+
+    Args:
+        cls: XML environment class.
+        content: String with the XML to load.
+    """
+    def decorator(f):
+        env = cls(read_only=False)
+
+        if content is not None:
+            env.read_only = True
+            env.read_fd(io.StringIO(content))
+
+        def wrapper(self, *args, **kwargs):
+            return f(self, env, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 @contextlib.contextmanager
 def chdir(path):
     old_path = os.getcwd()
