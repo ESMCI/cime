@@ -16,14 +16,22 @@ class EnvArchive(ArchiveBase, EnvBase):
         schema = os.path.join(utils.get_schema_path(), "env_archive.xsd")
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
 
+    def get_archive_specs(self):
+        components_element = self.get_child("components")
+
+        return self.get_children("comp_archive_spec", root=components_element)
+
+    # TODO check if used otherwise remove
     def get_entries(self):
         return self.get_children("comp_archive_spec")
 
+    # TODO check if used otherwise remove
     def get_entry_info(self, archive_entry):
         compname = self.get(archive_entry, "compname")
         compclass = self.get(archive_entry, "compclass")
         return compname, compclass
 
+    # TODO check if used otherwise remove
     def get_rpointer_contents(self, archive_entry):
         rpointer_items = []
         rpointer_nodes = self.get_children("rpointer", root=archive_entry)
