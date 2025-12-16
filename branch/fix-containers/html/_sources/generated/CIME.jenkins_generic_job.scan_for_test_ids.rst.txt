@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.jenkins\_generic\_job.scan\_for\_test\_ids
-===============================================
-
-.. currentmodule:: CIME.jenkins_generic_job
-
-.. autofunction:: scan_for_test_ids

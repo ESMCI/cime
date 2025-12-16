@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.batch\_jobid
-=======================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: batch_jobid
