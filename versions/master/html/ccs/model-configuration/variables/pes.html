@@ -494,10 +494,13 @@ following meanings:</p>
 <tr class="row-odd"><td><p>PSTRID</p></td>
 <td><p>The stride of MPI tasks across the global set of pes (for now set to 1). This variable is currently not used and is a placeholder for future development.</p></td>
 </tr>
-<tr class="row-even"><td><p>NINST</p></td>
+<tr class="row-even"><td><p>EXCL_STRIDE</p></td>
+<td><p>Stride of MPI tasks owned exclusively by a component. If 0, exclusivity is disabled.</p></td>
+</tr>
+<tr class="row-odd"><td><p>NINST</p></td>
 <td><p>The number of component instances, which are spread evenly across NTASKS.</p></td>
 </tr>
-<tr class="row-odd"><td><p>COST_PER_NODE</p></td>
+<tr class="row-even"><td><p>COST_PER_NODE</p></td>
 <td><p>The numbers of cores/node used for accounting purposes. The user should not normally need to set this - but it is useful for understanding how you will be charged.</p></td>
 </tr>
 </tbody>
