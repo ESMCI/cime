@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.get\_fortran\_variable\_indices
+=============================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: get_fortran_variable_indices

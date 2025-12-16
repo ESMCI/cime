@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.analyze\_build\_log
+==============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: analyze_build_log
