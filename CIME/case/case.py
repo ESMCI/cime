@@ -1094,9 +1094,9 @@ class Case(object):
         )
         drv_comp_model_specific = Component(drv_config_file_model_specific, "CPL")
 
-        self._component_description["forcing"] = (
-            drv_comp_model_specific.get_forcing_description(self._compsetname)
-        )
+        self._component_description[
+            "forcing"
+        ] = drv_comp_model_specific.get_forcing_description(self._compsetname)
         logger.info(
             "Compset forcing is {}".format(self._component_description["forcing"])
         )

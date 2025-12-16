@@ -173,24 +173,24 @@ class Pes(GenericXML):
                                             comment = self.text(node)
                                         elif "ntasks" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_ntasks[self.name(child).upper()] = (
-                                                    int(self.text(child))
-                                                )
+                                                pes_ntasks[
+                                                    self.name(child).upper()
+                                                ] = int(self.text(child))
                                         elif "nthrds" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_nthrds[self.name(child).upper()] = (
-                                                    int(self.text(child))
-                                                )
+                                                pes_nthrds[
+                                                    self.name(child).upper()
+                                                ] = int(self.text(child))
                                         elif "rootpe" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_rootpe[self.name(child).upper()] = (
-                                                    int(self.text(child))
-                                                )
+                                                pes_rootpe[
+                                                    self.name(child).upper()
+                                                ] = int(self.text(child))
                                         elif "pstrid" in vid:
                                             for child in self.get_children(root=node):
-                                                pes_pstrid[self.name(child).upper()] = (
-                                                    int(self.text(child))
-                                                )
+                                                pes_pstrid[
+                                                    self.name(child).upper()
+                                                ] = int(self.text(child))
                                         elif "excl_stride" in vid:
                                             for child in self.get_children(root=node):
                                                 pes_excl_stride[
