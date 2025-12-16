@@ -69,6 +69,7 @@
     ROOTPE: the global mpi task of the component root task, if negative, indicates nodes rather than tasks.
     PSTRID: the stride of MPI tasks across the global set of pes (for now set to 1)
     NINST : the number of component instances (will be spread evenly across NTASKS)
+    EXCL_STRIDE: the stride of MPI tasks owned exclusively by a component. If 0, exclusivity is disabled.
 
     for example, for NTASKS = 8, NTHRDS = 2, ROOTPE = 32, NINST  = 2
     the MPI tasks would be placed starting on global pe 32 and each pe would be threaded 2-ways
