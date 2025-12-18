@@ -484,8 +484,8 @@ def _case_setup_impl(
                 ):
                     logger.info("Running cam.case_setup.py")
                     run_cmd_no_fail(
-                        "python {cam}/cime_config/cam.case_setup.py {cam} {case}".format(
-                            cam=camroot, case=caseroot
+                        "python {cam}/cime_config/cam.case_setup.py {cam} {case} {non_local}".format(
+                            cam=camroot, case=caseroot, non_local=str(non_local)
                         )
                     )
 
