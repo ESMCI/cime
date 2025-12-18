@@ -234,6 +234,7 @@ def mock_env(cls, content=None):
         cls: XML environment class.
         content: String with the XML to load.
     """
+
     def decorator(f):
         env = cls(read_only=False)
 
