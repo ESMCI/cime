@@ -21,6 +21,19 @@ class EnvArchive(ArchiveBase, EnvBase):
 
         return self.get_children("comp_archive_spec", root=components_element)
 
+    def get_rpointer_nodes(self, root):
+        assert root.name == "comp_archive_spec"
+
+        return self.get_children("rpointer", root=root)
+
+    def get_rpointers(self, root):
+        for node in self.get_rpointer_nodes(root):
+            file = self.get_child("rpointer_file", root=node).text
+
+            content = self.get_child("rpointer_content", root=node).text
+
+            yield file, content
+
     # TODO check if used otherwise remove
     def get_entries(self):
         return self.get_children("comp_archive_spec")

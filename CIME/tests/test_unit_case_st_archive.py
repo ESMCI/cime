@@ -40,6 +40,16 @@ SINGLE_NINST_DATE = r"""<components version="2.0">
 </components>
 """
 
+SINGLE_NINST_MPAS_DATE = r"""<components version="2.0">
+  <comp_archive_spec compname="drv" compclass="cpl">
+    <rpointer>
+      <rpointer_file>rpointer.cpl$NINST_STRING.$DATENAME</rpointer_file>
+      <rpointer_content >$CASE.cpl$NINST_STRING.r.$MPAS_DATENAME.nc</rpointer_content>
+    </rpointer>
+  </comp_archive_spec>
+</components>
+"""
+
 
 def write_files(*files):
     for file, content in files:
@@ -49,6 +59,43 @@ def write_files(*files):
 
 
 class TestArchiveRpointerFiles(unittest.TestCase):
+    @mock.patch("shutil.move")
+    @mock.patch("CIME.case.case_st_archive.safe_copy")
+    @utils.mock_env(_env_archive.EnvArchive, SINGLE_NINST_MPAS_DATE)
+    def test_generate_rpointer_mpas(self, env_archive, safe_copy, move):
+        archive_entry = env_archive.get_archive_specs()[0]
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            run_dir = Path(tempdir, "run")
+            rest_dir = Path(tempdir, "archive", "rest", "0001-01-01")
+            rest_dir.mkdir(parents=True)
+
+            case_st_archive._archive_rpointer_files(
+                "case",
+                [],
+                str(run_dir),
+                True,
+                env_archive,
+                archive_entry,
+                str(rest_dir),
+                date.date(1, 1, 1),
+                False,
+            )
+
+            safe_copy.assert_not_called()
+
+            move.assert_not_called()
+
+            # should have created the file
+            generated_files = list(rest_dir.glob("*"))
+            assert generated_files == [rest_dir / "rpointer.cpl.0001-01-01-00000"]
+
+            with (rest_dir / "rpointer.cpl.0001-01-01-00000").open("r") as f:
+                content = f.read()
+
+            # check content
+            assert content == "case.cpl.r.0001-01-01_00:00:00.nc \n"
+
     @mock.patch("shutil.move")
     @mock.patch("CIME.case.case_st_archive.safe_copy")
     @utils.mock_env(_env_archive.EnvArchive, SINGLE_NINST_DATE)
