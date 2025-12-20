@@ -228,7 +228,8 @@ def _archive_rpointer_files(
             # possible value of ninst_strings
 
             # If timestamped rpointers exist use them
-            if rpointers:
+            # If only one rpointer file, leave in run directorya and create in archive
+            if rpointers and len(rpointers) > 1:
                 for rpfile in rpointers:
                     logger.info("moving interim rpointer_file {}".format(rpfile))
                     shutil.move(
