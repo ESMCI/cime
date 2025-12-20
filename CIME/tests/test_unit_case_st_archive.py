@@ -308,11 +308,17 @@ class TestArchiveRpointerFiles(unittest.TestCase):
 
             safe_copy.assert_not_called()
 
-            move.assert_called_once()
-            move.assert_any_call(
-                str(run_dir / "rpointer.cpl.0001-01-01-00000"),
-                str(rest_dir / "rpointer.cpl.0001-01-01-00000"),
-            )
+            move.assert_not_called()
+
+            # should have created the file
+            generated_files = list(rest_dir.glob("*"))
+            assert generated_files == [rest_dir / "rpointer.cpl.0001-01-01-00000"]
+
+            with (rest_dir / "rpointer.cpl.0001-01-01-00000").open("r") as f:
+                content = f.read()
+
+            # check content
+            assert content == "case.cpl.r.0001-01-01-00000.nc \n"
 
     @mock.patch("shutil.move")
     @mock.patch("CIME.case.case_st_archive.safe_copy")
