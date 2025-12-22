@@ -921,6 +921,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert success
 
+    # TODO should update all tests to use mock_case
     def test_bless_results_invalid_case(self):
         with ExitStack() as stack:
             tempdir = stack.enter_context(tempfile.TemporaryDirectory())
@@ -952,10 +953,11 @@ class TestUnitBlessTestResults(unittest.TestCase):
                 with (x / "TestStatus").open("w") as f:
                     f.write(tests[i][1].format(tests[i][0]))
 
-            with self.assertRaises(CIMEError):
-                success = bless_test_results(
-                    "master", "/tmp/baseline", str(caseroots[0].parent), "oneapi-ifx"
-                )
+            success = bless_test_results(
+                "master", "/tmp/baseline", str(caseroots[0].parent), "oneapi-ifx"
+            )
+
+            self.assertFalse(success)
 
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")

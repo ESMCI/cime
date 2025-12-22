@@ -6,6 +6,7 @@ from CIME.utils import (
     EnvironmentContext,
     parse_test_name,
     match_any,
+    CIMEError,
 )
 from CIME.config import Config
 from CIME.test_status import *
@@ -20,6 +21,48 @@ from CIME.baselines.performance import (
 import os, time
 
 logger = logging.getLogger(__name__)
+
+
+class BlessError(Exception):
+    def __init__(self, test_name, reasons):
+        if isinstance(reasons, str):
+            reasons = list(reasons)
+
+        self._test_name = test_name
+        self._index = 0
+        self._reasons = reasons
+
+        super().__init__()
+
+    @property
+    def test_name(self):
+        return self._test_name
+
+    def __iter__(self):
+        self._index = 0
+
+        return self
+
+    def __next__(self):
+        if self._index > len(self._reasons) - 1:
+            raise StopIteration()
+
+        item = self._reasons[self._index]
+
+        self._index += 1
+
+        return item
+
+    def __len__(self):
+        return len(self._reasons)
+
+    def __str__(self):
+        return f"There were {len(self)} bless errors"
+
+    def __repr__(self):
+        reason_str = ",".join(self._reasons) if len(self) > 0 else ""
+
+        return f"BlessError(reasons=[{reason_str}])"
 
 
 def _bless_throughput(
@@ -367,108 +410,28 @@ def bless_test_results(
             if not force:
                 time.sleep(2)
 
-            with Case(test_dir) as case:
-                # Resolve baseline_name and baseline_root
-                if baseline_name is None:
-                    baseline_name_resolved = case.get_value("BASELINE_NAME_CMP")
-                    if not baseline_name_resolved:
-                        cime_root = CIME.utils.get_cime_root()
-                        baseline_name_resolved = CIME.utils.get_current_branch(
-                            repo=cime_root
-                        )
-                else:
-                    baseline_name_resolved = baseline_name
-
-                if baseline_root is None:
-                    baseline_root_resolved = case.get_value("BASELINE_ROOT")
-                else:
-                    baseline_root_resolved = baseline_root
-
-                if baseline_name_resolved is None:
-                    broken_blesses.append(
-                        (test_name, "Could not determine baseline name")
-                    )
-                    continue
-
-                if baseline_root_resolved is None:
-                    broken_blesses.append(
-                        (test_name, "Could not determine baseline root")
-                    )
-                    continue
-
-                # Bless namelists
-                if nl_bless:
-                    success, reason = bless_namelists(
-                        test_name,
-                        report_only,
-                        force,
-                        pes_file,
-                        baseline_name_resolved,
-                        baseline_root_resolved,
-                        new_test_root=new_test_root,
-                        new_test_id=new_test_id,
-                    )
-                    if not success:
-                        broken_blesses.append((test_name, reason))
-
-                # Bless hist files
-                if hist_bless:
-                    if "HOMME" in test_name:
-                        success = False
-                        reason = "HOMME tests cannot be blessed with bless_for_tests"
-                    else:
-                        success, reason = bless_history(
-                            test_name,
-                            case,
-                            baseline_name_resolved,
-                            baseline_root_resolved,
-                            report_only,
-                            force,
-                        )
-
-                    if not success:
-                        broken_blesses.append((test_name, reason))
-
-                if tput_bless:
-                    success, reason = _bless_throughput(
-                        case,
-                        test_name,
-                        baseline_root_resolved,
-                        baseline_name_resolved,
-                        report_only,
-                        force,
-                    )
-
-                    if not success:
-                        broken_blesses.append((test_name, reason))
-
-                if mem_bless:
-                    success, reason = _bless_memory(
-                        case,
-                        test_name,
-                        baseline_root_resolved,
-                        baseline_name_resolved,
-                        report_only,
-                        force,
-                    )
-
-                    if not success:
-                        broken_blesses.append((test_name, reason))
-
-                if lock_baselines:
-                    baseline_full_dir = os.path.join(
-                        baseline_root_resolved,
-                        baseline_name_resolved,
-                        case.get_value("CASEBASEID"),
-                    )
-                    stat, out, _ = run_cmd(
-                        f"chmod -R g-w {baseline_full_dir}", combine_output=True
-                    )
-                    if stat != 0:
-                        msg = (
-                            f"Failed to lock baselines for {baseline_full_dir}:\n{out}"
-                        )
-                        logger.warning(msg)
+            try:
+                _bless_test(
+                    test_name,
+                    test_dir,
+                    baseline_name,
+                    baseline_root,
+                    nl_bless,
+                    hist_bless,
+                    tput_bless,
+                    mem_bless,
+                    lock_baselines,
+                    pes_file,
+                    new_test_root,
+                    new_test_id,
+                    report_only,
+                    force,
+                )
+            except BlessError as e:
+                for reason in e:
+                    broken_blesses.append((e.test_name, reason))
+            except CIMEError as e:
+                broken_blesses.append((test_name, str(e)))
 
     # Emit a warning if items in bless_tests did not match anything
     if bless_tests:
@@ -492,6 +455,121 @@ had a mistake (likely compiler or testid).""".format(
         success = False
 
     return success
+
+
+def _bless_test(
+    test_name,
+    test_dir,
+    baseline_name,
+    baseline_root,
+    nl_bless,
+    hist_bless,
+    tput_bless,
+    mem_bless,
+    lock_baselines,
+    pes_file,
+    new_test_root,
+    new_test_id,
+    report_only,
+    force,
+):
+    with Case(test_dir) as case:
+        # Resolve baseline_name and baseline_root
+        if baseline_name is None:
+            baseline_name_resolved = case.get_value("BASELINE_NAME_CMP")
+            if not baseline_name_resolved:
+                cime_root = CIME.utils.get_cime_root()
+                baseline_name_resolved = CIME.utils.get_current_branch(repo=cime_root)
+        else:
+            baseline_name_resolved = baseline_name
+
+        if baseline_root is None:
+            baseline_root_resolved = case.get_value("BASELINE_ROOT")
+        else:
+            baseline_root_resolved = baseline_root
+
+        if baseline_name_resolved is None:
+            raise BlessError(test_name, "Could not determine baseline name")
+
+        if baseline_root_resolved is None:
+            raise BlessError(test_name, "Could not determine baseline root")
+
+        bless_errors = []
+
+        # Bless namelists
+        if nl_bless:
+            success, reason = bless_namelists(
+                test_name,
+                report_only,
+                force,
+                pes_file,
+                baseline_name_resolved,
+                baseline_root_resolved,
+                new_test_root=new_test_root,
+                new_test_id=new_test_id,
+            )
+            if not success:
+                bless_errors.append(reason)
+
+        # Bless hist files
+        if hist_bless:
+            if "HOMME" in test_name:
+                success = False
+                reason = "HOMME tests cannot be blessed with bless_for_tests"
+            else:
+                success, reason = bless_history(
+                    test_name,
+                    case,
+                    baseline_name_resolved,
+                    baseline_root_resolved,
+                    report_only,
+                    force,
+                )
+
+            if not success:
+                bless_errors.append(reason)
+
+        if tput_bless:
+            success, reason = _bless_throughput(
+                case,
+                test_name,
+                baseline_root_resolved,
+                baseline_name_resolved,
+                report_only,
+                force,
+            )
+
+            if not success:
+                bless_errors.append(reason)
+
+        if mem_bless:
+            success, reason = _bless_memory(
+                case,
+                test_name,
+                baseline_root_resolved,
+                baseline_name_resolved,
+                report_only,
+                force,
+            )
+
+            if not success:
+                bless_errors.append(reason)
+
+        if lock_baselines:
+            baseline_full_dir = os.path.join(
+                baseline_root_resolved,
+                baseline_name_resolved,
+                case.get_value("CASEBASEID"),
+            )
+            stat, out, _ = run_cmd(
+                f"chmod -R g-w {baseline_full_dir}", combine_output=True
+            )
+            if stat != 0:
+                msg = f"Failed to lock baselines for {baseline_full_dir}:\n{out}"
+                logger.warning(msg)
+
+        if len(bless_errors) > 0:
+            raise BlessError(test_name, bless_errors)
 
 
 def is_hist_bless_needed(
