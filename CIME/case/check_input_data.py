@@ -335,25 +335,22 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
             logger.debug("Creating run directory: {}".format(rundir))
             os.makedirs(rundir)
         rpointerfile = None
-        found_drp = False
+
         # copy the refcases' rpointer files to the run directory
         for rpointerfile in glob.iglob(os.path.join("{}", "*rpointer*").format(refdir)):
             logger.info("Copy rpointer {}".format(rpointerfile))
             safe_copy(rpointerfile, rundir)
             pfile = os.path.basename(rpointerfile)
             os.chmod(os.path.join(rundir, pfile), 0o644)
-            if pfile == drv_restart_pointer:
-                found_drp = True
-            elif "cpl" in pfile:
-                drp = pfile
+            if "cpl" in pfile and drv_restart_pointer != pfile:
+                self.set_value("DRV_RESTART_POINTER", pfile)
+
         expect(
             rpointerfile,
             "Reference case directory {} does not contain any rpointer files".format(
                 refdir
             ),
         )
-        if not found_drp:
-            self.set_value("DRV_RESTART_POINTER", drp)
 
         # link everything else
 
