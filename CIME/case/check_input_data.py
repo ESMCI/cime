@@ -283,7 +283,7 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
     get_refcase = self.get_value("GET_REFCASE")
     run_type = self.get_value("RUN_TYPE")
     continue_run = self.get_value("CONTINUE_RUN")
-
+    drv_restart_pointer = self.get_value("DRV_RESTART_POINTER")
     # We do not fully populate the inputdata directory on every
     # machine and do not expect every user to download the 3TB+ of
     # data in our inputdata repository. This code checks for the
@@ -335,17 +335,23 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
             logger.debug("Creating run directory: {}".format(rundir))
             os.makedirs(rundir)
         rpointerfile = None
+
         # copy the refcases' rpointer files to the run directory
         for rpointerfile in glob.iglob(os.path.join("{}", "*rpointer*").format(refdir)):
             logger.info("Copy rpointer {}".format(rpointerfile))
             safe_copy(rpointerfile, rundir)
-            os.chmod(os.path.join(rundir, os.path.basename(rpointerfile)), 0o644)
+            pfile = os.path.basename(rpointerfile)
+            os.chmod(os.path.join(rundir, pfile), 0o644)
+            if "cpl" in pfile and drv_restart_pointer != pfile:
+                self.set_value("DRV_RESTART_POINTER", pfile)
+
         expect(
             rpointerfile,
             "Reference case directory {} does not contain any rpointer files".format(
                 refdir
             ),
         )
+
         # link everything else
 
         for rcfile in glob.iglob(os.path.join(refdir, "*")):
