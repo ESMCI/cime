@@ -140,6 +140,8 @@ class NamelistDefinition(EntryID):
             group = self.get(node, "group")
         elif self.get_version() >= 2.0:
             group = self.get_element_text("group", root=node)
+        else:
+            group = None
         return group
 
     def _get_type(self, node):
@@ -147,6 +149,8 @@ class NamelistDefinition(EntryID):
             type_info = self.get(node, "type")
         elif self.get_version() >= 2.0:
             type_info = self._get_type_info(node)
+        else:
+            type_info = None
         return type_info
 
     def _get_valid_values(self, node):
@@ -534,6 +538,8 @@ class NamelistDefinition(EntryID):
             input_pathname = self.get(node, "input_pathname")
         elif self.get_version() >= 2.0:
             input_pathname = self._get_node_element_info(node, "input_pathname")
+        else:
+            input_pathname = None
         return input_pathname
 
     # pylint: disable=arguments-differ

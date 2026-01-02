@@ -1214,6 +1214,7 @@ class Namelist(object):
 
     def _write(self, out_file, groups, format_, sorted_groups):
         """Unwrapped version of `write` assuming that a file object is input."""
+        equals = None
         if groups is None:
             groups = list(self._groups.keys())
         if format_ == "nml" or format_ == "nmlcontents":

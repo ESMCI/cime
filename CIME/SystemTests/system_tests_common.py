@@ -186,8 +186,9 @@ class SystemTestsCommon(object):
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
         else:
+            coupling_secs = None
             timestep = None
-    
+
         # Convert stop_n to units of coupling intervals
         factor = 1
         if stop_option == "nsteps":
@@ -267,6 +268,7 @@ class SystemTestsCommon(object):
         elif stop_option == "nyears":
             rtd = timedelta(days=rest_n * 365)
         else:
+            rtd = None
             expect(False, f"stop_option {stop_option} not available for this test")
 
         restdatetime = startdatetime + rtd

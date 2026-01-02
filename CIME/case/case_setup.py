@@ -311,13 +311,14 @@ def _case_setup_impl(
             ninst = case.get_value("NINST")
 
         multi_driver = case.get_value("MULTI_DRIVER")
-
+        ninst = 0
         for comp in models:
             ntasks = case.get_value("NTASKS_{}".format(comp))
             if comp == "CPL":
                 continue
             if comp_interface != "nuopc":
                 ninst = case.get_value("NINST_{}".format(comp))
+
             if multi_driver:
                 if comp_interface != "nuopc":
                     expect(

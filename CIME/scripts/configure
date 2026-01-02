@@ -97,7 +97,7 @@ def parse_command_line(args):
     argcnt = len(args)
     args = parser.parse_args()
     CIME.utils.parse_args_and_handle_standard_logging_options(args)
-
+    machobj = None
     opts = {}
     if args.machines_dir is not None:
         machines_file = os.path.join(args.machines_dir, "config_machines.xml")

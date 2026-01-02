@@ -59,8 +59,7 @@ class Tests(GenericXML):
 
         if not valid:
             case_base_id = case.get_value("CASEBASEID")
-
-            raise Exception(
+            raise RuntimeError(
                 f"{case_base_id} does not support the '--single-exe' option as it requires separate builds"
             )
 

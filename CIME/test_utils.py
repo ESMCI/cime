@@ -26,6 +26,8 @@ def get_tests_from_xml(
     """
     listoftests = []
     testlistfiles = []
+    thismach = None
+    thiscompiler = None
     if machine is not None:
         thismach = machine
     if compiler is not None:

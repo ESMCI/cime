@@ -355,6 +355,9 @@ def check_case(self, skip_pnl=False, chksum=False):
         elif ncpl_base_period == "decade":
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
+        else:
+            coupling_secs = None
+            timestep = None
         stop_option = self.get_value("STOP_OPTION")
         stop_n = self.get_value("STOP_N")
         if stop_option == "nsteps":

@@ -74,6 +74,8 @@ class Compsets(GenericXML):
         else:
             compsets = {}
             nodes = self.get_children("compset")
+            lname = None
+            alias = None
             for node in nodes:
                 for child in node:
                     logger.debug(
@@ -85,7 +87,8 @@ class Compsets(GenericXML):
                         alias = self.text(child)
                     if self.name(child) == "lname":
                         lname = self.text(child)
-                compsets[alias] = lname
+                if alias is not None and lname is not None:
+                    compsets[alias] = lname
             return compsets
 
     def print_values(self, arg_help=True):

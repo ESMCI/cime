@@ -390,7 +390,8 @@ class _TimingParser:
         inittype = "FALSE"
         if (run_type == "startup" or run_type == "hybrid") and not continue_run:
             inittype = "TRUE"
-
+        binfilename = None
+        finfilename = None
         if inst > 0:
             inst_label = "_{:04d}".format(inst)
         else:
@@ -450,6 +451,9 @@ class _TimingParser:
             logger.warning("Unknown NCPL_BASE_PERIOD={}".format(ncpl_base_period))
 
         # at this point the routine becomes driver specific
+        nsteps = 0
+        nmax = 0
+        fmax = 0
         if self._driver == "mct" or self._driver == "moab":
             nprocs, ncount = self.gettime2("CPL:CLOCK_ADVANCE ")
             nsteps = ncount / nprocs

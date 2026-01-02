@@ -151,7 +151,8 @@ def compare_test_results(
                     logfile_name,
                     test_dir,
                 )
-
+            compare_result = None
+            compare_comment = None
             if nl_do_compare or do_compare:
                 if nl_do_compare:
                     nl_success = compare_namelists(
