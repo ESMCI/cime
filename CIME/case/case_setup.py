@@ -310,6 +310,8 @@ def _case_setup_impl(
         comp_interface = case.get_value("COMP_INTERFACE")
         if comp_interface == "nuopc":
             ninst = case.get_value("NINST")
+        else:
+            ninst = 1
 
         multi_driver = case.get_value("MULTI_DRIVER")
         for comp in models:
@@ -318,8 +320,6 @@ def _case_setup_impl(
                 continue
             if comp_interface != "nuopc":
                 ninst = case.get_value("NINST_{}".format(comp))
-            else:
-                ninst = 1
 
             if multi_driver:
                 if comp_interface != "nuopc":
