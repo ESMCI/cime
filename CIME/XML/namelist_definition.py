@@ -141,7 +141,7 @@ class NamelistDefinition(EntryID):
         elif self.get_version() >= 2.0:
             group = self.get_element_text("group", root=node)
         else:
-            group = None
+            raise RuntimeError("Undefined XML file version")
         return group
 
     def _get_type(self, node):
@@ -150,7 +150,7 @@ class NamelistDefinition(EntryID):
         elif self.get_version() >= 2.0:
             type_info = self._get_type_info(node)
         else:
-            type_info = None
+            raise RuntimeError("Undefined XML file version")
         return type_info
 
     def _get_valid_values(self, node):
@@ -539,7 +539,7 @@ class NamelistDefinition(EntryID):
         elif self.get_version() >= 2.0:
             input_pathname = self._get_node_element_info(node, "input_pathname")
         else:
-            input_pathname = None
+            raise RuntimeError("Invalid XML file version")
         return input_pathname
 
     # pylint: disable=arguments-differ

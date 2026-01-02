@@ -25,8 +25,6 @@ class Compsets(GenericXML):
         is scientifically supported.   science_support is returned as an array of grids for this compset
         """
         nodes = self.get_children("compset")
-        alias = None
-        lname = None
 
         science_support = []
 
@@ -74,9 +72,9 @@ class Compsets(GenericXML):
         else:
             compsets = {}
             nodes = self.get_children("compset")
-            lname = None
-            alias = None
             for node in nodes:
+                alias = None
+                lname = None
                 for child in node:
                     logger.debug(
                         "Here child is {} with value {}".format(
@@ -89,6 +87,8 @@ class Compsets(GenericXML):
                         lname = self.text(child)
                 if alias is not None and lname is not None:
                     compsets[alias] = lname
+                else:
+                    raise RuntimeError("Invalid entry in config_compsets.xml")
             return compsets
 
     def print_values(self, arg_help=True):

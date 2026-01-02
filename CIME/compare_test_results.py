@@ -151,8 +151,6 @@ def compare_test_results(
                     logfile_name,
                     test_dir,
                 )
-            compare_result = None
-            compare_comment = None
             if nl_do_compare or do_compare:
                 if nl_do_compare:
                     nl_success = compare_namelists(
@@ -183,8 +181,7 @@ def compare_test_results(
                 brief_result += "{} {} {} {}\n".format(
                     nl_compare_result, test_name, NAMELIST_PHASE, nl_compare_comment
                 )
-
-            if not namelists_only:
+            if not namelists_only and not build_only:
                 brief_result += "{} {} {}".format(
                     compare_result, test_name, BASELINE_PHASE
                 )
