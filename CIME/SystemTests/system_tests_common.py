@@ -185,7 +185,9 @@ class SystemTestsCommon(object):
         elif ncpl_base_period == "decade":
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
-
+        else:
+            timestep = None
+    
         # Convert stop_n to units of coupling intervals
         factor = 1
         if stop_option == "nsteps":
