@@ -20,6 +20,7 @@ from CIME.utils import (
     copy_local_macros_to_dir,
     batch_jobid,
     run_cmd_no_fail,
+    CIMEError,
 )
 from CIME.status import run_and_log_case_status, append_case_status
 from CIME.test_status import *
@@ -409,11 +410,11 @@ def _case_setup_impl(
             ngpus_per_node = case.get_value("NGPUS_PER_NODE")
             if gpu_type and str(gpu_type).lower() != "none":
                 if max_gpus_per_node <= 0:
-                    raise RuntimeError(
+                    raise CIMEError(
                         f"MAX_GPUS_PER_NODE must be larger than 0 for machine={mach} and compiler={compiler} in order to configure a GPU run"
                     )
                 if not gpu_offload:
-                    raise RuntimeError(
+                    raise CIMEError(
                         "GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled"
                     )
                 case.gpu_enabled = True
@@ -425,11 +426,11 @@ def _case_setup_impl(
                         else max_gpus_per_node,
                     )
             elif gpu_offload:
-                raise RuntimeError(
+                raise CIMEError(
                     "GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled"
                 )
             elif ngpus_per_node and ngpus_per_node != 0:
-                raise RuntimeError(
+                raise CIMEError(
                     f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;"
                 )
 

@@ -6,6 +6,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
+from CIME.utils import CIMEError
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +89,7 @@ class Compsets(GenericXML):
                 if alias is not None and lname is not None:
                     compsets[alias] = lname
                 else:
-                    raise RuntimeError("Invalid entry in config_compsets.xml")
+                    raise CIMEError("Invalid entry in config_compsets.xml")
             return compsets
 
     def print_values(self, arg_help=True):

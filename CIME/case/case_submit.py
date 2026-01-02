@@ -356,7 +356,7 @@ def check_case(self, skip_pnl=False, chksum=False):
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
         else:
-            raise RuntimeError("ncpl_base_period handling error")
+            raise CIMEError("ncpl_base_period handling error")
 
         stop_option = self.get_value("STOP_OPTION")
         stop_n = self.get_value("STOP_N")

@@ -186,7 +186,7 @@ class SystemTestsCommon(object):
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
         else:
-            raise RuntimeError("unhandled ncpl_base_period value")
+            raise CIMEError("unhandled ncpl_base_period value")
 
         # Convert stop_n to units of coupling intervals
         factor = 1
@@ -1302,12 +1302,12 @@ class TESTRUNFAILRESET(TESTRUNFAIL):
 
 class TESTRUNFAILEXC(TESTRUNPASS):
     def run_phase(self):
-        raise RuntimeError("Exception from run_phase")
+        raise CIMEError("Exception from run_phase")
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
     def _st_archive_case_test(self):
-        raise RuntimeError("Exception from st archive")
+        raise CIMEError("Exception from st archive")
 
 
 class TESTBUILDFAIL(TESTRUNPASS):
@@ -1329,7 +1329,7 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 class TESTBUILDFAILEXC(FakeTest):
     def build_phase(self, sharedlib_only=False, model_only=False):
-        raise RuntimeError("Exception from build")
+        raise CIMEError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):
