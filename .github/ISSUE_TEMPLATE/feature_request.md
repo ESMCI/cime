@@ -5,7 +5,7 @@ Please provide a clear and concise description of what the problem is e.g. I'm a
 
 ## Describe the solution you'd like
 <!--
-A clear and consise description of what you want to happen.
+A clear and concise description of what you want to happen.
 -->
 
 ## Describe alternative solutions
