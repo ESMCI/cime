@@ -306,17 +306,15 @@ def _post_run_check(case, lid):
     driver = case.get_value("COMP_INTERFACE")
 
     if driver == "nuopc":
-        comp_standalone, model = is_comp_standalone(case)
-        if comp_standalone:
-            file_prefix = model
-        else:
+        comp_standalone, file_prefix = is_comp_standalone(case)
+        if not comp_standalone:
             file_prefix = "med"
     else:
         file_prefix = "cpl"
 
     cpl_ninst = 1
     if case.get_value("MULTI_DRIVER"):
-        cpl_ninst = int(case.get_value("NINST_MAX"))
+        cpl_ninst = case.get_value("NINST_MAX")
     cpl_logs = []
 
     if cpl_ninst > 1:
