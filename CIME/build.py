@@ -245,12 +245,16 @@ def get_standard_cmake_args(case, sharedpath):
     cmake_args += " -Dcompile_threaded={} ".format(
         stringify_bool(case.get_build_threaded())
     )
-    # check settings for GPU
-    gpu_type = case.get_value("GPU_TYPE")
-    openacc_gpu_offload = case.get_value("OPENACC_GPU_OFFLOAD")
-    openmp_gpu_offload = case.get_value("OPENMP_GPU_OFFLOAD")
-    kokkos_gpu_offload = case.get_value("KOKKOS_GPU_OFFLOAD")
-    cmake_args += f" -DGPU_TYPE={gpu_type} -DOPENACC_GPU_OFFLOAD={openacc_gpu_offload} -DOPENMP_GPU_OFFLOAD={openmp_gpu_offload} -DKOKKOS_GPU_OFFLOAD={kokkos_gpu_offload} "
+    # check for optional settings for GPU
+    for item in [
+        "GPU_TYPE",
+        "OPENACC_GPU_OFFLOAD",
+        "OPENMP_GPU_OFFLOAD",
+        "KOKKOS_GPU_OFFLOAD",
+    ]:
+        item_value = case.get_value(item)
+        if item_value:
+            cmake_args += f" -D{item}={item_value}"
 
     ocn_model = case.get_value("COMP_OCN")
     atm_dycore = case.get_value("CAM_DYCORE")
