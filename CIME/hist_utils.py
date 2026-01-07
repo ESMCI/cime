@@ -522,6 +522,7 @@ def cprnc(
             out = fd.read()
 
     comment = ""
+    files_match = False
     if cpr_stat == 0:
         # Successful exit from cprnc
         if multiinst_driver_compare:

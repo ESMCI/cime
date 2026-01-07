@@ -32,6 +32,7 @@ def _download_checksum_file(rundir):
                 protocol, user, passwd
             )
         )
+        server = None
         if protocol == "svn":
             server = CIME.Servers.SVN(address, user, passwd)
         elif protocol == "gftp":
@@ -42,6 +43,7 @@ def _download_checksum_file(rundir):
             server = CIME.Servers.WGET.wget_login(address, user, passwd)
         else:
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
+
         if not server:
             continue
 
@@ -190,7 +192,8 @@ def _check_all_input_data_impl(
     else:
         if chksum:
             chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
-
+        else:
+            chksum_found = False
         clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
         if clm_usrdat_name and clm_usrdat_name == "UNSET":
             clm_usrdat_name = None
@@ -409,6 +412,7 @@ def _check_input_data_impl(
         )
 
     no_files_missing = True
+    server = None
     if download:
         if protocol not in vars(CIME.Servers):
             logger.info("Client protocol {} not enabled".format(protocol))

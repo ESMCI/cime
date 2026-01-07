@@ -6,6 +6,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
+from CIME.utils import CIMEError
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +26,6 @@ class Compsets(GenericXML):
         is scientifically supported.   science_support is returned as an array of grids for this compset
         """
         nodes = self.get_children("compset")
-        alias = None
-        lname = None
 
         science_support = []
 
@@ -75,6 +74,8 @@ class Compsets(GenericXML):
             compsets = {}
             nodes = self.get_children("compset")
             for node in nodes:
+                alias = None
+                lname = None
                 for child in node:
                     logger.debug(
                         "Here child is {} with value {}".format(
@@ -85,7 +86,10 @@ class Compsets(GenericXML):
                         alias = self.text(child)
                     if self.name(child) == "lname":
                         lname = self.text(child)
-                compsets[alias] = lname
+                if alias is not None and lname is not None:
+                    compsets[alias] = lname
+                else:
+                    raise CIMEError("Invalid entry in config_compsets.xml")
             return compsets
 
     def print_values(self, arg_help=True):

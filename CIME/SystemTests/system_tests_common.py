@@ -185,6 +185,8 @@ class SystemTestsCommon(object):
         elif ncpl_base_period == "decade":
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
+        else:
+            raise CIMEError("unhandled ncpl_base_period value")
 
         # Convert stop_n to units of coupling intervals
         factor = 1
@@ -265,6 +267,7 @@ class SystemTestsCommon(object):
         elif stop_option == "nyears":
             rtd = timedelta(days=rest_n * 365)
         else:
+            rtd = None
             expect(False, f"stop_option {stop_option} not available for this test")
 
         restdatetime = startdatetime + rtd
@@ -1299,12 +1302,12 @@ class TESTRUNFAILRESET(TESTRUNFAIL):
 
 class TESTRUNFAILEXC(TESTRUNPASS):
     def run_phase(self):
-        raise RuntimeError("Exception from run_phase")
+        raise CIMEError("Exception from run_phase")
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
     def _st_archive_case_test(self):
-        raise RuntimeError("Exception from st archive")
+        raise CIMEError("Exception from st archive")
 
 
 class TESTBUILDFAIL(TESTRUNPASS):
@@ -1326,7 +1329,7 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 class TESTBUILDFAILEXC(FakeTest):
     def build_phase(self, sharedlib_only=False, model_only=False):
-        raise RuntimeError("Exception from build")
+        raise CIMEError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):

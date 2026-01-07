@@ -2697,6 +2697,7 @@ def is_comp_standalone(case):
     """
     stubcnt = 0
     classes = case.get_values("COMP_CLASSES")
+    model = "cpl"
     for comp in classes:
         if case.get_value("COMP_{}".format(comp)) == "s{}".format(comp.lower()):
             stubcnt = stubcnt + 1
@@ -2705,4 +2706,4 @@ def is_comp_standalone(case):
     numclasses = len(classes)
     if stubcnt >= numclasses - 2:
         return True, model
-    return False, get_model()
+    return False, None

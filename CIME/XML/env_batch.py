@@ -549,6 +549,7 @@ class EnvBatch(EnvBase):
             default_queue = self.text(qnode)
         else:
             unknown_queue = False
+            default_queue = None
 
         for root in roots:
             if root is not None:

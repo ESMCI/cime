@@ -21,7 +21,7 @@ from CIME.namelist import (
     Namelist,
     get_fortran_name_only,
 )
-
+from CIME.utils import CIMEError
 from CIME.XML.standard_module_setup import *
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
@@ -140,6 +140,8 @@ class NamelistDefinition(EntryID):
             group = self.get(node, "group")
         elif self.get_version() >= 2.0:
             group = self.get_element_text("group", root=node)
+        else:
+            raise CIMEError("Undefined XML file version")
         return group
 
     def _get_type(self, node):
@@ -147,6 +149,8 @@ class NamelistDefinition(EntryID):
             type_info = self.get(node, "type")
         elif self.get_version() >= 2.0:
             type_info = self._get_type_info(node)
+        else:
+            raise CIMEError("Undefined XML file version")
         return type_info
 
     def _get_valid_values(self, node):
@@ -534,6 +538,8 @@ class NamelistDefinition(EntryID):
             input_pathname = self.get(node, "input_pathname")
         elif self.get_version() >= 2.0:
             input_pathname = self._get_node_element_info(node, "input_pathname")
+        else:
+            raise CIMEError("Invalid XML file version")
         return input_pathname
 
     # pylint: disable=arguments-differ
