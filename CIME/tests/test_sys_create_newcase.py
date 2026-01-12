@@ -314,7 +314,10 @@ class TestCreateNewcase(base.BaseTestCase):
             COMP_CLASSES = case.get_values("COMP_CLASSES")
             BUILD_COMPLETE = case.get_value("BUILD_COMPLETE")
             cmd = xmlquery + " --non-local STOP_N --value"
-            output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
+            # avoid a potential warning in output by only looking at the last line
+            output = (
+                utils.run_cmd_no_fail(cmd, from_dir=casedir).strip().splitlines()[-1]
+            )
             self.assertTrue(output == str(STOP_N), msg="%s != %s" % (output, STOP_N))
             cmd = xmlquery + " --non-local BUILD_COMPLETE --value"
             output = utils.run_cmd_no_fail(cmd, from_dir=casedir)

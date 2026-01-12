@@ -45,9 +45,13 @@ class TestCimeCase(base.BaseTestCase):
             )
 
             case.flush()
-
-            build_complete = utils.run_cmd_no_fail(
-                "./xmlquery BUILD_COMPLETE --value", from_dir=casedir
+            # the strip().splitlines()[-1] avoids a potential warning message in the output.
+            build_complete = (
+                utils.run_cmd_no_fail(
+                    "./xmlquery BUILD_COMPLETE --value", from_dir=casedir
+                )
+                .strip()
+                .splitlines()[-1]
             )
             self.assertEqual(
                 build_complete,
@@ -342,8 +346,13 @@ class TestCimeCase(base.BaseTestCase):
         self.run_cmd_assert_result(
             "./xmlchange --id PIO_CONFIG_OPTS --val='-opt1'", from_dir=casedir
         )
-        result = self.run_cmd_assert_result(
-            "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+        # Avoids a potential warning in output about python version
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+            )
+            .strip()
+            .splitlines()[-1]
         )
         self.assertEqual(result, "-opt1")
 
@@ -597,10 +606,16 @@ class TestCimeCase(base.BaseTestCase):
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
-        result = self.run_cmd_assert_result(
-            "./xmlquery --non-local --value PROJECT --subgroup=case.test",
-            from_dir=casedir,
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery --non-local --value PROJECT --subgroup=case.test",
+                from_dir=casedir,
+            )
+            .strip()
+            .splitlines()[-1]
         )
+
         self.assertEqual(result, "testproj")
 
     def test_create_test_longname(self):
