@@ -339,19 +339,35 @@ class TestCreateNewcase(base.BaseTestCase):
             for comp in COMP_CLASSES:
                 caseresult = case.get_value("NTASKS_%s" % comp)
                 cmd = xmlquery + " --non-local NTASKS_%s --value" % comp
-                output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
+                # avoid a potential warning in output by only looking at the last line
+                output = (
+                    utils.run_cmd_no_fail(cmd, from_dir=casedir)
+                    .strip()
+                    .splitlines()[-1]
+                )
+
                 self.assertTrue(
                     output == str(caseresult), msg="%s != %s" % (output, caseresult)
                 )
                 cmd = xmlquery + " --non-local NTASKS --subgroup %s --value" % comp
-                output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
+                # avoid a potential warning in output by only looking at the last line
+                output = (
+                    utils.run_cmd_no_fail(cmd, from_dir=casedir)
+                    .strip()
+                    .splitlines()[-1]
+                )
                 self.assertTrue(
                     output == str(caseresult), msg="%s != %s" % (output, caseresult)
                 )
             if self.MACHINE.has_batch_system():
                 JOB_QUEUE = case.get_value("JOB_QUEUE", subgroup="case.run")
                 cmd = xmlquery + " --non-local JOB_QUEUE --subgroup case.run --value"
-                output = utils.run_cmd_no_fail(cmd, from_dir=casedir)
+                # avoid a potential warning in output by only looking at the last line
+                output = (
+                    utils.run_cmd_no_fail(cmd, from_dir=casedir)
+                    .strip()
+                    .splitlines()[-1]
+                )
                 self.assertTrue(
                     output == JOB_QUEUE, msg="%s != %s" % (output, JOB_QUEUE)
                 )
