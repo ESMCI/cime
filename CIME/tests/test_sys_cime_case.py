@@ -359,8 +359,13 @@ class TestCimeCase(base.BaseTestCase):
         self.run_cmd_assert_result(
             "./xmlchange --id PIO_CONFIG_OPTS --val='-opt2' --append", from_dir=casedir
         )
-        result = self.run_cmd_assert_result(
-            "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+            )
+            .strip()
+            .splitlines()[-1]
         )
         self.assertEqual(result, "-opt1 -opt2")
 
@@ -514,10 +519,14 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         self.run_cmd_assert_result("./case.setup --reset", from_dir=casedir)
-
-        result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
-            from_dir=casedir,
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+                from_dir=casedir,
+            )
+            .strip()
+            .splitlines()[-1]
         )
         with Case(casedir) as case:
             walltime_format = case.get_value("walltime_format", subgroup=None)
@@ -544,9 +553,14 @@ class TestCimeCase(base.BaseTestCase):
 
         self.run_cmd_assert_result("./case.setup --reset", from_dir=casedir)
 
-        result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
-            from_dir=casedir,
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+                from_dir=casedir,
+            )
+            .strip()
+            .splitlines()[-1]
         )
         with Case(casedir) as case:
             walltime_format = case.get_value("walltime_format", subgroup=None)
