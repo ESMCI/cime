@@ -1,6 +1,7 @@
 """
 case_run is a member of Class Case
 '"""
+
 from CIME.XML.standard_module_setup import *
 from CIME.config import Config
 from CIME.utils import gzip_existing_file, new_lid
@@ -336,7 +337,9 @@ def _post_run_check(case, lid):
     if comp_standalone:
         model_logfile = os.path.join(rundir, file_prefix + ".log." + lid)
         if not os.path.isfile(model_logfile):
-            expect(False, "Model did not complete, no {} log file ".format(model_logfile))
+            expect(
+                False, "Model did not complete, no {} log file ".format(model_logfile)
+            )
         elif os.stat(model_logfile).st_size == 0:
             expect(False, "Run FAILED")
     else:
