@@ -77,7 +77,7 @@ def parse_command_line(args, description):
 
     parser.add_argument(
         "--header",
-        default="Comp  NTASKS  NTHRDS  ROOTPE PSTRIDE XSTRIDE",
+        default="Comp  NTASKS  NTHRDS  ROOTPE PSTRIDE",
         help="Custom header for PE layout display",
     )
 
@@ -136,7 +136,11 @@ def format_pelayout(comp, ntasks, nthreads, rootpe, pstride, xstride, arg_format
     layout_str = re.sub(r"%([-+0-9]*)H", r"{H:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)R", r"{R:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)P", r"{P:\1}", layout_str)
-    layout_str = re.sub(r"%([-+0-9]*)X", r"{X:\1}", layout_str)
+    if xstride:
+        layout_str = re.sub(r"%([-+0-9]*)X", r"{X:\1}", layout_str)
+    else:
+        layout_str = re.sub(r"%([-+0-9]*)X", r"", layout_str)
+
     layout_str = layout_str.format(**subs)
     return layout_str
 
@@ -154,6 +158,8 @@ def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, xstrid, arg_format, 
     comp_classes = case.get_values("COMP_CLASSES")
 
     if header is not None:
+        if any(v is not None for v in xstrid.values()):
+            header += " XSTRIDE"
         print(header)
     # End if
     maxthrds = -1
@@ -205,7 +211,12 @@ def gather_pelayout(case):
         nthreads[comp] = int(case.get_value("NTHRDS_" + comp))
         rootpes[comp] = int(case.get_value("ROOTPE_" + comp))
         pstride[comp] = int(case.get_value("PSTRID_" + comp))
-        xstride[comp] = int(case.get_value("EXCL_STRIDE_" + comp))
+        excl_stride = case.get_value("EXCL_STRIDE_" + comp)
+        if excl_stride:
+            xstride[comp] = int(case.get_value("EXCL_STRIDE_" + comp))
+        else:
+            xstride[comp] = None
+
     # End for
     return ntasks, nthreads, rootpes, pstride, xstride
 
