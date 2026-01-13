@@ -158,6 +158,8 @@ def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, xstrid, arg_format, 
     comp_classes = case.get_values("COMP_CLASSES")
 
     if header is not None:
+        if any(v is not None for v in xstrid.values()):
+            header += " XSTRIDE"
         print(header)
     # End if
     maxthrds = -1
@@ -214,6 +216,7 @@ def gather_pelayout(case):
             xstride[comp] = int(case.get_value("EXCL_STRIDE_" + comp))
         else:
             xstride[comp] = None
+
     # End for
     return ntasks, nthreads, rootpes, pstride, xstride
 
