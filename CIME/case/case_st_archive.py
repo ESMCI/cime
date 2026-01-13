@@ -275,6 +275,7 @@ def _archive_log_files(dout_s_root, rundir, archive_incomplete, archive_file_fn)
         log_search = "*.log.*"
 
     logfiles = glob.glob(os.path.join(rundir, log_search))
+    logfiles.append(os.path.join(rundir, "CASEROOT"))
     for logfile in logfiles:
         srcfile = join(rundir, os.path.basename(logfile))
         destfile = join(archive_logdir, os.path.basename(logfile))
