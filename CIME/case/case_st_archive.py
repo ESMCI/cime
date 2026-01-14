@@ -285,7 +285,10 @@ def _archive_log_files(dout_s_root, rundir, archive_incomplete, archive_file_fn)
         )
         archive_file_fn(srcfile, destfile)
     # Finally copy the CASEROOT file into the archive directory
-    safe_copy(os.path.join(rundir, "CASEROOT"), archive_logdir)
+    caseroot = os.path.join(rundir, "CASEROOT")
+    logdir_caseroot = os.path.join(archive_logdir, "CASEROOT")
+    if os.path.exists(caseroot) and not os.path.exists(logdir_caseroot):
+        safe_copy(os.path.join(rundir, "CASEROOT"), archive_logdir)
 
 
 ###############################################################################
