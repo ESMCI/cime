@@ -1335,6 +1335,8 @@ def _check_disposition(testdir):
     copyfilelist = []
     for root, _, files in os.walk(testdir):
         for _file in files:
+            if "CASEROOT" in _file:
+                continue
             with open(os.path.join(root, _file), "r") as fd:
                 disposition = fd.readline()
             logger.info(
