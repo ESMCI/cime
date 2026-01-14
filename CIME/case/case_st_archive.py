@@ -1183,7 +1183,9 @@ def test_st_archive(self, testdir="st_archive_test"):
                 )
                 with open(fname, "w") as fd:
                     fd.write(disposition + "\n")
-
+    caseroot = self.get_value("CASEROOT")
+    with open(os.path.join(testdir, "CASEROOT"), "w") as f:
+        f.write(caseroot)
     logger.info("testing components: {} ".format(list(set(components))))
     _archive_process(
         self,
