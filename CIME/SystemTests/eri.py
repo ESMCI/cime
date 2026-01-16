@@ -302,13 +302,17 @@ class ERI(SystemTestsCommon):
         # do the restart run (short term archiving is off)
         self.run_indv(suffix="rest")
 
-        # Note that, for both of these comparisons, the "control" case comes first: the
-        # branch case is compared against the hybrid case (which it branched off of, and
-        # so serves as its "control"); the "rest" run is a restart from the branch case
-        # and so is compared against this branch case. The order of the two suffixes in
-        # each call isn't very important, but it *is* somewhat important that the first
-        # suffix differs between these two comparisons: otherwise, the cprnc output files
-        # from the second comparison overwrite the files from the first comparison (since
-        # the cprnc output file names are derived from the first suffix).
-        self._component_compare_test("hybrid", "branch")
-        self._component_compare_test("branch", "rest")
+        # Note that, for both of these comparisons, the "test" case comes first and the
+        # "control" case comes second: the branch case is compared against the hybrid case
+        # (which it branched off of, and so serves as its "control"); the "rest" run is a
+        # restart from the branch case and so is compared against this branch case. We
+        # make this choice because the cprnc output file names are derived from the first
+        # suffix, so:
+        # - Listing the "test" case as the first suffix means that the cprnc files are
+        #   named with the name of the case we're testing in that cprnc comparison, which
+        #   is more intuitive.
+        # - Having the first suffix differ between the two comparisons is important to
+        #   avoid having the cprnc output files from the second comparison overwrite the
+        #   files from the first comparison.
+        self._component_compare_test("branch", "hybrid")
+        self._component_compare_test("rest", "branch")
