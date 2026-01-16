@@ -239,14 +239,14 @@ TESTTYPE     Description
                 and writing restarts at day 10.
                 ref2case is a clone of the main case.
                 Short term archiving is on.
-              case
+              case (Suffix branch)
                 Do a branch run, starting from restarts written in ref2case,
                 for 9 days and writing restarts at day 5.
                 Short term archiving is off.
-              case (Suffix base)
+              case - restart (Suffix rest)
                 Do a restart run from the branch run restarts for 4 days.
-                Compare component history files '.base' and '.hybrid' at day 19.
                 Short term archiving is off.
+              Comparisons are done between branch vs. hybrid and rest vs. branch
 
    ERP       PES counts hybrid (OPENMP/MPI) restart bit-for-bit test from startup, (default 6 days + 5 days).
               Initial PES set up out of the box
