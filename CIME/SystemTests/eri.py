@@ -272,7 +272,7 @@ class ERI(SystemTestsCommon):
 
         self._skip_pnl = False
         # run branch case (short term archiving is off)
-        self.run_indv()
+        self.run_indv(suffix="branch")
 
         #
         # (3b) Test run:
@@ -303,13 +303,12 @@ class ERI(SystemTestsCommon):
         self.run_indv(suffix="rest")
 
         # Note that, for both of these comparisons, the "control" case comes first: the
-        # "base" case is the branch run, which is compared against the "hybrid" run (which
-        # it branched off of, and so serves as its "control"); the "rest" run is a restart
-        # from this "base" case and so is compared against this "base" case. The order of
-        # the two suffixes in each call isn't very important, but it *is* somewhat
-        # important that the first suffix differs between these two comparisons:
-        # otherwise, the cprnc output files from the second comparison overwrite the files
-        # from the first comparison (since the cprnc output file names are derived from
-        # the first suffix).
-        self._component_compare_test("hybrid", "base")
-        self._component_compare_test("base", "rest")
+        # branch case is compared against the hybrid case (which it branched off of, and
+        # so serves as its "control"); the "rest" run is a restart from the branch case
+        # and so is compared against this branch case. The order of the two suffixes in
+        # each call isn't very important, but it *is* somewhat important that the first
+        # suffix differs between these two comparisons: otherwise, the cprnc output files
+        # from the second comparison overwrite the files from the first comparison (since
+        # the cprnc output file names are derived from the first suffix).
+        self._component_compare_test("hybrid", "branch")
+        self._component_compare_test("branch", "rest")
