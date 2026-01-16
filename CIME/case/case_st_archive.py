@@ -284,6 +284,11 @@ def _archive_log_files(dout_s_root, rundir, archive_incomplete, archive_file_fn)
             )
         )
         archive_file_fn(srcfile, destfile)
+    # Finally copy the CASEROOT file into the archive directory
+    caseroot = os.path.join(rundir, "CASEROOT")
+    logdir_caseroot = os.path.join(archive_logdir, "CASEROOT")
+    if os.path.exists(caseroot) and not os.path.exists(logdir_caseroot):
+        safe_copy(os.path.join(rundir, "CASEROOT"), archive_logdir)
 
 
 ###############################################################################
@@ -1181,7 +1186,9 @@ def test_st_archive(self, testdir="st_archive_test"):
                 )
                 with open(fname, "w") as fd:
                     fd.write(disposition + "\n")
-
+    caseroot = self.get_value("CASEROOT")
+    with open(os.path.join(testdir, "CASEROOT"), "w") as f:
+        f.write(caseroot)
     logger.info("testing components: {} ".format(list(set(components))))
     _archive_process(
         self,
@@ -1331,6 +1338,8 @@ def _check_disposition(testdir):
     copyfilelist = []
     for root, _, files in os.walk(testdir):
         for _file in files:
+            if "CASEROOT" in _file:
+                continue
             with open(os.path.join(root, _file), "r") as fd:
                 disposition = fd.readline()
             logger.info(
