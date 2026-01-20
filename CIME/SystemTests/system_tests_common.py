@@ -121,6 +121,14 @@ class SystemTestsCommon(object):
         self._user_separate_builds = False
         self._expected_num_cmp = None
         self._rest_n = None
+        sc_file = os.path.join(caseroot, "shell_commands")
+        if os.path.isfile(sc_file):
+            with open(sc_file, "r") as fp:
+                for line in fp:
+                    match = re.search(r"REST_N\s*=\s*(\d+)", line)
+                    if match:
+                        self._rest_n = int(match.group(1))
+
         # Does the model support this variable?
         self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
 
@@ -177,6 +185,8 @@ class SystemTestsCommon(object):
         elif ncpl_base_period == "decade":
             coupling_secs = 315360000 / maxncpl
             timestep = 315360000 / minncpl
+        else:
+            raise CIMEError("unhandled ncpl_base_period value")
 
         # Convert stop_n to units of coupling intervals
         factor = 1
@@ -192,13 +202,36 @@ class SystemTestsCommon(object):
             factor = 315360000
         else:
             expect(False, f"stop_option {stop_option} not available for this test")
-        stop_n = int(stop_n * factor // coupling_secs)
-        if self._case.get_value("TESTCASE") == "IRT":
-            rest_n = math.ceil((stop_n // 3) * coupling_secs / factor)
+
+        stop_n_coupling_intervals = int(stop_n * factor // coupling_secs)
+        expect(
+            stop_n_coupling_intervals > 0,
+            "Bad STOP_N: {:d} ({:d} coupling intervals)".format(
+                stop_n, stop_n_coupling_intervals
+            ),
+        )
+
+        if self._rest_n:
+            rest_n = self._rest_n
         else:
-            rest_n = math.ceil((stop_n // 2 + 1) * coupling_secs / factor)
-        expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
-        expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
+            if self._case.get_value("TESTCASE") == "IRT":
+                rest_n = math.ceil(
+                    (stop_n_coupling_intervals // 3) * coupling_secs / factor
+                )
+            else:
+                rest_n = math.ceil(
+                    (stop_n_coupling_intervals // 2 + 1) * coupling_secs / factor
+                )
+
+        # Note that the error message here refers to STOP_N being too short, because
+        # that's the typical root cause of this problem
+        expect(
+            rest_n > 0 and rest_n < stop_n,
+            "ERROR: STOP_N value {:d} too short: results in REST_N = {:d}".format(
+                stop_n, rest_n
+            ),
+        )
+
         cal = self._case.get_value("CALENDAR")
         if not starttime:
             starttime = self._case.get_value("START_TOD")
@@ -234,6 +267,7 @@ class SystemTestsCommon(object):
         elif stop_option == "nyears":
             rtd = timedelta(days=rest_n * 365)
         else:
+            rtd = None
             expect(False, f"stop_option {stop_option} not available for this test")
 
         restdatetime = startdatetime + rtd
@@ -328,6 +362,54 @@ class SystemTestsCommon(object):
             self._case.set_initial_test_values()
             self._case.case_setup(reset=True, test_mode=True)
             fix_single_exe_case(self._case)
+
+    def setup(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the setup phase. setup_phase is the extension point
+        that subclasses should use.
+        """
+        self.setup_phase(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_phase(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        This is the default setup phase implementation, it just does an individual setup.
+        This is the subclass' extension point if they need to define a custom setup
+        phase.
+
+        PLEASE THROW EXCEPTION ON FAIL
+        """
+        self.setup_indv(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_indv(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Perform an individual setup
+        """
+        self._case.case_setup(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
 
     def build(
         self,
@@ -1220,12 +1302,12 @@ class TESTRUNFAILRESET(TESTRUNFAIL):
 
 class TESTRUNFAILEXC(TESTRUNPASS):
     def run_phase(self):
-        raise RuntimeError("Exception from run_phase")
+        raise CIMEError("Exception from run_phase")
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
     def _st_archive_case_test(self):
-        raise RuntimeError("Exception from st archive")
+        raise CIMEError("Exception from st archive")
 
 
 class TESTBUILDFAIL(TESTRUNPASS):
@@ -1246,9 +1328,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case, **kwargs):
-        FakeTest.__init__(self, case, **kwargs)
-        raise RuntimeError("Exception from init")
+    def build_phase(self, sharedlib_only=False, model_only=False):
+        raise CIMEError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):

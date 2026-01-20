@@ -69,7 +69,6 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         multisubmit=False,
         ignore_fieldlist_diffs=False,
         case_two_keep_init_generated_files=False,
-        dry_run=False,
         **kwargs
     ):
         """
@@ -139,11 +138,10 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         self._caseroot2 = self._get_caseroot2()
         # Initialize self._case2; it will get set to its true value in
         # _setup_cases_if_not_yet_done
-        self._case2 = None
-
-        # Prevent additional setup_case calls when detecting support for `--single-exe`
-        if not dry_run:
-            self._setup_cases_if_not_yet_done()
+        if os.path.exists(self._caseroot2):
+            self._case2 = self._case_from_existing_caseroot(self._caseroot2)
+        else:
+            self._case2 = None
 
         self._multisubmit = (
             multisubmit and self._case1.get_value("BATCH_SYSTEM") != "none"
@@ -212,6 +210,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
     # ========================================================================
 
     def build_phase(self, sharedlib_only=False, model_only=False):
+        # Prevent additional setup_case calls when detecting support for `--single-exe`
+        self._setup_cases_if_not_yet_done()
+
         # Subtle issue: case1 is already in a writeable state since it tends to be opened
         # with a with statement in all the API entrances in CIME. case2 was created via clone,
         # not a with statement, so it's not in a writeable state, so we need to use a with

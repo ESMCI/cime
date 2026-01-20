@@ -1,0 +1,52 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build documentation",
+            "type": "shell",
+            "command": "source ${workspaceFolder}/.venv/bin/activate && sphinx-autobuild --ignore generated/ . _build/html",
+            "options": {
+                "cwd": "${workspaceFolder}/doc/source"
+            }
+        },
+	{
+            "label": "Docker Build (base)",
+            "type": "shell",
+            "command": "docker build -t ghcr.io/esmci/cime:dev --target base .",
+            "options": {
+                "cwd": "${workspaceFolder}/docker"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker Run (base) - E3SM",
+            "type": "shell",
+            "command": "docker run -it --rm -v ${workspaceFolder}/..:/home/cime/e3sm/${workspaceFolderBasename} -w /home/cime/e3sm/${workspaceFolderBasename}/cime -e CIME_MODEL=e3sm -e USER_ID=`id -u` -e GROUP_ID=`id -g` ghcr.io/esmci/cime:dev bash",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+                {
+            "label": "Docker Run (base) - CESM",
+            "type": "shell",
+            "command": "docker run -it --rm -v ${workspaceFolder}/..:/home/cime/cesm/${workspaceFolderBasename} -w /home/cime/cesm/${workspaceFolderBasename}/cime -e CIME_MODEL=cesm -e USER_ID=`id -u` -e GROUP_ID=`id -g` ghcr.io/esmci/cime:dev bash",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+    ]
+}

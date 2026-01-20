@@ -90,7 +90,11 @@ class ERI(SystemTestsCommon):
         start_1_year, start_1_month, start_1_day = [
             int(item) for item in start_1.split("-")
         ]
-        start_2_year = start_1_year + 2
+        # Change the year for the hybrid case to make sure the system can handle this change in year.
+        # Note: When using a Gregorian calendar, it is important for the two years to be leap years
+        #       because a testmod which tests the gregorian calendar starts the runs on leap day,
+        #       which must exist in all of the start years.
+        start_2_year = start_1_year + 4
         start_2 = "{:04d}-{:02d}-{:02d}".format(
             start_2_year, start_1_month, start_1_day
         )

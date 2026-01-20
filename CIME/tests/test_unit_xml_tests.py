@@ -32,16 +32,27 @@ class TestXMLTests(unittest.TestCase):
 
             case.get_compset_components.return_value = ()
 
-            case.get_value.side_effect = (
-                "SMS",
-                tdir,
-                f"{caseroot}",
-                "SMS.f19_g16.S",
-                "cpl",
-                "SMS.f19_g16.S",
-                f"{caseroot}",
-                "SMS.f19_g16.S",
-            )
+            def fake_get_value(item, attribute=None):
+                simple_lookup = {
+                    "TESTCASE": "SMS",
+                    "CASEROOT": f"{caseroot}",
+                    "CASEBASEID": "SMS.f19_g16.S",
+                    "COMP_INTERFACE": "cpl",
+                    "DRV_RESTART_POINTER": None,
+                }
+                if item in simple_lookup:
+                    return simple_lookup[item]
+                elif item == "SYSTEM_TESTS_DIR":
+                    if attribute["component"] == "any":
+                        return tdir
+                    else:
+                        return None
+
+                raise KeyError(
+                    f"Unmocked call: case.get_value({item}, attribute={attribute})"
+                )
+
+            case.get_value.side_effect = fake_get_value
 
             tests = Tests()
 
@@ -65,17 +76,28 @@ class TestXMLTests(unittest.TestCase):
 
             case.get_compset_components.return_value = ()
 
-            case.get_value.side_effect = (
-                "ERP",
-                tdir,
-                f"{caseroot}",
-                "ERP.f19_g16.S",
-                "cpl",
-                None,
-                "ERP.f19_g16.S",
-                f"{caseroot}",
-                "ERP.f19_g16.S",
-            )
+            def fake_get_value(item, attribute=None):
+                simple_lookup = {
+                    "TESTCASE": "ERP",
+                    "CASEROOT": f"{caseroot}",
+                    "CASEBASEID": "ERP.f19_g16.S",
+                    "CASE": "ERP.f19_g16.S",
+                    "COMP_INTERFACE": "cpl",
+                    "DRV_RESTART_POINTER": None,
+                }
+                if item in simple_lookup:
+                    return simple_lookup[item]
+                elif item == "SYSTEM_TESTS_DIR":
+                    if attribute["component"] == "any":
+                        return tdir
+                    else:
+                        return None
+
+                raise KeyError(
+                    f"Unmocked call: case.get_value({item}, attribute={attribute})"
+                )
+
+            case.get_value.side_effect = fake_get_value
 
             tests = Tests()
 

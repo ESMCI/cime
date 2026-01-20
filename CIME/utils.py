@@ -113,17 +113,20 @@ def set_logger_indent(indent):
 
 
 class EnvironmentContext(object):
-    """
-    Context manager for environment variables
-    Usage:
-        os.environ['MYVAR'] = 'oldvalue'
-        with EnvironmentContex(MYVAR='myvalue', MYVAR2='myvalue2'):
-            print os.getenv('MYVAR')    # Should print myvalue.
-            print os.getenv('MYVAR2')    # Should print myvalue2.
-        print os.getenv('MYVAR')        # Should print oldvalue.
-        print os.getenv('MYVAR2')        # Should print None.
+    """Context manager for environment variables.
+
+    .. code-block:: python
+
+        Usage:
+            os.environ['MYVAR'] = 'oldvalue'
+            with EnvironmentContex(MYVAR='myvalue', MYVAR2='myvalue2'):
+                print os.getenv('MYVAR')    # Should print myvalue.
+                print os.getenv('MYVAR2')    # Should print myvalue2.
+            print os.getenv('MYVAR')        # Should print oldvalue.
+            print os.getenv('MYVAR2')        # Should print None.
 
     CREDIT: https://github.com/sakurai-youhei/envcontext
+
     """
 
     def __init__(self, **kwargs):
@@ -1007,10 +1010,8 @@ def parse_test_name(test_name):
     parse and return the partial results.
 
     TESTMODS use hyphens in a special way:
-    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to
-      the path 'test/mods')
-    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path'
-      indicates two test mods: 'test/mods' and 'other/dir/path')
+    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to the path 'test/mods')
+    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path' indicates two test mods: 'test/mods' and 'other/dir/path')
 
     If there are one or more TESTMODS, then the testmods component of the result will be a
     list, where each element of the list is one testmod, and hyphens have been replaced by
@@ -1051,6 +1052,7 @@ def parse_test_name(test_name):
     Traceback (most recent call last):
         ...
     CIMEError: ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV
+
     """
     rv = [None] * 7
     num_dots = test_name.count(".")
@@ -1111,10 +1113,8 @@ def get_full_test_name(
     Use the additional args to fill out the name if needed
 
     Testmods can be provided through one of two arguments, but *not* both:
-    - testmods_list: a list of one or more testmods (as would be returned by
-      parse_test_name, for example)
-    - testmods_string: a single string containing one or more testmods; if there is more
-      than one, then they should be separated by a string of two hyphens ('--')
+    - testmods_list: a list of one or more testmods (as would be returned by parse_test_name, for example)
+    - testmods_string: a single string containing one or more testmods; if there is more than one, then they should be separated by a string of two hyphens ('--')
 
     For both testmods_list and testmods_string, any slashes as path separators ('/') are
     replaced by hyphens ('-').
@@ -1151,6 +1151,7 @@ def get_full_test_name(
     The following tests the consistency check between the test name and various optional arguments:
     >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
     """
     (
         partial_testcase,
@@ -1444,16 +1445,28 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
 
     # Handle pre-existing file
     try:
-        if os.path.isfile(tgt_path):
-            copy_over_file(src_path, tgt_path)
+        if os.path.isfile(src_path):
+            if os.path.isfile(tgt_path):
+                copy_over_file(src_path, tgt_path)
 
-        elif preserve_meta:
-            # We are making a new file, copy file contents, permissions, and metadata.
-            # This can fail if the underlying directory is not writable by current user.
-            shutil.copy2(src_path, tgt_path)
+            elif preserve_meta:
+                # We are making a new file, copy file contents, permissions, and metadata.
+                # This can fail if the underlying directory is not writable by current user.
+                shutil.copy2(src_path, tgt_path)
 
+            else:
+                shutil.copy(src_path, tgt_path)
         else:
-            shutil.copy(src_path, tgt_path)
+            # Some of the archived "files" are directories, like ADIOS BP output "files"
+            if preserve_meta:
+                shutil.copytree(src_path, tgt_path, dirs_exist_ok=True)
+            else:
+                shutil.copytree(
+                    src_path,
+                    tgt_path,
+                    dirs_exist_ok=True,
+                    copy_function=shutil.copyfile,
+                )
 
     except OSError:
         # Some systems get weird OSErrors when using shutil copy, try an
@@ -1462,7 +1475,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
         # cp is not in PATH, we must give up and raise the original err
         if cp_path is None:
             raise
-        run_cmd_no_fail(f"{cp_path} -f {src_path} {tgt_path}")
+        run_cmd_no_fail(f"{cp_path} -f -r {src_path} {tgt_path}")
 
     # If src file was executable, then the tgt file should be too
     st = os.stat(tgt_path)
@@ -2279,7 +2292,7 @@ def find_system_test(testname, case):
     if testname.startswith("TEST"):
         system_test_path = "CIME.SystemTests.system_tests_common.{}".format(testname)
     else:
-        components = ["any"]
+        components = ["any", "allactive"]
         components.extend(case.get_compset_components())
         fdir = []
         for component in components:
@@ -2288,6 +2301,11 @@ def find_system_test(testname, case):
             )
             if tdir is not None:
                 tdir = os.path.abspath(tdir)
+                if tdir in fdir:
+                    # This can happen if multiple SYSTEM_TESTS_DIRs resolve to the same
+                    # path; in this case, we just want to handle the first occurrence and
+                    # skip the rest.
+                    continue
                 system_test_file = os.path.join(tdir, "{}.py".format(testname.lower()))
                 if os.path.isfile(system_test_file):
                     fdir.append(tdir)
@@ -2342,6 +2360,11 @@ def ls_sorted_by_mtime(path):
     """return list of path sorted by timestamp oldest first"""
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
     return list(sorted(os.listdir(path), key=mtime))
+
+
+def ls_sorted_by_fname(path):
+    """return list of path sorted by name oldest first"""
+    return list(sorted(os.listdir(path)))
 
 
 def get_lids(case):
@@ -2703,6 +2726,7 @@ def is_comp_standalone(case):
     """
     stubcnt = 0
     classes = case.get_values("COMP_CLASSES")
+    model = "cpl"
     for comp in classes:
         if case.get_value("COMP_{}".format(comp)) == "s{}".format(comp.lower()):
             stubcnt = stubcnt + 1
@@ -2711,4 +2735,4 @@ def is_comp_standalone(case):
     numclasses = len(classes)
     if stubcnt >= numclasses - 2:
         return True, model
-    return False, get_model()
+    return False, None

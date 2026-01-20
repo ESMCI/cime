@@ -47,8 +47,15 @@ def create_dirs(self):
 
     # As a convenience write the location of the case directory in the bld and run directories
     for dir_ in (exeroot, rundir):
-        with open(os.path.join(dir_, "CASEROOT"), "w+") as fd:
-            fd.write(caseroot + "\n")
+        if os.access(dir_, os.W_OK):
+            with open(os.path.join(dir_, "CASEROOT"), "w+") as fd:
+                fd.write(caseroot + "\n")
+        else:
+            logger.warning(
+                "Write permission is missing for directory '{}'. Skipping creation of 'CASEROOT' file.".format(
+                    dir_
+                )
+            )
 
 
 def create_namelists(self, component=None):

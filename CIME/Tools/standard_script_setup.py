@@ -36,10 +36,10 @@ def check_minimum_python_version(major, minor, warn_only=False):
     raise RuntimeError(msg + " - please use a newer version of Python.")
 
 
-# Require users to be using >=3.6
-check_minimum_python_version(3, 6)
-# Warn users if they are using <3.8
-check_minimum_python_version(3, 8, warn_only=True)
+# Require users to be using >=3.9
+check_minimum_python_version(3, 9)
+# Warn users if they are using <3.10
+check_minimum_python_version(3, 10, warn_only=True)
 
 real_file_dir = os.path.dirname(os.path.realpath(__file__))
 cimeroot = os.path.abspath(os.path.join(real_file_dir, "..", ".."))

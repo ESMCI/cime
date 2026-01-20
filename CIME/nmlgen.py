@@ -326,19 +326,20 @@ class NamelistGenerator(object):
         few differences between Fortran namelist literals and values in the
         defaults file:
         1) In the defaults file, whitespace is ignored except within strings, so
-           the output of this function strips out most whitespace. (This implies
-           that commas are the only way to separate array elements in the
-           defaults file.)
+        the output of this function strips out most whitespace. (This implies
+        that commas are the only way to separate array elements in the
+        defaults file.)
         2) In the defaults file, quotes around character literals (strings) are
-           optional, as long as the literal does not contain whitespace, commas,
-           or (single or double) quotes. If a setting for a character variable
-           does not seem to have quotes (and is not a null value), this function
-           will add them.
+        optional, as long as the literal does not contain whitespace, commas,
+        or (single or double) quotes. If a setting for a character variable
+        does not seem to have quotes (and is not a null value), this function
+        will add them.
         3) Default values may refer to variables in a case's `env_*.xml` files.
-           This function replaces references of the form `$VAR` or `${VAR}` with
-           the value of the variable `VAR` in an env file, if that variable
-           exists. This behavior is suppressed within single-quoted strings
-           (similar to parameter expansion in shell scripts).
+        This function replaces references of the form `$VAR` or `${VAR}` with
+        the value of the variable `VAR` in an env file, if that variable
+        exists. This behavior is suppressed within single-quoted strings
+        (similar to parameter expansion in shell scripts).
+
         """
         default = self._definition.get_value_match(
             name, attributes=config, exact_match=False
@@ -536,14 +537,12 @@ class NamelistGenerator(object):
     ):
         """Write the pseudo-XML file corresponding to a given stream.
 
-        Arguments:
-        `config` - Used to look up namelist defaults. This is used *in addition*
-                   to the `config` used to construct the namelist generator. The
-                   main reason to supply additional configuration options here
-                   is to specify stream-specific settings.
-        `stream` - Name of the stream.
-        `stream_path` - Path to write the stream file to.
-        `data_list_path` - Path of file to append input data information to.
+        Args:
+            config - Used to look up namelist defaults. This is used *in addition* to the `config` used to construct the namelist generator. The main reason to supply additional configuration options here is to specify stream-specific settings.
+            caseroot - Path to the case root directory.
+            stream - Name of the stream.
+            stream_path - Path to write the stream file to.
+            data_list_path - Path of file to append input data information to.
         """
 
         if os.path.exists(stream_path):

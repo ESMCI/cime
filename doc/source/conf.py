@@ -18,6 +18,7 @@
 #
 import os
 import sys
+from pathlib import Path
 
 # Note that we need a specific version of sphinx_rtd_theme. This can be obtained with:
 # pip install git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
@@ -37,17 +38,24 @@ sys.path.insert(2, os.path.abspath("../../CIME"))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.todo",
-    "sphinx.ext.coverage",
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx.ext.viewcode",
+    "sphinx.ext.linkcode",
     "sphinx.ext.todo",
-    "sphinxcontrib.programoutput",
     "sphinx_rtd_theme",
     "sphinx_copybutton",
+    "sphinx_toolbox.code",
 ]
+
+def linkcode_resolve(domain, info):
+    if domain != 'py' or not info['module']:
+        return None
+
+    filename = info['module'].replace('.', '/')
+
+    return f"https://github.com/esmci/cime/blob/master/{filename}.py"
+
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -64,7 +72,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "CIME"
-copyright = "2017, U.S. National Science Foundation and U.S. Department of Energy"
+copyright = "2025, U.S. National Science Foundation and U.S. Department of Energy"
 author = "Staff of the NSF/CESM and DOE/E3SM projects"
 
 # The version info for the project you're documenting, acts as replacement for

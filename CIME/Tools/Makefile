@@ -119,11 +119,19 @@ endif
 FTORCH_DIR = $(SHAREDLIBROOT)/$(SHAREDPATH)/FTorch/
 ifneq "$(wildcard $(FTORCH_DIR) )" ""
   INCLDIR  += -I$(FTORCH_DIR)/modules -I$(FTORCH_DIR)
-  SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  ifeq ($(strip $(COMPILER)),nag)
+    SLIBS  +=  -Wl,-Wl,,-rpath=$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  else
+    SLIBS  +=  -Wl,-rpath,$(FTORCH_DIR) -L$(FTORCH_DIR) -lftorch_wrapper
+  endif
 endif
 ifeq ($(strip $(USE_FTORCH)), TRUE)
   CPPDEFS  += -DUSE_FTORCH
-  SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  ifeq ($(strip $(COMPILER)),nag)
+    SLIBS  +=  -Wl,-Wl,,-rpath=$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  else
+    SLIBS  +=  -Wl,-rpath,$(TORCH_DIR)/lib -L$(TORCH_DIR)/lib -ltorch_cpu -lc10 -lstdc++ -Wl,-rpath,$(FTORCH_DIR)/src -L$(FTORCH_DIR)/src -lftorch
+  endif
 endif
 
 ifdef FSTDLIB_PKGCONFIG
@@ -565,11 +573,11 @@ ifdef MPAS_LIBDIR
 .PHONY: libmpas
 # The CASEROOT, COMPILER and MACH are added so that the Depends file could be visible to
 # the MPAS dycore.
-# The GPUFLAGS is added so that the GPU flags defined in ccs_config_cesm could also be
+# The OPENACC_GPU_FLAGS is added so that the GPU flags defined in ccs_config_cesm could also be
 # used to build the MPAS dycore if needed.
 libmpas: cam_abortutils.o physconst.o
 	$(MAKE) -C $(MPAS_LIBDIR) CC="$(CC)" FC="$(FC)" PIODEF="$(PIODEF)" \
-	FFLAGS='$(FREEFLAGS) $(FFLAGS)' GPUFLAGS='$(GPUFLAGS)' \
+	FFLAGS='$(FREEFLAGS) $(FFLAGS)' OPENACC_GPU_FLAGS='$(OPENACC_GPU_FLAGS)' \
 	CASEROOT='$(CASEROOT)' COMPILER='$(COMPILER)' MACH='$(MACH)' \
 	FCINCLUDES='$(INCLDIR) $(INCS) -I$(ABS_INSTALL_SHAREDPATH)/include -I$(ABS_ESMF_PATH)/include'
 
@@ -861,6 +869,10 @@ endif
 ifdef COSP_LIBDIR
   ifeq ($(CIME_MODEL),cesm)
     ULIBDEP += $(COSP_LIBDIR)/libcosp.a
+    # Additionally include RTTOV if asked via CAM_CONFIG_OPTS.
+    ifeq ($(findstring -rttov,$(CAM_CONFIG_OPTS)),-rttov)
+      ULIBDEP += $(COSP_LIBDIR)/librttov_wrapper.a $(COSP_LIBDIR)/librttov_mw_scatt.a $(COSP_LIBDIR)/librttov_brdf_atlas.a $(COSP_LIBDIR)/librttov_emis_atlas.a  $(COSP_LIBDIR)/librttov_other.a $(COSP_LIBDIR)/librttov_parallel.a $(COSP_LIBDIR)/librttov_coef_io.a $(COSP_LIBDIR)/librttov_hdf.a $(COSP_LIBDIR)/librttov_main.a
+    endif
   endif
 endif
 

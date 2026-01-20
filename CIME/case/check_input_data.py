@@ -32,6 +32,7 @@ def _download_checksum_file(rundir):
                 protocol, user, passwd
             )
         )
+        server = None
         if protocol == "svn":
             server = CIME.Servers.SVN(address, user, passwd)
         elif protocol == "gftp":
@@ -42,6 +43,7 @@ def _download_checksum_file(rundir):
             server = CIME.Servers.WGET.wget_login(address, user, passwd)
         else:
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
+
         if not server:
             continue
 
@@ -190,7 +192,8 @@ def _check_all_input_data_impl(
     else:
         if chksum:
             chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
-
+        else:
+            chksum_found = False
         clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
         if clm_usrdat_name and clm_usrdat_name == "UNSET":
             clm_usrdat_name = None
@@ -283,7 +286,7 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
     get_refcase = self.get_value("GET_REFCASE")
     run_type = self.get_value("RUN_TYPE")
     continue_run = self.get_value("CONTINUE_RUN")
-
+    drv_restart_pointer = self.get_value("DRV_RESTART_POINTER")
     # We do not fully populate the inputdata directory on every
     # machine and do not expect every user to download the 3TB+ of
     # data in our inputdata repository. This code checks for the
@@ -335,17 +338,23 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
             logger.debug("Creating run directory: {}".format(rundir))
             os.makedirs(rundir)
         rpointerfile = None
+
         # copy the refcases' rpointer files to the run directory
         for rpointerfile in glob.iglob(os.path.join("{}", "*rpointer*").format(refdir)):
             logger.info("Copy rpointer {}".format(rpointerfile))
             safe_copy(rpointerfile, rundir)
-            os.chmod(os.path.join(rundir, os.path.basename(rpointerfile)), 0o644)
+            pfile = os.path.basename(rpointerfile)
+            os.chmod(os.path.join(rundir, pfile), 0o644)
+            if "cpl" in pfile and drv_restart_pointer != pfile:
+                self.set_value("DRV_RESTART_POINTER", pfile)
+
         expect(
             rpointerfile,
             "Reference case directory {} does not contain any rpointer files".format(
                 refdir
             ),
         )
+
         # link everything else
 
         for rcfile in glob.iglob(os.path.join(refdir, "*")):
@@ -403,6 +412,7 @@ def _check_input_data_impl(
         )
 
     no_files_missing = True
+    server = None
     if download:
         if protocol not in vars(CIME.Servers):
             logger.info("Client protocol {} not enabled".format(protocol))

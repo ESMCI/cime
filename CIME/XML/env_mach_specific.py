@@ -12,6 +12,26 @@ from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
 
+# Helpful map for converting resource limits to shell commands
+# { python rlimit -> (csh name, sh ulimit flag)
+RESOURCE_MAP = {
+    "RLIMIT_AS": ("vmemoryuse", "-v"),
+    "RLIMIT_CORE": ("coredumpsize", "-c"),
+    "RLIMIT_CPU": ("cputime", "-t"),
+    "RLIMIT_DATA": ("datasize", "-d"),
+    "RLIMIT_FSIZE": ("filesize", "-f"),
+    "RLIMIT_MEMLOCK": ("memorylocked", "-l"),
+    "RLIMIT_MSGQUEUE": ("maxmessage", "-q"),
+    "RLIMIT_NICE": ("maxnice", "UNSUPPORTED"),
+    "RLIMIT_NOFILE": ("descriptors", "-n"),
+    "RLIMIT_NPROC": ("maxproc", "-u"),
+    "RLIMIT_OFILE": ("descriptors", "-n"),
+    "RLIMIT_RSS": ("memoryuse", "-m"),
+    "RLIMIT_RTPRIO": ("maxrtprio", "-r"),
+    "RLIMIT_RTTIME": ("maxrttime", "UNSUPPORTED"),
+    "RLIMIT_SIGPENDING": ("maxsignal", "-i"),
+    "RLIMIT_STACK": ("stacksize", "-s"),
+}
 
 # Is not of type EntryID but can use functions from EntryID (e.g
 # get_type) otherwise need to implement own functions and make GenericXML parent class
@@ -146,13 +166,13 @@ class EnvMachSpecific(EnvBase):
         if envs_to_set is not None:
             self._load_envs(envs_to_set, verbose=verbose)
 
-        self._get_resources_for_case(case)
+        self._set_resources_for_case(case)
 
         return [] if envs_to_set is None else envs_to_set
 
-    def _get_resources_for_case(self, case):
+    def _set_resources_for_case(self, case):
         resource_nodes = self.get_children("resource_limits")
-        if resource_nodes is not None:
+        if resource_nodes:
             expect(
                 platform.system() != "Darwin",
                 "Mac OS does not support setting resource limits",
@@ -166,6 +186,11 @@ class EnvMachSpecific(EnvBase):
                 )
                 limits = (int(val), limits[1])
                 resource.setrlimit(attr, limits)
+
+    def _get_resources_for_case(self, case):
+        resource_nodes = self.get_children("resource_limits")
+        if resource_nodes is not None:
+            return self._compute_resource_actions(resource_nodes, case)
 
     def _load_modules(self, modules_to_load, force_method=None, verbose=False):
         module_system = (
@@ -229,14 +254,7 @@ class EnvMachSpecific(EnvBase):
             fd.write(output_text)
         return overrides
 
-    def make_env_mach_specific_file(self, shell, case, output_dir=""):
-        """Writes .env_mach_specific.sh or .env_mach_specific.csh
-
-        Args:
-        shell: string - 'sh' or 'csh'
-        case: case object
-        output_dir: string - path to output directory (if empty string, uses current directory)
-        """
+    def _make_env_mach_specific_file_impl(self, shell, case):
         source_cmd = "." if shell == "sh" else "source"
         module_system = self.get_module_system_type()
         sh_init_cmd = self.get_module_system_init_path(shell)
@@ -264,7 +282,7 @@ class EnvMachSpecific(EnvBase):
             job = case.get_primary_job()
         modules_to_load = self._get_modules_for_case(case, job=job)
         envs_to_set = self._get_envs_for_case(case, job=job)
-        filename = ".env_mach_specific.{}".format(shell)
+        resources = self._get_resources_for_case(case)
         if modules_to_load is not None:
             if module_system == "module":
                 lines.extend(self._get_module_commands(modules_to_load, shell))
@@ -300,8 +318,32 @@ class EnvMachSpecific(EnvBase):
                 else:
                     expect(False, "Unknown shell type: '{}'".format(shell))
 
+        if resources is not None:
+            for name, val in resources:
+                tuple_idx = 0 if shell == "csh" else 1
+                lcmd = "limit" if shell == "csh" else "ulimit"
+                val = "unlimited" if val == "-1" else val
+                if name not in RESOURCE_MAP:
+                    logger.warning(
+                        f"Cannot translate resource {name} to a shell limit/ulimit"
+                    )
+                else:
+                    res_name = RESOURCE_MAP[name][tuple_idx]
+                    lines.append(f"{lcmd} {res_name} {val}")
+
+        return "\n".join(lines) + "\n"
+
+    def make_env_mach_specific_file(self, shell, case, output_dir=""):
+        """Writes .env_mach_specific.sh or .env_mach_specific.csh
+
+        Args:
+        shell: string - 'sh' or 'csh'
+        case: case object
+        output_dir: string - path to output directory (if empty string, uses current directory)
+        """
+        filename = ".env_mach_specific.{}".format(shell)
         with open(os.path.join(output_dir, filename), "w") as fd:
-            fd.write("\n".join(lines) + "\n")
+            fd.write(self._make_env_mach_specific_file_impl(shell, case))
 
     # Private API
 

@@ -11,6 +11,7 @@ from CIME import utils
 from CIME.tests import base
 from CIME.case.case import Case
 from CIME.XML.env_run import EnvRun
+from CIME.utils import find_system_test
 
 try:
     collectionsAbc = collections.abc
@@ -44,9 +45,13 @@ class TestCimeCase(base.BaseTestCase):
             )
 
             case.flush()
-
-            build_complete = utils.run_cmd_no_fail(
-                "./xmlquery BUILD_COMPLETE --value", from_dir=casedir
+            # the strip().splitlines()[-1] avoids a potential warning message in the output.
+            build_complete = (
+                utils.run_cmd_no_fail(
+                    "./xmlquery BUILD_COMPLETE --value", from_dir=casedir
+                )
+                .strip()
+                .splitlines()[-1]
             )
             self.assertEqual(
                 build_complete,
@@ -260,6 +265,46 @@ class TestCimeCase(base.BaseTestCase):
             build_threaded = case.get_build_threaded()
             self.assertTrue(build_threaded)
 
+    def test_cime_case_build_threaded_3(self):
+        casedir = self._create_test(
+            ["--no-run", "ERP_P1x2.f19_g16.A"],
+            test_id=self._baseline_name,
+        )
+
+        with Case(casedir, read_only=False) as case:
+            build_threaded = case.get_value("BUILD_THREADED")
+            self.assertTrue(build_threaded)
+
+            build_threaded = case.get_build_threaded()
+            self.assertTrue(build_threaded)
+
+            testname = case.get_value("TESTCASE")
+            self.assertTrue(testname is not None)
+
+            test = find_system_test(testname, case)(case)
+            case2 = test._case2
+            self.assertTrue(case2.get_build_threaded())
+
+    def test_cime_case_build_threaded_4(self):
+        casedir = self._create_test(
+            ["--no-run", "ERP_P1x1.f19_g16.A"],
+            test_id=self._baseline_name,
+        )
+
+        with Case(casedir, read_only=False) as case:
+            build_threaded = case.get_value("BUILD_THREADED")
+            self.assertFalse(build_threaded)
+
+            build_threaded = case.get_build_threaded()
+            self.assertFalse(build_threaded)
+
+            testname = case.get_value("TESTCASE")
+            self.assertTrue(testname is not None)
+
+            test = find_system_test(testname, case)(case)
+            case2 = test._case2
+            self.assertFalse(case2.get_build_threaded())
+
     def test_cime_case_mpi_serial(self):
         casedir = self._create_test(
             ["--no-build", "TESTRUNPASS_Mmpi-serial_P10.f19_g16.A"],
@@ -301,16 +346,26 @@ class TestCimeCase(base.BaseTestCase):
         self.run_cmd_assert_result(
             "./xmlchange --id PIO_CONFIG_OPTS --val='-opt1'", from_dir=casedir
         )
-        result = self.run_cmd_assert_result(
-            "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+        # Avoids a potential warning in output about python version
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+            )
+            .strip()
+            .splitlines()[-1]
         )
         self.assertEqual(result, "-opt1")
 
         self.run_cmd_assert_result(
             "./xmlchange --id PIO_CONFIG_OPTS --val='-opt2' --append", from_dir=casedir
         )
-        result = self.run_cmd_assert_result(
-            "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
+            )
+            .strip()
+            .splitlines()[-1]
         )
         self.assertEqual(result, "-opt1 -opt2")
 
@@ -464,10 +519,14 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         self.run_cmd_assert_result("./case.setup --reset", from_dir=casedir)
-
-        result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
-            from_dir=casedir,
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+                from_dir=casedir,
+            )
+            .strip()
+            .splitlines()[-1]
         )
         with Case(casedir) as case:
             walltime_format = case.get_value("walltime_format", subgroup=None)
@@ -494,9 +553,14 @@ class TestCimeCase(base.BaseTestCase):
 
         self.run_cmd_assert_result("./case.setup --reset", from_dir=casedir)
 
-        result = self.run_cmd_assert_result(
-            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
-            from_dir=casedir,
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+                from_dir=casedir,
+            )
+            .strip()
+            .splitlines()[-1]
         )
         with Case(casedir) as case:
             walltime_format = case.get_value("walltime_format", subgroup=None)
@@ -556,10 +620,16 @@ class TestCimeCase(base.BaseTestCase):
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
-        result = self.run_cmd_assert_result(
-            "./xmlquery --non-local --value PROJECT --subgroup=case.test",
-            from_dir=casedir,
+        # the strip().splitlines()[-1] avoids a potential warning message in the output.
+        result = (
+            self.run_cmd_assert_result(
+                "./xmlquery --non-local --value PROJECT --subgroup=case.test",
+                from_dir=casedir,
+            )
+            .strip()
+            .splitlines()[-1]
         )
+
         self.assertEqual(result, "testproj")
 
     def test_create_test_longname(self):
@@ -755,7 +825,7 @@ class TestCimeCase(base.BaseTestCase):
         if self._config.test_mode == "cesm":
             create_test_extra_args = ["--generate", "baseline", "--no-build", test_name]
         else:
-            create_test_extra_args = ["-g", "--no-build", test_name]
+            create_test_extra_args = ["-g", "--no-build", "-b", "test", test_name]
 
         orig_testroot = self._testroot
         self._testroot = os.path.join(orig_testroot, "case0")

@@ -7,7 +7,8 @@ import tempfile
 
 from CIME.case import case_submit
 from CIME.case import Case
-from CIME import utils as cime_utils
+from CIME import utils
+from CIME.tests.utils import mock_case
 
 
 def make_valid_case(path):
@@ -84,8 +85,200 @@ class TestCaseSubmit(unittest.TestCase):
 
 class TestCase(unittest.TestCase):
     def setUp(self):
-        self.srcroot = os.path.abspath(cime_utils.get_src_root())
+        self.srcroot = os.path.abspath(utils.get_src_root())
         self.tempdir = tempfile.TemporaryDirectory()
+
+    @mock_case()
+    def test_set_value_namespaced_reference(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "2")
+
+        case.set_value("HIST_N", "$STOP_N")
+
+        assert case.get_value("HIST_N", resolved=False) == "$STOP_N"
+
+        case.set_value("HIST_N", "$test1::STOP_N")
+
+        assert case.get_value("HIST_N", resolved=False) == "$test1::STOP_N"
+
+        with self.assertRaisesRegex(
+            utils.CIMEError,
+            r"ERROR: Value '\$test1::test2::STOP_N' is not valid, a namespaced reference must be in the form \$SUBGROUP::VARIABLE",
+        ):
+            case.set_value("HIST_N", "$test1::test2::STOP_N")
+
+    @mock_case()
+    def test_set_value(self, case, test_env, **kwargs):
+        test_env.new_entry("BUFFER", etype="char")
+        test_env.new_entry("HIST_N", "2")
+
+        case.set_value("HIST_N", "5")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+        case.set_value("HIST_N", 10)
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 10, hist_n
+
+        case.set_value("BUFFER", "a::unique::value")
+
+        assert case.get_value("BUFFER") == "a::unique::value"
+
+    @mock_case()
+    def test_get_values_group_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "2, $test2::STOP_N", subgroup="test1")
+
+        test_env.new_group("test2")
+        test_env.new_entry("STOP_N", "4", subgroup="test2")
+
+        outputs = case.get_values("HIST_N")
+
+        assert outputs == [2, 4]
+
+    @mock_case()
+    def test_get_values_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "2, $STOP_N", subgroup="test1")
+
+        test_env.new_entry("STOP_N", "4", subgroup="test1")
+
+        outputs = case.get_values("HIST_N")
+
+        assert outputs == [2, 4]
+
+    @mock_case()
+    def test_get_values(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "2, 4, 6, 8", subgroup="test1")
+
+        outputs = case.get_values("HIST_N")
+
+        assert outputs == [2, 4, 6, 8]
+
+    @mock_case()
+    def test_get_value_group_reference_invalid(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "$test1::test2::STOP_N")
+
+        with self.assertRaisesRegex(
+            utils.CIMEError,
+            r"ERROR: Could not resolve variable HIST_N",
+        ):
+            case.get_value("HIST_N")
+
+    @mock_case()
+    def test_get_value_nested_group_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_group("test2")
+        test_env.new_group("test3")
+
+        test_env.new_entry(
+            "BATCH_COMMAND_FLAGS", "-q $JOB_QUEUE", subgroup="test1", etype="char"
+        )
+        test_env.new_entry(
+            "BATCH_COMMAND_FLAGS",
+            "$test3::BATCH_COMMAND_FLAGS -d -t",
+            subgroup="test2",
+            etype="char",
+        )
+        test_env.new_entry(
+            "BATCH_COMMAND_FLAGS", "-q $JOB_QUEUE", subgroup="test3", etype="char"
+        )
+
+        test_env.new_entry("JOB_QUEUE", "failover", subgroup="test1", etype="char")
+        test_env.new_entry("JOB_QUEUE", "priority", subgroup="test2", etype="char")
+        test_env.new_entry("JOB_QUEUE", "limited", subgroup="test3", etype="char")
+
+        assert case.get_value("BATCH_COMMAND_FLAGS", subgroup="test1") == "-q failover"
+        assert (
+            case.get_value("BATCH_COMMAND_FLAGS", subgroup="test2")
+            == "-q limited -d -t"
+        )
+        assert case.get_value("BATCH_COMMAND_FLAGS", subgroup="test3") == "-q limited"
+
+        case.set_value("BATCH_COMMAND_FLAGS", "-q $test2::JOB_QUEUE", subgroup="test3")
+
+        assert (
+            case.get_value("BATCH_COMMAND_FLAGS", subgroup="test2")
+            == "-q priority -d -t"
+        )
+
+    @mock_case()
+    def test_get_value_group_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "$test3::STOP_N", subgroup="test1")
+        test_env.new_entry("STOP_N", "2", subgroup="test1")
+
+        test_env.new_group("test2")
+        test_env.new_entry("STOP_N", "-2", subgroup="test2")
+
+        test_env.new_group("test3")
+        test_env.new_entry("STOP_N", "5", subgroup="test3")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+    @mock_case()
+    def test_get_value_reference(self, case, test_env, **kwargs):
+        test_env.new_group("test1")
+        test_env.new_entry("HIST_N", "$STOP_N", subgroup="test1")
+
+        # request no resolve
+        hist_n = case.get_value("HIST_N", resolved=False)
+
+        assert hist_n == "$STOP_N"
+
+        # referenced variable exists nowhere
+        with self.assertRaisesRegex(
+            utils.CIMEError, "ERROR: Could not resolve variable HIST_N"
+        ):
+            case.get_value("HIST_N")
+
+        # referenced variable exists in different subgroup
+        test_env.new_group("test2")
+        test_env.new_entry("STOP_N", "5", subgroup="test2")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+        test_env.remove_group("test2")
+
+        # referenced variable exists in same subgroup
+        test_env.new_entry("STOP_N", "5", subgroup="test1")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+
+        test_env.remove_entry(name="STOP_N", subgroup="test1")
+
+        # referenced variable exists in same subgroup with different type
+        # will convert real to integer, since HIST_N is of integer type
+        test_env.new_entry("STOP_N", "5", subgroup="test1", etype="real")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 5, hist_n
+        assert isinstance(hist_n, int)
+
+    @mock_case()
+    def test_get_value(self, case, test_env, **kwargs):
+        test_env.new_entry("HIST_N", "2")
+
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == 2, hist_n
+
+    @mock_case(empty_env=True)
+    def test_get_value_no_files(self, case, **kwargs):
+        hist_n = case.get_value("HIST_N")
+
+        assert hist_n == None, hist_n
 
     @mock.patch("CIME.case.case.Case.read_xml")
     def test_fix_sys_argv_quotes(self, read_xml):

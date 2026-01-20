@@ -99,31 +99,55 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.10", "3.12"]
+        python-version: ["3.9", "3.10", "3.12", "3.13", "3.14"]
     steps:
+      - name: Checkout model code
+        uses: actions/checkout@v4
+        with:
+          repository: ESCOMP/CESM
+          path: cesm # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          ref: cesm3.0-alphabranch
+      - name: Get ccs_config dependency
+        working-directory: cesm
+        run: |
+          # Need these for machine files
+          ./bin/git-fleximod update ccs_config
+
+          # Remove CIME to checkout
+          rm -rf cime/
+
+          git status
+          git submodule status
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          path: cesm/cime
+          submodules: "true"
       - name: Run tests
         shell: bash
+        working-directory: cesm/cime
         env:
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
-          CIME_TEST_PLATFORM: ubuntu-latest
+          CIME_TEST_PLATFORM: "ubuntu-latest"
+          SKIP_ENTRYPOINT: "true"
         run: |
-          export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          source /opt/conda/etc/profile.d/conda.sh
 
-          source /entrypoint.sh
+          conda activate cesm
 
-          # from 'entrypoint.sh', create and activate new environment
-          create_environment ${{ matrix.python-version }}
+          mamba install -y 'python=${{ matrix.python-version }}'
 
           pip install -r test-requirements.txt
 
           # GitHub runner home is different than container
-          cp -rf /root/.cime /github/home/
+          cp -rf /home/cime/.cime /github/home/
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
+          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # Run system tests
   system-testing:
@@ -140,53 +164,94 @@ jobs:
       # allow all jobs to finish
       fail-fast: false
       matrix:
-        model: ["e3sm", "cesm"]
+        model:
+          - name: "e3sm"
+            repo: E3SM-Project/e3sm
+            branch: master
+          - name: "cesm"
+            repo: ESCOMP/CESM
+            branch: cesm3.0-alphabranch
         driver: ["mct", "nuopc"]
         exclude:
           # exclude nuopc driver when running e3sm tests
-          - model: "e3sm"
+          - model: { name: "e3sm" }
             driver: "nuopc"
           # exclude mct driver when running cesm tests
-          - model: "cesm"
+          - model: { name: "cesm" }
             driver: "mct"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout model code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.model.repo }}
+          path: ${{ matrix.model.name }} # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          ref: ${{ matrix.model.branch }}
+      - name: Check out model dependencies
+        shell: bash
+        working-directory: ${{ matrix.model.name }}
+        run: |
+          # need https for submodules
+          sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" .gitmodules
+
+          if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
+            git submodule update --init
+          else
+            ./bin/git-fleximod update
+          fi
+
+          # remove cime so it can be checkedout
+          rm -rf cime/
+
+          git status
+          git submodule status
+      - name: Checkout CIME
+        uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.model.name }}/cime
+          submodules: 'true'
       - name: Cache inputdata
         uses: actions/cache@v3
         with:
-          path: /storage/inputdata
+          path: /home/cime/inputdata
           key: inputdata-2
       - name: Run tests
         shell: bash
+        working-directory: ${{ matrix.model.name }}/cime
         env:
-          CIME_MODEL: ${{ matrix.model }}
+          CIME_MODEL: ${{ matrix.model.name }}
           CIME_DRIVER: ${{ matrix.driver }}
           CIME_TEST_PLATFORM: ubuntu-latest
+          SKIP_ENTRYPOINT: "true"
         run: |
-          pip install -r test-requirements.txt
+          source /opt/conda/etc/profile.d/conda.sh
 
-          export CIME_REMOTE=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          conda activate ${{ matrix.model.name }}
+
+          pip install -r test-requirements.txt
 
           source /entrypoint.sh
 
-          # GitHub runner home is different than container
-          cp -rf /root/.cime /github/home/
-
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate base
-
-          # container libnetcdf is 4.9.2 as cesm requires esmf >8.6.1
-          # e3sm scorpio incompatible with 4.9.2, downgrade to 4.9.1
-          # only reference found about scorpio incompatibility with 4.9.2 (https://github.com/E3SM-Project/scorpio/issues/554#issuecomment-1877361470)
-          # TODO open scorpio issue, possible solutions; 1. support two conda environments in container 2. maybe move from conda to spack? build all libraries in image
-          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            mamba install -y 'libnetcdf=4.9.1'
+          if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
+            fix_mct_makefiles ../externals/mct
           fi
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          # GitHub runner home is different than container
+          cp -rf /home/cime/.cime /github/home/
+
+          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
+            ln -sf /github/home/.cime/config_machines.v2.xml /github/home/.cime/config_machines.xml
+          else
+            ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
+          fi
+
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - uses: mxschmitt/action-tmate@v3
         if: ${{ !always() }}
         with:
@@ -194,13 +259,13 @@ jobs:
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
-        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz /storage/cases/
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz /home/cime/cases /home/cime/baselines /home/cime/archive
         # How to download artifacts:
         # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: testing-logs-${{ github.run_number }}-${{ matrix.model }}-${{ matrix.driver }}
-          path: /testing-logs-${{ github.run_number}}-${{ matrix.model }}-${{ matrix.driver }}.tar.gz
+          name: testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}
+          path: /testing-logs-${{ github.run_number}}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz
           retention-days: 4

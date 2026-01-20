@@ -7,10 +7,14 @@ import sys
 import time
 import contextlib
 from collections.abc import Iterable
+from unittest import mock
+import xml.etree.ElementTree as ET
 
 from CIME import utils
 from CIME import test_status
 from CIME.utils import expect
+from CIME.case import Case
+from CIME.XML.entry_id import EntryID
 
 MACRO_PRESERVE_ENV = [
     "ADDR2LINE",
@@ -49,6 +53,178 @@ MACRO_PRESERVE_ENV = [
     "STRINGS",
     "STRIP",
 ]
+
+test_env_xml = """<?xml version="1.0"?>
+<file id="env_test.xml" version="2.0">
+    <header>These are the variables specific to a test case.</header>
+    <group id="test_group">
+        <entry id="test_entry" value="none">
+            <type>char</type>
+            <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,pbspro,lsf,slurm,cobalt,cobalt_theta,slurm_single_node,none</valid_values>
+            <desc>The batch system type to use for this machine.</desc>
+        </entry>
+    </group>
+</file>
+"""
+
+
+class TestEnv(EntryID):
+    def __init__(self):
+        super().__init__(read_only=False)
+
+        self.read_fd(io.StringIO(test_env_xml))
+
+    def get_type_info(self, vid):
+        gnodes = self.get_children("group")
+        type_info = None
+        for gnode in gnodes:
+            nodes = self.get_children("entry", {"id": vid}, root=gnode)
+            for node in nodes:
+                new_type_info = self._get_type_info(node)
+                if type_info is None:
+                    type_info = new_type_info
+                else:
+                    expect(
+                        type_info == new_type_info,
+                        "Inconsistent type_info for entry id={} {} {}".format(
+                            vid, new_type_info, type_info
+                        ),
+                    )
+        return type_info
+
+    def new_group(self, name):
+        return self.make_child("group", attributes={"id": name})
+
+    def new_entry(
+        self,
+        name,
+        value=None,
+        subgroup=None,
+        etype="integer",
+        valid_values=None,
+        desc=None,
+        default_value=None,
+    ):
+        root_node = None
+
+        if subgroup is not None:
+            try:
+                root_node = self.get_child("group", {"id": subgroup})
+            except Exception:
+                root_node = self.new_group(subgroup)
+
+        if value is None:
+            value = "none"
+
+        entry = self.make_child(
+            "entry", attributes={"id": name, "value": value}, root=root_node
+        )
+
+        self.make_child("type", text=etype, root=entry)
+
+        if valid_values:
+            if isinstance(valid_values, (list, tuple)):
+                valid_values = ",".join(valid_values)
+
+            self.make_child("valid_values", text=",".join(valid_values), root=entry)
+
+        if desc:
+            self.make_child("desc", text=desc, root=entry)
+
+        if default_value:
+            self.make_child("default_value", text=default_value, root=entry)
+
+        return entry
+
+    def remove_entry(self, name=None, value=None, subgroup=None):
+        root = None
+        attributes = {}
+
+        if name is not None:
+            attributes["id"] = name
+
+        if value is not None:
+            attributes["value"] = value
+
+        if subgroup is not None:
+            root = self.get_optional_child("group", attributes={"id": subgroup})
+
+        for x in self.get_children("entry", attributes=attributes, root=root):
+            self.remove_child(x, root=root)
+
+    def remove_group(self, gid=None):
+        if gid is None:
+            attributes = {}
+        else:
+            attributes = {"id": gid}
+
+        for x in self.get_children("group", attributes=attributes):
+            self.remove_child(x)
+
+    def __str__(self):
+        return ET.tostring(self.root.xml_element, encoding="unicode", method="xml")
+
+
+def mock_case(
+    *args,
+    empty_env=False,
+    filename=None,
+    mock_set_value=False,
+    casename=None,
+    tempdir=None,
+    **kwargs,
+):
+    if filename is None:
+        filename = "env_test.xml"
+
+    if casename is None:
+        casename = "case"
+
+    with contextlib.ExitStack() as stack:
+        if tempdir is None:
+            tempdir = stack.enter_context(tempfile.TemporaryDirectory())
+
+        def outer(func):
+            # patch "read_xml" function since the source file usually doesn't exist
+            @mock.patch("CIME.case.case.Case.read_xml")
+            def wrapper(self, read_xml, *args, **kwargs):
+                caseroot = f"{tempdir}/{casename}"
+
+                case = stack.enter_context(Case(caseroot, read_only=False))
+                case.flush = lambda: None
+
+                env = TestEnv()
+                env.filename = f"{os.getcwd()}/{filename}"
+
+                if not empty_env:
+                    case._files = [env]
+
+                    case._env_entryid_files = [env]
+
+                if mock_set_value:
+                    case.set_value = mock.MagicMock()
+
+                #
+                if self is None:
+                    return read_xml, env, caseroot, casename, case
+
+                func(
+                    self,
+                    *args,
+                    **kwargs,
+                    case_read_xml=read_xml,
+                    test_env=env,
+                    caseroot=caseroot,
+                    case=case,
+                )
+
+            # not wrapping function
+            if func is None:
+                return wrapper(None)
+
+            return wrapper
+
+        return outer
 
 
 @contextlib.contextmanager

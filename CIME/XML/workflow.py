@@ -82,6 +82,6 @@ class Workflow(GenericXML):
                         else:
                             jdict[self.name(child)] = self.text(child)
 
-                jobs.append((name, jdict))
+                    jobs.append((name, jdict))
 
         return jobs

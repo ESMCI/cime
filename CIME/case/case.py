@@ -461,19 +461,24 @@ class Case(object):
             )
             if len(results) > 0:
                 new_results = []
+
                 if resolved:
                     for result in results:
                         if isinstance(result, str):
-                            result = self.get_resolved_value(result)
+                            result = self.get_resolved_value(result, subgroup=subgroup)
+
+                            # If still not resolved, we have a problem
+                            expect(
+                                "$" not in result,
+                                "Could not resolve variable {}".format(item),
+                            )
+
                             vtype = env_file.get_type_info(item)
-                            if vtype is not None or vtype != "char":
+
+                            if vtype is not None and vtype != "char":
                                 result = convert_to_type(result, vtype, item)
 
-                            new_results.append(result)
-
-                        else:
-                            new_results.append(result)
-
+                        new_results.append(result)
                 else:
                     new_results = results
 
@@ -483,6 +488,7 @@ class Case(object):
         return []
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
+        # TODO this needs to be moved into either create_test or create_newcase
         if item == "GPU_ENABLED":
             if not self.gpu_enabled:
                 if (
@@ -492,7 +498,6 @@ class Case(object):
                     self.gpu_enabled = True
             return "true" if self.gpu_enabled else "false"
 
-        result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
             result = env_file.get_value(
@@ -502,14 +507,24 @@ class Case(object):
             if result is not None:
                 if resolved and isinstance(result, str):
                     result = self.get_resolved_value(result, subgroup=subgroup)
+
+                    if "$" in result:
+                        # last ditch effort to get variable from any group
+                        result = self.get_resolved_value(result)
+
+                    # If still not resolved, we have a problem
+                    expect(
+                        "$" not in result, "Could not resolve variable {}".format(item)
+                    )
+
                     vtype = env_file.get_type_info(item)
+
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
 
                 return result
 
-        # Return empty result
-        return result
+        return None
 
     def get_record_fields(self, variable, field):
         """get_record_fields gets individual requested field from an entry_id file
@@ -612,6 +627,13 @@ class Case(object):
             "Cannot modify case, read_only. "
             "Case must be opened with read_only=False and can only be modified within a context manager",
         )
+
+        # Only validate references e.g. $<variable> or $<subgroup>::<variable>
+        if isinstance(value, str) and value.startswith("$"):
+            expect(
+                len(value.split("::")) <= 2,
+                f"Value {value!r} is not valid, a namespaced reference must be in the form $SUBGROUP::VARIABLE",
+            )
 
         if item == "CASEROOT":
             self._caseroot = value
@@ -1182,6 +1204,7 @@ class Case(object):
         pes_nthrds = {}
         pes_rootpe = {}
         pes_pstrid = {}
+        pes_excl_stride = {}
         other = {}
         append = {}
         comment = None
@@ -1211,6 +1234,7 @@ class Case(object):
                 pes_nthrds,
                 pes_rootpe,
                 pes_pstrid,
+                pes_excl_stride,
                 other,
                 append,
                 comment,
@@ -1265,17 +1289,24 @@ class Case(object):
             nthrds_str = "NTHRDS_{}".format(comp_class)
             rootpe_str = "ROOTPE_{}".format(comp_class)
             pstrid_str = "PSTRID_{}".format(comp_class)
+            excl_stride_str = "EXCL_STRIDE_{}".format(comp_class)
 
             ntasks = pes_ntasks[ntasks_str] if ntasks_str in pes_ntasks else 1
             nthrds = pes_nthrds[nthrds_str] if nthrds_str in pes_nthrds else 1
             rootpe = pes_rootpe[rootpe_str] if rootpe_str in pes_rootpe else 0
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
+            excl_stride = (
+                pes_excl_stride[excl_stride_str]
+                if excl_stride_str in pes_excl_stride
+                else 0
+            )
 
             totaltasks.append((ntasks + rootpe) * nthrds)
             mach_pes_obj.set_value(ntasks_str, ntasks)
             mach_pes_obj.set_value(nthrds_str, nthrds)
             mach_pes_obj.set_value(rootpe_str, rootpe)
             mach_pes_obj.set_value(pstrid_str, pstrid)
+            mach_pes_obj.set_value(excl_stride_str, excl_stride)
 
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
@@ -1601,7 +1632,12 @@ class Case(object):
         if postprocessing.file_exists:
             env_postprocessing = self.get_env("postprocessing")
             env_postprocessing.add_elements_by_group(srcobj=postprocessing)
-
+            # Add cupid related fields to env_mach_pes.xml
+            env_mach_pes = self.get_env("mach_pes")
+            if env_mach_pes.get_value("CUPID_NTASKS") is None:
+                env_mach_pes.unlock()
+                env_mach_pes.add_elements_by_group(srcobj=postprocessing)
+                env_mach_pes.lock()
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)

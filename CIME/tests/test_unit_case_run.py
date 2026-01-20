@@ -10,7 +10,7 @@ def _case_post_run_check():
     case = mock.MagicMock()
 
     # RUNDIR, COMP_INTERFACE, COMP_CPL, COMP_ATM, COMP_OCN, MULTI_DRIVER
-    case.get_value.side_effect = ("/tmp/run", "mct", "cpl", "satm", "socn", False)
+    case.get_value.side_effect = ("/tmp/run", "mct", "cpl", 1, "satm", "socn", False)
 
     # COMP_CLASSES
     case.get_values.return_value = ("CPL", "ATM", "OCN")

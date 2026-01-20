@@ -63,6 +63,7 @@ PHASES = [
     RUN_PHASE,
 ]  # Order matters
 
+
 ###############################################################################
 def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads):
     ###############################################################################
@@ -130,6 +131,8 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
 
 
 _TIME_CACHE = {}
+
+
 ###############################################################################
 def _get_time_est(test, baseline_root, as_int=False, use_cache=False, raw=False):
     ###############################################################################
@@ -881,7 +884,7 @@ class TestScheduler(object):
                     envtest.set_test_parameter("USE_ESMF_LIB", "TRUE")
                     logger.debug(" USE_ESMF_LIB set to TRUE")
 
-                elif opt == "CG":
+                elif opt == "cG":
                     envtest.set_test_parameter("CALENDAR", "GREGORIAN")
                     logger.debug(" CALENDAR set to {}".format(opt))
 

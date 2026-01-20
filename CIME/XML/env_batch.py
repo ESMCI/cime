@@ -101,9 +101,9 @@ class EnvBatch(EnvBase):
 
     def get_type_info(self, vid):
         gnodes = self.get_children("group")
+        type_info = None
         for gnode in gnodes:
             nodes = self.get_children("entry", {"id": vid}, root=gnode)
-            type_info = None
             for node in nodes:
                 new_type_info = self._get_type_info(node)
                 if type_info is None:
@@ -215,6 +215,7 @@ class EnvBatch(EnvBase):
             tasks_per_node,
             thread_count,
             ngpus_per_node,
+            mem_per_task,
         ) = self._env_workflow.get_job_specs(case, job)
 
         overrides = {}
@@ -238,7 +239,8 @@ class EnvBatch(EnvBase):
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
-        mem_per_task = case.get_value("MEM_PER_TASK")
+        if mem_per_task is None:
+            mem_per_task = case.get_value("MEM_PER_TASK")
         max_tasks_per_node = case.get_value("MAX_TASKS_PER_NODE")
         expect(
             max_tasks_per_node > 0,
@@ -347,9 +349,6 @@ class EnvBatch(EnvBase):
                     job, walltime, force_queue, walltime_format
                 )
             )
-            task_count = (
-                int(jsect["task_count"]) if "task_count" in jsect else case.total_tasks
-            )
 
             if "walltime" in jsect and walltime is None:
                 walltime = jsect["walltime"]
@@ -360,10 +359,20 @@ class EnvBatch(EnvBase):
 
             if "task_count" in jsect:
                 # job is using custom task_count, need to compute a node_count based on this
-                node_count = int(
-                    math.ceil(float(task_count) / float(case.tasks_per_node))
-                )
+                task_count = jsect["task_count"]
+                if "$" in task_count:
+                    task_count = case.get_resolved_value(jsect["task_count"])
+                if "$" in task_count:
+                    logger.warning("Could not resolve {}, using 1".format(task_count))
+                    task_count = 1
+                    node_count = 1
+                else:
+                    task_count = int(task_count)
+                    node_count = int(
+                        math.ceil(float(task_count) / float(case.tasks_per_node))
+                    )
             else:
+                task_count = case.total_tasks
                 node_count = case.num_nodes
 
             queue = self.select_best_queue(
@@ -541,6 +550,7 @@ class EnvBatch(EnvBase):
             default_queue = self.text(qnode)
         else:
             unknown_queue = False
+            default_queue = None
 
         for root in roots:
             if root is not None:
