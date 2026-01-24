@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>System Testing &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="_static/sphinx-toolbox-code.css" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3d7e66fe" />
@@ -370,7 +370,7 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 <td><p>Exact restart from startup with resubmit, (default 4 days + 3 days). Tests incomplete logs option for st_archive.</p></td>
 </tr>
 <tr class="row-even"><td><p>ERI</p></td>
-<td><dl class="simple">
+<td><dl>
 <dt>Hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</dt><dd><dl class="simple">
 <dt>ref1case</dt><dd><p>Do an initial run for 3 days writing restarts at day 3.
 ref1case is a clone of the main case.
@@ -381,15 +381,15 @@ and writing restarts at day 10.
 ref2case is a clone of the main case.
 Short term archiving is on.</p>
 </dd>
-<dt>case</dt><dd><p>Do a branch run, starting from restarts written in ref2case,
+<dt>case (Suffix branch)</dt><dd><p>Do a branch run, starting from restarts written in ref2case,
 for 9 days and writing restarts at day 5.
 Short term archiving is off.</p>
 </dd>
-<dt>case (Suffix base)</dt><dd><p>Do a restart run from the branch run restarts for 4 days.
-Compare component history files ‘.base’ and ‘.hybrid’ at day 19.
+<dt>case - restart (Suffix rest)</dt><dd><p>Do a restart run from the branch run restarts for 4 days.
 Short term archiving is off.</p>
 </dd>
 </dl>
+<p>Comparisons are done between branch vs. hybrid and rest vs. branch</p>
 </dd>
 </dl>
 </td>

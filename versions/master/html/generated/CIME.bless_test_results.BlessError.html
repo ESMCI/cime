@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.get_tests.is_perf_test &mdash; CIME master documentation</title>
+  <title>CIME.bless_test_results.BlessError &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.get_tests.key_test_time" href="CIME.get_tests.key_test_time.html" />
-    <link rel="prev" title="CIME.get_tests.infer_arch_from_tests" href="CIME.get_tests.infer_arch_from_tests.html" /> 
+    <link rel="next" title="CIME.build" href="CIME.build.html" />
+    <link rel="prev" title="CIME.bless_test_results.is_hist_bless_needed" href="CIME.bless_test_results.is_hist_bless_needed.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,7 +71,17 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.Tools.html">CIME.Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html">CIME.XML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.aprun.html">CIME.aprun</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.bless_test_results.html">CIME.bless_test_results</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.bless_test_results.html">CIME.bless_test_results</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.bless_history.html">CIME.bless_test_results.bless_history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.bless_namelists.html">CIME.bless_test_results.bless_namelists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.bless_test_results.html">CIME.bless_test_results.bless_test_results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.bless_test_results.is_hist_bless_needed.html">CIME.bless_test_results.is_hist_bless_needed</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.bless_test_results.BlessError</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.bless_test_results.BlessError"><code class="docutils literal notranslate"><span class="pre">BlessError</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.build.html">CIME.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
@@ -83,22 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.cs_status.html">CIME.cs_status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.date.html">CIME.date</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.expected_fails.html">CIME.expected_fails</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="CIME.get_tests.html">CIME.get_tests</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.get_build_groups.html">CIME.get_tests.get_build_groups</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.get_full_test_names.html">CIME.get_tests.get_full_test_names</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.get_recommended_test_time.html">CIME.get_tests.get_recommended_test_time</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.get_test_data.html">CIME.get_tests.get_test_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.get_test_suite.html">CIME.get_tests.get_test_suite</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.get_test_suites.html">CIME.get_tests.get_test_suites</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.infer_arch_from_tests.html">CIME.get_tests.infer_arch_from_tests</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.get_tests.is_perf_test</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.get_tests.is_perf_test"><code class="docutils literal notranslate"><span class="pre">is_perf_test()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.key_test_time.html">CIME.get_tests.key_test_time</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.get_tests.suite_has_test.html">CIME.get_tests.suite_has_test</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.get_tests.html">CIME.get_tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.get_timing.html">CIME.get_timing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.gitinterface.html">CIME.gitinterface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.hist_utils.html">CIME.hist_utils</a></li>
@@ -133,10 +128,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-          <li class="breadcrumb-item"><a href="CIME.get_tests.html">CIME.get_tests</a></li>
-      <li class="breadcrumb-item active">CIME.get_tests.is_perf_test</li>
+          <li class="breadcrumb-item"><a href="CIME.bless_test_results.html">CIME.bless_test_results</a></li>
+      <li class="breadcrumb-item active">CIME.bless_test_results.BlessError</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.get_tests.is_perf_test.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.bless_test_results.BlessError.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -144,21 +139,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cime-get-tests-is-perf-test">
-<h1>CIME.get_tests.is_perf_test<a class="headerlink" href="#cime-get-tests-is-perf-test" title="Link to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="CIME.get_tests.is_perf_test">
-<span class="sig-prename descclassname"><span class="pre">CIME.get_tests.</span></span><span class="sig-name descname"><span class="pre">is_perf_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/get_tests.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.get_tests.is_perf_test" title="Link to this definition"></a></dt>
-<dd><p>Is the provided test in a suite with perf=True?</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_perf_test</span><span class="p">(</span><span class="s2">&quot;SMS_P2.T42_T42.S.melvin_gnu&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_perf_test</span><span class="p">(</span><span class="s2">&quot;SMS_P2.f19_g16.X.melvin_gnu&quot;</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_perf_test</span><span class="p">(</span><span class="s2">&quot;PFS_P2.f19_g16.X.melvin_gnu&quot;</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-</dd></dl>
+  <section id="cime-bless-test-results-blesserror">
+<h1>CIME.bless_test_results.BlessError<a class="headerlink" href="#cime-bless-test-results-blesserror" title="Link to this heading"></a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="CIME.bless_test_results.BlessError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.bless_test_results.</span></span><span class="sig-name descname"><span class="pre">BlessError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reasons</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/bless_test_results.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.bless_test_results.BlessError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -166,8 +152,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.get_tests.infer_arch_from_tests.html" class="btn btn-neutral float-left" title="CIME.get_tests.infer_arch_from_tests" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.get_tests.key_test_time.html" class="btn btn-neutral float-right" title="CIME.get_tests.key_test_time" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.bless_test_results.is_hist_bless_needed.html" class="btn btn-neutral float-left" title="CIME.bless_test_results.is_hist_bless_needed" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.build.html" class="btn btn-neutral float-right" title="CIME.build" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

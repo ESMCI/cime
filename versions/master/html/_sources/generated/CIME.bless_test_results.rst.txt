@@ -32,6 +32,15 @@ CIME.bless\_test\_results
 
     
         
+            .. rubric:: Exceptions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    BlessError
+        
     
 
 
