@@ -1025,7 +1025,7 @@ for some of your components.
             ts_comments = (
                 os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
             )
-            log_comments  = "============ BASELINE COMPARE SYNOPSIS ============="
+            log_comments = "============ BASELINE COMPARE SYNOPSIS ============="
             log_comments += ts_comments
             log_comments += "===================================================="
             append_testlog(log_comments, self._orig_caseroot)
