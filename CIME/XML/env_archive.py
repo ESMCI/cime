@@ -34,25 +34,5 @@ class EnvArchive(ArchiveBase, EnvBase):
 
             yield file, content
 
-    # TODO check if used otherwise remove
-    def get_entries(self):
-        return self.get_children("comp_archive_spec")
-
-    # TODO check if used otherwise remove
-    def get_entry_info(self, archive_entry):
-        compname = self.get(archive_entry, "compname")
-        compclass = self.get(archive_entry, "compclass")
-        return compname, compclass
-
-    # TODO check if used otherwise remove
-    def get_rpointer_contents(self, archive_entry):
-        rpointer_items = []
-        rpointer_nodes = self.get_children("rpointer", root=archive_entry)
-        for rpointer_node in rpointer_nodes:
-            file_node = self.get_child("rpointer_file", root=rpointer_node)
-            content_node = self.get_child("rpointer_content", root=rpointer_node)
-            rpointer_items.append([self.text(file_node), self.text(content_node)])
-        return rpointer_items
-
     def get_type_info(self, vid):
         return "char"
