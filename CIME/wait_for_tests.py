@@ -446,7 +446,6 @@ def create_cdash_xml(
     # Get total elapsed time
     if "JENKINS_START_TIME" in os.environ:
         time_info = int(current_time) - int(os.environ["JENKINS_START_TIME"])
-        )
     else:
         time_info = "unknown"
 
