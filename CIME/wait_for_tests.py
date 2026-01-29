@@ -289,7 +289,13 @@ def create_cdash_test_xml(
 
 ###############################################################################
 def create_cdash_xml_fakes(
-    results, cdash_build_name, cdash_build_group, utc_time, current_time, hostname, data_rel_path
+    results,
+    cdash_build_name,
+    cdash_build_group,
+    utc_time,
+    current_time,
+    hostname,
+    data_rel_path,
 ):
     ###############################################################################
 
@@ -323,14 +329,22 @@ def create_cdash_xml_fakes(
         data_rel_path,
     )
 
+
 ###############################################################################
 def create_cdash_upload_xml(
-    results, cdash_build_name, cdash_build_group, utc_time, hostname, force_log_upload, tmp_path, data_rel_path
+    results,
+    cdash_build_name,
+    cdash_build_group,
+    utc_time,
+    hostname,
+    force_log_upload,
+    tmp_path,
+    data_rel_path,
 ):
     ###############################################################################
 
     log_dirname = f"{cdash_build_name}_logs"
-    log_path    = tmp_path / log_dirname
+    log_path = tmp_path / log_dirname
 
     need_to_upload = False
 
@@ -369,10 +383,14 @@ def create_cdash_upload_xml(
                     log_dst_dir.mkdir(parents=True)
                     for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
                         if os.path.isdir(log_file):
-                            shutil.copytree(log_file, log_dst_dir / os.path.basename(log_file))
+                            shutil.copytree(
+                                log_file, log_dst_dir / os.path.basename(log_file)
+                            )
                         else:
                             safe_copy(log_file, str(log_dst_dir))
-                    for log_file in glob.glob(os.path.join(log_src_dir, "*.cprnc.out*")):
+                    for log_file in glob.glob(
+                        os.path.join(log_src_dir, "*.cprnc.out*")
+                    ):
                         safe_copy(log_file, str(log_dst_dir))
 
             need_to_upload = True
@@ -382,7 +400,9 @@ def create_cdash_upload_xml(
         tarball = "{}.tar.gz".format(log_dirname)
 
         run_cmd_no_fail(
-            "tar -cf - {} | gzip -c".format(log_dirname), arg_stdout=tarball, from_dir=str(tmp_path)
+            "tar -cf - {} | gzip -c".format(log_dirname),
+            arg_stdout=tarball,
+            from_dir=str(tmp_path),
         )
         base64 = run_cmd_no_fail("base64 {}".format(tarball), from_dir=str(tmp_path))
 
@@ -398,13 +418,13 @@ def create_cdash_upload_xml(
 </Upload>
 </Site>
 """.format(
-    cdash_build_name,
-    utc_time,
-    cdash_build_group,
-    hostname,
-    str((tmp_path / tarball).absolute()),
-    base64,
-)
+            cdash_build_name,
+            utc_time,
+            cdash_build_group,
+            hostname,
+            str((tmp_path / tarball).absolute()),
+            base64,
+        )
 
         with (data_rel_path / "Upload.xml").open(mode="w") as fd:
             fd.write(xml_text)
@@ -458,7 +478,7 @@ def create_cdash_xml(
                 utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
                 dart_path = tmp_path / "DartConfiguration.tcl"
                 testing_path = tmp_path / "Testing"
-                testtime_dir = testing_path / utc_time # Most action happens here
+                testtime_dir = testing_path / utc_time  # Most action happens here
                 tag_file = testing_path / "TAG"
                 notes_file = tmp_path / "notes.txt"
 
@@ -470,7 +490,9 @@ def create_cdash_xml(
 
                 # Make notes file
                 with notes_file.open(mode="w") as notes_fd:
-                    notes_fd.write(f"Commit {git_commit}\nTotal testing time {time_info} seconds\n")
+                    notes_fd.write(
+                        f"Commit {git_commit}\nTotal testing time {time_info} seconds\n"
+                    )
 
                 create_cdash_xml_fakes(
                     results,
@@ -479,7 +501,7 @@ def create_cdash_xml(
                     utc_time,
                     current_time,
                     hostname,
-                    testtime_dir
+                    testtime_dir,
                 )
 
                 create_cdash_upload_xml(
@@ -490,7 +512,7 @@ def create_cdash_xml(
                     hostname,
                     force_log_upload,
                     tmp_path,
-                    testtime_dir
+                    testtime_dir,
                 )
 
                 for drop_method in ["https", "http"]:
@@ -523,21 +545,27 @@ def create_cdash_xml(
     UseLaunchers:
     CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
     """.format(
-        str(tmp_path.absolute()),
-        hostname,
-        cdash_build_name,
-        cdash_project,
-        shutil.which("scp"),
-        cdash_timestamp,
-        drop_method,
-    )
+                        str(tmp_path.absolute()),
+                        hostname,
+                        cdash_build_name,
+                        cdash_project,
+                        shutil.which("scp"),
+                        cdash_timestamp,
+                        drop_method,
+                    )
                     with dart_path.open(mode="w") as dart_fd:
                         dart_fd.write(dart_config)
 
-                    stat, out, _ = run_cmd("ctest -VV -D NightlySubmit -A notes.txt", combine_output=True, from_dir=str(tmp_path))
+                    stat, out, _ = run_cmd(
+                        "ctest -VV -D NightlySubmit -A notes.txt",
+                        combine_output=True,
+                        from_dir=str(tmp_path),
+                    )
                     if stat != 0:
                         logging.warning(
-                            "ctest upload drop method {} FAILED:\n{}".format(drop_method, out)
+                            "ctest upload drop method {} FAILED:\n{}".format(
+                                drop_method, out
+                            )
                         )
                     else:
                         logging.info("Upload SUCCESS:\n{}".format(out))
