@@ -1,6 +1,5 @@
 # pylint: disable=import-error
-import queue
-import os, time, threading, socket, signal, shutil, glob
+import queue, os, time, threading, socket, signal, shutil, glob, tempfile
 
 # pylint: disable=import-error
 import logging
@@ -92,24 +91,16 @@ def create_cdash_xml_boiler(
     utc_time,
     current_time,
     hostname,
-    git_commit,
 ):
     ###############################################################################
     site_elem = xmlet.Element("Site")
-
-    if "JENKINS_START_TIME" in os.environ:
-        time_info_str = "Total testing time: {:d} seconds".format(
-            int(current_time) - int(os.environ["JENKINS_START_TIME"])
-        )
-    else:
-        time_info_str = ""
 
     site_elem.attrib["BuildName"] = cdash_build_name
     site_elem.attrib["BuildStamp"] = "{}-{}".format(utc_time, cdash_build_group)
     site_elem.attrib["Name"] = hostname
     site_elem.attrib["OSName"] = "Linux"
     site_elem.attrib["Hostname"] = hostname
-    site_elem.attrib["OSVersion"] = "Commit: {}{}".format(git_commit, time_info_str)
+    site_elem.attrib["OSVersion"] = "Unknown"
 
     phase_elem = xmlet.SubElement(site_elem, phase)
 
@@ -130,7 +121,6 @@ def create_cdash_config_xml(
     current_time,
     hostname,
     data_rel_path,
-    git_commit,
 ):
     ###############################################################################
     site_elem, config_elem = create_cdash_xml_boiler(
@@ -140,7 +130,6 @@ def create_cdash_config_xml(
         utc_time,
         current_time,
         hostname,
-        git_commit,
     )
 
     xmlet.SubElement(config_elem, "ConfigureCommand").text = "namelists"
@@ -165,7 +154,7 @@ def create_cdash_config_xml(
     xmlet.SubElement(config_elem, "ElapsedMinutes").text = "0"  # Skip for now
 
     etree = xmlet.ElementTree(site_elem)
-    etree.write(os.path.join(data_rel_path, "Configure.xml"))
+    etree.write(data_rel_path / "Configure.xml")
 
 
 ###############################################################################
@@ -177,7 +166,6 @@ def create_cdash_build_xml(
     current_time,
     hostname,
     data_rel_path,
-    git_commit,
 ):
     ###############################################################################
     site_elem, build_elem = create_cdash_xml_boiler(
@@ -187,7 +175,6 @@ def create_cdash_build_xml(
         utc_time,
         current_time,
         hostname,
-        git_commit,
     )
 
     xmlet.SubElement(build_elem, "ConfigureCommand").text = "case.build"
@@ -214,7 +201,7 @@ def create_cdash_build_xml(
     xmlet.SubElement(build_elem, "ElapsedMinutes").text = "0"  # Skip for now
 
     etree = xmlet.ElementTree(site_elem)
-    etree.write(os.path.join(data_rel_path, "Build.xml"))
+    etree.write(data_rel_path / "Build.xml")
 
 
 ###############################################################################
@@ -226,7 +213,6 @@ def create_cdash_test_xml(
     current_time,
     hostname,
     data_rel_path,
-    git_commit,
 ):
     ###############################################################################
     site_elem, testing_elem = create_cdash_xml_boiler(
@@ -236,7 +222,6 @@ def create_cdash_test_xml(
         utc_time,
         current_time,
         hostname,
-        git_commit,
     )
 
     test_list_elem = xmlet.SubElement(testing_elem, "TestList")
@@ -298,28 +283,14 @@ def create_cdash_test_xml(
     xmlet.SubElement(testing_elem, "ElapsedMinutes").text = "0"  # Skip for now
 
     etree = xmlet.ElementTree(site_elem)
-
-    etree.write(os.path.join(data_rel_path, "Test.xml"))
+    etree.write(data_rel_path / "Test.xml")
 
 
 ###############################################################################
 def create_cdash_xml_fakes(
-    results, cdash_build_name, cdash_build_group, utc_time, current_time, hostname
+    results, cdash_build_name, cdash_build_group, utc_time, current_time, hostname, data_rel_path
 ):
     ###############################################################################
-    # We assume all cases were created from the same code repo
-    first_result_case = os.path.dirname(list(results.items())[0][1][0])
-    try:
-        srcroot = run_cmd_no_fail(
-            "./xmlquery --value SRCROOT", from_dir=first_result_case
-        )
-    except CIMEError:
-        # Use repo containing this script as last resort
-        srcroot = os.path.join(CIME.utils.get_cime_root(), "..")
-
-    git_commit = CIME.utils.get_current_commit(repo=srcroot)
-
-    data_rel_path = os.path.join("Testing", utc_time)
 
     create_cdash_config_xml(
         results,
@@ -329,7 +300,6 @@ def create_cdash_xml_fakes(
         current_time,
         hostname,
         data_rel_path,
-        git_commit,
     )
 
     create_cdash_build_xml(
@@ -340,7 +310,6 @@ def create_cdash_xml_fakes(
         current_time,
         hostname,
         data_rel_path,
-        git_commit,
     )
 
     create_cdash_test_xml(
@@ -351,88 +320,72 @@ def create_cdash_xml_fakes(
         current_time,
         hostname,
         data_rel_path,
-        git_commit,
     )
-
 
 ###############################################################################
 def create_cdash_upload_xml(
-    results, cdash_build_name, cdash_build_group, utc_time, hostname, force_log_upload
+    results, cdash_build_name, cdash_build_group, utc_time, hostname, force_log_upload, tmp_path, data_rel_path
 ):
     ###############################################################################
 
-    data_rel_path = os.path.join("Testing", utc_time)
+    log_dirname = f"{cdash_build_name}_logs"
+    log_path    = tmp_path / log_dirname
 
-    try:
-        log_dir = "{}_logs".format(cdash_build_name)
+    need_to_upload = False
 
-        need_to_upload = False
+    for test_name, test_data in results.items():
+        test_path, test_status, _ = test_data
 
-        for test_name, test_data in results.items():
-            test_path, test_status, _ = test_data
+        if test_status != TEST_PASS_STATUS or force_log_upload:
+            test_case_dir = os.path.dirname(test_path)
 
-            if test_status != TEST_PASS_STATUS or force_log_upload:
-                test_case_dir = os.path.dirname(test_path)
+            case_dirs = [test_case_dir]
+            case_base = os.path.basename(test_case_dir)
+            test_case2_dir = os.path.join(test_case_dir, "case2", case_base)
+            if os.path.exists(test_case2_dir):
+                case_dirs.append(test_case2_dir)
 
-                case_dirs = [test_case_dir]
-                case_base = os.path.basename(test_case_dir)
-                test_case2_dir = os.path.join(test_case_dir, "case2", case_base)
-                if os.path.exists(test_case2_dir):
-                    case_dirs.append(test_case2_dir)
+            for case_dir in case_dirs:
+                for param in ["EXEROOT", "RUNDIR", "CASEDIR"]:
+                    if param == "CASEDIR":
+                        log_src_dir = case_dir
+                    else:
+                        # it's possible that tests that failed very badly/early, and fake cases for testing
+                        # will not be able to support xmlquery
+                        try:
+                            log_src_dir = run_cmd_no_fail(
+                                "./xmlquery {} --value".format(param),
+                                from_dir=case_dir,
+                            )
+                        except:
+                            continue
 
-                for case_dir in case_dirs:
-                    for param in ["EXEROOT", "RUNDIR", "CASEDIR"]:
-                        if param == "CASEDIR":
-                            log_src_dir = case_dir
+                    log_dst_dir = log_path / "{}{}_{}_logs".format(
+                        test_name,
+                        "" if case_dir == test_case_dir else ".case2",
+                        param,
+                    )
+                    log_dst_dir.mkdir(parents=True)
+                    for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
+                        if os.path.isdir(log_file):
+                            shutil.copytree(log_file, log_dst_dir / os.path.basename(log_file))
                         else:
-                            # it's possible that tests that failed very badly/early, and fake cases for testing
-                            # will not be able to support xmlquery
-                            try:
-                                log_src_dir = run_cmd_no_fail(
-                                    "./xmlquery {} --value".format(param),
-                                    from_dir=case_dir,
-                                )
-                            except:
-                                continue
+                            safe_copy(log_file, str(log_dst_dir))
+                    for log_file in glob.glob(os.path.join(log_src_dir, "*.cprnc.out*")):
+                        safe_copy(log_file, str(log_dst_dir))
 
-                        log_dst_dir = os.path.join(
-                            log_dir,
-                            "{}{}_{}_logs".format(
-                                test_name,
-                                "" if case_dir == test_case_dir else ".case2",
-                                param,
-                            ),
-                        )
-                        os.makedirs(log_dst_dir)
-                        for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
-                            if os.path.isdir(log_file):
-                                shutil.copytree(
-                                    log_file,
-                                    os.path.join(
-                                        log_dst_dir, os.path.basename(log_file)
-                                    ),
-                                )
-                            else:
-                                safe_copy(log_file, log_dst_dir)
-                        for log_file in glob.glob(
-                            os.path.join(log_src_dir, "*.cprnc.out*")
-                        ):
-                            safe_copy(log_file, log_dst_dir)
+            need_to_upload = True
 
-                need_to_upload = True
+    if need_to_upload:
 
-        if need_to_upload:
+        tarball = "{}.tar.gz".format(log_dirname)
 
-            tarball = "{}.tar.gz".format(log_dir)
-            if os.path.exists(tarball):
-                os.remove(tarball)
+        run_cmd_no_fail(
+            "tar -cf - {} | gzip -c".format(log_dirname), arg_stdout=tarball, from_dir=str(tmp_path)
+        )
+        base64 = run_cmd_no_fail("base64 {}".format(tarball), from_dir=str(tmp_path))
 
-            run_cmd_no_fail(
-                "tar -cf - {} | gzip -c".format(log_dir), arg_stdout=tarball
-            )
-            base64 = run_cmd_no_fail("base64 {}".format(tarball))
-
-            xml_text = r"""<?xml version="1.0" encoding="UTF-8"?>
+        xml_text = r"""<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="Dart/Source/Server/XSL/Build.xsl <file:///Dart/Source/Server/XSL/Build.xsl> "?>
 <Site BuildName="{}" BuildStamp="{}-{}" Name="{}" Generator="ctest3.0.0">
 <Upload>
@@ -444,20 +397,16 @@ def create_cdash_upload_xml(
 </Upload>
 </Site>
 """.format(
-                cdash_build_name,
-                utc_time,
-                cdash_build_group,
-                hostname,
-                os.path.abspath(tarball),
-                base64,
-            )
+    cdash_build_name,
+    utc_time,
+    cdash_build_group,
+    hostname,
+    str((tmp_path / tarball).absolute()),
+    base64,
+)
 
-            with open(os.path.join(data_rel_path, "Upload.xml"), "w") as fd:
-                fd.write(xml_text)
-
-    finally:
-        if os.path.isdir(log_dir):
-            shutil.rmtree(log_dir)
+        with (data_rel_path / "Upload.xml").open(mode="w") as fd:
+            fd.write(xml_text)
 
 
 ###############################################################################
@@ -482,84 +431,121 @@ def create_cdash_xml(
             "Could not convert hostname '{}' into an E3SM machine name".format(hostname)
         )
 
-    for drop_method in ["https", "http"]:
-        dart_config = """
-SourceDirectory: {0}
-BuildDirectory: {0}
-
-# Site is something like machine.domain, i.e. pragmatic.crd
-Site: {1}
-
-# Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: {2}
-
-# Submission information
-IsCDash: TRUE
-CDashVersion:
-QueryCDashVersion:
-DropSite: my.cdash.org
-DropLocation: /submit.php?project={3}
-DropSiteUser:
-DropSitePassword:
-DropSiteMode:
-DropMethod: {6}
-TriggerSite:
-ScpCommand: {4}
-
-# Dashboard start time
-NightlyStartTime: {5} UTC
-
-UseLaunchers:
-CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
-""".format(
-            os.getcwd(),
-            hostname,
-            cdash_build_name,
-            cdash_project,
-            shutil.which("scp"),
-            cdash_timestamp,
-            drop_method,
+    # We assume all cases were created from the same code repo
+    first_result_case = os.path.dirname(list(results.items())[0][1][0])
+    try:
+        srcroot = run_cmd_no_fail(
+            "./xmlquery --value SRCROOT", from_dir=first_result_case
         )
+    except CIMEError:
+        # Use repo containing this script as last resort
+        srcroot = os.path.join(CIME.utils.get_cime_root(), "..")
 
-        with open("DartConfiguration.tcl", "w") as dart_fd:
-            dart_fd.write(dart_config)
+    git_commit = CIME.utils.get_current_commit(repo=srcroot)
 
-        utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
-        testing_dir = os.path.join("Testing", utc_time)
-        if os.path.isdir(testing_dir):
-            shutil.rmtree(testing_dir)
-
-        os.makedirs(os.path.join("Testing", utc_time))
-
-        # Make tag file
-        with open("Testing/TAG", "w") as tag_fd:
-            tag_fd.write("{}\n{}\n".format(utc_time, cdash_build_group))
-
-        create_cdash_xml_fakes(
-            results,
-            cdash_build_name,
-            cdash_build_group,
-            utc_time,
-            current_time,
-            hostname,
+    # Get total elapsed time
+    if "JENKINS_START_TIME" in os.environ:
+        time_info = int(current_time) - int(os.environ["JENKINS_START_TIME"])
         )
+    else:
+        time_info = "unknown"
 
-        create_cdash_upload_xml(
-            results,
-            cdash_build_name,
-            cdash_build_group,
-            utc_time,
-            hostname,
-            force_log_upload,
-        )
+    prefixes = [None, first_result_case, os.getcwd()]
+    for prexix in prefixes:
+        try:
+            with tempfile.TemporaryDirectory(prefix=prefix) as tmpdir:
+                tmp_path = Path(tmpdir)
+                utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
+                dart_path = tmp_path / "DartConfiguration.tcl"
+                testing_path = tmp_path / "Testing"
+                testtime_dir = testing_path / utc_time # Most action happens here
+                tag_file = testing_path / "TAG"
+                notes_file = tmp_path / "notes.txt"
 
-        stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True)
-        if stat != 0:
-            logging.warning(
-                "ctest upload drop method {} FAILED:\n{}".format(drop_method, out)
-            )
+                testtime_dir.mkdir(parents=True)
+
+                # Make tag file
+                with tag_file.open(mode="w") as tag_fd:
+                    tag_fd.write(f"{utc_time}\n{cdash_build_group}\n")
+
+                # Make notes file
+                with notes_file.open(mode="w") as notes_fd:
+                    notes_fd.write(f"Commit {git_commit}\nTotal testing time {time_info} seconds\n")
+
+                create_cdash_xml_fakes(
+                    results,
+                    cdash_build_name,
+                    cdash_build_group,
+                    utc_time,
+                    current_time,
+                    hostname,
+                    testtime_dir
+                )
+
+                create_cdash_upload_xml(
+                    results,
+                    cdash_build_name,
+                    cdash_build_group,
+                    utc_time,
+                    hostname,
+                    force_log_upload,
+                    tmp_path,
+                    testtime_dir
+                )
+
+                for drop_method in ["https", "http"]:
+                    dart_config = """
+    SourceDirectory: {0}
+    BuildDirectory: {0}
+
+    # Site is something like machine.domain, i.e. pragmatic.crd
+    Site: {1}
+
+    # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
+    BuildName: {2}
+
+    # Submission information
+    IsCDash: TRUE
+    CDashVersion:
+    QueryCDashVersion:
+    DropSite: my.cdash.org
+    DropLocation: /submit.php?project={3}
+    DropSiteUser:
+    DropSitePassword:
+    DropSiteMode:
+    DropMethod: {6}
+    TriggerSite:
+    ScpCommand: {4}
+
+    # Dashboard start time
+    NightlyStartTime: {5} UTC
+
+    UseLaunchers:
+    CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
+    """.format(
+        str(tmp_path.absolute()),
+        hostname,
+        cdash_build_name,
+        cdash_project,
+        shutil.which("scp"),
+        cdash_timestamp,
+        drop_method,
+    )
+                    with dart_path.open(mode="w") as dart_fd:
+                        dart_fd.write(dart_config)
+
+                    stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True, from_dir=str(tmp_path))
+                    if stat != 0:
+                        logging.warning(
+                            "ctest upload drop method {} FAILED:\n{}".format(drop_method, out)
+                        )
+                    else:
+                        logging.info("Upload SUCCESS:\n{}".format(out))
+
+        except Exception as e:
+            logging.info(f"Prexix '{prefix}' failed with error {e}")
+
         else:
-            logging.info("Upload SUCCESS:\n{}".format(out))
             return
 
     expect(False, "All cdash upload attempts failed")
