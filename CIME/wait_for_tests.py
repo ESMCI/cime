@@ -534,19 +534,17 @@ def create_cdash_xml(
                     with dart_path.open(mode="w") as dart_fd:
                         dart_fd.write(dart_config)
 
-                    stat, out, _ = run_cmd("ctest -VV -D NightlySubmit", combine_output=True, from_dir=str(tmp_path))
+                    stat, out, _ = run_cmd("ctest -VV -D NightlySubmit -A notes.txt", combine_output=True, from_dir=str(tmp_path))
                     if stat != 0:
                         logging.warning(
                             "ctest upload drop method {} FAILED:\n{}".format(drop_method, out)
                         )
                     else:
                         logging.info("Upload SUCCESS:\n{}".format(out))
+                        return
 
         except Exception as e:
             logging.info(f"Prexix '{prefix}' failed with error {e}")
-
-        else:
-            return
 
     expect(False, "All cdash upload attempts failed")
 
