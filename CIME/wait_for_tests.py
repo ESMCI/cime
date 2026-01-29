@@ -1,5 +1,6 @@
 # pylint: disable=import-error
 import queue, os, time, threading, socket, signal, shutil, glob, tempfile
+from pathlib import Path
 
 # pylint: disable=import-error
 import logging
@@ -450,7 +451,7 @@ def create_cdash_xml(
         time_info = "unknown"
 
     prefixes = [None, first_result_case, os.getcwd()]
-    for prexix in prefixes:
+    for prefix in prefixes:
         try:
             with tempfile.TemporaryDirectory(prefix=prefix) as tmpdir:
                 tmp_path = Path(tmpdir)
