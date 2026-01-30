@@ -103,7 +103,16 @@ def create_namelists(self, component=None):
                 compname,
                 case=self,
             )
-
+            pio_typename = self.get_value("PIO_TYPENAME_{}".format(model_str.upper()))
+            pio_netcdf_format = self.get_value(
+                "PIO_NETCDF_FORMAT_{}".format(model_str.upper())
+            )
+            expect(
+                not ("4" in pio_typename and pio_netcdf_format == "64bit_data"),
+                "Cannot use pio_netcdf_format {} with pio_typename {}".format(
+                    pio_netcdf_format, pio_typename
+                ),
+            )
         logger.debug(
             "Finished creating component namelists, component {} models = {}".format(
                 component, models
