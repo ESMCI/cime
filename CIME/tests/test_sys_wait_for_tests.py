@@ -9,6 +9,7 @@ import threading
 
 from CIME import utils
 from CIME import test_status
+from CIME.wait_for_tests import ENV_VAR_KEEP_CDASH
 from CIME.tests import base
 from CIME.tests import utils as test_utils
 
@@ -109,6 +110,8 @@ class TestWaitForTests(base.BaseTestCase):
         if do_teardown:
             for testdir in self._testdirs:
                 shutil.rmtree(testdir)
+
+        os.environ.pop(ENV_VAR_KEEP_CDASH, None)
 
     def simple_test(self, testdir, expected_results, extra_args="", build_name=None):
         # Need these flags to test dashboard if e3sm
@@ -270,6 +273,7 @@ class TestWaitForTests(base.BaseTestCase):
 
     def test_wait_for_test_cdash_kill(self):
         expected_results = ["PEND" if item == 5 else "PASS" for item in range(10)]
+        os.environ[ENV_VAR_KEEP_CDASH] = "True"
         build_name = "regression_test_kill_" + self._timestamp
         run_thread = threading.Thread(
             target=self.threaded_test,

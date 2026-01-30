@@ -87,7 +87,7 @@ OR
     )
 
     parser.add_argument(
-        "--force-log-upload",
+        "--cdash-force-log-upload",
         action="store_true",
         help="Always upload logs to cdash, even if test passed",
     )
@@ -103,6 +103,11 @@ OR
         "--cdash-project",
         default=CIME.wait_for_tests.E3SM_MAIN_CDASH,
         help="The name of the CDash project where results should be uploaded",
+    )
+
+    parser.add_argument(
+        "--cdash-tmproot",
+        help="Where to put temporary files needed to do cdash submission. Default=/tmp",
     )
 
     parser.add_argument(
@@ -132,9 +137,10 @@ OR
         args.ignore_memleak,
         args.cdash_build_name,
         args.cdash_project,
+        args.cdash_tmproot,
         args.cdash_build_group,
         args.timeout,
-        args.force_log_upload,
+        args.cdash_force_log_upload,
         args.no_run,
         args.update_success,
     )
@@ -153,6 +159,7 @@ def _main_func(description):
         ignore_memleak,
         cdash_build_name,
         cdash_project,
+        cdash_tmproot,
         cdash_build_group,
         timeout,
         force_log_upload,
@@ -172,6 +179,7 @@ def _main_func(description):
             ignore_memleak=ignore_memleak,
             cdash_build_name=cdash_build_name,
             cdash_project=cdash_project,
+            cdash_tmproot=cdash_tmproot,
             cdash_build_group=cdash_build_group,
             timeout=timeout,
             force_log_upload=force_log_upload,
