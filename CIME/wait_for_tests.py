@@ -558,14 +558,14 @@ NightlyStartTime: {5} UTC
 UseLaunchers:
 CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
 """.format(
-    str(tmp_path.absolute()),
-    hostname,
-    cdash_build_name,
-    cdash_project,
-    shutil.which("scp"),
-    cdash_timestamp,
-    drop_method,
-)
+                        str(tmp_path.absolute()),
+                        hostname,
+                        cdash_build_name,
+                        cdash_project,
+                        shutil.which("scp"),
+                        cdash_timestamp,
+                        drop_method,
+                    )
                     with dart_path.open(mode="w") as dart_fd:
                         dart_fd.write(dart_config)
 
@@ -591,7 +591,9 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
                         return
 
         except Exception as e:
-            logging.warning(f"Using temp root '{tmproot}', cdash submission failed with error {e}")
+            logging.warning(
+                f"Using temp root '{tmproot}', cdash submission failed with error {e}"
+            )
 
     expect(False, "All cdash upload attempts failed")
 
