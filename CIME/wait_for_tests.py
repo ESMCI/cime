@@ -530,42 +530,42 @@ def create_cdash_xml(
 
                 for drop_method in ["https", "http"]:
                     dart_config = """
-    SourceDirectory: {0}
-    BuildDirectory: {0}
+SourceDirectory: {0}
+BuildDirectory: {0}
 
-    # Site is something like machine.domain, i.e. pragmatic.crd
-    Site: {1}
+# Site is something like machine.domain, i.e. pragmatic.crd
+Site: {1}
 
-    # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-    BuildName: {2}
+# Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
+BuildName: {2}
 
-    # Submission information
-    IsCDash: TRUE
-    CDashVersion:
-    QueryCDashVersion:
-    DropSite: my.cdash.org
-    DropLocation: /submit.php?project={3}
-    DropSiteUser:
-    DropSitePassword:
-    DropSiteMode:
-    DropMethod: {6}
-    TriggerSite:
-    ScpCommand: {4}
+# Submission information
+IsCDash: TRUE
+CDashVersion:
+QueryCDashVersion:
+DropSite: my.cdash.org
+DropLocation: /submit.php?project={3}
+DropSiteUser:
+DropSitePassword:
+DropSiteMode:
+DropMethod: {6}
+TriggerSite:
+ScpCommand: {4}
 
-    # Dashboard start time
-    NightlyStartTime: {5} UTC
+# Dashboard start time
+NightlyStartTime: {5} UTC
 
-    UseLaunchers:
-    CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
-    """.format(
-                        str(tmp_path.absolute()),
-                        hostname,
-                        cdash_build_name,
-                        cdash_project,
-                        shutil.which("scp"),
-                        cdash_timestamp,
-                        drop_method,
-                    )
+UseLaunchers:
+CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
+""".format(
+    str(tmp_path.absolute()),
+    hostname,
+    cdash_build_name,
+    cdash_project,
+    shutil.which("scp"),
+    cdash_timestamp,
+    drop_method,
+)
                     with dart_path.open(mode="w") as dart_fd:
                         dart_fd.write(dart_config)
 
@@ -591,7 +591,7 @@ def create_cdash_xml(
                         return
 
         except Exception as e:
-            logging.info(f"Temp dir '{tmpdir}' failed with error {e}")
+            logging.warning(f"Using temp root '{tmproot}', cdash submission failed with error {e}")
 
     expect(False, "All cdash upload attempts failed")
 
@@ -859,7 +859,7 @@ def wait_for_tests(
                 )
 
     if cdash_build_name:
-        tmpdir = create_cdash_xml(
+        create_cdash_xml(
             test_results,
             cdash_build_name,
             cdash_project,
