@@ -433,7 +433,12 @@ def create_cdash_upload_xml(
 
 ###############################################################################
 def create_cdash_xml(
-    results, cdash_build_name, cdash_project, cdash_build_group, force_log_upload=False, cdash_tmproot=None
+    results,
+    cdash_build_name,
+    cdash_project,
+    cdash_build_group,
+    force_log_upload=False,
+    cdash_tmproot=None,
 ):
     ###############################################################################
 
@@ -578,7 +583,9 @@ def create_cdash_xml(
                     else:
                         logging.info("Upload SUCCESS:\n{}".format(out))
                         if ENV_VAR_KEEP_CDASH in os.environ:
-                            logging.info(f"Test mode enabled, copying {str(tmp_path)} to {os.getcwd()}")
+                            logging.info(
+                                f"Test mode enabled, copying {str(tmp_path)} to {os.getcwd()}"
+                            )
                             safe_copy(str(tmp_path / "Testing"), os.getcwd())
 
                         return
@@ -858,7 +865,7 @@ def wait_for_tests(
             cdash_project,
             cdash_build_group,
             force_log_upload,
-            cdash_tmproot
+            cdash_tmproot,
         )
 
     return all_pass
