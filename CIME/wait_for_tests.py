@@ -17,6 +17,7 @@ SIGNAL_RECEIVED = False
 E3SM_MAIN_CDASH = "E3SM"
 CDASH_DEFAULT_BUILD_GROUP = "ACME_Latest"
 SLEEP_INTERVAL_SEC = 0.1
+ENV_VAR_KEEP_CDASH = "CIME_TEST_CDASH_WFT"
 
 ###############################################################################
 def signal_handler(*_):
@@ -432,7 +433,7 @@ def create_cdash_upload_xml(
 
 ###############################################################################
 def create_cdash_xml(
-    results, cdash_build_name, cdash_project, cdash_build_group, force_log_upload=False
+    results, cdash_build_name, cdash_project, cdash_build_group, force_log_upload=False, cdash_tmproot=None
 ):
     ###############################################################################
 
@@ -470,7 +471,14 @@ def create_cdash_xml(
     else:
         time_info = "unknown"
 
-    tmproots = [None, first_result_case, os.getcwd()]
+    if cdash_tmproot:
+        tmproots = [cdash_tmproot]
+    else:
+        tmproots = [None, first_result_case, os.getcwd()]
+
+    # Try multiple tmproots if necessary. The default /tmp will be tried first
+    # unless cdash_tmproot was provided. The location of the default can be
+    # modified via the TMPDIR environment variable.
     for tmproot in tmproots:
         try:
             with tempfile.TemporaryDirectory(dir=tmproot) as tmpdir:
@@ -569,6 +577,10 @@ def create_cdash_xml(
                         )
                     else:
                         logging.info("Upload SUCCESS:\n{}".format(out))
+                        if ENV_VAR_KEEP_CDASH in os.environ:
+                            logging.info(f"Test mode enabled, copying {str(tmp_path)} to {os.getcwd()}")
+                            safe_copy(str(tmp_path / "Testing"), os.getcwd())
+
                         return
 
         except Exception as e:
@@ -739,6 +751,7 @@ def wait_for_tests(
     ignore_memleak=False,
     cdash_build_name=None,
     cdash_project=E3SM_MAIN_CDASH,
+    cdash_tmproot=None,
     cdash_build_group=CDASH_DEFAULT_BUILD_GROUP,
     timeout=None,
     force_log_upload=False,
@@ -839,12 +852,13 @@ def wait_for_tests(
                 )
 
     if cdash_build_name:
-        create_cdash_xml(
+        tmpdir = create_cdash_xml(
             test_results,
             cdash_build_name,
             cdash_project,
             cdash_build_group,
             force_log_upload,
+            cdash_tmproot
         )
 
     return all_pass
