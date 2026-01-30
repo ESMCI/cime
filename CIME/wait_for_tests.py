@@ -7,7 +7,7 @@ import logging
 import xml.etree.ElementTree as xmlet
 
 import CIME.utils
-from CIME.utils import expect, Timeout, run_cmd_no_fail, safe_copy, CIMEError
+from CIME.utils import expect, Timeout, run_cmd, run_cmd_no_fail, safe_copy, CIMEError
 from CIME.XML.machines import Machines
 from CIME.test_status import *
 from CIME.provenance import save_test_success
@@ -372,7 +372,7 @@ def create_cdash_upload_xml(
                                 "./xmlquery {} --value".format(param),
                                 from_dir=case_dir,
                             )
-                        except:
+                        except CIMEError:
                             continue
 
                     log_dst_dir = log_path / "{}{}_{}_logs".format(
@@ -470,10 +470,10 @@ def create_cdash_xml(
     else:
         time_info = "unknown"
 
-    prefixes = [None, first_result_case, os.getcwd()]
-    for prefix in prefixes:
+    tmproots = [None, first_result_case, os.getcwd()]
+    for tmproot in tmproots:
         try:
-            with tempfile.TemporaryDirectory(prefix=prefix) as tmpdir:
+            with tempfile.TemporaryDirectory(dir=tmproot) as tmpdir:
                 tmp_path = Path(tmpdir)
                 utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
                 dart_path = tmp_path / "DartConfiguration.tcl"
@@ -572,7 +572,7 @@ def create_cdash_xml(
                         return
 
         except Exception as e:
-            logging.info(f"Prexix '{prefix}' failed with error {e}")
+            logging.info(f"Temp dir '{tmpdir}' failed with error {e}")
 
     expect(False, "All cdash upload attempts failed")
 
