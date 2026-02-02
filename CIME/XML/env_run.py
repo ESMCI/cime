@@ -76,17 +76,23 @@ class EnvRun(EnvBase):
 
             if nvid == "PIO_TYPENAME":
                 if comp:
-                    pio_netcdf_formats = [
-                        self.get_value("PIO_NETCDF_FORMAT_{}".format(comp.upper()))
-                    ]
+                    pio_netcdf_format_val = self.get_value(
+                        "PIO_NETCDF_FORMAT_{}".format(comp.upper())
+                    )
+                    if pio_netcdf_format_val is None:
+                        pio_netcdf_format_val = ""
+                    pio_netcdf_formats = [pio_netcdf_format_val]
                 else:
                     pio_netcdf_formats = self.get_values("PIO_NETCDF_FORMAT")
                 pio_typenames = [value]
             elif nvid == "PIO_NETCDF_FORMAT":
                 if comp:
-                    pio_typenames = [
-                        self.get_value("PIO_TYPENAME_{}".format(comp.upper()))
-                    ]
+                    pio_typename_val = self.get_value(
+                        "PIO_TYPENAME_{}".format(comp.upper())
+                    )
+                    if pio_typename_val is None:
+                        pio_typename_val = ""
+                    pio_typenames = [pio_typename_val]
                 else:
                     pio_typenames = self.get_values("PIO_TYPENAME")
                 pio_netcdf_formats = [value]
