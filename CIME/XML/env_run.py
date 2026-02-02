@@ -101,8 +101,12 @@ class EnvRun(EnvBase):
                 if pio_netcdf_format is None:
                     pio_netcdf_format = last_format
 
+                incompatible_pio_typenames = ("netcdf4p", "netcdf4c")
                 expect(
-                    not ("4" in pio_typename and "64bit_data" in pio_netcdf_format),
+                    not (
+                        pio_typename in incompatible_pio_typenames
+                        and "64bit_data" in pio_netcdf_format
+                    ),
                     "pio_typename {} is not compatible with pio_netcdf_format {}".format(
                         pio_typename, pio_netcdf_format
                     ),
