@@ -114,8 +114,8 @@ def create_namelists(self, component=None):
             )
             expect(
                 not bad_pio_combo,
-                "Cannot use pio_netcdf_format {} with pio_typename {}".format(
-                    pio_netcdf_format, pio_typename
+                "pio_typename {} is not compatible with pio_netcdf_format {}".format(
+                    pio_typename, pio_netcdf_format
                 ),
             )
         logger.debug(
