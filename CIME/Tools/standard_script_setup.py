@@ -4,7 +4,7 @@ that every script should do.
 """
 # pylint: disable=unused-import
 
-import sys, os
+import sys, os, logging
 import __main__ as main
 
 
@@ -31,8 +31,6 @@ def check_minimum_python_version(major, minor, warn_only=False):
         + str(sys.version_info[1])
     )
     if warn_only:
-        import logging
-
         logging.warning(msg.replace("required", "recommended") + ".")
         return
     raise RuntimeError(msg + " - please use a newer version of Python.")
@@ -53,4 +51,4 @@ os.environ["CIMEROOT"] = cimeroot
 import CIME.utils
 
 CIME.utils.stop_buffering_output()
-import logging, argparse
+import argparse
