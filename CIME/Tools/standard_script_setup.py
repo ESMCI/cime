@@ -31,7 +31,8 @@ def check_minimum_python_version(major, minor, warn_only=False):
         + str(sys.version_info[1])
     )
     if warn_only:
-        print(msg.replace("required", "recommended") + ".")
+        import logging
+        logging.warn(msg.replace("required", "recommended") + ".")
         return
     raise RuntimeError(msg + " - please use a newer version of Python.")
 
