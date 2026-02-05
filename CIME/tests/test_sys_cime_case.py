@@ -45,13 +45,9 @@ class TestCimeCase(base.BaseTestCase):
             )
 
             case.flush()
-            # the strip().splitlines()[-1] avoids a potential warning message in the output.
-            build_complete = (
-                utils.run_cmd_no_fail(
-                    "./xmlquery BUILD_COMPLETE --value", from_dir=casedir
-                )
-                .strip()
-                .splitlines()[-1]
+
+            build_complete = utils.run_cmd_no_fail(
+                "./xmlquery BUILD_COMPLETE --value", from_dir=casedir
             )
             self.assertEqual(
                 build_complete,
@@ -346,26 +342,16 @@ class TestCimeCase(base.BaseTestCase):
         self.run_cmd_assert_result(
             "./xmlchange --id PIO_CONFIG_OPTS --val='-opt1'", from_dir=casedir
         )
-        # Avoids a potential warning in output about python version
-        result = (
-            self.run_cmd_assert_result(
-                "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
-            )
-            .strip()
-            .splitlines()[-1]
+        result = self.run_cmd_assert_result(
+            "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
         )
         self.assertEqual(result, "-opt1")
 
         self.run_cmd_assert_result(
             "./xmlchange --id PIO_CONFIG_OPTS --val='-opt2' --append", from_dir=casedir
         )
-        # the strip().splitlines()[-1] avoids a potential warning message in the output.
-        result = (
-            self.run_cmd_assert_result(
-                "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
-            )
-            .strip()
-            .splitlines()[-1]
+        result = self.run_cmd_assert_result(
+            "./xmlquery --value PIO_CONFIG_OPTS", from_dir=casedir
         )
         self.assertEqual(result, "-opt1 -opt2")
 
@@ -519,14 +505,10 @@ class TestCimeCase(base.BaseTestCase):
         )
 
         self.run_cmd_assert_result("./case.setup --reset", from_dir=casedir)
-        # the strip().splitlines()[-1] avoids a potential warning message in the output.
-        result = (
-            self.run_cmd_assert_result(
-                "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
-                from_dir=casedir,
-            )
-            .strip()
-            .splitlines()[-1]
+
+        result = self.run_cmd_assert_result(
+            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            from_dir=casedir,
         )
         with Case(casedir) as case:
             walltime_format = case.get_value("walltime_format", subgroup=None)
@@ -553,14 +535,9 @@ class TestCimeCase(base.BaseTestCase):
 
         self.run_cmd_assert_result("./case.setup --reset", from_dir=casedir)
 
-        # the strip().splitlines()[-1] avoids a potential warning message in the output.
-        result = (
-            self.run_cmd_assert_result(
-                "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
-                from_dir=casedir,
-            )
-            .strip()
-            .splitlines()[-1]
+        result = self.run_cmd_assert_result(
+            "./xmlquery JOB_WALLCLOCK_TIME --subgroup=case.test --value",
+            from_dir=casedir,
         )
         with Case(casedir) as case:
             walltime_format = case.get_value("walltime_format", subgroup=None)
@@ -620,16 +597,10 @@ class TestCimeCase(base.BaseTestCase):
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )
 
-        # the strip().splitlines()[-1] avoids a potential warning message in the output.
-        result = (
-            self.run_cmd_assert_result(
-                "./xmlquery --non-local --value PROJECT --subgroup=case.test",
-                from_dir=casedir,
-            )
-            .strip()
-            .splitlines()[-1]
+        result = self.run_cmd_assert_result(
+            "./xmlquery --non-local --value PROJECT --subgroup=case.test",
+            from_dir=casedir,
         )
-
         self.assertEqual(result, "testproj")
 
     def test_create_test_longname(self):
