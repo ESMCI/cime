@@ -191,9 +191,9 @@ def buildlib(bldroot, installpath, case):
                     installed_file_time = os.path.getmtime(installed_file)
                 if item_time > installed_file_time:
                     safe_copy(item, installed_file)
-        expect_string = "NetCDF_C_LIBRARY-ADVANCED"
+        expect_string = "NetCDF_C_FOUND:BOOL=TRUE"
         pnetcdf_string = "WITH_PNETCDF:BOOL=ON"
-        netcdf4_string = "NetCDF_C_HAS_PARALLEL:BOOL=TRUE"
+        netcdf4_string = "HAVE_NETCDF_PAR:INTERNAL=1"
 
     # make sure case pio_typename valid_values is set correctly
     expect_string_found = False
@@ -203,6 +203,8 @@ def buildlib(bldroot, installpath, case):
     cache_file = open(os.path.join(pio_dir, "CMakeCache.txt"), "r")
     for line in cache_file:
         if re.search(expect_string, line):
+            expect_string_found = True
+        elif re.search("NetCDF_C_LIBRARY-ADVANCED", line):
             expect_string_found = True
         if re.search(pnetcdf_string, line):
             pnetcdf_found = True
