@@ -1,45 +1,27 @@
-ARG BASE_TAG=latest
-FROM condaforge/miniforge3:${BASE_TAG} AS base
+ARG BASE_TAG=25.11.0-1
+FROM quay.io/condaforge/miniforge3:${BASE_TAG} AS base
 
 WORKDIR /home/cime
 
-RUN mkdir -p \
-        /home/cime/inputdata/cpl/gridmaps/oQU240 \
-        /home/cime/inputdata/share/domains \
-        /home/cime/timings \
-        /home/cime/cases \
-        /home/cime/archive \
-        /home/cime/baselines \
-        /home/cime/tools \
-    && wget -O /home/cime/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
-        https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc \
-    && wget -O /home/cime/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
-        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc \
-    && wget -O /home/cime/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc \
-        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive \
+        apt-get install -y --no-install-recommends perl libxml-libxml-perl gosu \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY cime.yaml cime.yaml
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive \
-    apt-get install -y --no-install-recommends \
-    perl libxml-libxml-perl && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN mamba install -y gosu tree
-
 RUN mamba create -n e3sm -y --file cime.yaml python=3.10 'libnetcdf=4.9.1=*openmpi*' \
-    && conda remove -n e3sm --force perl \
     && conda clean -afy \
     && rm -rf /opt/conda/pkgs/*
 
 RUN mamba create -n cesm -y --file cime.yaml python=3.10 'libnetcdf>=4.9.2=*openmpi*' \
-    && conda remove -n cesm --force perl \
     && conda clean -afy \
     && rm -rf /opt/conda/pkgs/*
 
 COPY .cime .cime
 COPY entrypoint.sh /entrypoint.sh
+
+RUN bash -c "SKIP_ENTRYPOINT=true . /entrypoint.sh && download_input_data"
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
