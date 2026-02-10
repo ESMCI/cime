@@ -1,4 +1,4 @@
-ARG BASE_TAG=25.11.0-1
+ARG BASE_TAG=latest
 FROM quay.io/condaforge/miniforge3:${BASE_TAG} AS base
 
 WORKDIR /home/cime
