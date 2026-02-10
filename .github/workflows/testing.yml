@@ -132,6 +132,9 @@ jobs:
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
         run: |
+          # TODO remove just for testing
+          export
+
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate cesm
@@ -139,9 +142,6 @@ jobs:
           mamba install -y 'python=${{ matrix.python-version }}'
 
           pip install -r test-requirements.txt
-
-          # GitHub runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
 
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
@@ -223,20 +223,24 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
+          # TODO remove just for testing
+          export
+
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate ${{ matrix.model.name }}
 
           pip install -r test-requirements.txt
 
+          # load functions
           source /entrypoint.sh
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
           fi
 
-          # GitHub runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
+          # TODO remove just for testing
+          ls -la "${HOME}"
 
           if [[ "${CIME_MODEL}" == "e3sm" ]]; then
             ln -sf /github/home/.cime/config_machines.v2.xml /github/home/.cime/config_machines.xml
