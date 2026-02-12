@@ -5,7 +5,7 @@ WORKDIR /home/cime
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive \
-        apt-get install -y --no-install-recommends perl libxml-libxml-perl gosu \
+        apt-get install -y --no-install-recommends perl libxml-libxml-perl gosu wget curl subversion \
     && rm -rf /var/lib/apt/lists/*
 
 COPY cime.yaml cime.yaml

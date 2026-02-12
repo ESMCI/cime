@@ -5,9 +5,6 @@ dependencies:
 # development tools
   - cmake<4.0 # some libraries still require 3.5.x
   - make
-  - wget
-  - curl
-  - subversion
   - m4
   - pkg-config
   - vim
