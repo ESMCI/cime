@@ -48,7 +48,7 @@ function build_cprnc() {
         exit 1
     fi
 
-    pushd `mktemp -d`
+    pushd "$(mktemp -d)" || exit 1
 
     cmake "${cprnc_dir}"
 
@@ -57,7 +57,7 @@ function build_cprnc() {
     # Needs to be copied into the machines configured tool path
     cp cprnc "${CIME_HOME}/tools/cprnc"
 
-    popd
+    popd || exit 1
 }
 
 
