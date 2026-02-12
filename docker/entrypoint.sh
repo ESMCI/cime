@@ -109,8 +109,11 @@ fi
     echo "elif [[ ${CIME_MODEL} == 'cesm' ]]; then"
     echo "  conda activate cesm"
     echo "fi"
-    # Clobber PATH so system perl is used instead of conda perl
-    echo "export PATH=/usr/bin:\$PATH"
+
+    echo "export PERL=/usr/bin/perl"
+
+    # prefer host perl
+    echo "hash -p /usr/bin/perl perl"
 } > "${HOME}/.bashrc"
 
 
