@@ -13,11 +13,9 @@ SRC_PATH="${SRC_PATH:-${PWD}}"
 
 
 # Determine HOME directory: use provided HOME in CI, /root if root, default otherwise
-if [[ "${CI:-false}" == "true" ]]; then
-    HOME="${HOME}"
-elif [[ "${USER_ID}" == "0" ]]; then
+if [[ "${USER_ID}" == "0" ]]; then
     HOME="/root"
-else
+elif [[ "${CI:-false}" == "false" ]]; then
     # Not populated in $HOME until gosu switches user
     HOME="/home/cime"
 fi
