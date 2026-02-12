@@ -45,7 +45,7 @@ function build_cprnc() {
 
     if [[ ! -e "${cprnc_dir}" ]]; then
         echo "CPRNC path does not exist. Change to CIME's root directory."
-        exit 0
+        exit 1
     fi
 
     pushd `mktemp -d`
