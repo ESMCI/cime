@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set up basic user, logname, and default group/user IDs
-export USER=`id -nu`
+export USER="$(id -nu)"
 export LOGNAME="${USER}"
 export USER_ID="${USER_ID:-1000}"
 export GROUP_ID="${GROUP_ID:-1000}"
