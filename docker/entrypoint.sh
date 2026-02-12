@@ -138,4 +138,3 @@ if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
         gosu "${USER_ID}" "${@}"
     fi
 fi
-
