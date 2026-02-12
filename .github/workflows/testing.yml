@@ -132,8 +132,8 @@ jobs:
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
         run: |
-          # TODO remove just for testing
-          export
+          # manually run the entrypoint
+          source /entrypoint.sh
 
           source /opt/conda/etc/profile.d/conda.sh
 
@@ -223,17 +223,14 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
-          # TODO remove just for testing
-          export
+          # manually run the entrypoint
+          source /entrypoint.sh
 
           source /opt/conda/etc/profile.d/conda.sh
 
           conda activate ${{ matrix.model.name }}
 
           pip install -r test-requirements.txt
-
-          # load functions
-          source /entrypoint.sh
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
