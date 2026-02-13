@@ -1026,7 +1026,9 @@ for some of your components.
 
     def _generate_baseline(self):
         """
-        generate a new baseline case based on the current test
+        Do NOT override this method, this method is the framework that controls the
+        generate_baseline phase. generate_baseline_phase is the extension point that subclasses
+        should use.
         """
         with self._test_status:
             # generate baseline
@@ -1057,9 +1059,18 @@ for some of your components.
 
                         perf_write_baseline(self._case, basegen_dir, cpllog)
 
+                self.generate_baseline_phase(basegen_dir)
+
             self._test_status.set_status(
                 GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
             )
+
+    def generate_baseline_phase(self, basegen_dir):  # pylint: disable=unused-argument
+        """
+        Extension point for subclasses to perform additional operations during baseline generation
+        phase.
+        """
+        return
 
 
 def perf_check_for_memory_leak(case, tolerance):
