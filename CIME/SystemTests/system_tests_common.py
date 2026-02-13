@@ -1034,9 +1034,6 @@ for some of your components.
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASEGEN_CASE")
-            self._test_status.set_status(
-                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
-            )
             basegen_dir = os.path.join(
                 self._case.get_value("BASELINE_ROOT"),
                 self._case.get_value("BASEGEN_CASE"),
@@ -1059,6 +1056,10 @@ for some of your components.
                         )
 
                         perf_write_baseline(self._case, basegen_dir, cpllog)
+
+            self._test_status.set_status(
+                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
+            )
 
 
 def perf_check_for_memory_leak(case, tolerance):
