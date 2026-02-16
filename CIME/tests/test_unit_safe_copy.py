@@ -4,7 +4,7 @@ import shutil
 import tempfile
 
 import unittest
-from CIME.utils import safe_copy
+from CIME.utils import safe_copy, SharedArea
 
 
 class TestSafeCopy(unittest.TestCase):
@@ -252,4 +252,107 @@ class TestSafeCopy(unittest.TestCase):
         self.assertEqual(
             self._read_file(os.path.join(tgt_dir, self.SUBDIR, self.NESTED_FILE)),
             self.NESTED_CONTENT,
+        )
+
+    def test_safe_copy_with_shared_area_preserve_meta_false(self):
+        """
+        Test that SharedArea umask is respected when preserve_meta=False.
+
+        When copying within a SharedArea context with preserve_meta=False, the target file
+        should have permissions based on the SharedArea umask (0o002 by default, making files
+        group-writable and other-readable), not the source file's permissions.
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Create source file with restrictive permissions (no group/other access)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+
+        # Copy within SharedArea with preserve_meta=False
+        with SharedArea():
+            safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        # Target should be group-writable and other-readable (umask 0o002)
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # With umask 0o002, new files should have group read-write and other read permissions
+        self.assertTrue(
+            tgt_mode & stat.S_IWGRP,
+            f"Expected group write permission, got {oct(tgt_mode)}",
+        )
+        self.assertTrue(
+            tgt_mode & stat.S_IROTH,
+            f"Expected other read permission, got {oct(tgt_mode)}",
+        )
+        self.assertFalse(
+            tgt_mode & stat.S_IWOTH,
+            "Unexpectedly got other-write permission",
+        )
+
+    def test_safe_copy_with_shared_area_preserve_meta_true(self):
+        """
+        Test that SharedArea umask is ignored when preserve_meta=True.
+
+        When copying within a SharedArea context with preserve_meta=True, the target file
+        should preserve the source file's permissions, ignoring the SharedArea umask.
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Create source file with restrictive permissions (no group/other access)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+        src_stat = os.stat(src_file)
+
+        # Copy within SharedArea with preserve_meta=True
+        with SharedArea():
+            safe_copy(src_file, tgt_file, preserve_meta=True)
+
+        # Target should have same permissions as source (ignoring SharedArea umask)
+        tgt_stat = os.stat(tgt_file)
+        self.assertEqual(stat.S_IMODE(src_stat.st_mode), stat.S_IMODE(tgt_stat.st_mode))
+
+    def test_safe_copy_directory_with_shared_area_preserve_meta_false(self):
+        """
+        Test that SharedArea umask is respected for directory copies when preserve_meta=False.
+
+        When copying a directory within a SharedArea context with preserve_meta=False, the files
+        in the target directory should have permissions based on the SharedArea umask, not the
+        source files' permissions.
+
+        This test is currently failing: The target files get the same permissions as the source
+        files.
+        """
+        src_dir = os.path.join(self._workdir, self.SRC_DIR)
+        tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
+        os.makedirs(src_dir)
+
+        # Create source file with restrictive permissions
+        src_file = os.path.join(src_dir, self.SINGLE_FILE)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+
+        # Copy within SharedArea with preserve_meta=False
+        with SharedArea():
+            safe_copy(src_dir, tgt_dir, preserve_meta=False)
+
+        # Target file should be group-writable and other-readable (umask 0o002)
+        tgt_file = os.path.join(tgt_dir, self.SINGLE_FILE)
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # With umask 0o002, new files should have group write and other read permissions
+        self.assertTrue(
+            tgt_mode & stat.S_IWGRP,
+            f"Expected group write permission, got {oct(tgt_mode)}",
+        )
+        self.assertTrue(
+            tgt_mode & stat.S_IROTH,
+            f"Expected other read permission, got {oct(tgt_mode)}",
+        )
+        self.assertFalse(
+            tgt_mode & stat.S_IWOTH,
+            "Unexpectedly got other-write permission",
         )
