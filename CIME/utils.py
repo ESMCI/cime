@@ -1436,7 +1436,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
                 shutil.copy2(src_path, tgt_path)
 
             else:
-                shutil.copy(src_path, tgt_path)
+                shutil.copyfile(src_path, tgt_path)
         else:
             # Some of the archived "files" are directories, like ADIOS BP output "files"
             if preserve_meta:
