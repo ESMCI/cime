@@ -121,7 +121,9 @@ class TestSafeCopy(unittest.TestCase):
 
         tgt_stat = os.stat(tgt_file)
         # Check that permissions are preserved (masking out file type bits)
-        self.assertEqual(stat.S_IMODE(src_stat.st_mode), stat.S_IMODE(tgt_stat.st_mode))
+        self.assertEqual(
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
+        )
 
     def test_safe_copy_preserve_meta_false(self):
         """
@@ -151,7 +153,7 @@ class TestSafeCopy(unittest.TestCase):
         # intended behavior with preserve_meta=False according to the safe_copy docstring.
         tgt_stat = os.stat(tgt_file)
         self.assertNotEqual(
-            stat.S_IMODE(src_stat.st_mode), stat.S_IMODE(tgt_stat.st_mode)
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
         )
 
     def test_safe_copy_executable_file(self):
@@ -222,7 +224,7 @@ class TestSafeCopy(unittest.TestCase):
         # Verify that permissions are NOT preserved (should be different from source)
         tgt_stat = os.stat(tgt_file)
         self.assertNotEqual(
-            stat.S_IMODE(src_stat.st_mode), stat.S_IMODE(tgt_stat.st_mode)
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
         )
 
     def test_safe_copy_nested_directory(self):
@@ -312,7 +314,9 @@ class TestSafeCopy(unittest.TestCase):
 
         # Target should have same permissions as source (ignoring SharedArea umask)
         tgt_stat = os.stat(tgt_file)
-        self.assertEqual(stat.S_IMODE(src_stat.st_mode), stat.S_IMODE(tgt_stat.st_mode))
+        self.assertEqual(
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
+        )
 
     def test_safe_copy_directory_with_shared_area_preserve_meta_false(self):
         """
