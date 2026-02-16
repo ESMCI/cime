@@ -126,14 +126,7 @@ class TestSafeCopy(unittest.TestCase):
         )
 
     def test_safe_copy_preserve_meta_false(self):
-        """
-        Test that metadata is not preserved when preserve_meta=False.
-
-        This test is currently failing: The safe_copy docstring indicates that we do NOT want
-        permissions preserved when preserve_meta is False, but it looks like they *are* preserved
-        due to the use of copy(), which according to the Python docs (and this test) *does* preserve
-        permissions.
-        """
+        """Test that metadata is not preserved when preserve_meta=False."""
         src_file = os.path.join(self._workdir, self.SRC_FILE)
         tgt_file = os.path.join(self._workdir, self.TGT_FILE)
 
@@ -193,17 +186,7 @@ class TestSafeCopy(unittest.TestCase):
         )
 
     def test_safe_copy_directory_preserve_meta_false(self):
-        """
-        Test copying a directory with preserve_meta=False.
-
-        This test is currently passing, unlike test_safe_copy_preserve_meta_false, which is the
-        equivalent test for files. This is because when copying a DIRECTORY with
-        preserve_meta=False, it uses shutil.copytree with copy_function=shutil.copyfile, which does
-        *not* preserve permissions.
-
-        This suggests that using shutil.copyfile instead of shutil.copy when calling safe_copy() on
-        a file would fix test_safe_copy_preserve_meta_false.
-        """
+        """Test copying a directory with preserve_meta=False."""
         src_dir = os.path.join(self._workdir, self.SRC_DIR)
         tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
         os.makedirs(os.path.join(src_dir, self.SUBDIR))
@@ -359,4 +342,46 @@ class TestSafeCopy(unittest.TestCase):
         self.assertFalse(
             tgt_mode & stat.S_IWOTH,
             "Unexpectedly got other-write permission",
+        )
+
+    def test_safe_copy_outside_shared_area(self):
+        """
+        Test that safe_copy works normally outside of SharedArea context.
+
+        This is a baseline test to ensure that the SharedArea tests are actually
+        testing the SharedArea behavior and not just normal file copy behavior.
+        When copying outside SharedArea with preserve_meta=False, the file should
+        NOT preserve permissions and should NOT be group-writable (unless the user's
+        default umask happens to allow it).
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Create source file with restrictive permissions (no group/other access)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+        src_stat = os.stat(src_file)
+
+        # Copy outside SharedArea with preserve_meta=False
+        safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        # Verify the file was created with correct content
+        self.assertTrue(os.path.isfile(tgt_file))
+        self.assertEqual(self._read_file(tgt_file), self.TEST_CONTENT)
+
+        # Permissions should NOT be preserved (bug is now fixed)
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # Verify permissions are different from source
+        self.assertNotEqual(
+            stat.S_IMODE(src_stat.st_mode),
+            tgt_mode,
+            "Permissions should not be preserved with preserve_meta=False",
+        )
+
+        # Outside SharedArea, file should NOT be group-writable (typical umask is 0o022)
+        self.assertFalse(
+            tgt_mode & stat.S_IWGRP,
+            f"File should not be group-writable outside SharedArea, got {oct(tgt_mode)}",
         )
