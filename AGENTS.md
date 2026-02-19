@@ -4,7 +4,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ## Project Overview
 
-CIME (Common Infrastructure for Modeling the Earth) provides a Case Control System (CCS) for configuring, compiling, and executing Earth System Models, plus a framework for system testing. CIME is a Python-based infrastructure used by CESM and E3SM. It does NOT contain model source code itself, but provides the infrastructure to manage model runs.
+CIME (Common Infrastructure for Modeling the Earth) provides a Case Control System (CCS) for configuring, compiling, and executing Earth System Models, plus a framework for system testing. CIME is a Python-based infrastructure currently used by CESM, E3SM and NorESM. It does NOT contain model source code itself, but provides the infrastructure to manage model runs.
 
 ## Running Tests
 
@@ -53,7 +53,7 @@ This runs:
 
 - Code is formatted with `black`
 - Linted with `pylint` (see `.pre-commit-config.yaml` for disabled checks)
-- Python 3.5+ required
+- Python 3.9+ required
 - Follow PEP8 style guidelines
 
 ## Key Architecture Concepts
@@ -160,6 +160,7 @@ Online documentation: https://esmci.github.io/cime
 
 - When modifying Case env classes, changes affect the case's XML files
 - The Case class extends across multiple files using imports (see imports at end of `case.py`)
-- CIME can run standalone or be integrated with host models (CESM, E3SM)
+- CIME must be integrated with host models (CESM, E3SM, NorESM) to run system tests and must be
+on a supported machine (found using `./scripts/query_config --machines`)/
 - Machine-specific configurations are in XML files, not hardcoded
 - Git submodules may need initialization: `git submodule update --init`
