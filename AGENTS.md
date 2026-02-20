@@ -26,10 +26,6 @@ From the repository root, run tests using either:
 # Using pytest (recommended)
 pytest CIME/tests
 
-# Using the custom test runner
-cd CIME/tests
-./scripts_regression_tests.py
-
 # Run specific test file
 pytest CIME/tests/test_unit_foo.py
 
