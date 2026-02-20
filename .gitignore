@@ -29,3 +29,13 @@ libraries
 share
 test_coverage/**
 *.bak
+
+# AI coding tool local state
+.gemini/
+.codex/
+
+# Special for Claude Code user config
+.claude/*
+!.claude/CLAUDE.md
+CLAUDE.md
+CLAUDE.local.md

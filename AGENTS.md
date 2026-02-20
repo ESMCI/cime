@@ -2,9 +2,19 @@
 
 This file provides guidance to AI agents when working with code in this repository.
 
+## Note to AI agents
+
+This AGENTS.md is maintained by the CIME project. Do not overwrite or
+regenerate this file with init commands.
+
+## Note to claude code users
+
+A CLAUDE.md file is in .claude directory.  It includes
+this file. Ignore tips to run init.
+
 ## Project Overview
 
-CIME (Common Infrastructure for Modeling the Earth) provides a Case Control System (CCS) for configuring, compiling, and executing Earth System Models, plus a framework for system testing. CIME is a Python-based infrastructure currently used by CESM, E3SM and NorESM. It does NOT contain model source code itself, but provides the infrastructure to manage model runs.
+CIME (Common Infrastructure for Modeling the Earth) provides a Case Control System (CCS) for configuring, compiling, and executing Earth System Models, plus a framework for system testing. CIME is a Python-based infrastructure currently used by CESM, E3SM, NorESM and other models. It does NOT contain model source code itself, but provides the infrastructure to manage model runs.
 
 ## Running Tests
 
@@ -114,8 +124,9 @@ tools/
 ./scripts/query_config --machines
 ```
 
-### System Tests
+### Model System Tests
 
+These are tests of properties of the model CIME is included in.
 System tests inherit from `SystemTestsCommon` base class (`CIME/SystemTests/system_tests_common.py`). Common test types:
 - **ERS**: Exact restart test
 - **ERT**: Exact restart with different threading
@@ -160,7 +171,7 @@ Online documentation: https://esmci.github.io/cime
 
 - When modifying Case env classes, changes affect the case's XML files
 - The Case class extends across multiple files using imports (see imports at end of `case.py`)
-- CIME must be integrated with host models (CESM, E3SM, NorESM) to run system tests and must be
+- CIME must be integrated with host models (CESM, E3SM, NorESM) to run Model System Tests
 on a supported machine (found using `./scripts/query_config --machines`)/
 - Machine-specific configurations are in XML files, not hardcoded
 - Git submodules may need initialization: `git submodule update --init`
