@@ -128,19 +128,20 @@ def create_namelists(self, component=None):
         if have_postprocessing:
             config_dir = os.path.dirname(_postprocessing_spec_file)
             cmd = os.path.join(config_dir, "buildnml")
-            # NOTE: In order to name the specific postprocessing component, there would need to be
-            # a new XML variable with something like POSTPROC_NAME
-            compname = "postprocessor"
-            logger.info("Create namelist for postprocessing component {}".format(compname))
-            import_and_run_sub_or_cmd(
-                cmd,
-                (caseroot),
-                "buildnml",
-                (self, caseroot, compname),
-                config_dir,
-                compname,
-                case=self,
-            )
+            if ( os.path.exists(cmd) ):
+                # NOTE: In order to name the specific postprocessing component, there would need to be
+                # a new XML variable with something like POSTPROC_NAME
+                compname = "postprocessor"
+                logger.info("Create namelist for postprocessing component {}".format(compname))
+                import_and_run_sub_or_cmd(
+                    cmd,
+                    (caseroot),
+                    "buildnml",
+                    (self, caseroot, compname),
+                    config_dir,
+                    compname,
+                    case=self,
+                )
 
     # Save namelists to docdir
     if not os.path.isdir(docdir):
