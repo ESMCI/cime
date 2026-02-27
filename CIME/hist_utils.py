@@ -101,7 +101,7 @@ def copy_histfiles(case, suffix, match_suffix=None):
                 if "ocean_geometry" in test_hist:
                     comments += "    skipping '{}'\n".format(test_hist)
                     continue
-                if "mom6.ic" in test_hist:
+                if re.search(r"mom6(_[0-9]{4})?\.ic", os.path.basename(test_hist)):
                     comments += "    skipping '{}'\n".format(test_hist)
                     continue
             comments += "  Copying hist files for model '{}'\n".format(model)
