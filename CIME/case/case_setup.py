@@ -154,11 +154,9 @@ def _create_macros_cmake(
     mach = mach_obj.get_machine_name()
     macros = [
         "universal.cmake",
-        os_ + ".cmake",
         compiler + ".cmake",
-        "{}_{}.cmake".format(compiler, os),
         mach + ".cmake",
-        "{}_{}.cmake".format(compiler, mach),
+        "{}_{}.cmake".format(mach, compiler),
         "CMakeLists.txt",
     ]
     for macro in macros:
