@@ -45,6 +45,7 @@ from CIME.XML.env_postprocessing import EnvPostprocessing
 from CIME.XML.generic_xml import GenericXML
 from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
+from CIME.compset_validity_checker import CompsetValidityChecker
 
 logger = logging.getLogger(__name__)
 
@@ -1023,6 +1024,18 @@ class Case(object):
         self.set_lookup_value("TESTS_MODS_DIR", tests_mods_dir)
         self.set_lookup_value("USER_MODS_DIR", user_mods_dir)
 
+    def _check_compset_validity(self, compset_alias):
+        # dictionary mapping component classes (keys) to component names (values)
+        comp_names = {}
+
+        for comp in self._component_classes:
+            if comp == "CPL":
+                continue
+            comp_names[comp] = self.get_value("COMP_{}".format(comp))
+
+        compset_validity_checker = CompsetValidityChecker(comp_names, compset_alias)
+        compset_validity_checker.check_compset_validity()
+
     def get_compset_components(self):
         # If are doing a create_clone then, self._compsetname is not set yet
         components = []
@@ -1402,6 +1415,12 @@ class Case(object):
         self.get_compset_var_settings(files)
 
         self.clean_up_lookups(allow_undefined=True)
+
+        # --------------------------------------------
+        # check validity
+        # --------------------------------------------
+
+        self._check_compset_validity(compset_alias)
 
         # --------------------------------------------
         # machine
