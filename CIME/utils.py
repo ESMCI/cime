@@ -224,9 +224,9 @@ def check_name(fullname, additional_chars=None, fullpath=False):
 
 
 # Should only be called from get_cime_config()
-def _read_cime_config_file():
+def _read_cime_config_file(configdir=".cime"):
     """
-    READ the config file in ~/.cime, this file may contain
+    READ the config file in configdir, this file may contain
     [main]
     CIME_MODEL=e3sm,cesm,ufs
     PROJECT=someprojectnumber
@@ -274,7 +274,7 @@ def _read_cime_config_file():
     )
 
     cime_config_file = os.path.abspath(
-        os.path.join(os.path.expanduser("~"), ".cime", "config")
+        os.path.join(os.path.expanduser("~"), configdir, "config")
     )
     cime_config = configparser.ConfigParser()
     if os.path.isfile(cime_config_file):
@@ -282,8 +282,8 @@ def _read_cime_config_file():
         for section in cime_config.sections():
             expect(
                 section in allowed_sections,
-                "Unknown section {} in .cime/config\nallowed sections are {}".format(
-                    section, allowed_sections
+                "Unknown section {} in {}/config\nallowed sections are {}".format(
+                    section, configdir, allowed_sections
                 ),
             )
         if cime_config.has_section("main"):
@@ -312,10 +312,21 @@ def _read_cime_config_file():
 _CIMECONFIG = None
 
 
+def get_config_dir():
+    commit = get_current_commit(
+        repo=os.path.abspath(os.path.join(get_cime_root(), "..")), tag=True
+    )
+    if commit.startswith("cesm") or commit.startswith("e3sm"):
+        configdir = "." + commit[0:5]
+    if not os.path.isdir(os.path.join(os.path.expanduser("~"), configdir)):
+        configdir = ".cime"
+    return configdir
+
+
 def get_cime_config():
     global _CIMECONFIG
     if not _CIMECONFIG:
-        _CIMECONFIG = _read_cime_config_file()
+        _CIMECONFIG = _read_cime_config_file(configdir=get_config_dir())
 
     return _CIMECONFIG
 
@@ -346,7 +357,7 @@ def copy_local_macros_to_dir(destination, extra_machdir=None):
     dotcime = None
     home = os.environ.get("HOME")
     if home:
-        dotcime = os.path.join(home, ".cime")
+        dotcime = os.path.join(home, get_config_dir())
     if dotcime and os.path.isdir(dotcime):
         local_macros.extend(glob.glob(dotcime + "/*.cmake"))
 
@@ -450,7 +461,9 @@ def get_cime_default_driver():
             driver = cime_config.get("main", "CIME_DRIVER")
             if driver:
                 logger.debug(
-                    "Setting CIME_driver={} from ~/.cime/config".format(driver)
+                    "Setting CIME_driver={} from ~/{}/config".format(
+                        driver, get_config_dir()
+                    )
                 )
 
     from CIME.config import Config
@@ -532,7 +545,11 @@ def get_model():
         if cime_config.has_option("main", "CIME_MODEL"):
             model = cime_config.get("main", "CIME_MODEL")
             if model is not None:
-                logger.debug("Setting CIME_MODEL={} from ~/.cime/config".format(model))
+                logger.debug(
+                    "Setting CIME_MODEL={} from ~/{}/config".format(
+                        model, get_config_dir()
+                    )
+                )
 
     # One last try
     if model is None:
@@ -557,7 +574,9 @@ def get_model():
 
     modelroot = os.path.join(get_cime_root(), "CIME", "config")
     models = os.listdir(modelroot)
-    msg = ".cime/config or environment variable CIME_MODEL must be set to one of: "
+    msg = "{}/config or environment variable CIME_MODEL must be set to one of: ".format(
+        get_config_dir()
+    )
     msg += ", ".join(
         [
             model
@@ -1572,7 +1591,9 @@ def get_project(machobj=None):
     if cime_config.has_option("main", "PROJECT"):
         project = cime_config.get("main", "PROJECT")
         if project is not None:
-            logger.info("Using project from .cime/config: " + project)
+            logger.info(
+                "Using project from {}/config: {}".format(get_config_dir(), project)
+            )
             return project
 
     projectfile = os.path.abspath(os.path.join(os.path.expanduser("~"), ".cesm_proj"))
@@ -1626,7 +1647,11 @@ def get_charge_account(machobj=None, project=None):
     if cime_config.has_option("main", "CHARGE_ACCOUNT"):
         charge_account = cime_config.get("main", "CHARGE_ACCOUNT")
         if charge_account is not None:
-            logger.info("Using charge_account from .cime/config: " + charge_account)
+            logger.info(
+                "Using charge_account from {}/config: {}".format(
+                    get_config_dir(), charge_account
+                )
+            )
             return charge_account
 
     if machobj is not None:
@@ -2608,7 +2633,9 @@ def get_htmlroot(machobj=None):
     if cime_config.has_option("main", "CIME_HTML_ROOT"):
         htmlroot = cime_config.get("main", "CIME_HTML_ROOT")
         if htmlroot is not None:
-            logger.info("Using htmlroot from .cime/config: {}".format(htmlroot))
+            logger.info(
+                "Using htmlroot from {}/config: {}".format(get_config_dir(), htmlroot)
+            )
             return htmlroot
 
     if machobj is not None:
@@ -2638,7 +2665,9 @@ def get_urlroot(machobj=None):
     if cime_config.has_option("main", "CIME_URL_ROOT"):
         urlroot = cime_config.get("main", "CIME_URL_ROOT")
         if urlroot is not None:
-            logger.info("Using urlroot from .cime/config: {}".format(urlroot))
+            logger.info(
+                "Using urlroot from {}/config: {}".format(get_config_dir(), urlroot)
+            )
             return urlroot
 
     if machobj is not None:
