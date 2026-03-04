@@ -97,7 +97,7 @@ export PKG_CONFIG_PATH=/opt/spakc-envs/view/pkgconfig
 export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
 export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
 
-if [[ "${CI:-false}" == "true" ]]; then
+if [[ "${CI:-false}" == "false" ]]; then
   source ${HOME}/.local/bin/env
   source ${HOME}/.venv/bin/activate
 fi
