@@ -95,8 +95,11 @@ fi
 export PATH=/opt/spack-envs/view/bin:$PATH
 export PKG_CONFIG_PATH=/opt/spakc-envs/view/pkgconfig
 export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
-source ${HOME}/.local/bin/env
-source ${HOME}/.venv/bin/activate
+
+if [[ "${CI:-false}" == "true" ]]; then
+  source ${HOME}/.local/bin/env
+  source ${HOME}/.venv/bin/activate
+fi
 
 # If not skipping entrypoint, set up user/group IDs and exec given command.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
