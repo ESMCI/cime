@@ -71,8 +71,9 @@ You will need to initialize and update submodules:
 
 From here you can edit the code and run the unit tests following this [guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#pytest).
 
-If you need to run the system tests you will need to have your respective model
-checked out and on a supported machine.
+When running the ``unit`` tests you can specify any valid machine e.g. docker and the tests will run.
+
+If you need to run the ``system`` tests you will need to have your respective model checked out and on a supported machine. Alternatively you can use CIME [container](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#docker-container) which is used in our GitHub CI testing.
 
 Before creating your PR you will need to run the code quality checkers; see this [guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#code-quality).
 
