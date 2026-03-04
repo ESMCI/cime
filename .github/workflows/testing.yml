@@ -62,7 +62,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          target: base
           context: docker/
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -123,6 +122,8 @@ jobs:
         with:
           path: cesm/cime
           submodules: "true"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Run tests
         shell: bash
         working-directory: cesm/cime
@@ -132,18 +133,16 @@ jobs:
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
         run: |
-          source /opt/conda/etc/profile.d/conda.sh
+          # manually run the entrypoint
+          source /entrypoint.sh
 
-          conda activate cesm
+          uv python install "${{ matrix.python-version }}"
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r test-requirements.txt
+          uv pip install pytest pytest-cov
 
-          mamba install -y 'python=${{ matrix.python-version }}'
-
-          pip install -r test-requirements.txt
-
-          # GitHub runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
-
-          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -214,6 +213,10 @@ jobs:
         with:
           path: /home/cime/inputdata
           key: inputdata-2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.10"
       - name: Run tests
         shell: bash
         working-directory: ${{ matrix.model.name }}/cime
@@ -223,31 +226,23 @@ jobs:
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
         run: |
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate ${{ matrix.model.name }}
-
-          pip install -r test-requirements.txt
-
+          # manually run the entrypoint
           source /entrypoint.sh
+
+          uv python install 3.10
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r test-requirements.txt
+          uv pip install pytest pytest-cov
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
           fi
 
-          # GitHub runner home is different than container
-          cp -rf /home/cime/.cime /github/home/
-
-          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            ln -sf /github/home/.cime/config_machines.v2.xml /github/home/.cime/config_machines.xml
-          else
-            ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
-          fi
-
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
