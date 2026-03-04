@@ -1,0 +1,36 @@
+﻿..
+  module.rst
+
+CIME.user\_mod\_support
+=======================
+
+.. automodule:: CIME.user_mod_support
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    apply_user_mods
+                    build_include_dirs_list
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

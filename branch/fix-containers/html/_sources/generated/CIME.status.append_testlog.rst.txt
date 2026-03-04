@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.status.append\_testlog
+===========================
+
+.. currentmodule:: CIME.status
+
+.. autofunction:: append_testlog

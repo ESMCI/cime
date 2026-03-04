@@ -1,0 +1,29 @@
+..
+  class.rst
+
+CIME.config.Config
+==================
+
+.. currentmodule:: CIME.config
+
+.. autoclass:: Config
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Config.__init__
+                    ~Config.instance
+                    ~Config.load
+                    ~Config.load_defaults
+                    ~Config.print_method_rst
+                    ~Config.print_rst_table
+                    ~Config.print_variable_rst
+        
+    
