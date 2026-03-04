@@ -20,11 +20,13 @@ For more information on contributing to open source projects,
 is a great starting point. Also, checkout the [Zen of Scientific Software Maintenance](https://jrleeman.github.io/ScientificSoftwareMaintenance/)
 for some guiding principles on how to create high quality scientific software contributions.
 
+The canonical, detailed contributing guide for this repository is included in the source tree at `doc/source/contributing-guide.rst`; please consult that file as the single source of truth for developer workflows, testing, and container usage.
+
 ## Getting Started
 
 Interested in helping extend CIME? Have code from your research that you believe others will
-find useful? Have a few minutes to tackle an issue? In this guide we will get you setup and
-integrated into contributing to CIME!
+find useful? Have a few minutes to tackle an issue? This guide will get you set up to contribute
+to CIME.
 
 ## What Can I Do?
 * Tackle any unassigned [issues](https://github.com/ESMCI/CIME/issues) you wish!
@@ -44,7 +46,7 @@ The goal is to maintain a diverse community that's pleasant for everyone.
   include multiple bug fixes in a single pull request, but they should be related.
   For unrelated changes, please submit multiple pull requests.
 * Do not commit changes to files that are irrelevant to your feature or bugfix
-  (eg: .gitignore).
+  (e.g., .gitignore).
 * Be willing to accept constructive criticism as part of issuing a pull request,
   since the CIME developers are dedicated to ensuring that new features extend the
   system robustly and do not introduce new bugs.
@@ -53,7 +55,7 @@ The goal is to maintain a diverse community that's pleasant for everyone.
 
 ## Reporting a bug
 When creating a new issue, please be as specific as possible. Include the version
-of the code you were using, as well as what operating system you are running.
+of the code you were using, as well as what operating system you are running. Include the commit SHA or tag (e.g., output of `git rev-parse HEAD`) and the branch name.
 If possible, include complete, minimal example code that reproduces the problem.
 
 ## Pull Requests
@@ -62,34 +64,17 @@ We love pull requests from everyone. Fork, then clone the repo:
 
     git clone git@github.com:your-username/CIME.git
 
-Additionally you may need to checkout the submodules with:
+You will need to initialize and update submodules:
 
     cd CIME
-    git submodule update --init
+    git submodule update --init --recursive
 
-You will need to install CIME dependencies and edit config files
-to tell CIME about your development machine. See the [CIME users guide](https://esmci.github.io/cime/users_guide/porting-cime.html)
+From here you can edit the code and run the unit tests following this [guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#pytest).
 
-Run the scripts_regression_tests:
+If you need to run the system tests you will need to have your respective model
+checked out and on a supported machine.
 
-    cd CIME/tests
-    python scripts_regression_tests.py
-
-Alternatively with `pytest`:
-
-    pytest CIME/tests
-
-Make your change. Add tests for your change. Make the tests pass to the same level as before your changes.
-
-    cd CIME/tests
-    python scripts_regression_tests.py
-
-Run [pre-commit](https://pre-commit.com/#usage) before committing changes and submitting a PR.
-
-    pip install pre-commit
-    pre-commit run -a
-
-Commit the changes you made. Chris Beams has written a [guide](https://chris.beams.io/posts/git-commit/) on how to write good commit messages.
+Before creating your PR you will need to run the code quality checkers; see this [guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#code-quality).
 
 Push to your fork and [submit a pull request][pr].
 
@@ -102,8 +87,9 @@ We may suggest some changes or improvements or alternatives.
 Some things that will increase the chance that your pull request is accepted:
 
 * Write tests.
-* Follow [PEP8][pep8] for style. (The `flake8` utility can help with this.)
-* Write a [good commit message][commit].
+* Write documentation.
+* Follow the [Code Quality guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#code-quality)
+* Write a good commit message, we recommend using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 Pull requests will automatically have tests run by a Github Action. This
 includes running both the unit tests as well as `pre-commit`, which checks
