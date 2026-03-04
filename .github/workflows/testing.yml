@@ -124,8 +124,6 @@ jobs:
           submodules: "true"
       - name: Install uv
         uses: astral-sh/setup-uv@v7
-        with:
-          python-version: ${{ matrix.python-version }}
       - name: Run tests
         shell: bash
         working-directory: cesm/cime
@@ -134,15 +132,15 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
-          UV_SYSTEM_PYTHON: 1
         run: |
           # manually run the entrypoint
           source /entrypoint.sh
 
+          uv python install "${{ matrix.python-version }}"
           uv venv
           source .venv/bin/activate
-          pip install -r test-requirements.txt
-          pip install pytest pytest-cov
+          uv pip install -r test-requirements.txt
+          uv pip install pytest pytest-cov
 
           uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
@@ -227,15 +225,15 @@ jobs:
           CIME_DRIVER: ${{ matrix.driver }}
           CIME_TEST_PLATFORM: ubuntu-latest
           SKIP_ENTRYPOINT: "true"
-          UV_SYSTEM_PYTHON: 1
         run: |
           # manually run the entrypoint
           source /entrypoint.sh
 
+          uv python install 3.10
           uv venv
           source .venv/bin/activate
-          pip install -r test-requirements.txt
-          pip install pytest pytest-cov
+          uv pip install -r test-requirements.txt
+          uv pip install pytest pytest-cov
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
