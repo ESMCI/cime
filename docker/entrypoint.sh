@@ -85,16 +85,6 @@ if [[ "${CI:-false}" == "true" ]]; then
   cp -rf /root/.cime "${HOME}"
 fi
 
-
-# Write minimal .bashrc to activate correct conda environment and ensure system perl is preferred
-{
-    echo "export PATH=\"/opt/spack-envs/view/bin:$PATH\""
-    echo "export PKG_CONFIG_PATH=\"/opt/spack-envs/view/lib/pkgconfig\""
-    echo "export LD_LIBRARY_PATH=\"/opt/spack-envs/view/lib\""
-    echo "source \$HOME/.local/bin/env"
-} > "${HOME}/.bashrc"
-
-
 link_config_machines
 
 # Allow git to operate in any directory, for container/dev scenarios
@@ -102,6 +92,11 @@ if [[ -e "${PWD}/.git" ]]; then
     git config --global --add safe.directory "*"
 fi
 
+export PATH=/opt/spack-envs/view/bin:$PATH
+export PKG_CONFIG_PATH=/opt/spakc-envs/view/pkgconfig
+export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
+source ${HOME}/.local/bin/env
+source ${HOME}/.venv/bin/activate
 
 # If not skipping entrypoint, set up user/group IDs and exec given command.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
