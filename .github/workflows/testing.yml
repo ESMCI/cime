@@ -141,8 +141,8 @@ jobs:
 
           uv venv
           source .venv/bin/activate
-          uv pip install -r test-requirements.txt
-          uv pip install pytest pytest-cov
+          pip install -r test-requirements.txt
+          pip install pytest pytest-cov
 
           uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
@@ -234,8 +234,8 @@ jobs:
 
           uv venv
           source .venv/bin/activate
-          uv pip install -r test-requirements.txt
-          uv pip install pytest pytest-cov
+          pip install -r test-requirements.txt
+          pip install pytest pytest-cov
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
