@@ -134,7 +134,7 @@ jobs:
           CIME_DRIVER: "nuopc"
           CIME_TEST_PLATFORM: "ubuntu-latest"
           SKIP_ENTRYPOINT: "true"
-          UV_SYSTEM_PYTHON: 1 
+          UV_SYSTEM_PYTHON: 1
         run: |
           # manually run the entrypoint
           source /entrypoint.sh
