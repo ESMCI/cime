@@ -7,18 +7,8 @@ export USER_ID="${USER_ID:-1000}"
 export GROUP_ID="${GROUP_ID:-1000}"
 
 # Set static home path where .cime exists and container entrypoint options
-CIME_HOME="/home/cime"
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
 SRC_PATH="${SRC_PATH:-${PWD}}"
-
-
-# Determine HOME directory: use provided HOME in CI, /root if root, default otherwise
-if [[ "${USER_ID}" == "0" ]]; then
-    HOME="/root"
-elif [[ "${CI:-false}" == "false" ]]; then
-    # Not populated in $HOME until gosu switches user
-    HOME="/home/cime"
-fi
 
 
 # Fix AR variable in MCT-related Makefiles
@@ -55,7 +45,7 @@ function build_cprnc() {
     make
 
     # Needs to be copied into the machines configured tool path
-    cp cprnc "${CIME_HOME}/tools/cprnc"
+    cp cprnc "${HOME}/tools/cprnc"
 
     popd || exit 1
 }
@@ -63,21 +53,21 @@ function build_cprnc() {
 
 # Download input data needed for model setup
 function download_input_data() {
-    mkdir -p "${CIME_HOME}/inputdata/cpl/gridmaps/oQU240" \
-        "${CIME_HOME}/inputdata/share/domains" \
-        "${CIME_HOME}/timings" \
-        "${CIME_HOME}/cases" \
-        "${CIME_HOME}/archive" \
-        "${CIME_HOME}/baselines" \
-        "${CIME_HOME}/tools"
+    mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240" \
+        "${HOME}/inputdata/share/domains" \
+        "${HOME}/timings" \
+        "${HOME}/cases" \
+        "${HOME}/archive" \
+        "${HOME}/baselines" \
+        "${HOME}/tools"
 
-    wget -O "${CIME_HOME}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
+    wget -O "${HOME}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
 
-    wget -O "${CIME_HOME}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc" \
+    wget -O "${HOME}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
 
-    wget -O "${CIME_HOME}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc" \
+    wget -O "${HOME}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 }
 
@@ -85,35 +75,21 @@ function download_input_data() {
 # Link correct config_machines file based on CIME_MODEL, also set ESMFMKFILE for cesm
 function link_config_machines() {
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-        ln -sf "${CIME_HOME}/.cime/config_machines.v2.xml" "${HOME}/.cime/config_machines.xml"
+        ln -sf "${HOME}/.cime/config_machines.v2.xml" "${HOME}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
         export ESMFMKFILE=/opt/conda/envs/cesm/lib/esmf.mk
 
-        ln -sf "${CIME_HOME}/.cime/config_machines.v3.xml" "${HOME}/.cime/config_machines.xml"
+        ln -sf "${HOME}/.cime/config_machines.v3.xml" "${HOME}/.cime/config_machines.xml"
     fi
 }
 
 
-# If root or in CI, move .cime config to the appropriate home directory
-if [[ "${USER_ID}" == "0" ]] || [[ "${CI:-false}" == "true" ]]; then
-    cp -rf "${CIME_HOME}/.cime" "${HOME}"
-fi
-
-
 # Write minimal .bashrc to activate correct conda environment and ensure system perl is preferred
 {
-    echo "source /opt/conda/etc/profile.d/conda.sh"
-    echo "conda activate base"
-    echo "if [[ ${CIME_MODEL} == 'e3sm' ]]; then"
-    echo "  conda activate e3sm"
-    echo "elif [[ ${CIME_MODEL} == 'cesm' ]]; then"
-    echo "  conda activate cesm"
-    echo "fi"
-
-    echo "export PERL=/usr/bin/perl"
-
-    # prefer host perl
-    echo "hash -p /usr/bin/perl perl"
+    echo "export PATH=\"/opt/spack-envs/view/bin:$PATH\""
+    echo "export PKG_CONFIG_PATH=\"/opt/spack-envs/view/lib/pkgconfig\""
+    echo "export LD_LIBRARY_PATH=\"/opt/spack-envs/view/lib\""
+    echo "source \$HOME/.local/bin/env"
 } > "${HOME}/.bashrc"
 
 
@@ -127,15 +103,5 @@ fi
 
 # If not skipping entrypoint, set up user/group IDs and exec given command.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
-    if [[ "${USER_ID}" == "0" ]]; then
-        exec "${@}"
-    else
-        # Modify user/group, useful for local in-container development
-        groupmod -g "${GROUP_ID}" -n cime ubuntu
-        usermod -d "${HOME}" -u "${USER_ID}" -g "${GROUP_ID}" -l cime ubuntu
-
-        chown -R cime:cime "${HOME}"
-
-        gosu "${USER_ID}" "${@}"
-    fi
+    exec "${@}"
 fi
