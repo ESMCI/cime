@@ -139,10 +139,13 @@ jobs:
           # manually run the entrypoint
           source /entrypoint.sh
 
+          uv python install '${{ matrix.python-version }}'
+          uv venv
+          source .venv/bin/activate
           uv pip install -r test-requirements.txt
           uv pip install pytest pytest-cov
 
-          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -230,6 +233,9 @@ jobs:
           # manually run the entrypoint
           source /entrypoint.sh
 
+          uv python install 3.10
+          uv venv
+          source .venv/bin/activate
           uv pip install -r test-requirements.txt
           uv pip install pytest pytest-cov
 
@@ -240,7 +246,7 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-          pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
