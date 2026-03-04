@@ -139,7 +139,6 @@ jobs:
           # manually run the entrypoint
           source /entrypoint.sh
 
-          uv python install '${{ matrix.python-version }}'
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
@@ -233,7 +232,6 @@ jobs:
           # manually run the entrypoint
           source /entrypoint.sh
 
-          uv python install 3.10
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
