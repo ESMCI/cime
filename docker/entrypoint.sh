@@ -8,8 +8,6 @@ export GROUP_ID="${GROUP_ID:-1000}"
 
 # Set static home path where .cime exists and container entrypoint options
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
-SRC_PATH="${SRC_PATH:-${PWD}}"
-
 
 # Fix AR variable in MCT-related Makefiles
 function fix_mct_makefiles() {
@@ -83,6 +81,10 @@ function link_config_machines() {
     fi
 }
 
+if [[ "${CI:-false}" == "true" ]]; then
+  cp -rf /root/.cime "${HOME}"
+fi
+
 
 # Write minimal .bashrc to activate correct conda environment and ensure system perl is preferred
 {
@@ -96,7 +98,7 @@ function link_config_machines() {
 link_config_machines
 
 # Allow git to operate in any directory, for container/dev scenarios
-if [[ -e "${SRC_PATH}/.git" ]]; then
+if [[ -e "${PWD}/.git" ]]; then
     git config --global --add safe.directory "*"
 fi
 
