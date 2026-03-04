@@ -29,8 +29,14 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     vim \
     neovim \
-  && rm -rf /var/lib/apt/lists/* \
-  && curl -LsSf https://astral.sh/uv/install.sh | sh
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+  && source ~/.local/bin/env \
+  && uv python install 3.10 \
+  && uv venv \
+  && source .venv/bin/activate \
+  && uv pip install pytest pytest-cov
 
 COPY entrypoint.sh /entrypoint.sh
 COPY .cime /root/.cime
