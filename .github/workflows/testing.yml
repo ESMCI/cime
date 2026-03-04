@@ -122,6 +122,10 @@ jobs:
         with:
           path: cesm/cime
           submodules: "true"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Run tests
         shell: bash
         working-directory: cesm/cime
@@ -132,15 +136,10 @@ jobs:
           SKIP_ENTRYPOINT: "true"
         run: |
           # manually run the entrypoint
-          source /entrypoint.sh
+          SKIP_ENTRYPOINT="true" source /entrypoint.sh
 
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate cesm
-
-          mamba install -y 'python=${{ matrix.python-version }}'
-
-          pip install -r test-requirements.txt
+          uv pip install -r test-requirements.txt
+          uv pip install pytest pytest-cov
 
           pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
       - name: Upload coverage reports to Codecov
@@ -213,6 +212,10 @@ jobs:
         with:
           path: /home/cime/inputdata
           key: inputdata-2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.10"
       - name: Run tests
         shell: bash
         working-directory: ${{ matrix.model.name }}/cime
@@ -223,25 +226,13 @@ jobs:
           SKIP_ENTRYPOINT: "true"
         run: |
           # manually run the entrypoint
-          source /entrypoint.sh
+          SKIP_ENTRYPOINT=true source /entrypoint.sh
 
-          source /opt/conda/etc/profile.d/conda.sh
-
-          conda activate ${{ matrix.model.name }}
-
-          pip install -r test-requirements.txt
+          uv pip install -r test-requirements.txt
+          uv pip install pytest pytest-cov
 
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             fix_mct_makefiles ../externals/mct
-          fi
-
-          # TODO remove just for testing
-          ls -la "${HOME}"
-
-          if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-            ln -sf /github/home/.cime/config_machines.v2.xml /github/home/.cime/config_machines.xml
-          else
-            ln -sf /github/home/.cime/config_machines.v3.xml /github/home/.cime/config_machines.xml
           fi
 
           git config --global user.name "${{ github.actor }}"
