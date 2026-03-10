@@ -229,6 +229,9 @@ jobs:
           # manually run the entrypoint
           source /entrypoint.sh
 
+          # TODO remove, debug only
+          export
+
           uv python install 3.10
           uv venv
           source .venv/bin/activate
