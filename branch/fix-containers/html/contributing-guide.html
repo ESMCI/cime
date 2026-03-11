@@ -248,8 +248,8 @@ pip<span class="w"> </span>install<span class="w"> </span>pytest<span class="w">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/esmci/cime:latest
 </pre></div>
 </div>
-<p>or can be built locally.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>docker/
+<p>or can be built locally. The build context needs to be set to the root of the CIME repository.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>.
 </pre></div>
 </div>
 <section id="running">
