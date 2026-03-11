@@ -18,7 +18,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && mkdir -p /opt/spack-envs
 
-COPY spack.yaml /opt/spack-envs/spack.yaml
+COPY docker/spack.yaml /opt/spack-envs/spack.yaml
 
 RUN spack compiler find \
   && spack external find --not-buildable \
@@ -31,14 +31,16 @@ RUN apt-get update \
     neovim \
   && rm -rf /var/lib/apt/lists/*
 
+COPY test-requirements.txt /requirements.txt
+
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
   && source ~/.local/bin/env \
   && uv python install 3.10 \
   && uv venv \
   && source .venv/bin/activate \
-  && uv pip install pytest pytest-cov
+  && uv pip install -r /requirements.txt
 
-COPY entrypoint.sh /entrypoint.sh
-COPY .cime /root/.cime
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/.cime /root/.cime
 
 ENTRYPOINT ["/entrypoint.sh"]
