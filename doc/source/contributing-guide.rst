@@ -147,11 +147,11 @@ The image can be pulled from ``ghcr.io``.
 
    docker pull ghcr.io/esmci/cime:latest
 
-or can be built locally.
+or can be built locally. The build context needs to be set to the root of the CIME repository.
 
 .. code-block:: bash
 
-   docker build -t ghcr.io/esmci/cime:latest docker/
+   docker build -t ghcr.io/esmci/cime:latest -f docker/Dockerfile .
 
 Running
 ```````
