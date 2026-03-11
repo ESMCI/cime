@@ -228,16 +228,10 @@ jobs:
           # manually run the entrypoint
           source /entrypoint.sh
 
-          # TODO remove, debug only
-          export
-
           uv python install 3.10
           uv venv
           source .venv/bin/activate
           uv pip install -r test-requirements.txt
-          # if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
-          #   fix_mct_makefiles ../externals/mct
-          # fi
 
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
