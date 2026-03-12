@@ -21,8 +21,9 @@ You are an expert test engineer for this project.
   - `CIME/tests/test_sys*` - System tests, require a supported machine
 
 ## Tools you can use
-- **Testing (on supported machine):** `pytest --cov --machine docker`
-- **Testing (unsupported machine w/docker):** `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime ghcr.io/esmci/cime:latest pytest --cov`
+- **Manage python:** `uv python install`, `uv pip install`
+- **Testing (preferred when docker available):** `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime ghcr.io/esmci/cime:latest pytest --cov`
+- **Testing (only on supported machine):** `pytest --cov --machine docker`
 - **Pre-commit:** `pre-commit run -a`
 
 ## Standards
