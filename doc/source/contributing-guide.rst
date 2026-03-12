@@ -161,7 +161,7 @@ following example assumes the model is checked out in ``$SRC_PATH``.
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v `pwd`/test-cases:/root/cases -v `pwd`/input-data:/root/inputdata -w /root/E3SM/cime ghcr.io/esmci/cime:latest bash
+   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -v ./inputdata:/root/inputdata -w /root/E3SM/cime ghcr.io/esmci/cime:latest bash
 
 This example will drop into a shell where CIME commands or tests can be run.
 The options are broken down below.
@@ -169,8 +169,8 @@ The options are broken down below.
 - ``--hostname docker`` is required to tell CIME which machine definition to use.
 - ``-e CIME_MODEL=e3sm`` defines the model.
 - ``-v ${SRC_PATH}:/root/E3SM`` passes through the model source.
-- ``-v `pwd`/test-cases:/root/cases`` stores cases in the current directory under ``test-cases``.
-- ``-v `pwd`/inputdata:/root/inputdata`` stores inputdata in the current directory under ``inputdata``.
+- ``-v ./inputdata:/root/inputdata`` persistent input data.
+- ``-v ./storage:/root/storage`` persistent cases, baselines, timings, etc.
 - ``-w /root/E3SM/cime`` set the current working directory to CIME's root.
 - ``ghcr.io/esmci/cime:latest`` container image.
 - ``bash`` the command to run in the container.
@@ -179,9 +179,9 @@ You can even run CIME or testing without a shell.
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v `pwd`/test-cases:/root/cases -v `pwd`/input-data:/root/inputdata -w /root/E3SM/cime ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
+   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v `pwd`/test-cases:/root/cases -v `pwd`/input-data:/root/inputdata -w /root/E3SM/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
+   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
 

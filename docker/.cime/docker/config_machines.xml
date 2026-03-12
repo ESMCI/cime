@@ -8,14 +8,14 @@
     <COMPILERS>gnu,gnuX</COMPILERS>
     <MPILIBS>openmpi</MPILIBS>
     <PROJECT>CIME</PROJECT>
-    <SAVE_TIMING_DIR>/root/timings</SAVE_TIMING_DIR>
+    <SAVE_TIMING_DIR>/root/storage/timings</SAVE_TIMING_DIR>
     <SAVE_TIMING_DIR_PROJECTS>CIME</SAVE_TIMING_DIR_PROJECTS>
-    <CIME_OUTPUT_ROOT>/root/cases</CIME_OUTPUT_ROOT>
+    <CIME_OUTPUT_ROOT>/root/storage/cases</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/root/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/root/inputdata-clmforc</DIN_LOC_ROOT_CLMFORC>
-    <DOUT_S_ROOT>/root/archive/$CASE</DOUT_S_ROOT>
-    <BASELINE_ROOT>/root/baselines/$COMPILER</BASELINE_ROOT>
-    <CCSM_CPRNC>/root/tools/cprnc</CCSM_CPRNC>
+    <DOUT_S_ROOT>/root/storage/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>/root/storage/baselines/$COMPILER</BASELINE_ROOT>
+    <CCSM_CPRNC>/root/storage/tools/cprnc</CCSM_CPRNC>
     <GMAKE>make</GMAKE>
     <GMAKE_J>4</GMAKE_J>
     <TESTS>e3sm_developer</TESTS>

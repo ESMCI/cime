@@ -3,8 +3,6 @@
 # Set up basic user, logname, and default group/user IDs
 export USER="$(id -nu)"
 export LOGNAME="${USER}"
-export USER_ID="${USER_ID:-1000}"
-export GROUP_ID="${GROUP_ID:-1000}"
 
 # Set static home path where .cime exists and container entrypoint options
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
@@ -34,13 +32,15 @@ function build_cprnc() {
 # Download input data needed for model setup
 # required for grid generation tests
 function download_input_data() {
-    mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240" \
-        "${HOME}/inputdata/share/domains" \
-        "${HOME}/timings" \
-        "${HOME}/cases" \
-        "${HOME}/archive" \
-        "${HOME}/baselines" \
-        "${HOME}/tools"
+    local storage="${HOME}/storage"
+
+    mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240"
+    mkdir -p "${HOME}/inputdata/share/domains"
+    mkdir -p "${storage}/cases"
+    mkdir -p "${storage}/timings"
+    mkdir -p "${storage}/archive"
+    mkdir -p "${storage}/baselines"
+    mkdir -p "${storage}/tools"
 
     wget -O "${HOME}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
