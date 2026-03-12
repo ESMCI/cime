@@ -35,24 +35,6 @@ Requires a supported machine and supported model (E3SM, CESM, NorESM).
 
 ## Developer
 
-### Container
-
-Provides a supported machine for CIME development and testing.
-
-Assume supported model is cloned in parent directory.
-
-Build the container: `docker build -t ghcr.io/esmci/cime:latest -f docker/Dockerfile .`
-Run a non-persistent container: `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*`
-Start persistent container: `docker run -d --name cime --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest`
-Run develop test: `docker exec -it cime /entrypoint.sh pytest CIME/tests/test_unit*`
-Create a case: `docker exec -it cime /entrypoint.sh ./scripts/create_newcase --compset X --res f19_g16 --case /root/storage/cases/case01`
-Setup a case: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./case.setup`
-Build a case: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./case.build`
-Submit a case: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./case.submit`
-Query case config: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./xmlquery`
-Change a case config: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./xmlchange`
-Run a model system test: `docker exec -it cime /entrypoint.sh ./scripts/create_test SMS.f19_g16.S`
-
 ### Testing
 
 Unit tests: `CIME/tests/test_unit*.py`
