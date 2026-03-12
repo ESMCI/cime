@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.locked\_files.diff\_lockedfile
-===================================
-
-.. currentmodule:: CIME.locked_files
-
-.. autofunction:: diff_lockedfile

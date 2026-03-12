@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.jenkins\_generic\_job.delete\_old\_test\_data
-==================================================
-
-.. currentmodule:: CIME.jenkins_generic_job
-
-.. autofunction:: delete_old_test_data
