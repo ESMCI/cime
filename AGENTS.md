@@ -12,10 +12,10 @@ this file. Ignore tips to run init.
 
 ## Overview
 
-At it's core CIME provides a user the ability to configure, build, and run
+At its core, CIME provides users the ability to configure, build, and run
 simulation models. In addition it provides tools to post-process and archive
 model output. CIME provides model developers the ability to test their models
-under specific criteria e.g. check performance or reproducibility.
+under specific criteria, e.g., check performance or reproducibility.
 
 Documentation: https://esmci.github.io/cime
 
@@ -23,7 +23,7 @@ Documentation: https://esmci.github.io/cime
 
 Requires a supported machine and supported model (E3SM, CESM, NorESM).
 
-- Create a case: `./scripts/create_newcase --compset <compset> --res <res> --case <case directory> --machine <machone>`, e.g. `./scripts/create_newcase --compset A --res f19_g16 --case ./cases/case01 --machine docker`
+- Create a case: `./scripts/create_newcase --compset <compset> --res <res> --case <case directory> --machine <machine>`, e.g. `./scripts/create_newcase --compset A --res f19_g16 --case ./cases/case01 --machine docker`
 - Setup case: `./case.setup`
 - Build case: `./case.build`
 - Submit case: `./case.submit`
@@ -42,7 +42,7 @@ Provides a supported machine for CIME development and testing.
 Assume supported model is cloned in parent directory.
 
 Build the container: `docker build -t ghcr.io/esmci/cime:latest -f docker/Dockerfile .`
-Run a non-persistent container: `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*`:w
+Run a non-persistent container: `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*`
 Start persistent container: `docker run -d --name cime --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest`
 Run develop test: `docker exec -it cime /entrypoint.sh pytest CIME/tests/test_unit*`
 Create a case: `docker exec -it cime /entrypoint.sh ./scripts/create_newcase --compset X --res f19_g16 --case /root/storage/cases/case01`
@@ -70,13 +70,13 @@ Use Google style for docstrings.
 
 Use `black` and `pylint` for formatting and linting.
 
-Always use `pre-commit` before commiting code, e.g. `pre-commit run -a`.
+Always use `pre-commit` before committing code, e.g. `pre-commit run -a`.
 
 ### Documentation
 
 Documentation is found under `doc/`.
 
-Always write documentation in reStructured text.
+Always write documentation in reStructuredText.
 
 Setup: `pip install -r doc/requirements.txt`
 
@@ -89,11 +89,11 @@ The `Case` class (`CIME/case/case.py`) is the core of CIME.
 Case configuration is handled by XML files. 
 
 - Dynamic configuration `CIME/XML/env_*.py`, read/write configuration specific to a `Case`.
-- Static configuration, all non `env_*.py` files under `CIME/XML/*.py`, readonly provided before `Case` is constructed.
+- Static configuration: all non-`env_*.py` files under `CIME/XML/*.py`, read-only and provided before `Case` is constructed.
 
-Dynamic config classes named after XML they read e.g. `Machines`.
+Dynamic config classes are named after the XML they read, e.g., `Machines`.
 
-Static config classes name `Env*`.
+Static config classes are named `Env*`.
 
 Model System Tests are found under `CIME/SystemTests/`, each test type has it's own module.
 
@@ -104,10 +104,10 @@ CIME is heavily XML-driven. Key concepts:
 - Config files define machines, compsets, grids, tests
 
 ## Development Notes
-- Do not use external packages; if it's required ask for users approval
+- Do not use external packages; if required, ask for the user's approval
 - Host models provide static configuration
-- Dynamic configuration is dervice from static configuration + user input
+- Dynamic configuration is derived from static configuration + user input
 - Always use dependency injection; if refactoring prefer dependency injection
-- The CASE class is spread across multiple files
+- The Case class is spread across multiple files
 - Running model system tests require a support machine
 - Can use docker container if not on supported machine
