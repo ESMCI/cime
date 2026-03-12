@@ -1,7 +1,5 @@
 # AGENTS.md
 
-This file provides guidance to AI agents when working with code in this repository.
-
 ## Note to AI agents
 
 This AGENTS.md is maintained by the CIME project. Do not overwrite or
@@ -12,126 +10,92 @@ regenerate this file with init commands.
 A CLAUDE.md file is in .claude directory.  It includes
 this file. Ignore tips to run init.
 
-## Project Overview
+## Overview
 
-CIME (Common Infrastructure for Modeling the Earth) provides a Case Control System (CCS) for configuring, compiling, and executing Earth System Models, plus a framework for system testing. CIME is a Python-based infrastructure currently used by CESM, E3SM, NorESM and other models. It does NOT contain model source code itself, but provides the infrastructure to manage model runs.
+At it's core CIME provides a user the ability to configure, build, and run
+simulation models. In addition it provides tools to post-process and archive
+model output. CIME provides model developers the ability to test their models
+under specific criteria e.g. check performance or reproducibility.
 
-## Running Tests
+Documentation: https://esmci.github.io/cime
 
-### Unit and System Tests
+### User Usage
 
-From the repository root, run tests using either:
+Requires a supported machine and supported model (E3SM, CESM, NorESM).
 
-```bash
-# Using pytest (recommended)
-pytest CIME/tests
+- Create a case: `./scripts/create_newcase --compset <compset> --res <res> --case <case directory> --machine <machone>`, e.g. `./scripts/create_newcase --compset A --res f19_g16 --case ./cases/case01 --machine docker`
+- Setup case: `./case.setup`
+- Build case: `./case.build`
+- Submit case: `./case.submit`
+- Query case config: `./xmlquery`
+- Change case config: `./xmlchange`
+- Preview namelist: `./preview_namelists`
+- Run a model system test: `./scripts/create_test  --machine <machine> SMS.f19_g16.X`, e.g. `./scripts/create_test --machine docker SMS.f19_g16.X`
+- Query configuration: `./scripts/query_config --compsets`, `./scripts/query_config --grids`, `./scripts/query_config --machines`
 
-# Run specific test file
-pytest CIME/tests/test_unit_foo.py
+## Developer
 
-# Run specific test class
-pytest CIME/tests/test_unit_foo.py::TestClass
+### Container
 
-# Run specific test case
-pytest CIME/tests/test_unit_foo.py::TestClass::test_method
-```
+Provides a supported machine for CIME development and testing.
 
-Test files follow a naming convention:
-- Unit tests: `test_unit_*.py`
-- System tests: `test_sys_*.py`
+Assume supported model is cloned in parent directory.
 
-### Pre-commit Hooks
+Build the container: `docker build -t ghcr.io/esmci/cime:latest -f docker/Dockerfile .`
+Run a non-persistent container: `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*`:w
+Start persistent container: `docker run -d --name cime --hostname docker -v ../:/root/model -w /root/model/cime -v ./inputdata:/root/inputdata -v ./storage:/root/storage -e CIME_MODEL=e3sm ghcr.io/esmci/cime:latest`
+Run develop test: `docker exec -it cime /entrypoint.sh pytest CIME/tests/test_unit*`
+Create a case: `docker exec -it cime /entrypoint.sh ./scripts/create_newcase --compset X --res f19_g16 --case /root/storage/cases/case01`
+Setup a case: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./case.setup`
+Build a case: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./case.build`
+Submit a case: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./case.submit`
+Query case config: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./xmlquery`
+Change a case config: `docker exec -it -w /root/storage/cases/case01 cime /entrypoint.sh ./xmlchange`
+Run a model system test: `docker exec -it cime /entrypoint.sh ./scripts/create_test SMS.f19_g16.S`
 
-Before committing, always run:
+### Testing
 
-```bash
-pip install pre-commit
-pre-commit run -a
-```
+Unit tests: `CIME/tests/test_unit*.py`
+E2E tests: `CIME/tests/test_sys*.py`
 
-This runs:
-- `black` formatter on CIME code
-- `pylint` with project-specific configuration
-- XML validation on config files
-- End-of-file and trailing whitespace checks
+Setup: `pip install -r test-requirements.txt`
 
-## Code Quality
+Running tests: `pytest CIME/tests/test_*.py`
 
-- Code is formatted with `black`
-- Linted with `pylint` (see `.pre-commit-config.yaml` for disabled checks)
-- Python 3.9+ required
-- Follow PEP8 style guidelines
+### Code Quality
 
-## Key Architecture Concepts
+Follow `pep8` style guidelines.
 
-### Case Control System (CCS)
+Use Google style for docstrings.
 
-The heart of CIME is the `Case` class (`CIME/case/case.py`), which manages all interactions with a CIME case. The Case class coordinates between:
+Use `black` and `pylint` for formatting and linting.
 
-1. **Config XML Classes** (readonly) - Located in `CIME/XML/`, these read CIME distribution config files like `config_*.xml`. Python classes are named after the XML they read (e.g., `Machines` reads machine configs).
+Always use `pre-commit` before commiting code, e.g. `pre-commit run -a`.
 
-2. **Env XML Classes** (read/write) - Also in `CIME/XML/`, these manage case-specific `env_*.xml` files. Classes are named `Env*` (e.g., `EnvRun`, `EnvBuild`).
+### Documentation
 
-The Case class contains an array of Env classes and uses Config classes to populate them during case creation/configuration.
+Documentation is found under `doc/`.
 
-### Directory Structure
+Always write documentation in reStructured text.
 
-```
-CIME/
-├── case/              # Case control modules (setup, run, submit, etc.)
-├── XML/               # XML parsers for config and env files
-├── SystemTests/       # System test implementations (ERS, ERT, etc.)
-├── Tools/             # Case manipulation tools (xmlchange, xmlquery, etc.)
-├── scripts/           # Top-level user-facing scripts
-├── data/              # Config files, XML schemas
-├── tests/             # Unit and system tests
-├── BuildTools/        # Build system utilities
-└── non_py/            # Non-Python components (C/Fortran)
+Setup: `pip install -r doc/requirements.txt`
 
-scripts/
-├── create_newcase     # Create new case
-├── create_test        # Create and run tests
-├── create_clone       # Clone existing case
-├── query_config       # Query available configurations
-└── query_testlists    # Query test lists
+Build documentation: `cd doc; make html`
 
-tools/
-└── mapping/           # Grid mapping file generation tools
-```
+### Architecture
 
-### Common Workflows
+The `Case` class (`CIME/case/case.py`) is the core of CIME.
 
-**Create a case** (requires machine configuration):
-```bash
-./scripts/create_newcase --case CASENAME --compset COMPSET --res GRID [--machine MACHINE]
-```
+Case configuration is handled by XML files. 
 
-**Create and run tests**:
-```bash
-./scripts/create_test TESTNAME
-./scripts/create_test TESTNAME1 TESTNAME2 ...
-./scripts/create_test -f TESTFILE  # from file
-```
+- Dynamic configuration `CIME/XML/env_*.py`, read/write configuration specific to a `Case`.
+- Static configuration, all non `env_*.py` files under `CIME/XML/*.py`, readonly provided before `Case` is constructed.
 
-**Query configurations**:
-```bash
-./scripts/query_config --compsets
-./scripts/query_config --grids
-./scripts/query_config --machines
-```
+Dynamic config classes named after XML they read e.g. `Machines`.
 
-### Model System Tests
+Static config classes name `Env*`.
 
-These are tests of properties of the model CIME is included in.
-System tests inherit from `SystemTestsCommon` base class (`CIME/SystemTests/system_tests_common.py`). Common test types:
-- **ERS**: Exact restart test
-- **ERT**: Exact restart with different threading
-- **SMS**: Smoke test
-- **SEQ**: Sequencing test
-
-Each test type has its own module in `CIME/SystemTests/`.
-
-### XML-Based Configuration
+Model System Tests are found under `CIME/SystemTests/`, each test type has it's own module.
 
 CIME is heavily XML-driven. Key concepts:
 - Generic XML handling is in `CIME/XML/generic_xml.py`
@@ -139,35 +103,11 @@ CIME is heavily XML-driven. Key concepts:
 - XML schemas are in `CIME/data/config/xml_schemas/`
 - Config files define machines, compsets, grids, tests
 
-### Case Management Tools
-
-Located in `CIME/Tools/`, these are executable scripts:
-- `xmlchange`: Modify case XML variables
-- `xmlquery`: Query case XML variables
-- `case.setup`: Setup case directory structure
-- `case.build`: Build the case
-- `case.submit`: Submit case to batch system
-- `preview_namelists`: Generate and preview namelists
-
-## Documentation
-
-Build Sphinx documentation:
-```bash
-cd doc
-make clean
-make api
-make html
-```
-
-Requires: `sphinx`, `sphinxcontrib-programoutput`, and custom theme (see `doc/README`).
-
-Online documentation: https://esmci.github.io/cime
-
 ## Development Notes
-
-- When modifying Case env classes, changes affect the case's XML files
-- The Case class extends across multiple files using imports (see imports at end of `case.py`)
-- CIME must be integrated with host models (CESM, E3SM, NorESM) to run Model System Tests
-on a supported machine (found using `./scripts/query_config --machines`)/
-- Machine-specific configurations are in XML files, not hardcoded
-- Git submodules may need initialization: `git submodule update --init`
+- Do not use external packages; if it's required ask for users approval
+- Host models provide static configuration
+- Dynamic configuration is dervice from static configuration + user input
+- Always use dependency injection; if refactoring prefer dependency injection
+- The CASE class is spread across multiple files
+- Running model system tests require a support machine
+- Can use docker container if not on supported machine
