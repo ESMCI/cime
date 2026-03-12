@@ -9,24 +9,6 @@ export GROUP_ID="${GROUP_ID:-1000}"
 # Set static home path where .cime exists and container entrypoint options
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
 
-# Fix AR variable in MCT-related Makefiles
-function fix_mct_makefiles() {
-    fix_arflags "${1}/mct/Makefile"
-    fix_arflags "${1}/mpeu/Makefile"
-    fix_arflags "${1}/mpi-serial/Makefile"
-}
-
-
-# Add ARFLAGS to AR in a Makefile if .bak does not exist
-function fix_arflags() {
-    if [[ ! -e "${1}.bak" ]]; then
-        echo "Fixing AR variable in ${1}"
-
-        sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${1}"
-    fi
-}
-
-
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
     cprnc_dir="${PWD}/CIME/non_py/cprnc"
@@ -50,6 +32,7 @@ function build_cprnc() {
 
 
 # Download input data needed for model setup
+# required for grid generation tests
 function download_input_data() {
     mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240" \
         "${HOME}/inputdata/share/domains" \
