@@ -1,0 +1,387 @@
+import os
+import stat
+import shutil
+import tempfile
+
+import unittest
+from CIME.utils import safe_copy, SharedArea
+
+
+class TestSafeCopy(unittest.TestCase):
+    # Test content constants
+    TEST_CONTENT = "test content"
+    NEW_CONTENT = "new content"
+    OLD_CONTENT = "old content"
+    CONTENT_1 = "content1"
+    CONTENT_2 = "content2"
+    ROOT_CONTENT = "root content"
+    NESTED_CONTENT = "nested content"
+    SCRIPT_CONTENT = "#!/bin/bash\necho test"
+
+    # Permission constants
+    PERM_RW_R_R = 0o644  # rw-r--r-- (owner: read/write, group/others: read)
+    PERM_RW_ONLY = 0o600  # rw------- (owner: read/write only)
+    PERM_EXECUTABLE = 0o755  # rwxr-xr-x (owner: rwx, group/others: rx)
+    PERM_READONLY = 0o444  # r--r--r-- (all: read only)
+
+    # Filename constants
+    SRC_FILE = "source.txt"
+    TGT_FILE = "target.txt"
+    SRC_DIR = "source_dir"
+    TGT_DIR = "target_dir"
+    SCRIPT_FILE = "script.sh"
+    SCRIPT_COPY = "script_copy.sh"
+    FILE_1 = "file1.txt"
+    FILE_2 = "file2.txt"
+    SINGLE_FILE = "file.txt"
+    SUBDIR = "subdir"
+    NESTED_FILE = "nested.txt"
+
+    def setUp(self):
+        self._workdir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._workdir, ignore_errors=True)
+
+    def _create_file(self, path, content):
+        """Helper method to create a file with given content"""
+        with open(path, "w", encoding="utf8") as f:
+            f.write(content)
+
+    def _read_file(self, path):
+        """Helper method to read file content"""
+        with open(path, "r", encoding="utf8") as f:
+            return f.read()
+
+    def test_safe_copy_basic_file(self):
+        """Test basic file copy to a new location"""
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        self._create_file(src_file, self.TEST_CONTENT)
+
+        safe_copy(src_file, tgt_file)
+
+        self.assertTrue(os.path.isfile(tgt_file))
+        self.assertEqual(self._read_file(tgt_file), self.TEST_CONTENT)
+
+    def test_safe_copy_to_directory(self):
+        """Test copying a file to a directory (should use basename)"""
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
+        os.makedirs(tgt_dir)
+
+        self._create_file(src_file, self.TEST_CONTENT)
+
+        safe_copy(src_file, tgt_dir)
+
+        expected_file = os.path.join(tgt_dir, self.SRC_FILE)
+        self.assertTrue(os.path.isfile(expected_file))
+        self.assertEqual(self._read_file(expected_file), self.TEST_CONTENT)
+
+    def test_safe_copy_overwrite_existing(self):
+        """Test overwriting an existing file"""
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        self._create_file(src_file, self.NEW_CONTENT)
+        self._create_file(tgt_file, self.OLD_CONTENT)
+
+        safe_copy(src_file, tgt_file)
+
+        self.assertEqual(self._read_file(tgt_file), self.NEW_CONTENT)
+
+    def test_safe_copy_readonly_file(self):
+        """Test overwriting a read-only file (when we own it)"""
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        self._create_file(src_file, self.NEW_CONTENT)
+        self._create_file(tgt_file, self.OLD_CONTENT)
+
+        # Make target read-only
+        os.chmod(tgt_file, self.PERM_READONLY)
+
+        safe_copy(src_file, tgt_file)
+
+        self.assertEqual(self._read_file(tgt_file), self.NEW_CONTENT)
+
+    def test_safe_copy_preserve_meta_true(self):
+        """Test that metadata is preserved when preserve_meta=True"""
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        self._create_file(src_file, self.TEST_CONTENT)
+
+        # Set specific permissions on source
+        os.chmod(src_file, self.PERM_RW_R_R)
+        src_stat = os.stat(src_file)
+
+        safe_copy(src_file, tgt_file, preserve_meta=True)
+
+        tgt_stat = os.stat(tgt_file)
+        # Check that permissions are preserved (masking out file type bits)
+        self.assertEqual(
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
+        )
+
+    def test_safe_copy_preserve_meta_false(self):
+        """Test that metadata is not preserved when preserve_meta=False."""
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        self._create_file(src_file, self.TEST_CONTENT)
+
+        # Set specific permissions on source
+        os.chmod(src_file, self.PERM_RW_ONLY)
+        src_stat = os.stat(src_file)
+
+        safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        # File should exist with content copied correctly
+        self.assertTrue(os.path.isfile(tgt_file))
+        self.assertEqual(self._read_file(tgt_file), self.TEST_CONTENT)
+
+        # Verify that permissions are NOT preserved (should be different from source): This is the
+        # intended behavior with preserve_meta=False according to the safe_copy docstring.
+        tgt_stat = os.stat(tgt_file)
+        self.assertNotEqual(
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
+        )
+
+    def test_safe_copy_executable_file(self):
+        """Test that executable bit is preserved for executable files"""
+        src_file = os.path.join(self._workdir, self.SCRIPT_FILE)
+        tgt_file = os.path.join(self._workdir, self.SCRIPT_COPY)
+
+        self._create_file(src_file, self.SCRIPT_CONTENT)
+
+        # Make source executable
+        os.chmod(src_file, self.PERM_EXECUTABLE)
+
+        safe_copy(src_file, tgt_file)
+
+        # Check that target is also executable
+        self.assertTrue(os.access(tgt_file, os.X_OK))
+
+    def test_safe_copy_directory(self):
+        """Test copying a directory"""
+        src_dir = os.path.join(self._workdir, self.SRC_DIR)
+        tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
+        os.makedirs(src_dir)
+
+        # Create some files in source directory
+        self._create_file(os.path.join(src_dir, self.FILE_1), self.CONTENT_1)
+        self._create_file(os.path.join(src_dir, self.FILE_2), self.CONTENT_2)
+
+        safe_copy(src_dir, tgt_dir)
+
+        # Check that directory and files were copied
+        self.assertTrue(os.path.isdir(tgt_dir))
+        self.assertTrue(os.path.isfile(os.path.join(tgt_dir, self.FILE_1)))
+        self.assertTrue(os.path.isfile(os.path.join(tgt_dir, self.FILE_2)))
+
+        self.assertEqual(
+            self._read_file(os.path.join(tgt_dir, self.FILE_1)), self.CONTENT_1
+        )
+
+    def test_safe_copy_directory_preserve_meta_false(self):
+        """Test copying a directory with preserve_meta=False."""
+        src_dir = os.path.join(self._workdir, self.SRC_DIR)
+        tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
+        os.makedirs(os.path.join(src_dir, self.SUBDIR))
+
+        test_file = os.path.join(src_dir, self.SUBDIR, self.SINGLE_FILE)
+        self._create_file(test_file, self.TEST_CONTENT)
+
+        # Set specific permissions on the file
+        os.chmod(test_file, self.PERM_RW_ONLY)
+        src_stat = os.stat(test_file)
+
+        safe_copy(src_dir, tgt_dir, preserve_meta=False)
+
+        self.assertTrue(os.path.isdir(tgt_dir))
+        tgt_file = os.path.join(tgt_dir, self.SUBDIR, self.SINGLE_FILE)
+        self.assertTrue(os.path.isfile(tgt_file))
+
+        # Verify that permissions are NOT preserved (should be different from source)
+        tgt_stat = os.stat(tgt_file)
+        self.assertNotEqual(
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
+        )
+
+    def test_safe_copy_nested_directory(self):
+        """Test copying a directory with nested subdirectories"""
+        src_dir = os.path.join(self._workdir, self.SRC_DIR)
+        tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
+        os.makedirs(os.path.join(src_dir, self.SUBDIR))
+
+        self._create_file(
+            os.path.join(src_dir, self.SUBDIR, self.SINGLE_FILE), self.ROOT_CONTENT
+        )
+        self._create_file(
+            os.path.join(src_dir, self.SUBDIR, self.NESTED_FILE), self.NESTED_CONTENT
+        )
+
+        safe_copy(src_dir, tgt_dir)
+
+        self.assertTrue(os.path.isdir(tgt_dir))
+        self.assertTrue(
+            os.path.isfile(os.path.join(tgt_dir, self.SUBDIR, self.SINGLE_FILE))
+        )
+        self.assertTrue(os.path.isdir(os.path.join(tgt_dir, self.SUBDIR)))
+        self.assertTrue(
+            os.path.isfile(os.path.join(tgt_dir, self.SUBDIR, self.NESTED_FILE))
+        )
+
+        self.assertEqual(
+            self._read_file(os.path.join(tgt_dir, self.SUBDIR, self.NESTED_FILE)),
+            self.NESTED_CONTENT,
+        )
+
+    def test_safe_copy_with_shared_area_preserve_meta_false(self):
+        """
+        Test that SharedArea umask is respected when preserve_meta=False.
+
+        When copying within a SharedArea context with preserve_meta=False, the target file
+        should have permissions based on the SharedArea umask (0o002 by default, making files
+        group-writable and other-readable), not the source file's permissions.
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Create source file with restrictive permissions (no group/other access)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+
+        # Copy within SharedArea with preserve_meta=False
+        with SharedArea():
+            safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        # Target should be group-writable and other-readable (umask 0o002)
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # With umask 0o002, new files should have group read-write and other read permissions
+        self.assertTrue(
+            tgt_mode & stat.S_IWGRP,
+            f"Expected group write permission, got {oct(tgt_mode)}",
+        )
+        self.assertTrue(
+            tgt_mode & stat.S_IROTH,
+            f"Expected other read permission, got {oct(tgt_mode)}",
+        )
+        self.assertFalse(
+            tgt_mode & stat.S_IWOTH,
+            "Unexpectedly got other-write permission",
+        )
+
+    def test_safe_copy_with_shared_area_preserve_meta_true(self):
+        """
+        Test that SharedArea umask is ignored when preserve_meta=True.
+
+        When copying within a SharedArea context with preserve_meta=True, the target file
+        should preserve the source file's permissions, ignoring the SharedArea umask.
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Create source file with restrictive permissions (no group/other access)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+        src_stat = os.stat(src_file)
+
+        # Copy within SharedArea with preserve_meta=True
+        with SharedArea():
+            safe_copy(src_file, tgt_file, preserve_meta=True)
+
+        # Target should have same permissions as source (ignoring SharedArea umask)
+        tgt_stat = os.stat(tgt_file)
+        self.assertEqual(
+            oct(stat.S_IMODE(src_stat.st_mode)), oct(stat.S_IMODE(tgt_stat.st_mode))
+        )
+
+    def test_safe_copy_directory_with_shared_area_preserve_meta_false(self):
+        """
+        Test that SharedArea umask is respected for directory copies when preserve_meta=False.
+
+        When copying a directory within a SharedArea context with preserve_meta=False, the files
+        in the target directory should have permissions based on the SharedArea umask, not the
+        source files' permissions.
+
+        This test is currently failing: The target files get the same permissions as the source
+        files.
+        """
+        src_dir = os.path.join(self._workdir, self.SRC_DIR)
+        tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
+        os.makedirs(src_dir)
+
+        # Create source file with restrictive permissions
+        src_file = os.path.join(src_dir, self.SINGLE_FILE)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+
+        # Copy within SharedArea with preserve_meta=False
+        with SharedArea():
+            safe_copy(src_dir, tgt_dir, preserve_meta=False)
+
+        # Target file should be group-writable and other-readable (umask 0o002)
+        tgt_file = os.path.join(tgt_dir, self.SINGLE_FILE)
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # With umask 0o002, new files should have group write and other read permissions
+        self.assertTrue(
+            tgt_mode & stat.S_IWGRP,
+            f"Expected group write permission, got {oct(tgt_mode)}",
+        )
+        self.assertTrue(
+            tgt_mode & stat.S_IROTH,
+            f"Expected other read permission, got {oct(tgt_mode)}",
+        )
+        self.assertFalse(
+            tgt_mode & stat.S_IWOTH,
+            "Unexpectedly got other-write permission",
+        )
+
+    def test_safe_copy_outside_shared_area(self):
+        """
+        Test that safe_copy works normally outside of SharedArea context.
+
+        This is a baseline test to ensure that the SharedArea tests are actually
+        testing the SharedArea behavior and not just normal file copy behavior.
+        When copying outside SharedArea with preserve_meta=False, the file should
+        NOT preserve permissions and should NOT be group-writable (unless the user's
+        default umask happens to allow it).
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Create source file with restrictive permissions (no group/other access)
+        self._create_file(src_file, self.TEST_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+        src_stat = os.stat(src_file)
+
+        # Copy outside SharedArea with preserve_meta=False
+        safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        # Verify the file was created with correct content
+        self.assertTrue(os.path.isfile(tgt_file))
+        self.assertEqual(self._read_file(tgt_file), self.TEST_CONTENT)
+
+        # Permissions should NOT be preserved (bug is now fixed)
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # Verify permissions are different from source
+        self.assertNotEqual(
+            stat.S_IMODE(src_stat.st_mode),
+            tgt_mode,
+            "Permissions should not be preserved with preserve_meta=False",
+        )
+
+        # Outside SharedArea, file should NOT be group-writable (typical umask is 0o022)
+        self.assertFalse(
+            tgt_mode & stat.S_IWGRP,
+            f"File should not be group-writable outside SharedArea, got {oct(tgt_mode)}",
+        )
