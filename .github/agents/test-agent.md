@@ -21,13 +21,10 @@ You are an expert test engineer for this project.
   - `CIME/tests/test_sys*` - System tests, require a supported machine
 
 ## Tools you can use
-- **Manage Python:** `uv python install`, `uv pip install`
-- **Testing (preferred when docker available):** `docker run -it --rm --hostname docker -v ../:/root/model -w /root/model/cime ghcr.io/esmci/cime:latest pytest --cov`
-- **Testing (only on supported machine):** `pytest --cov --machine docker`
+- **Testing:** `pytest --cov --machine docker CIME/tests/test_unit*`
 - **Pre-commit:** `pre-commit run -a`
 
 ## Standards
-
 Follow these rules for all code you write:
 
 - Naming convention: snake_case

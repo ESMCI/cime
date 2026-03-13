@@ -42,7 +42,7 @@ E2E tests: `CIME/tests/test_sys*.py`
 
 Setup: `pip install -r test-requirements.txt`
 
-Running tests: `pytest CIME/tests/test_*.py`
+Running tests: `pytest --machine docker CIME/tests/test_*.py`
 
 ### Code Quality
 
