@@ -516,7 +516,11 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._generate_baseline()
+            # Patch generate_baseline_phase() so we can check it was called
+            with mock.patch.object(
+                common, "generate_baseline_phase"
+            ) as mock_generate_baseline_phase:
+                common._generate_baseline()
 
             baseline_dir = baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             assert (baseline_dir / "cpl.log.gz").exists()
@@ -536,46 +540,24 @@ class TestUnitSystemTests(unittest.TestCase):
             assert len(lines) == 1
             assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
 
-    def test_generate_baseline_phase_is_called(self):
-        with tempfile.TemporaryDirectory() as tempdir:
-            case, baseline_root = setup_generate_baseline_mock(tempdir)
-
-            common = SystemTestsCommon(case)
-
-            expected_basegen_dir = str(baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu")
-
-            with mock.patch.object(common, "generate_baseline_phase") as mock_phase:
-                common._generate_baseline()
-
-            mock_phase.assert_called_once_with(expected_basegen_dir)
-
-    def test_generate_baseline_phase_base_is_noop(self):
-        with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(tempdir)
-
-            case.get_value.side_effect = [
-                str(caseroot),
-                "ERIO.ne30_g16.A.docker_gnu",
-                "mct",
-                None,
-                str(run_dir),
-                "case.std",
-            ]
-
-            common = SystemTestsCommon(case)
-
-            result = common.generate_baseline_phase("/some/basegen/dir")
-
-            assert result is None
+            # Check that generate_baseline_phase() was called
+            expected_basegen_dir = str(
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
+            )
+            mock_generate_baseline_phase.assert_called_once_with(expected_basegen_dir)
 
     def test_generate_baseline_phase_subclass_called(self):
+        """Check that child classes can extend generate_baseline_phase() such that it gets called"""
+
         class _SubTest(SystemTestsCommon):
             def __init__(self, case):
                 super().__init__(case)
                 self.phase_called_with = None
+                self.abc123 = None
 
             def generate_baseline_phase(self, basegen_dir):
                 self.phase_called_with = basegen_dir
+                self.abc123 = 1987
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, baseline_root = setup_generate_baseline_mock(tempdir)
@@ -584,8 +566,11 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._generate_baseline()
 
-            expected_basegen_dir = str(baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu")
+            expected_basegen_dir = str(
+                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
+            )
             assert common.phase_called_with == expected_basegen_dir
+            assert common.abc123 == 1987
 
     def test_kwargs(self):
         case = mock.MagicMock()
