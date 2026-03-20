@@ -344,6 +344,73 @@ class TestSafeCopy(unittest.TestCase):
             "Unexpectedly got other-write permission",
         )
 
+    def test_safe_copy_overwrite_preserve_meta_false(self):
+        """Overwriting an existing file with preserve_meta=False should not copy permissions.
+
+        Instead, the existing target's permissions should be preserved.
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        # Source has restrictive permissions; target already exists with broader permissions
+        self._create_file(src_file, self.NEW_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+        self._create_file(tgt_file, self.OLD_CONTENT)
+        os.chmod(tgt_file, self.PERM_RW_R_R)  # 0o644
+        tgt_mode_orig = stat.S_IMODE(os.stat(tgt_file).st_mode)
+
+        safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        # Content must be updated
+        self.assertEqual(self._read_file(tgt_file), self.NEW_CONTENT)
+
+        # Permissions must NOT have been taken from src (0o600)
+        tgt_mode = stat.S_IMODE(os.stat(tgt_file).st_mode)
+        src_mode = stat.S_IMODE(os.stat(src_file).st_mode)
+        self.assertNotEqual(
+            tgt_mode,
+            src_mode,
+            f"preserve_meta=False should not copy permissions to an existing target; "
+            f"src={oct(src_mode)}, tgt={oct(tgt_mode)}",
+        )
+
+        # Instead, the existing target's perms should have been preserved.
+        self.assertEqual(tgt_mode, tgt_mode_orig)
+
+    def test_safe_copy_overwrite_readonly_preserve_meta_false_with_shared_area(self):
+        """Overwriting an existing read-only owned file with preserve_meta=False inside
+        SharedArea should apply the SharedArea umask, not the source permissions.
+        """
+        src_file = os.path.join(self._workdir, self.SRC_FILE)
+        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+
+        self._create_file(src_file, self.NEW_CONTENT)
+        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600 — restrictive
+        self._create_file(tgt_file, self.OLD_CONTENT)
+        os.chmod(tgt_file, self.PERM_READONLY)  # 0o444 — read-only
+
+        # Ensure src file not group-writable
+        src_stat = os.stat(src_file)
+        src_mode = stat.S_IMODE(src_stat.st_mode)
+        self.assertFalse(
+            src_mode & stat.S_IWGRP,
+            f"Expected group write permission with SharedArea umask, got {oct(src_mode)}",
+        )
+
+        with SharedArea():
+            safe_copy(src_file, tgt_file, preserve_meta=False)
+
+        self.assertEqual(self._read_file(tgt_file), self.NEW_CONTENT)
+
+        tgt_stat = os.stat(tgt_file)
+        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+
+        # With SharedArea umask (0o002), the file should be group-writable
+        self.assertTrue(
+            tgt_mode & stat.S_IWGRP,
+            f"Expected group write permission with SharedArea umask, got {oct(tgt_mode)}",
+        )
+
     def test_safe_copy_outside_shared_area(self):
         """
         Test that safe_copy works normally outside of SharedArea context.
