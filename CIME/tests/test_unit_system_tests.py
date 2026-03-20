@@ -529,6 +529,125 @@ class TestUnitSystemTests(unittest.TestCase):
             assert len(lines) == 1
             assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
 
+    def test_generate_baseline_phase_is_called(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, caseroot, baseline_root, run_dir = create_mock_case(
+                tempdir, cpllog_data=CPLLOG
+            )
+
+            get_value_calls = [
+                str(caseroot),
+                "ERIO.ne30_g16.A.docker_gnu",
+                "mct",
+                None,
+                str(run_dir),
+                "case.std",
+                str(baseline_root),
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
+                "ERIO",
+                "mct",
+                str(run_dir),
+                "ERIO",
+                "ERIO.ne30_g16.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                str(baseline_root),
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                str(run_dir),
+                "mct",
+                "/tmp/components/cpl",
+                str(run_dir),
+                "mct",
+                str(run_dir),
+                "mct",
+            ]
+
+            if Config.instance().create_bless_log:
+                get_value_calls.insert(12, os.getcwd())
+
+            case.get_value.side_effect = get_value_calls
+
+            common = SystemTestsCommon(case)
+
+            expected_basegen_dir = str(baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu")
+
+            with mock.patch.object(common, "generate_baseline_phase") as mock_phase:
+                common._generate_baseline()
+
+            mock_phase.assert_called_once_with(expected_basegen_dir)
+
+    def test_generate_baseline_phase_base_is_noop(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, caseroot, baseline_root, run_dir = create_mock_case(tempdir)
+
+            case.get_value.side_effect = [
+                str(caseroot),
+                "ERIO.ne30_g16.A.docker_gnu",
+                "mct",
+                None,
+                str(run_dir),
+                "case.std",
+            ]
+
+            common = SystemTestsCommon(case)
+
+            result = common.generate_baseline_phase("/some/basegen/dir")
+
+            assert result is None
+
+    def test_generate_baseline_phase_subclass_called(self):
+        class _SubTest(SystemTestsCommon):
+            def __init__(self, case):
+                super().__init__(case)
+                self.phase_called_with = None
+
+            def generate_baseline_phase(self, basegen_dir):
+                self.phase_called_with = basegen_dir
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            case, caseroot, baseline_root, run_dir = create_mock_case(
+                tempdir, cpllog_data=CPLLOG
+            )
+
+            get_value_calls = [
+                str(caseroot),
+                "ERIO.ne30_g16.A.docker_gnu",
+                "mct",
+                None,
+                str(run_dir),
+                "case.std",
+                str(baseline_root),
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
+                "ERIO",
+                "mct",
+                str(run_dir),
+                "ERIO",
+                "ERIO.ne30_g16.A.docker_gnu",
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                str(baseline_root),
+                "master/ERIO.ne30_g16.A.docker_gnu",
+                str(run_dir),
+                "mct",
+                "/tmp/components/cpl",
+                str(run_dir),
+                "mct",
+                str(run_dir),
+                "mct",
+            ]
+
+            if Config.instance().create_bless_log:
+                get_value_calls.insert(12, os.getcwd())
+
+            case.get_value.side_effect = get_value_calls
+
+            common = _SubTest(case)
+
+            common._generate_baseline()
+
+            expected_basegen_dir = str(baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu")
+            assert common.phase_called_with == expected_basegen_dir
+
     def test_kwargs(self):
         case = mock.MagicMock()
 
