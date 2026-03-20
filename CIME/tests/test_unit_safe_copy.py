@@ -363,25 +363,29 @@ class TestSafeCopy(unittest.TestCase):
         src_stat = os.stat(src_file)
 
         # Copy outside SharedArea with preserve_meta=False
-        safe_copy(src_file, tgt_file, preserve_meta=False)
+        old_umask = os.umask(0o022)
+        try:
+            safe_copy(src_file, tgt_file, preserve_meta=False)
 
-        # Verify the file was created with correct content
-        self.assertTrue(os.path.isfile(tgt_file))
-        self.assertEqual(self._read_file(tgt_file), self.TEST_CONTENT)
+            # Verify the file was created with correct content
+            self.assertTrue(os.path.isfile(tgt_file))
+            self.assertEqual(self._read_file(tgt_file), self.TEST_CONTENT)
 
-        # Permissions should NOT be preserved (bug is now fixed)
-        tgt_stat = os.stat(tgt_file)
-        tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
+            # Permissions should NOT be preserved (bug is now fixed)
+            tgt_stat = os.stat(tgt_file)
+            tgt_mode = stat.S_IMODE(tgt_stat.st_mode)
 
-        # Verify permissions are different from source
-        self.assertNotEqual(
-            stat.S_IMODE(src_stat.st_mode),
-            tgt_mode,
-            "Permissions should not be preserved with preserve_meta=False",
-        )
+            # Verify permissions are different from source
+            self.assertNotEqual(
+                stat.S_IMODE(src_stat.st_mode),
+                tgt_mode,
+                "Permissions should not be preserved with preserve_meta=False",
+            )
 
-        # Outside SharedArea, file should NOT be group-writable (typical umask is 0o022)
-        self.assertFalse(
-            tgt_mode & stat.S_IWGRP,
-            f"File should not be group-writable outside SharedArea, got {oct(tgt_mode)}",
-        )
+            # Outside SharedArea, with umask 0o022, file should NOT be group-writable
+            self.assertFalse(
+                tgt_mode & stat.S_IWGRP,
+                f"File should not be group-writable outside SharedArea, got {oct(tgt_mode)}",
+            )
+        finally:
+            os.umask(old_umask)
