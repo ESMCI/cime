@@ -67,34 +67,16 @@ class TestCopyOverFile(unittest.TestCase):
         src = self._make_file("src.txt", self.SRC_CONTENT)
         tgt = self._make_file("tgt.txt", self.OLD_CONTENT, mode=0o444)
 
-        # Simulate not being the owner by faking os.stat to return a different uid.
-        # Use a side_effect function (not return_value) so that calls from shutil or
-        # os internals still get a proper os.stat_result with st_ino/st_dev present.
-        real_stat = os.stat(tgt)
-        fake_stat_result = os.stat_result(
-            (
-                real_stat.st_mode,
-                real_stat.st_ino,
-                real_stat.st_dev,
-                real_stat.st_nlink,
-                os.getuid() + 1,
-                real_stat.st_gid,
-                real_stat.st_size,
-                real_stat.st_atime,
-                real_stat.st_mtime,
-                real_stat.st_ctime,
-            )
-        )
-        real_os_stat = os.stat
-
-        def fake_stat_fn(path, *args, **kwargs):
-            if path == tgt:
-                return fake_stat_result
-            return real_os_stat(path, *args, **kwargs)
-
-        with patch("CIME.utils.os.stat", side_effect=fake_stat_fn):
-            with self.assertRaises(OSError):
-                copy_over_file(src, tgt, preserve_meta=True)
+        # Simulate being a different user (not the file owner) who cannot write to
+        # the read-only target.  We patch both os.getuid (so owner_uid != getuid())
+        # and os.access (so the file appears non-writable regardless of whether the
+        # test runner is root, which would otherwise make os.access return True for
+        # any file and prevent the OSError path from being reached).
+        real_uid = os.getuid()
+        with patch("CIME.utils.os.getuid", return_value=real_uid + 1):
+            with patch("CIME.utils.os.access", return_value=False):
+                with self.assertRaises(OSError):
+                    copy_over_file(src, tgt, preserve_meta=True)
 
     def test_not_owner_content_only(self):
         """A non-owned writable target gets content-only copy (no metadata transfer)."""
