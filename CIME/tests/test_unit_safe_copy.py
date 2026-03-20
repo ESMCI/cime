@@ -309,8 +309,8 @@ class TestSafeCopy(unittest.TestCase):
         in the target directory should have permissions based on the SharedArea umask, not the
         source files' permissions.
 
-        This test is currently failing: The target files get the same permissions as the source
-        files.
+        This test guards against a bug where directory copies incorrectly preserved the source
+        files' permissions instead of applying the SharedArea umask.
         """
         src_dir = os.path.join(self._workdir, self.SRC_DIR)
         tgt_dir = os.path.join(self._workdir, self.TGT_DIR)
