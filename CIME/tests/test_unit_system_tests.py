@@ -38,6 +38,47 @@ CPLLOG = """
 """
 
 
+def setup_generate_baseline_mock(tempdir):
+    """Set up a mock case for _generate_baseline tests, returning (case, baseline_root)."""
+    case, caseroot, baseline_root, run_dir = create_mock_case(
+        tempdir, cpllog_data=CPLLOG
+    )
+
+    get_value_calls = [
+        str(caseroot),
+        "ERIO.ne30_g16.A.docker_gnu",
+        "mct",
+        None,
+        str(run_dir),
+        "case.std",
+        str(baseline_root),
+        "master/ERIO.ne30_g16.A.docker_gnu",
+        "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
+        "ERIO",
+        "mct",
+        str(run_dir),
+        "ERIO",
+        "ERIO.ne30_g16.A.docker_gnu",
+        "master/ERIO.ne30_g16.A.docker_gnu",
+        str(baseline_root),
+        "master/ERIO.ne30_g16.A.docker_gnu",
+        str(run_dir),
+        "mct",
+        "/tmp/components/cpl",
+        str(run_dir),
+        "mct",
+        str(run_dir),
+        "mct",
+    ]
+
+    if Config.instance().create_bless_log:
+        get_value_calls.insert(12, os.getcwd())
+
+    case.get_value.side_effect = get_value_calls
+
+    return case, baseline_root
+
+
 def create_mock_case(tempdir, idx=None, cpllog_data=None):
     if idx is None:
         idx = 0
@@ -471,41 +512,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
     def test_generate_baseline(self):
         with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
-
-            get_value_calls = [
-                str(caseroot),
-                "ERIO.ne30_g16.A.docker_gnu",
-                "mct",
-                None,
-                str(run_dir),
-                "case.std",
-                str(baseline_root),
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
-                "ERIO",
-                "mct",
-                str(run_dir),
-                "ERIO",
-                "ERIO.ne30_g16.A.docker_gnu",
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                str(baseline_root),
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                str(run_dir),
-                "mct",
-                "/tmp/components/cpl",
-                str(run_dir),
-                "mct",
-                str(run_dir),
-                "mct",
-            ]
-
-            if Config.instance().create_bless_log:
-                get_value_calls.insert(12, os.getcwd())
-
-            case.get_value.side_effect = get_value_calls
+            case, baseline_root = setup_generate_baseline_mock(tempdir)
 
             common = SystemTestsCommon(case)
 
@@ -531,41 +538,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
     def test_generate_baseline_phase_is_called(self):
         with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
-
-            get_value_calls = [
-                str(caseroot),
-                "ERIO.ne30_g16.A.docker_gnu",
-                "mct",
-                None,
-                str(run_dir),
-                "case.std",
-                str(baseline_root),
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
-                "ERIO",
-                "mct",
-                str(run_dir),
-                "ERIO",
-                "ERIO.ne30_g16.A.docker_gnu",
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                str(baseline_root),
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                str(run_dir),
-                "mct",
-                "/tmp/components/cpl",
-                str(run_dir),
-                "mct",
-                str(run_dir),
-                "mct",
-            ]
-
-            if Config.instance().create_bless_log:
-                get_value_calls.insert(12, os.getcwd())
-
-            case.get_value.side_effect = get_value_calls
+            case, baseline_root = setup_generate_baseline_mock(tempdir)
 
             common = SystemTestsCommon(case)
 
@@ -605,41 +578,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 self.phase_called_with = basegen_dir
 
         with tempfile.TemporaryDirectory() as tempdir:
-            case, caseroot, baseline_root, run_dir = create_mock_case(
-                tempdir, cpllog_data=CPLLOG
-            )
-
-            get_value_calls = [
-                str(caseroot),
-                "ERIO.ne30_g16.A.docker_gnu",
-                "mct",
-                None,
-                str(run_dir),
-                "case.std",
-                str(baseline_root),
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                "ERIO.ne30_g16.A.docker_gnu.G.20230919_193255_z9hg2w",
-                "ERIO",
-                "mct",
-                str(run_dir),
-                "ERIO",
-                "ERIO.ne30_g16.A.docker_gnu",
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                str(baseline_root),
-                "master/ERIO.ne30_g16.A.docker_gnu",
-                str(run_dir),
-                "mct",
-                "/tmp/components/cpl",
-                str(run_dir),
-                "mct",
-                str(run_dir),
-                "mct",
-            ]
-
-            if Config.instance().create_bless_log:
-                get_value_calls.insert(12, os.getcwd())
-
-            case.get_value.side_effect = get_value_calls
+            case, baseline_root = setup_generate_baseline_mock(tempdir)
 
             common = _SubTest(case)
 
