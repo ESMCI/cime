@@ -67,15 +67,32 @@ class TestCopyOverFile(unittest.TestCase):
         src = self._make_file("src.txt", self.SRC_CONTENT)
         tgt = self._make_file("tgt.txt", self.OLD_CONTENT, mode=0o444)
 
-        # Simulate not being the owner by faking os.stat to return a different uid
+        # Simulate not being the owner by faking os.stat to return a different uid.
+        # Use a side_effect function (not return_value) so that calls from shutil or
+        # os internals still get a proper os.stat_result with st_ino/st_dev present.
         real_stat = os.stat(tgt)
+        fake_stat_result = os.stat_result(
+            (
+                real_stat.st_mode,
+                real_stat.st_ino,
+                real_stat.st_dev,
+                real_stat.st_nlink,
+                os.getuid() + 1,
+                real_stat.st_gid,
+                real_stat.st_size,
+                real_stat.st_atime,
+                real_stat.st_mtime,
+                real_stat.st_ctime,
+            )
+        )
+        real_os_stat = os.stat
 
-        class _FakeStat:
-            # pylint: disable=too-few-public-methods
-            st_uid = os.getuid() + 1  # different uid
-            st_mode = real_stat.st_mode
+        def fake_stat_fn(path, *args, **kwargs):
+            if path == tgt:
+                return fake_stat_result
+            return real_os_stat(path, *args, **kwargs)
 
-        with patch("CIME.utils.os.stat", return_value=_FakeStat()):
+        with patch("CIME.utils.os.stat", side_effect=fake_stat_fn):
             with self.assertRaises(OSError):
                 copy_over_file(src, tgt, preserve_meta=True)
 
