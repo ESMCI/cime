@@ -123,30 +123,35 @@ class TestCopyOverFile(unittest.TestCase):
         self.assertEqual(tgt_mode, stat.S_IMODE(real_stat.st_mode))
 
     def test_owned_target_preserve_meta_false_does_not_copy_permissions(self):
-        """With preserve_meta=False and owned target, permissions are NOT copied from src."""
-        # src has restrictive 0o600 permissions; tgt has broader 0o644
-        src = self._make_file("src.txt", self.SRC_CONTENT, mode=0o600)
-        tgt = self._make_file("tgt.txt", self.OLD_CONTENT, mode=0o644)
-        tgt_mode_orig = stat.S_IMODE(os.stat(tgt).st_mode)
-
-        copy_over_file(src, tgt, preserve_meta=False)
-
-        # Content must be copied
-        self.assertEqual(self._read(tgt), self.SRC_CONTENT)
-
-        # Permissions must NOT have been taken from src (0o600)
-        tgt_mode = stat.S_IMODE(os.stat(tgt).st_mode)
-        src_mode = stat.S_IMODE(os.stat(src).st_mode)
-        self.assertNotEqual(
-            tgt_mode,
-            src_mode,
-            f"preserve_meta=False should not copy permissions; "
-            f"src={oct(src_mode)}, tgt={oct(tgt_mode)}",
-        )
-        self.assertEqual(
-            tgt_mode,
-            tgt_mode_orig,
-        )
+        """With preserve_meta=False and owned target, permissions are NOT copied from src.
+        Instead, use caller's umask.
+        """
+        # Force a known umask so the post-copy file mode is deterministic and different from the
+        # original permissions of both source and target.
+        prev_umask = os.umask(0o022)
+        try:
+            # src has restrictive 0o600 permissions; tgt has broader 0o644
+            src = self._make_file("src.txt", self.SRC_CONTENT, mode=0o600)
+            tgt = self._make_file("tgt.txt", self.OLD_CONTENT, mode=0o644)
+            tgt_mode_orig = stat.S_IMODE(os.stat(tgt).st_mode)
+            copy_over_file(src, tgt, preserve_meta=False)
+            # Content must be copied
+            self.assertEqual(self._read(tgt), self.SRC_CONTENT)
+            # Permissions must NOT have been taken from src (0o600)
+            tgt_mode = stat.S_IMODE(os.stat(tgt).st_mode)
+            src_mode = stat.S_IMODE(os.stat(src).st_mode)
+            self.assertNotEqual(
+                tgt_mode,
+                src_mode,
+                f"preserve_meta=False should not copy permissions; "
+                f"src={oct(src_mode)}, tgt={oct(tgt_mode)}",
+            )
+            self.assertEqual(
+                tgt_mode,
+                tgt_mode_orig,
+            )
+        finally:
+            os.umask(prev_umask)
 
     def test_readonly_owned_target_preserve_meta_false_does_not_copy_permissions(self):
         """Read-only owned target with preserve_meta=False: made writable, content copied,

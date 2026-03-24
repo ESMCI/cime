@@ -347,35 +347,42 @@ class TestSafeCopy(unittest.TestCase):
     def test_safe_copy_overwrite_preserve_meta_false(self):
         """Overwriting an existing file with preserve_meta=False should not copy permissions.
 
-        Instead, the existing target's permissions should be preserved.
+        Instead, the target should be recreated so the current umask-derived permissions apply,
+        rather than preserving the existing target's permissions.
         """
-        src_file = os.path.join(self._workdir, self.SRC_FILE)
-        tgt_file = os.path.join(self._workdir, self.TGT_FILE)
+        # Force a known umask so the post-copy file mode is deterministic and different from the
+        # original permissions of both source and target.
+        prev_umask = os.umask(0o022)
+        try:
+            src_file = os.path.join(self._workdir, self.SRC_FILE)
+            tgt_file = os.path.join(self._workdir, self.TGT_FILE)
 
-        # Source has restrictive permissions; target already exists with broader permissions
-        self._create_file(src_file, self.NEW_CONTENT)
-        os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
-        self._create_file(tgt_file, self.OLD_CONTENT)
-        os.chmod(tgt_file, self.PERM_RW_R_R)  # 0o644
-        tgt_mode_orig = stat.S_IMODE(os.stat(tgt_file).st_mode)
+            # Source has restrictive permissions; target already exists with broader permissions
+            self._create_file(src_file, self.NEW_CONTENT)
+            os.chmod(src_file, self.PERM_RW_ONLY)  # 0o600
+            self._create_file(tgt_file, self.OLD_CONTENT)
+            os.chmod(tgt_file, self.PERM_RW_R_R)  # 0o644
+            tgt_mode_orig = stat.S_IMODE(os.stat(tgt_file).st_mode)
 
-        safe_copy(src_file, tgt_file, preserve_meta=False)
+            safe_copy(src_file, tgt_file, preserve_meta=False)
 
-        # Content must be updated
-        self.assertEqual(self._read_file(tgt_file), self.NEW_CONTENT)
+            # Content must be updated
+            self.assertEqual(self._read_file(tgt_file), self.NEW_CONTENT)
 
-        # Permissions must NOT have been taken from src (0o600)
-        tgt_mode = stat.S_IMODE(os.stat(tgt_file).st_mode)
-        src_mode = stat.S_IMODE(os.stat(src_file).st_mode)
-        self.assertNotEqual(
-            tgt_mode,
-            src_mode,
-            f"preserve_meta=False should not copy permissions to an existing target; "
-            f"src={oct(src_mode)}, tgt={oct(tgt_mode)}",
-        )
+            # Permissions must NOT have been taken from src (0o600)
+            tgt_mode = stat.S_IMODE(os.stat(tgt_file).st_mode)
+            src_mode = stat.S_IMODE(os.stat(src_file).st_mode)
+            self.assertNotEqual(
+                tgt_mode,
+                src_mode,
+                f"preserve_meta=False should not copy permissions to an existing target; "
+                f"src={oct(src_mode)}, tgt={oct(tgt_mode)}",
+            )
 
-        # Instead, the existing target's perms should have been preserved.
-        self.assertEqual(tgt_mode, tgt_mode_orig)
+            # Instead, the existing target's perms should have been preserved.
+            self.assertEqual(tgt_mode, tgt_mode_orig)
+        finally:
+            os.umask(prev_umask)
 
     def test_safe_copy_overwrite_readonly_preserve_meta_false_with_shared_area(self):
         """Overwriting an existing read-only owned file with preserve_meta=False inside
