@@ -617,9 +617,13 @@ class TestTestScheduler(base.BaseTestCase):
             del os.environ["TESTRUNFAIL_PASS"]
 
         baseline_dir = os.path.join(self._baseline_area, self._baseline_name)
-        self.assertTrue(os.path.isdir(baseline_dir), "Baseline dir should exist after generation")
+        self.assertTrue(
+            os.path.isdir(baseline_dir), "Baseline dir should exist after generation"
+        )
         baseline_cases = glob.glob(os.path.join(baseline_dir, "*TESTRUNFAIL*"))
-        self.assertEqual(len(baseline_cases), 1, "Expected exactly one TESTRUNFAIL baseline dir")
+        self.assertEqual(
+            len(baseline_cases), 1, "Expected exactly one TESTRUNFAIL baseline dir"
+        )
 
         # Collect the set of regular files created by the baseline generation.
         # CaseDocs is a directory managed separately by the namelist phase and
