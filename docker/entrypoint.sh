@@ -9,7 +9,7 @@ SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
 
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
-    cprnc_dir="${PWD}/CIME/non_py/cprnc"
+    cprnc_dir="${CPRNC_DIR:-${PWD}/CIME/non_py/cprnc}"
 
     if [[ ! -e "${cprnc_dir}" ]]; then
         echo "CPRNC path does not exist. Change to CIME's root directory."
@@ -21,6 +21,8 @@ function build_cprnc() {
     cmake "${cprnc_dir}"
 
     make
+
+    mkdir "${HOME}/tools"
 
     # Needs to be copied into the machines configured tool path
     cp cprnc "${HOME}/tools/cprnc"
@@ -80,12 +82,11 @@ export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
 export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
 export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
 
-if [[ "${CI:-false}" == "false" ]]; then
+if [[ "${CI:-false}" == "false" ]] && [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
   source ${HOME}/.local/bin/env
   source ${HOME}/.venv/bin/activate
 fi
 
-# If not skipping entrypoint, set up user/group IDs and exec given command.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     exec "${@}"
 fi

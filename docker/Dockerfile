@@ -25,6 +25,16 @@ RUN spack compiler find \
   && spack external find --not-buildable openmpi \
   && spack -e /opt/spack-envs install --fail-fast
 
+FROM builder AS cprnc_builder
+
+COPY CIME/non_py/cprnc /src/cprnc
+COPY docker/entrypoint.sh /entrypoint.sh
+
+RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
+  && CPRNC_DIR=/src/cprnc build_cprnc
+
+FROM builder
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     vim \
@@ -41,9 +51,12 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
   && uv pip install -r /requirements.txt
 
 COPY docker/entrypoint.sh /entrypoint.sh
-COPY docker/.cime /root/.cime
 
 RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
+  && mkdir -p /root/{tools,inputdata,cases,timings,archive,baselines} \
   && download_input_data
+
+COPY --from=cprnc_builder /root/tools/cprnc /root/tools/cprnc
+COPY docker/.cime /root/.cime
 
 ENTRYPOINT ["/entrypoint.sh"]
