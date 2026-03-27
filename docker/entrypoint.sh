@@ -34,8 +34,6 @@ function build_cprnc() {
 # Download input data needed for model setup
 # required for grid generation tests
 function download_input_data() {
-    local storage="${HOME}/storage"
-
     mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${HOME}/inputdata/share/domains"
 
