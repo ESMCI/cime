@@ -9,7 +9,7 @@ SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
 
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
-    cprnc_dir="${PWD}/CIME/non_py/cprnc"
+    cprnc_dir="${CPRNC_DIR:-${PWD}/CIME/non_py/cprnc}"
 
     if [[ ! -e "${cprnc_dir}" ]]; then
         echo "CPRNC path does not exist. Change to CIME's root directory."
@@ -18,9 +18,11 @@ function build_cprnc() {
 
     pushd "$(mktemp -d)" || exit 1
 
-    cmake "${cprnc_dir}"
+    cmake -S "${cprnc_dir}" -B .
 
     make
+
+    mkdir "${HOME}/tools"
 
     # Needs to be copied into the machines configured tool path
     cp cprnc "${HOME}/tools/cprnc"
@@ -32,15 +34,8 @@ function build_cprnc() {
 # Download input data needed for model setup
 # required for grid generation tests
 function download_input_data() {
-    local storage="${HOME}/storage"
-
     mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${HOME}/inputdata/share/domains"
-    mkdir -p "${storage}/cases"
-    mkdir -p "${storage}/timings"
-    mkdir -p "${storage}/archive"
-    mkdir -p "${storage}/baselines"
-    mkdir -p "${storage}/tools"
 
     wget -O "${HOME}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
@@ -58,11 +53,14 @@ function link_config_machines() {
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
         ln -sf "${HOME}/.cime/config_machines.v2.xml" "${HOME}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
-        export ESMFMKFILE=/opt/conda/envs/cesm/lib/esmf.mk
-
         ln -sf "${HOME}/.cime/config_machines.v3.xml" "${HOME}/.cime/config_machines.xml"
     fi
 }
+
+export PATH=/opt/spack-envs/view/bin:$PATH
+export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
+export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
+export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
 
 if [[ "${CI:-false}" == "true" ]]; then
   cp -rf /root/.cime "${HOME}"
@@ -75,17 +73,11 @@ if [[ -e "${PWD}/.git" ]]; then
     git config --global --add safe.directory "*"
 fi
 
-export PATH=/opt/spack-envs/view/bin:$PATH
-export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
-export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
-export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
-
-if [[ "${CI:-false}" == "false" ]]; then
+if [[ "${CI:-false}" == "false" ]] && [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
   source ${HOME}/.local/bin/env
   source ${HOME}/.venv/bin/activate
 fi
 
-# If not skipping entrypoint, set up user/group IDs and exec given command.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     exec "${@}"
 fi
