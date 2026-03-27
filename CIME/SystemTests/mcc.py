@@ -13,7 +13,13 @@ logger = logging.getLogger(__name__)
 class MCC(SystemTestsCompareTwo):
     def __init__(self, case, **kwargs):
         self._comp_classes = []
+        # KDR Set default ensemble size, maybe replace it from the test name.
         self._test_instances = 3
+        # ninst = self._case.get_value("NINST")
+        ninst = case.get_value("NINST")
+        if ninst > 1:
+            self._test_instances = ninst
+            
         SystemTestsCompareTwo.__init__(
             self,
             case,
