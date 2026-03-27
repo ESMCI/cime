@@ -38,11 +38,6 @@ function download_input_data() {
 
     mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${HOME}/inputdata/share/domains"
-    mkdir -p "${storage}/cases"
-    mkdir -p "${storage}/timings"
-    mkdir -p "${storage}/archive"
-    mkdir -p "${storage}/baselines"
-    mkdir -p "${storage}/tools"
 
     wget -O "${HOME}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
@@ -77,14 +72,8 @@ if [[ -e "${PWD}/.git" ]]; then
     git config --global --add safe.directory "*"
 fi
 
-export PATH=/opt/spack-envs/view/bin:$PATH
-export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
-export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
-export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
-
-source ${HOME}/.local/bin/env
-
 if [[ "${CI:-false}" == "false" ]] && [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
+  source ${HOME}/.local/bin/env
   source ${HOME}/.venv/bin/activate
 fi
 

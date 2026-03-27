@@ -1,4 +1,4 @@
-FROM ghcr.io/spack/ubuntu-noble:1.0.4 AS builder
+FROM ghcr.io/spack/ubuntu-noble:1.0.4 AS spack
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -25,7 +25,12 @@ RUN spack compiler find \
   && spack external find --not-buildable openmpi \
   && spack -e /opt/spack-envs install --fail-fast
 
-FROM builder AS cprnc_builder
+ENV PATH=/opt/spack-envs/view/bin:$PATH
+ENV PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
+ENV LD_LIBRARY_PATH=/opt/spack-envs/view/lib
+ENV ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
+
+FROM spack AS cprnc
 
 COPY CIME/non_py/cprnc /src/cprnc
 COPY docker/entrypoint.sh /entrypoint.sh
@@ -33,7 +38,7 @@ COPY docker/entrypoint.sh /entrypoint.sh
 RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
   && CPRNC_DIR=/src/cprnc build_cprnc
 
-FROM builder
+FROM spack AS main
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -56,7 +61,7 @@ RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
   && mkdir -p /root/{tools,inputdata,cases,timings,archive,baselines} \
   && download_input_data
 
-COPY --from=cprnc_builder /root/tools/cprnc /root/tools/cprnc
+COPY --from=cprnc /root/tools/cprnc /root/tools/cprnc
 COPY docker/.cime /root/.cime
 
 ENTRYPOINT ["/entrypoint.sh"]
