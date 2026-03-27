@@ -53,8 +53,6 @@ function link_config_machines() {
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
         ln -sf "${HOME}/.cime/config_machines.v2.xml" "${HOME}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
-        export ESMFMKFILE=/opt/conda/envs/cesm/lib/esmf.mk
-
         ln -sf "${HOME}/.cime/config_machines.v3.xml" "${HOME}/.cime/config_machines.xml"
     fi
 }
