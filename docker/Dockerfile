@@ -36,6 +36,7 @@ COPY CIME/non_py/cprnc /src/cprnc
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
+  && ls -la /src/cprnc \
   && CPRNC_DIR=/src/cprnc build_cprnc
 
 FROM spack AS main
