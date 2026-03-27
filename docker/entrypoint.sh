@@ -18,7 +18,7 @@ function build_cprnc() {
 
     pushd "$(mktemp -d)" || exit 1
 
-    cmake "${cprnc_dir}"
+    cmake -S "${cprnc_dir}" -B .
 
     make
 
