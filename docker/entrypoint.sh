@@ -6,10 +6,12 @@ export LOGNAME="${USER}"
 
 # Set static home path where .cime exists and container entrypoint options
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
+STORAGE_DIR="${HOME}/storage"
 
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
     cprnc_dir="${CPRNC_DIR:-${PWD}/CIME/non_py/cprnc}"
+    tools_dir="${STORAGE_DIR}/tools"
 
     if [[ ! -e "${cprnc_dir}" ]]; then
         echo "CPRNC path does not exist. Change to CIME's root directory."
@@ -22,10 +24,10 @@ function build_cprnc() {
 
     make
 
-    mkdir "${HOME}/tools"
+    [[ ! -e "${tools_dir}" ]] && mkdir -p "${tools_dir}"
 
     # Needs to be copied into the machines configured tool path
-    cp cprnc "${HOME}/tools/cprnc"
+    cp cprnc "${tools_dir}/cprnc"
 
     popd || exit 1
 }
@@ -34,16 +36,16 @@ function build_cprnc() {
 # Download input data needed for model setup
 # required for grid generation tests
 function download_input_data() {
-    mkdir -p "${HOME}/inputdata/cpl/gridmaps/oQU240"
-    mkdir -p "${HOME}/inputdata/share/domains"
+    mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
+    mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
-    wget -O "${HOME}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
+    wget -O "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
 
-    wget -O "${HOME}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc" \
+    wget -O "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
 
-    wget -O "${HOME}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc" \
+    wget -O "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc" \
         https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 }
 

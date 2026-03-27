@@ -58,10 +58,10 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
-  && mkdir -p /root/{tools,inputdata,cases,timings,archive,baselines} \
+  && mkdir -p /root/storage/{tools,inputdata,cases,timings,archive,baselines} \
   && download_input_data
 
-COPY --from=cprnc /root/tools/cprnc /root/tools/cprnc
+COPY --from=cprnc /root/storage/tools/cprnc /root/storage/tools/cprnc
 COPY docker/.cime /root/.cime
 
 ENTRYPOINT ["/entrypoint.sh"]
