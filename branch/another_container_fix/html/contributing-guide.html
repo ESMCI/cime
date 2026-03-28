@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing Guide &mdash; CIME master documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-toolbox-code.css" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3d7e66fe" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=30d551ce"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Glossary" href="glossary.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CIME
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">For Users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ccs/index.html">Case Control System (CCS)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system_testing.html">System Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/index.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-run-the-tests">How to run the tests</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pytest">pytest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts-regression-tests-py">scripts_regression_tests.py</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#code-quality">Code Quality</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installing-pre-commit">Installing pre-commit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-pre-commit">Running pre-commit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-git-hook-scripts">Installing git hook scripts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#docker-container">Docker container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running">Running</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CIME</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/contributing-guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contributing-guide">
+<span id="id1"></span><h1>Contributing Guide<a class="headerlink" href="#contributing-guide" title="Link to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id3">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#testing" id="id4">Testing</a></p>
+<ul>
+<li><p><a class="reference internal" href="#how-to-run-the-tests" id="id5">How to run the tests</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pytest" id="id6">pytest</a></p>
+<ul>
+<li><p><a class="reference internal" href="#examples" id="id7">Examples</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#scripts-regression-tests-py" id="id8">scripts_regression_tests.py</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id2" id="id9">Examples</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#code-quality" id="id10">Code Quality</a></p>
+<ul>
+<li><p><a class="reference internal" href="#installing-pre-commit" id="id11">Installing pre-commit</a></p></li>
+<li><p><a class="reference internal" href="#running-pre-commit" id="id12">Running pre-commit</a></p></li>
+<li><p><a class="reference internal" href="#installing-git-hook-scripts" id="id13">Installing git hook scripts</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#docker-container" id="id14">Docker container</a></p>
+<ul>
+<li><p><a class="reference internal" href="#running" id="id15">Running</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="introduction">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Introduction</a><a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p>The <cite>Case</cite> class is the core of the CIME Case Control system. All interactions with a case are performed through this class. The variables used to create and manipulate a case are defined in XML files, and for each XML file, there is a corresponding Python class to interact with it.</p>
+<p>XML files that are part of the CIME distribution and are intended to be read-only with respect to a case are typically named <cite>config_something.xml</cite>. The corresponding Python class is named <cite>Something</cite> and can be found in the file <cite>CIME.XML.something.py</cite>. These are referred to as the CIME config classes.</p>
+<p>XML files that are part of a case and thus are read/write to a case are typically named <cite>env_whatever.xml</cite>. The corresponding Python modules are <cite>CIME.XML.env_whatever.py</cite>, and the classes are named <cite>EnvWhatever</cite>. These are referred to as the Case env classes.</p>
+<p>The <cite>Case</cite> class includes an array of the Case env classes. In the <cite>configure</cite> function and its supporting functions, the case object creates and manipulates the Case env classes by reading and interpreting the CIME config classes.</p>
+</section>
+<section id="testing">
+<span id="contributing-guide-running-tests"></span><h2><a class="toc-backref" href="#id4" role="doc-backlink">Testing</a><a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>CIME splits its tests into two categories: <cite>unit</cite> and <cite>sys</cite>.</p>
+<p>The <cite>unit</cite> category covers doctests and unit tests, while the <cite>sys</cite> category covers regression tests. Tests are named accordingly (e.g., unit tests: <cite>CIME/tests/test_unit*</cite>).</p>
+<section id="how-to-run-the-tests">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">How to run the tests</a><a class="headerlink" href="#how-to-run-the-tests" title="Link to this heading"></a></h3>
+<p>There are two possible methods to run these tests.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>scripts_regression_tests.py is deprecated and will be removed in the future.</p>
+</div>
+<section id="pytest">
+<h4><a class="toc-backref" href="#id6" role="doc-backlink">pytest</a><a class="headerlink" href="#pytest" title="Link to this heading"></a></h4>
+<p>CIME supports running tests using <cite>pytest</cite>. By using <cite>pytest</cite> coverage reports are automatically generated. <cite>pytest</cite> supports all the same arguments as <cite>scripts_regression_tests.py</cite>, see <cite>–help</cite> for details.</p>
+<p>To get started install <cite>pytest</cite> and <cite>pytest-cov</cite>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>test-requirements.txt
+pip<span class="w"> </span>install<span class="w"> </span>pytest<span class="w"> </span>pytest-cov
+</pre></div>
+</div>
+<section id="examples">
+<h5><a class="toc-backref" href="#id7" role="doc-backlink">Examples</a><a class="headerlink" href="#examples" title="Link to this heading"></a></h5>
+<p>Running all the <code class="docutils literal notranslate"><span class="pre">sys</span></code> and <code class="docutils literal notranslate"><span class="pre">unit</span></code> tests.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
+</pre></div>
+</div>
+<p>Running only <code class="docutils literal notranslate"><span class="pre">sys</span></code> tests, <code class="docutils literal notranslate"><span class="pre">sys</span></code> can be replaced with <code class="docutils literal notranslate"><span class="pre">unit</span></code> to run only unit testing.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>CIME/tests/test_sys.*
+</pre></div>
+</div>
+<p>Running a specific test case.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>CIME/tests/test_unit_case.py
+</pre></div>
+</div>
+<p>A specific test can be run with the following.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
+</pre></div>
+</div>
+</section>
+</section>
+<section id="scripts-regression-tests-py">
+<h4><a class="toc-backref" href="#id8" role="doc-backlink">scripts_regression_tests.py</a><a class="headerlink" href="#scripts-regression-tests-py" title="Link to this heading"></a></h4>
+<p>The <cite>scripts_regression_tests.py</cite> script is located under <cite>CIME/tests</cite>.</p>
+<p>You can pass either the module name or the file path of a test.</p>
+<section id="id2">
+<h5><a class="toc-backref" href="#id9" role="doc-backlink">Examples</a><a class="headerlink" href="#id2" title="Link to this heading"></a></h5>
+<p>Running all the <code class="docutils literal notranslate"><span class="pre">sys</span></code> and <code class="docutils literal notranslate"><span class="pre">unit</span></code> tests.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>CIME/tests/scripts_regression_tests.py
+</pre></div>
+</div>
+<p>Running only <code class="docutils literal notranslate"><span class="pre">sys</span></code> tests, <code class="docutils literal notranslate"><span class="pre">sys</span></code> can be replaced with <code class="docutils literal notranslate"><span class="pre">unit</span></code> to run only unit testing.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>CIME/tests/scripts_regression_tests.py<span class="w"> </span>CIME/tests/test_sys*
+</pre></div>
+</div>
+<p>Runnig a specific test case.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>CIME/tests/scripts_regression_tests.py<span class="w"> </span>CIME.tests.test_unit_case
+</pre></div>
+</div>
+<p>A specific test can be run with the following.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>CIME/tests/scripts_regression_tests.py<span class="w"> </span>CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="code-quality">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Code Quality</a><a class="headerlink" href="#code-quality" title="Link to this heading"></a></h2>
+<p>To ensure code quality we require all code to be linted by <cite>pylint</cite> and formatted using <cite>black</cite>. We run a few other tools to check XML formatting, ending files with newlines and trailing white spaces.</p>
+<p>To ensure consistency when running these checks we require the use of [<cite>pre-commit</cite>](<a class="reference external" href="https://pre-commit.com/">https://pre-commit.com/</a>).</p>
+<p>Our GitHub actions will lint and check the format of each PR but will not automatically fix any issues. It’s up to the developer to resolve linting and formatting issues. We encourage installing <cite>pre-commit</cite>’s [Git hooks](#installing-git-hook-scripts) that will run these checks before code can be committed.</p>
+<section id="installing-pre-commit">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Installing pre-commit</a><a class="headerlink" href="#installing-pre-commit" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</section>
+<section id="running-pre-commit">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Running pre-commit</a><a class="headerlink" href="#running-pre-commit" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>run<span class="w"> </span>-a
+</pre></div>
+</div>
+</section>
+<section id="installing-git-hook-scripts">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Installing git hook scripts</a><a class="headerlink" href="#installing-git-hook-scripts" title="Link to this heading"></a></h3>
+<p>If you install these scripts then <cite>pre-commit</cite> will automatically run on <cite>git commit</cite>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+</section>
+</section>
+<section id="docker-container">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Docker container</a><a class="headerlink" href="#docker-container" title="Link to this heading"></a></h2>
+<p>CIME provides a container that the CI uses to run all the testing. This container</p>
+<p>can also be used to test locally providing a reproducible environment. The</p>
+<p>compiler is <code class="docutils literal notranslate"><span class="pre">GNU</span></code> and the MPI implementation is <code class="docutils literal notranslate"><span class="pre">OpenMPI</span></code>.</p>
+<p>The image can be pulled from <code class="docutils literal notranslate"><span class="pre">ghcr.io</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>ghcr.io/esmci/cime:latest
+</pre></div>
+</div>
+<p>or can be built locally. The build context needs to be set to the root of the CIME repository.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>-f<span class="w"> </span>docker/Dockerfile<span class="w"> </span>.
+</pre></div>
+</div>
+<section id="running">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Running</a><a class="headerlink" href="#running" title="Link to this heading"></a></h3>
+<p>The container does not provide any source, as such you will need to bind
+mount the model+cime directory and define which model is being used. The
+following example assumes the model is checked out in <code class="docutils literal notranslate"><span class="pre">$SRC_PATH</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>--hostname<span class="w"> </span>docker<span class="w"> </span>-e<span class="w"> </span><span class="nv">CIME_MODEL</span><span class="o">=</span>e3sm<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">SRC_PATH</span><span class="si">}</span>:/root/model<span class="w"> </span>-v<span class="w"> </span>./storage:/root/storage<span class="w"> </span>-w<span class="w"> </span>/root/E3SM/cime<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>bash
+</pre></div>
+</div>
+<p>This example will drop into a shell where CIME commands or tests can be run.
+The options are broken down below.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--hostname</span> <span class="pre">docker</span></code> is required to tell CIME which machine definition to use.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">CIME_MODEL=e3sm</span></code> defines the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">${SRC_PATH}:/root/E3SM</span></code> passes through the model source.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">./storage:/root/storage</span></code> persist all data; cases, baselines, archive, inputdata. the bind mounts can be broken out if you only want to persist certain input/outputs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-w</span> <span class="pre">/root/E3SM/cime</span></code> set the current working directory to CIME’s root.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ghcr.io/esmci/cime:latest</span></code> container image.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bash</span></code> the command to run in the container.</p></li>
+</ul>
+<p>You can even run CIME or testing without a shell.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>--hostname<span class="w"> </span>docker<span class="w"> </span>-e<span class="w"> </span><span class="nv">CIME_MODEL</span><span class="o">=</span>e3sm<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">SRC_PATH</span><span class="si">}</span>:/root/model<span class="w"> </span>-v<span class="w"> </span>./storage:/root/storage<span class="w"> </span>-w<span class="w"> </span>/root/E3SM/cime<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>pytest<span class="w"> </span>CIME/tests/test_unit*
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>--hostname<span class="w"> </span>docker<span class="w"> </span>-e<span class="w"> </span><span class="nv">CIME_MODEL</span><span class="o">=</span>e3sm<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">SRC_PATH</span><span class="si">}</span>:/root/model<span class="w"> </span>-v<span class="w"> </span>./storage:/root/storage<span class="w"> </span>-w<span class="w"> </span>/root/E3SM/cime<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>./scripts/create_test<span class="w"> </span>SMS.f19_g16.S
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="glossary.html" class="btn btn-neutral float-left" title="Glossary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, U.S. National Science Foundation and U.S. Department of Energy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+     
+<script>var version_json_loc = "../../versions.json";</script>
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+
+  <script type="text/javascript">
+    let baseUriRegex = /(.*\/cime)\/.*/g;
+    let parsedUri = baseUriRegex.exec(document.baseURI);
+
+    if (parsedUri != null && parsedUri.length == 2) {
+      let baseUri = parsedUri[1];
+
+      $.get(`${baseUri}/versions/versions.json`, function(data) {
+        let versionElement = $("#versions");
+
+        Object.keys(data).forEach(function(key) {
+          let value = data[key];
+
+          let item = `<dd><a href="${baseUri}/versions/${key}/html/">${value}</a></dd>`
+
+          versionElement.append(item);
+        });
+      });
+    }
+  </script>
+  <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      <span class="fa fa-book"> Read the Docs</span>
+      v: master
+      <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+      
+      <dl id="versions">
+        <dt>Versions</dt>
+      </dl>
+      
+      
+    </div>
+  </div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

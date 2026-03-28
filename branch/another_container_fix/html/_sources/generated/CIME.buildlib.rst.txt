@@ -1,0 +1,37 @@
+﻿..
+  module.rst
+
+CIME.buildlib
+=============
+
+.. automodule:: CIME.buildlib
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    build_cime_component_lib
+                    parse_input
+                    run_gmake
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

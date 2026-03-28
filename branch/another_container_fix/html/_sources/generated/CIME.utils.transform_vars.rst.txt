@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.transform\_vars
+==========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: transform_vars

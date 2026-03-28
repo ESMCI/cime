@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.wait\_for\_tests.wait\_for\_test
+=====================================
+
+.. currentmodule:: CIME.wait_for_tests
+
+.. autofunction:: wait_for_test

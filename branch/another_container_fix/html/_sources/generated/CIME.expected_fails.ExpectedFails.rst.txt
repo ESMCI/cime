@@ -1,0 +1,25 @@
+..
+  class.rst
+
+CIME.expected\_fails.ExpectedFails
+==================================
+
+.. currentmodule:: CIME.expected_fails
+
+.. autoclass:: ExpectedFails
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~ExpectedFails.__init__
+                    ~ExpectedFails.add_failure
+                    ~ExpectedFails.expected_fails_comment
+        
+    

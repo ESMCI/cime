@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.build.generate\_makefile\_macro
+====================================
+
+.. currentmodule:: CIME.build
+
+.. autofunction:: generate_makefile_macro
