@@ -17,7 +17,7 @@
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=30d551ce"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -277,11 +277,11 @@ result is None, as for other optional components.)</p>
 <span class="go">[&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, None, None, [&#39;test/mods&#39;]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more&#39;</span><span class="p">)</span>
 <span class="go">[&#39;ERS&#39;, None, &#39;fe12_123&#39;, &#39;JGF&#39;, &#39;machine&#39;, &#39;compiler&#39;, [&#39;test/mods&#39;, &#39;other/dir/path&#39;, &#39;and/one/more&#39;]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Expected 4th item of &#39;SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39; (&#39;A_XLND_SICE_SOCN_XROF_XGLC_SWAV&#39;) to be in form machine_compiler</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;SMS.f19_g16.2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">&#39;SMS.f19_g16.2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods&#39;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV</span>

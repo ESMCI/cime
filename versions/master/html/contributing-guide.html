@@ -17,7 +17,7 @@
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=30d551ce"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=f281be69"></script>
@@ -257,7 +257,7 @@ pip<span class="w"> </span>install<span class="w"> </span>pytest<span class="w">
 <p>The container does not provide any source, as such you will need to bind
 mount the model+cime directory and define which model is being used. The
 following example assumes the model is checked out in <code class="docutils literal notranslate"><span class="pre">$SRC_PATH</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>--hostname<span class="w"> </span>docker<span class="w"> </span>-e<span class="w"> </span><span class="nv">CIME_MODEL</span><span class="o">=</span>e3sm<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">SRC_PATH</span><span class="si">}</span>:/root/model<span class="w"> </span>-v<span class="w"> </span>./storage:/root/storage<span class="w"> </span>-v<span class="w"> </span>./inputdata:/root/inputdata<span class="w"> </span>-w<span class="w"> </span>/root/E3SM/cime<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>bash
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>--hostname<span class="w"> </span>docker<span class="w"> </span>-e<span class="w"> </span><span class="nv">CIME_MODEL</span><span class="o">=</span>e3sm<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">SRC_PATH</span><span class="si">}</span>:/root/model<span class="w"> </span>-v<span class="w"> </span>./storage:/root/storage<span class="w"> </span>-w<span class="w"> </span>/root/E3SM/cime<span class="w"> </span>ghcr.io/esmci/cime:latest<span class="w"> </span>bash
 </pre></div>
 </div>
 <p>This example will drop into a shell where CIME commands or tests can be run.
@@ -266,8 +266,7 @@ The options are broken down below.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">--hostname</span> <span class="pre">docker</span></code> is required to tell CIME which machine definition to use.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">CIME_MODEL=e3sm</span></code> defines the model.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">${SRC_PATH}:/root/E3SM</span></code> passes through the model source.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">./inputdata:/root/inputdata</span></code> persistent input data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">./storage:/root/storage</span></code> persistent cases, baselines, timings, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">./storage:/root/storage</span></code> persist all data; cases, baselines, archive, inputdata. the bind mounts can be broken out if you only want to persist certain input/outputs.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-w</span> <span class="pre">/root/E3SM/cime</span></code> set the current working directory to CIME’s root.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ghcr.io/esmci/cime:latest</span></code> container image.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">bash</span></code> the command to run in the container.</p></li>

@@ -17,7 +17,7 @@
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=30d551ce"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
@@ -184,21 +184,21 @@ arguments:
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;Fortune&quot;</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: &#39;bacon&#39; is not a valid literal for any Fortran type.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">)</span>
 <span class="go">1.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;bacon&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;logical&quot;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: &#39;bacon&#39; is not a valid literal of type &#39;logical&#39;.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;booga&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s2">&quot;booga&quot;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Invalid Fortran type for a namelist: &#39;booga&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;2*1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;2*1&quot;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
 <span class="gr">CIMEError</span>: <span class="n">ERROR: Cannot use repetition syntax in literal_to_python_value</span>
