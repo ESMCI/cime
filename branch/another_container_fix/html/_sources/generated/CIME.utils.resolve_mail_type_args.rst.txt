@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.resolve\_mail\_type\_args
-====================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: resolve_mail_type_args

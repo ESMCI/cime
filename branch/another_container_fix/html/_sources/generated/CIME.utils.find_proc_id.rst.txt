@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.find\_proc\_id
-=========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: find_proc_id
