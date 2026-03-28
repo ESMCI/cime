@@ -213,7 +213,7 @@ jobs:
       - name: Cache inputdata
         uses: actions/cache@v3
         with:
-          path: /home/cime/inputdata
+          path: /root/storage/inputdata
           key: inputdata-2
       - name: Install uv
         uses: astral-sh/setup-uv@v7
