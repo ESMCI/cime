@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import filecmp
+import shutil
 
 from CIME.XML.standard_module_setup import *
 from CIME.config import Config
@@ -650,6 +651,20 @@ def _generate_baseline_impl(case, baseline_dir=None, allow_baseline_overwrite=Fa
         and not allow_baseline_overwrite
     ):
         expect(False, " Cowardly refusing to overwrite existing baseline directory")
+
+    # Remove stale baseline files from a previous run so they don't linger when the
+    # new run no longer produces them.  CaseDocs and user_nl* are managed by the
+    # namelist-generation phase (which already ran), so we preserve those.
+    preserve_list = ["CaseDocs", BLESS_LOG_NAME, TEST_STATUS_FILENAME]
+    if os.path.isdir(basegen_dir):
+        for item in os.listdir(basegen_dir):
+            if item in preserve_list or item.startswith("user_nl"):
+                continue
+            item_path = os.path.join(basegen_dir, item)
+            if os.path.isfile(item_path):
+                os.remove(item_path)
+            elif os.path.isdir(item_path):
+                shutil.rmtree(item_path)
 
     comments = "Generating baselines into '{}'\n".format(basegen_dir)
     num_gen = 0
