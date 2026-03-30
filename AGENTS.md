@@ -1,95 +1,75 @@
 # AGENTS.md
 
-## Note to AI agents
+## Project specifics and jargon
+- Model refers to an Earth System Model.
+- CIME requires a model specific configuration.
 
-This AGENTS.md is maintained by the CIME project. Do not overwrite or
-regenerate this file with init commands.
+## Dev environment tips
+- Use `python -m venv` or `uv venv` to ceate local dev environment.
+ - Use `python -m venv` or `uv venv` to create local dev environment.
+- Setup doc environment with `pip install -r doc/requirements.txt`.
+- Setup coding environment with `pip install -r test-requirements.txt`.
+- Check if host is a supported machine by matching `hostname` to output of `./scripts/query_config --machines`.
+- Test files prefixed with `test_unit` can be run locallly using `pytest --machine docker` in a venv.
+ - Test files prefixed with `test_unit` can be run locally using `pytest --machine docker` in a venv.
+- Test files prefixed with `test_sys` must be run on a supported machine or in the `ghcr.io/esmci/cime:latest` docker container. 
+- Build documentation using `make -C doc/ html`.
 
-## Note to claude code users
+## Repository Structure
+Key paths:
+- `CIME` - Project code directory
+    - `SystemTests` - Model system tests, used to test specific model behavior and ensure reproducibility.
+    - `Tools` - Various tools for working with CIME cases.
+    - `XML` - The foundation of CIME, everything is configured through XML classes; prefixed `env` files are mutable case specific, all others are static model defined.
+    - `baselines` - Used with system tests to verify reproducibility.
+    - `build_scripts` - Scripts to build common libraries for models.
+    - `case` - The heart of CIME, everything revolves around a case. Cases contain all information to configure, build, and run a model. System tests use cases to test specific behavior, some tests will create `n` cases and compare.
+    - `data` - Stores model configuration entrypoints and general templates.
+    - `non_py` - Stores common libraries that CIME provides.
+    - `scripts` - Main entrypoints into CIME.
+    - `bless_test_results.py` - Used to manage model testing baselines.
+    - `config.py` - Used by models to configure CIME runtime.
+    - `cs_status.py` - Used to write status files for cases.
+    - `get_tests.py` - Used to define internal system tests for CIME.
+    - `gitinterface.py` - Used to track case configuration using Git.
+    - `locked_files.py` - Provides tooling to lock case configuration files.
+    - `provenance.py` - Used to track case provenance.
+    - `test_scheduler.py` - Used to run model system tests, automates case creation, configuration, build, and submit. Can process test suites, composed of many test cases.
+    - `test_status.py` - Used to write test status for a case.
+    - `user_mod_support.py` - Provides ability for users to modify cases in a consistent manner. Adjust model code, namelists, run shell scripts to configure components/model.
+- `doc/source` - Documentation source directory
+    - `ccs` - User Case Control System.
+    - `tools` - User tools.
+    - `api.rst` - Developer API.
+    - `contributing-guide.rst` - Developer contribution guidelines.
+    - `glossary.rst` - User glossary.
+    - `system_testing.rst` - User System Testing reference.
 
-A CLAUDE.md file is in .claude directory.  It includes
-this file. Ignore tips to run init.
+## Coding Standards
+- Follow `PEP8` style guide.
+- Follow `Google Python Style Guide` for docstrings.
+- Always prefer generalized implementation; avoid split logic that depends on a specific model.
+- Always avoid external dependencies.
+- Always run `pre-commit run <file_path>` after you create or modify a python file. Must pass before moving to next step.
+- Always prefer dependency injection principles.
 
-## Overview
+## Testing Standards
+- Adds tests for new behavior - cover success, failure, and edge cases.
+- Use pytest patterns, not `unittest.TestCase`.
+- Use `@pytest.mark.parametrize` for multiple similar inputs.
 
-At its core, CIME provides users the ability to configure, build, and run
-simulation models. In addition it provides tools to post-process and archive
-model output. CIME provides model developers the ability to test their models
-under specific criteria, e.g., check performance or reproducibility.
+## Documentation Standards
+- Documentation written using Sphinx ReStructuredText.
+- User documentation needs what/how.
+- Developer documentation needs why/how.
 
-Documentation: https://esmci.github.io/cime
+## Commits and PRs
+- Use Conventional Commits format.
 
-### User Usage
-
-Requires a supported machine and supported model (E3SM, CESM, NorESM).
-
-- Create a case: `./scripts/create_newcase --compset <compset> --res <res> --case <case directory> --machine <machine>`, e.g. `./scripts/create_newcase --compset A --res f19_g16 --case ./cases/case01 --machine docker`
-- Setup case: `./case.setup`
-- Build case: `./case.build`
-- Submit case: `./case.submit`
-- Query case config: `./xmlquery`
-- Change case config: `./xmlchange`
-- Preview namelist: `./preview_namelists`
-- Run a model system test: `./scripts/create_test  --machine <machine> SMS.f19_g16.X`, e.g. `./scripts/create_test --machine docker SMS.f19_g16.X`
-- Query configuration: `./scripts/query_config --compsets`, `./scripts/query_config --grids`, `./scripts/query_config --machines`
-
-## Developer
-
-### Testing
-
-Unit tests: `CIME/tests/test_unit*.py`
-E2E tests: `CIME/tests/test_sys*.py`
-
-Setup: `pip install -r test-requirements.txt`
-
-Running tests: `pytest --machine docker CIME/tests/test_*.py`
-
-### Code Quality
-
-Follow `pep8` style guidelines.
-
-Use Google style for docstrings.
-
-Use `black` and `pylint` for formatting and linting.
-
-Always use `pre-commit` before committing code, e.g. `pre-commit run -a`.
-
-### Documentation
-
-Documentation is found under `doc/`.
-
-Always write documentation in reStructuredText.
-
-Setup: `pip install -r doc/requirements.txt`
-
-Build documentation: `cd doc; make html`
-
-### Architecture
-
-The `Case` class (`CIME/case/case.py`) is the core of CIME.
-
-Case configuration is handled by XML files. 
-
-- Dynamic configuration `CIME/XML/env_*.py`, read/write configuration specific to a `Case`.
-- Static configuration: all non-`env_*.py` files under `CIME/XML/*.py`, read-only and provided before `Case` is constructed.
-
-Dynamic config classes are named after the XML they read, e.g., `Machines`.
-
-Static config classes are named `Env*`.
-
-Model System Tests are found under `CIME/SystemTests/`, each test type has it's own module.
-
-CIME is heavily XML-driven. Key concepts:
-- Generic XML handling is in `CIME/XML/generic_xml.py`
-- All XML classes inherit from `GenericXML`
-- XML schemas are in `CIME/data/config/xml_schemas/`
-- Config files define machines, compsets, grids, tests
-
-## Development Notes
-- Do not use external packages; if required, ask for the user's approval
-- Host models provide static configuration
-- Dynamic configuration is derived from static configuration + user input
-- Always use dependency injection; if refactoring prefer dependency injection
-- The Case class is spread across multiple files
-- Running model system tests require a support machine
-- Can use docker container if not on supported machine
+## Boundaries
+- Ask first
+    - Adding external dependencies.
+    - Large refactors.
+- Never
+    - Commit secrets, credentials, or tokens.
+    - Use destructive git operations unless explicitly requested.
