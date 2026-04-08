@@ -516,9 +516,9 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            # Patch generate_baseline_phase() so we can check it was called
+            # Patch additional_baseline_generation() so we can check it was called
             with mock.patch.object(
-                common, "generate_baseline_phase"
+                common, "additional_baseline_generation"
             ) as mock_generate_baseline_phase:
                 common._generate_baseline()
 
@@ -540,14 +540,14 @@ class TestUnitSystemTests(unittest.TestCase):
             assert len(lines) == 1
             assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
 
-            # Check that generate_baseline_phase() was called
+            # Check that additional_baseline_generation() was called
             expected_basegen_dir = str(
                 baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             )
             mock_generate_baseline_phase.assert_called_once_with(expected_basegen_dir)
 
     def test_generate_baseline_phase_subclass_called(self):
-        """Check that child classes can extend generate_baseline_phase() such that it gets called"""
+        """Check that child classes can extend additional_baseline_generation() such that it gets called"""
 
         class _SubTest(SystemTestsCommon):
             def __init__(self, case):
@@ -555,7 +555,7 @@ class TestUnitSystemTests(unittest.TestCase):
                 self.phase_called_with = None
                 self.abc123 = None
 
-            def generate_baseline_phase(self, basegen_dir):
+            def additional_baseline_generation(self, basegen_dir):
                 self.phase_called_with = basegen_dir
                 self.abc123 = 1987
 
