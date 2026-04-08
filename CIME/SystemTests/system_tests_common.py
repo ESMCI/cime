@@ -1064,7 +1064,9 @@ for some of your components.
                 GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
             )
 
-    def additional_baseline_generation(self, basegen_dir):  # pylint: disable=unused-argument
+    def additional_baseline_generation(
+        self, basegen_dir
+    ):  # pylint: disable=unused-argument
         """
         Extension point for subclasses to perform additional operations during baseline generation
         phase.
