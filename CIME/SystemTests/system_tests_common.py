@@ -1026,9 +1026,8 @@ for some of your components.
 
     def _generate_baseline(self):
         """
-        Do NOT override this method, this method is the framework that controls the
-        generate_baseline phase. additional_baseline_generation is the extension point that subclasses
-        should use.
+        If you find yourself wanting to override this method, check whether you can accomplish what
+        you want using additional_baseline_generation() instead.
         """
         with self._test_status:
             # generate baseline
