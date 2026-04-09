@@ -1,0 +1,26 @@
+﻿..
+  module.rst
+
+CIME.build\_scripts
+===================
+
+.. automodule:: CIME.build_scripts
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

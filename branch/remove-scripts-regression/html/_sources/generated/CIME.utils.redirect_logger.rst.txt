@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.redirect\_logger
+===========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: redirect_logger

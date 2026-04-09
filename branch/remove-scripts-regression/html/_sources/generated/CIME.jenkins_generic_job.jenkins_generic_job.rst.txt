@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.jenkins\_generic\_job.jenkins\_generic\_job
+================================================
+
+.. currentmodule:: CIME.jenkins_generic_job
+
+.. autofunction:: jenkins_generic_job

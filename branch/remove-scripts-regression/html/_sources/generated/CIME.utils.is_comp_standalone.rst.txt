@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.is\_comp\_standalone
+===============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: is_comp_standalone
