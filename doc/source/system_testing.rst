@@ -243,6 +243,14 @@ TESTTYPE     Description
                 Do a branch run, starting from restarts written in ref2case,
                 for 9 days and writing restarts at day 5.
                 Short term archiving is off.
+
+                One aspect of this branch run worth noting is that it writes an extra set of
+                restart files in the middle of the run, which are not written in the reference
+                case. (These restart files are needed for the final continue run.) This is one
+                of the few (or only) instances in the CIME System Tests where we do a comparison
+                between two runs where one run has written an extra set of restart files
+                part-way through. This can catch a particular type of error that arises
+                occasionally: where the mere act of *writing* a restart file can change answers.
               case - restart (Suffix rest)
                 Do a restart run from the branch run restarts for 4 days.
                 Short term archiving is off.
