@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.import\_and\_run\_sub\_or\_cmd
-=========================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: import_and_run_sub_or_cmd

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.ls\_sorted\_by\_mtime
-================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: ls_sorted_by_mtime

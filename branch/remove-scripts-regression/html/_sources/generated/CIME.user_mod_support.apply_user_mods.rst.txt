@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.user\_mod\_support.apply\_user\_mods
-=========================================
-
-.. currentmodule:: CIME.user_mod_support
-
-.. autofunction:: apply_user_mods

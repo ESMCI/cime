@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.date.get\_file\_date
-=========================
-
-.. currentmodule:: CIME.date
-
-.. autofunction:: get_file_date

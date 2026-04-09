@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.set\_model
-=====================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: set_model

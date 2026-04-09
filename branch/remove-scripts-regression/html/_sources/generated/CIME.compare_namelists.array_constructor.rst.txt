@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.compare\_namelists.array\_constructor
-==========================================
-
-.. currentmodule:: CIME.compare_namelists
-
-.. autofunction:: array_constructor
