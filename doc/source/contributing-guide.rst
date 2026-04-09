@@ -31,35 +31,33 @@ How to run the tests
 
     The legacy `scripts_regression_tests.py` entry point has been replaced by `pytest`.
 
-CIME supports running tests using `pytest`. By using `pytest` coverage reports are automatically generated. See `--help` for details.
-
-To get started install `pytest` and `pytest-cov`.
+CIME supports running tests using `pytest`. By using `pytest` coverage reports are automatically generated. Install the test requirements, which include `pytest` and `pytest-cov`:
 
 .. code-block:: bash
 
     pip install -r test-requirements.txt
 
-Examples
-........
-Running all the ``sys`` and ``unit`` tests.
+Common examples
+...............
+Run all ``sys`` and ``unit`` tests.
 
 .. code-block:: bash
 
     pytest
 
-Running only ``sys`` tests, ``sys`` can be replaced with ``unit`` to run only unit testing.
+Run only ``sys`` tests. Replace ``sys`` with ``unit`` to run only unit tests.
 
 .. code-block:: bash
 
     pytest CIME/tests/test_sys*
 
-Running a specific test case.
+Run a specific test case.
 
 .. code-block:: bash
 
     pytest CIME/tests/test_unit_case.py
 
-A specific test can be run with the following.
+Run a specific test method.
 
 .. code-block:: bash
 
@@ -69,9 +67,9 @@ Code Quality
 ------------
 To ensure code quality we require all code to be linted by `pylint` and formatted using `black`. We run a few other tools to check XML formatting, ending files with newlines and trailing white spaces.
 
-To ensure consistency when running these checks we require the use of [`pre-commit`](https://pre-commit.com/).
+To ensure consistency when running these checks, we require [`pre-commit`](https://pre-commit.com/).
 
-Our GitHub actions will lint and check the format of each PR but will not automatically fix any issues. It's up to the developer to resolve linting and formatting issues. We encourage installing `pre-commit`'s [Git hooks](#installing-git-hook-scripts) that will run these checks before code can be committed.
+GitHub Actions lint and check the format of each PR, but they do not automatically fix issues. Installing the `pre-commit` [Git hooks](#installing-git-hook-scripts) runs those checks before each commit.
 
 Installing pre-commit
 `````````````````````
@@ -97,51 +95,41 @@ If you install these scripts then `pre-commit` will automatically run on `git co
 
 Docker container
 ----------------
-CIME provides a container that the CI uses to run all the testing. This container
+CIME provides a container that CI uses to run tests. You can also use it locally for a reproducible environment. The compiler is ``GNU`` and the MPI implementation is ``OpenMPI``.
 
-can also be used to test locally providing a reproducible environment. The
-
-compiler is ``GNU`` and the MPI implementation is ``OpenMPI``.
-
-The image can be pulled from ``ghcr.io``.
+The image can be pulled from ``ghcr.io`` or built locally. For local builds, set the build context to the root of the CIME repository.
 
 .. code-block:: bash
 
    docker pull ghcr.io/esmci/cime:latest
 
-or can be built locally. The build context needs to be set to the root of the CIME repository.
-
-.. code-block:: bash
-
    docker build -t ghcr.io/esmci/cime:latest -f docker/Dockerfile .
 
 Running
 ```````
-The container does not provide any source, as such you will need to bind
-mount the model+cime directory and define which model is being used. The 
-following example assumes the model is checked out in ``$SRC_PATH``.
+The container does not include source code, so bind mount the model checkout and choose the model being used. The following example assumes the model is checked out in ``$SRC_PATH``.
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest bash
+   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest bash
 
 This example will drop into a shell where CIME commands or tests can be run.
 The options are broken down below.
 
 - ``--hostname docker`` is required to tell CIME which machine definition to use.
 - ``-e CIME_MODEL=e3sm`` defines the model.
-- ``-v ${SRC_PATH}:/root/E3SM`` passes through the model source.
-- ``-v ./storage:/root/storage`` persist all data; cases, baselines, archive, inputdata. the bind mounts can be broken out if you only want to persist certain input/outputs.
-- ``-w /root/E3SM/cime`` set the current working directory to CIME's root.
+- ``-v ${SRC_PATH}:/root/model`` passes through the model source.
+- ``-v ./storage:/root/storage`` persists data such as cases, baselines, archive, and inputdata. You can split the bind mounts if you only want to keep specific inputs or outputs.
+- ``-w /root/model/cime`` sets the current working directory to CIME's root.
 - ``ghcr.io/esmci/cime:latest`` container image.
 - ``bash`` the command to run in the container.
 
-You can even run CIME or testing without a shell.
+You can also run CIME commands or tests without opening a shell.
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
+   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
+   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
