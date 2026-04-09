@@ -371,7 +371,7 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 </tr>
 <tr class="row-even"><td><p>ERI</p></td>
 <td><dl>
-<dt>Hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</dt><dd><dl class="simple">
+<dt>Hybrid/branch/exact restart test, default (by default STOP_N is 22 days)</dt><dd><dl>
 <dt>ref1case</dt><dd><p>Do an initial run for 3 days writing restarts at day 3.
 ref1case is a clone of the main case.
 Short term archiving is on.</p>
@@ -384,6 +384,13 @@ Short term archiving is on.</p>
 <dt>case (Suffix branch)</dt><dd><p>Do a branch run, starting from restarts written in ref2case,
 for 9 days and writing restarts at day 5.
 Short term archiving is off.</p>
+<p>One aspect of this branch run worth noting is that it writes an extra set of
+restart files in the middle of the run, which are not written in the reference
+case. (These restart files are needed for the final continue run.) This is one
+of the few (or only) instances in the CIME System Tests where we do a comparison
+between two runs where one run has written an extra set of restart files
+part-way through. This can catch a particular type of error that arises
+occasionally: where the mere act of <em>writing</em> a restart file can change answers.</p>
 </dd>
 <dt>case - restart (Suffix rest)</dt><dd><p>Do a restart run from the branch run restarts for 4 days.
 Short term archiving is off.</p>
