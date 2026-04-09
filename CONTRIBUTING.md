@@ -20,13 +20,12 @@ For more information on contributing to open source projects,
 is a great starting point. Also, checkout the [Zen of Scientific Software Maintenance](https://jrleeman.github.io/ScientificSoftwareMaintenance/)
 for some guiding principles on how to create high quality scientific software contributions.
 
-The canonical, detailed contributing guide for this repository is included in the source tree at `doc/source/contributing-guide.rst`; please consult that file as the single source of truth for developer workflows, testing, and container usage.
+The canonical, detailed contributing guide for this repository is included in the source tree at `doc/source/contributing-guide.rst`; please consult that file as the single source of truth for developer workflows, testing, container usage, and code quality.
 
 ## Getting Started
 
 Interested in helping extend CIME? Have code from your research that you believe others will
-find useful? Have a few minutes to tackle an issue? This guide will get you set up to contribute
-to CIME.
+find useful? Have a few minutes to tackle an issue? Start here, then use the detailed guide for the workflow you need.
 
 ## What Can I Do?
 * Tackle any unassigned [issues](https://github.com/ESMCI/CIME/issues) you wish!
@@ -69,13 +68,7 @@ You will need to initialize and update submodules:
     cd CIME
     git submodule update --init --recursive
 
-From here you can edit the code and run the unit tests following this [guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#pytest).
-
-When running the ``unit`` tests you can specify any valid machine e.g. docker and the tests will run.
-
-If you need to run the ``system`` tests you will need to have your respective model checked out and on a supported machine. Alternatively you can use CIME [container](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#docker-container) which is used in our GitHub CI testing.
-
-Before creating your PR you will need to run the code quality checkers; see this [guide](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#code-quality).
+From here you can edit the code and follow the detailed guide for [testing](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#contributing-guide-running-tests), [code quality](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#code-quality), and the [Docker container workflow](https://esmci.github.io/cime/versions/master/html/contributing-guide.html#docker-container).
 
 Push to your fork and [submit a pull request][pr].
 
