@@ -27,22 +27,17 @@ The `unit` category covers doctests and unit tests, while the `sys` category cov
 
 How to run the tests
 ```````````````````````
-There are two possible methods to run these tests.
-
 .. warning::
 
-    scripts_regression_tests.py is deprecated and will be removed in the future.
+    The legacy `scripts_regression_tests.py` entry point has been replaced by `pytest`.
 
-pytest
-::::::
-CIME supports running tests using `pytest`. By using `pytest` coverage reports are automatically generated. `pytest` supports all the same arguments as `scripts_regression_tests.py`, see `--help` for details.
+CIME supports running tests using `pytest`. By using `pytest` coverage reports are automatically generated. See `--help` for details.
 
 To get started install `pytest` and `pytest-cov`.
 
 .. code-block:: bash
 
     pip install -r test-requirements.txt
-    pip install pytest pytest-cov
 
 Examples
 ........
@@ -56,7 +51,7 @@ Running only ``sys`` tests, ``sys`` can be replaced with ``unit`` to run only un
 
 .. code-block:: bash
 
-    pytest CIME/tests/test_sys.*
+    pytest CIME/tests/test_sys*
 
 Running a specific test case.
 
@@ -69,39 +64,6 @@ A specific test can be run with the following.
 .. code-block:: bash
 
     pytest CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
-
-
-scripts_regression_tests.py
-:::::::::::::::::::::::::::
-The `scripts_regression_tests.py` script is located under `CIME/tests`.
-
-You can pass either the module name or the file path of a test.
-
-Examples
-........
-Running all the ``sys`` and ``unit`` tests.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py
-
-Running only ``sys`` tests, ``sys`` can be replaced with ``unit`` to run only unit testing.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py CIME/tests/test_sys*
-
-Runnig a specific test case.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
-
-A specific test can be run with the following.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
 
 Code Quality
 ------------
@@ -183,4 +145,3 @@ You can even run CIME or testing without a shell.
 .. code-block:: bash
 
    docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
-
