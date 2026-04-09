@@ -1033,7 +1033,8 @@ for some of your components.
 
     def _generate_baseline(self):
         """
-        generate a new baseline case based on the current test
+        If you find yourself wanting to override this method, check whether you can accomplish what
+        you want using additional_baseline_generation() instead.
         """
         with self._test_status:
             # generate baseline
@@ -1041,9 +1042,6 @@ for some of your components.
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASEGEN_CASE")
-            self._test_status.set_status(
-                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
-            )
             basegen_dir = os.path.join(
                 self._case.get_value("BASELINE_ROOT"),
                 self._case.get_value("BASEGEN_CASE"),
@@ -1066,6 +1064,21 @@ for some of your components.
                         )
 
                         perf_write_baseline(self._case, basegen_dir, cpllog)
+
+                self.additional_baseline_generation(basegen_dir)
+
+            self._test_status.set_status(
+                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
+            )
+
+    def additional_baseline_generation(
+        self, basegen_dir
+    ):  # pylint: disable=unused-argument
+        """
+        Extension point for subclasses to perform additional operations during baseline generation
+        phase.
+        """
+        return
 
 
 def perf_check_for_memory_leak(case, tolerance):
