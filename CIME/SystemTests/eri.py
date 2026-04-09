@@ -223,6 +223,15 @@ class ERI(SystemTestsCommon):
         # (3a) Test run:
         # do a branch run from ref2 restart (short term archiving is off)
         #
+        # One aspect of this branch run worth noting is that it writes an extra set of
+        # restart files in the middle of the run, which are not written in the reference
+        # case. (These restart files are needed for the final continue run.) This is one
+        # of the few (or only) instances in the CIME System Tests where we do a comparison
+        # between two runs where one run has written an extra set of restart files
+        # part-way through. This can catch a particular type of error that arises
+        # occasionally: where the mere act of *writing* a restart file can change answers.
+        # (See also the discussion in https://github.com/ESMCI/cime/issues/4859.)
+        #
 
         os.chdir(caseroot)
         self._set_active_case(orig_case)
