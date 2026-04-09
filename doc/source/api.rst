@@ -23,7 +23,6 @@ API
     build
     buildlib
     buildnml
-    code_checker
     compare_namelists
     compare_test_results
     config
