@@ -8,7 +8,8 @@ import pytest
 
 from CIME import utils
 from CIME.config import Config
-from CIME.tests import scripts_regression_tests
+from CIME.XML.machines import Machines
+from CIME.tests.base import BaseTestCase
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -18,7 +19,7 @@ def pytest_addoption(parser):
     # pytest's addoption has same signature as add_argument
     setattr(parser, "add_argument", parser.addoption)
 
-    scripts_regression_tests.setup_arguments(parser)
+    setup_arguments(parser)
 
     # verbose and debug flags already exist
     parser.addoption("--silent", action="store_true", help="Disable all logging")
@@ -29,7 +30,7 @@ def pytest_configure(config):
 
     utils.configure_logging(kwargs["verbose"], kwargs["debug"], kwargs["silent"])
 
-    scripts_regression_tests.configure_tests(**kwargs)
+    configure_tests(**kwargs)
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -46,3 +47,166 @@ def setup(pytestconfig):
 
     # ensure GLOABL is reset
     utils.GLOBAL = {}
+
+def setup_arguments(parser):
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="Skip full system tests, which saves a lot of time",
+    )
+
+    parser.add_argument(
+        "--no-batch",
+        action="store_true",
+        help="Do not submit jobs to batch system, run locally."
+        " If false, will default to machine setting.",
+    )
+
+    parser.add_argument(
+        "--no-fortran-run",
+        action="store_true",
+        help="Do not run any fortran jobs. Implies --fast" " Used for github actions",
+    )
+
+    parser.add_argument(
+        "--no-cmake", action="store_true", help="Do not run cmake tests"
+    )
+
+    parser.add_argument(
+        "--no-teardown",
+        action="store_true",
+        help="Do not delete directories left behind by testing",
+    )
+
+    parser.add_argument(
+        "--machine", help="Select a specific machine setting for cime", default=None
+    )
+
+    parser.add_argument(
+        "--compiler", help="Select a specific compiler setting for cime", default=None
+    )
+
+    parser.add_argument(
+        "--mpilib", help="Select a specific compiler setting for cime", default=None
+    )
+
+    parser.add_argument(
+        "--test-root",
+        help="Select a specific test root for all cases created by the testing",
+        default=None,
+    )
+
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        help="Select a specific timeout for all tests",
+        default=None,
+    )
+
+def configure_tests(
+    timeout,
+    no_fortran_run,
+    fast,
+    no_batch,
+    no_cmake,
+    no_teardown,
+    machine,
+    compiler,
+    mpilib,
+    test_root,
+    **kwargs
+):
+    config = utils.get_cime_config()
+
+    customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
+    Config.load(customize_path)
+
+    if timeout:
+        BaseTestCase.GLOBAL_TIMEOUT = str(timeout)
+
+    BaseTestCase.NO_FORTRAN_RUN = no_fortran_run or False
+    BaseTestCase.FAST_ONLY = fast or no_fortran_run
+    BaseTestCase.NO_BATCH = no_batch or False
+    BaseTestCase.NO_CMAKE = no_cmake or False
+    BaseTestCase.NO_TEARDOWN = no_teardown or False
+
+    # make sure we have default values
+    MACHINE = None
+    TEST_COMPILER = None
+    TEST_MPILIB = None
+
+    if machine is not None:
+        MACHINE = Machines(machine=machine)
+        os.environ["CIME_MACHINE"] = machine
+    elif "CIME_MACHINE" in os.environ:
+        MACHINE = Machines(machine=os.environ["CIME_MACHINE"])
+    elif config.has_option("create_test", "MACHINE"):
+        MACHINE = Machines(machine=config.get("create_test", "MACHINE"))
+    elif config.has_option("main", "MACHINE"):
+        MACHINE = Machines(machine=config.get("main", "MACHINE"))
+    else:
+        MACHINE = Machines()
+
+    BaseTestCase.MACHINE = MACHINE
+
+    if compiler is not None:
+        TEST_COMPILER = compiler
+    elif config.has_option("create_test", "COMPILER"):
+        TEST_COMPILER = config.get("create_test", "COMPILER")
+    elif config.has_option("main", "COMPILER"):
+        TEST_COMPILER = config.get("main", "COMPILER")
+
+    BaseTestCase.TEST_COMPILER = TEST_COMPILER
+
+    if mpilib is not None:
+        TEST_MPILIB = mpilib
+    elif config.has_option("create_test", "MPILIB"):
+        TEST_MPILIB = config.get("create_test", "MPILIB")
+    elif config.has_option("main", "MPILIB"):
+        TEST_MPILIB = config.get("main", "MPILIB")
+
+    BaseTestCase.TEST_MPILIB = TEST_MPILIB
+
+    if test_root is not None:
+        TEST_ROOT = test_root
+    elif config.has_option("create_test", "TEST_ROOT"):
+        TEST_ROOT = config.get("create_test", "TEST_ROOT")
+    else:
+        TEST_ROOT = os.path.join(
+            MACHINE.get_value("CIME_OUTPUT_ROOT"),
+            "scripts_regression_test.%s" % CIME.utils.get_timestamp(),
+        )
+
+    BaseTestCase.TEST_ROOT = TEST_ROOT
+
+    write_provenance_info(MACHINE, TEST_COMPILER, TEST_MPILIB, TEST_ROOT)
+
+    atexit.register(functools.partial(cleanup, TEST_ROOT))
+
+def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
+    curr_commit = get_current_commit(repo=CIMEROOT)
+    logging.info("Testing commit %s" % curr_commit)
+    cime_model = get_model()
+    logging.info("Using cime_model = %s" % cime_model)
+    logging.info("Testing machine = %s" % machine.get_machine_name())
+    if test_compiler is not None:
+        logging.info("Testing compiler = %s" % test_compiler)
+    if test_mpilib is not None:
+        logging.info("Testing mpilib = %s" % test_mpilib)
+    logging.info("Test root: %s" % test_root)
+    logging.info("Test driver: %s" % CIME.utils.get_cime_default_driver())
+    logging.info("Python version {}\n".format(sys.version))
+
+def cleanup(test_root):
+    if (
+        os.path.exists(test_root)
+        and TEST_RESULT is not None
+        and TEST_RESULT.wasSuccessful()
+    ):
+        testreporter = os.path.join(test_root, "testreporter")
+        files = os.listdir(test_root)
+        if len(files) == 1 and os.path.isfile(testreporter):
+            os.unlink(testreporter)
+        if not os.listdir(test_root):
+            print("All pass, removing directory:", test_root)
+            os.rmdir(test_root)
