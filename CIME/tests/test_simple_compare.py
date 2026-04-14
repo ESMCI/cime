@@ -12,3 +12,8 @@ class TestSimpleCompare(unittest.TestCase):
                 _normalize_string_value(f"{test}.{action}.{testid}", test)
                 == f"{test}.ACTION.TESTID"
             )
+        for action in ["GG", "CC", "CG"]:
+            assert (
+                _normalize_string_value(f"{test}.{action}.{testid}", test)
+                == f"{test}.{action}.{testid}"
+            )
