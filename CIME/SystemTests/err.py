@@ -42,8 +42,7 @@ class ERR(RestartTest):
         expect(rest_cnt >= 1, "No restart files found in {}".format(rest_root))
         rest_dir = restart_list[rest_cnt // 2]
         self._case.restore_from_archive(rest_dir=os.path.join(rest_root, rest_dir))
-        if self._drv_restart_pointer:
-            self._case.set_value("DRV_RESTART_POINTER", "rpointer.cpl." + rest_dir)
+        self._set_drv_restart_pointer("rpointer.cpl." + rest_dir)
 
     def _case_two_custom_postrun_action(self):
         # Link back to original case1 name
