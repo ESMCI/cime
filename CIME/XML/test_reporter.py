@@ -2,6 +2,7 @@
 Interface to the testreporter xml.  This class inherits from GenericXML.py
 
 """
+
 # pylint: disable=import-error
 import urllib.parse
 import urllib.request
