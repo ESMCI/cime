@@ -1116,9 +1116,7 @@ class TestXMLEnvBatch(unittest.TestCase):
             batch._env_workflow = mock.MagicMock()
             batch._env_workflow.hidden_job.return_value = False
 
-            with mock.patch.object(
-                batch, "_build_run_args_str", return_value=""
-            ):
+            with mock.patch.object(batch, "_build_run_args_str", return_value=""):
                 submitcmd = batch._submit_single_job(
                     case,
                     "case.run",
