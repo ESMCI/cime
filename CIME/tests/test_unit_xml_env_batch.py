@@ -1091,6 +1091,44 @@ class TestXMLEnvBatch(unittest.TestCase):
             "JOB_WALLCLOCK_TIME", "12:00:00", subgroup="case.run"
         )
 
+    @mock.patch("CIME.XML.env_batch.get_batch_script_for_job")
+    @mock.patch("CIME.XML.env_batch.get_cime_config")
+    def test_submit_single_job_mail_type_comma_separated(
+        self, get_cime_config, get_batch_script_for_job
+    ):
+        """Test that multiple mail types are joined with commas, not repeated flags."""
+        with ExitStack() as stack:
+            file1 = _open_temp_file(stack, XML_BASE)
+            batch = EnvBatch(infile=file1.name)
+
+            case = mock.MagicMock()
+            case.get_value.side_effect = lambda *args, **kwargs: {
+                "BATCH_COMMAND_FLAGS": "",
+                "PROJECT": "test_project",
+            }.get(args[0], None)
+            case.get_resolved_value.side_effect = lambda x, **kwargs: x
+
+            cime_config = mock.MagicMock()
+            cime_config.has_option.return_value = False
+            get_cime_config.return_value = cime_config
+
+            get_batch_script_for_job.return_value = "case.run"
+            batch._env_workflow = mock.MagicMock()
+            batch._env_workflow.hidden_job.return_value = False
+
+            with mock.patch.object(
+                batch, "_build_run_args_str", return_value=""
+            ):
+                submitcmd = batch._submit_single_job(
+                    case,
+                    "case.run",
+                    mail_type=["end", "fail"],
+                    dry_run=True,
+                )
+
+        assert "--mail-type end,fail" in submitcmd
+        assert "--mail-type end --mail-type fail" not in submitcmd
+
     def test_get_job_overrides_mpi_serial_single_task(self):
         """Test that get_job_overrides gives expected results for an mpi-serial case with a single task"""
         task_count = 1

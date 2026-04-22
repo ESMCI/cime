@@ -1119,7 +1119,7 @@ class EnvBatch(EnvBase):
                 else:
                     submitargs += " {} {}".format(
                         mail_type_flag,
-                        " {} ".format(mail_type_flag).join(mail_type_args),
+                        ",".join(mail_type_args),
                     )
         batchsubmit = self.get_value("batch_submit", subgroup=None)
         expect(
