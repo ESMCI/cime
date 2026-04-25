@@ -6,9 +6,11 @@ if there is no queueing system.  A cesm workflow may include multiple
 jobs.
 submit, check_case and check_da_settings are members of class Case in file case.py
 """
+
 import configparser
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, CIMEError, get_time_in_seconds
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect, get_time_in_seconds
 from CIME.status import run_and_log_case_status
 from CIME.locked_files import (
     unlock_file,
@@ -117,12 +119,10 @@ def _submit(
 
     if batch_system != "none" and env_batch_has_changed and not external_workflow:
         # May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)
-        logger.warning(
-            """
+        logger.warning("""
 env_batch.xml appears to have changed, regenerating batch scripts
 manual edits to these file will be lost!
-"""
-        )
+""")
         env_batch.make_all_batch_files(case)
 
     case.flush()
@@ -159,12 +159,10 @@ manual edits to these file will be lost!
 
         if env_batch.get_batch_system_type() != "none" and env_batch_has_changed:
             # May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)
-            logger.warning(
-                """
+            logger.warning("""
 env_batch.xml appears to have changed, regenerating batch scripts
 manual edits to these file will be lost!
-"""
-            )
+""")
             env_batch.make_all_batch_files(case)
 
         unlock_file(os.path.basename(env_batch.filename), caseroot)

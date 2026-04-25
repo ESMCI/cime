@@ -19,7 +19,7 @@ import shutil
 import string
 import tempfile
 from CIME.XML.grids import Grids, _ComponentGrids, _add_grid_info, _strip_grid_from_name
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 
 class TestGrids(unittest.TestCase):
@@ -28,8 +28,7 @@ class TestGrids(unittest.TestCase):
     Note that much of the functionality of CIME.XML.grids is NOT covered here
     """
 
-    _CONFIG_GRIDS_TEMPLATE = string.Template(
-        """<?xml version="1.0"?>
+    _CONFIG_GRIDS_TEMPLATE = string.Template("""<?xml version="1.0"?>
 
 <grid_data version="2.1" xmlns:xi="http://www.w3.org/2001/XInclude">
   <help>
@@ -70,8 +69,7 @@ $EXTRA_REQUIRED_GRIDMAPS
 $GRIDMAP_ENTRIES
   </gridmaps>
 </grid_data>
-"""
-    )
+""")
 
     _MODEL_GRID_F09_G17 = """
     <model_grid alias="f09_g17">

@@ -1,7 +1,7 @@
 import logging
 import os
 
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 from CIME.XML.files import Files
 
 logger = logging.getLogger(__name__)

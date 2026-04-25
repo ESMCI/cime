@@ -7,7 +7,8 @@ import logging
 import xml.etree.ElementTree as xmlet
 
 import CIME.utils
-from CIME.utils import expect, Timeout, run_cmd, run_cmd_no_fail, safe_copy, CIMEError
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect, Timeout, run_cmd, run_cmd_no_fail, safe_copy
 from CIME.XML.machines import Machines
 from CIME.test_status import *
 from CIME.provenance import save_test_success
@@ -18,6 +19,7 @@ E3SM_MAIN_CDASH = "E3SM"
 CDASH_DEFAULT_BUILD_GROUP = "ACME_Latest"
 SLEEP_INTERVAL_SEC = 0.1
 ENV_VAR_KEEP_CDASH = "CIME_TEST_CDASH_WFT"
+
 
 ###############################################################################
 def signal_handler(*_):

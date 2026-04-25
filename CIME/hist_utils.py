@@ -1,6 +1,7 @@
 """
 Functions for actions pertaining to history files.
 """
+
 import logging
 import os
 import re
@@ -17,7 +18,7 @@ from CIME.utils import (
     SharedArea,
     parse_test_name,
 )
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 logger = logging.getLogger(__name__)
 

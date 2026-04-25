@@ -21,7 +21,7 @@ from CIME.namelist import (
     Namelist,
     get_fortran_name_only,
 )
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 from CIME.XML.standard_module_setup import *
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
@@ -32,7 +32,6 @@ _array_size_re = re.compile(r"^(?P<type>[^(]+)\((?P<size>[^)]+)\)$")
 
 
 class CaseInsensitiveDict(dict):
-
     """Basic case insensitive dict with strings only keys.
     From https://stackoverflow.com/a/27890005"""
 
@@ -65,7 +64,6 @@ class CaseInsensitiveDict(dict):
 
 
 class NamelistDefinition(EntryID):
-
     """Class representing variable definitions for a namelist.
     This class inherits from `EntryID`, and supports most inherited methods;
     however, `set_value` is unsupported.

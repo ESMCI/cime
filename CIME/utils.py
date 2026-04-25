@@ -152,8 +152,10 @@ class EnvironmentContext(object):
 # hate seeing. It's a subclass of Exception because we want it to be
 # "catchable". If you are debugging CIME and want to see the stacktrace,
 # run your CIME command with the --debug flag.
-class CIMEError(SystemExit, Exception):
-    pass
+#
+# Canonical definition lives in CIME.core.exceptions; re-exported here
+# for backward compatibility.
+from CIME.core.exceptions import CIMEError  # noqa: F401
 
 
 def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
