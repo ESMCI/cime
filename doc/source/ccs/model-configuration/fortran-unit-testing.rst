@@ -91,7 +91,7 @@ You will also see a final message like this:
 
    100% tests passed, 0 tests failed out of 17
 
-These unit tests are run automatically as part of **scripts_regression_tests** on machines that have a serial build of pFUnit available for the default compiler.
+These unit tests are run automatically as part of **pytest** on machines that have a serial build of pFUnit available for the default compiler.
 
 .. _adding_machine_support:
 
@@ -109,7 +109,7 @@ Building pFUnit
 ~~~~~~~~~~~~~~~
 
 Follow the instructions below to build pFUnit using the default compiler on your machine.
-That is the default for **run_tests.py** and that is required for **scripts_regression_tests.py** to run the unit tests on your machine.
+That is the default for **run_tests.py** and is required for pytest to run the unit tests on your machine.
 For the CMake step, we typically build with ``-DSKIP_MPI=YES``, ``-DSKIP_OPENMP=YES`` and ``-DCMAKE_INSTALL_PREFIX`` set to the directory where you want pFUnit to be installed.
 (At this time, no unit tests require parallel support, so we build without MPI support to keep things simple.)
 Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
