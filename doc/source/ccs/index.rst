@@ -18,7 +18,7 @@ The first thing to do is clone the model repository into ``$SRCROOT``.
 
 All examples will be run from ``$CIMEROOT`` which is should exist under ``$SRCROOT`` e.g. (``$CIMEROOT`` would be ``$SRCROOT/cime``).
 
-Next set the ``CIME_MODEL`` evnironment variable for your model, e.g. ``export CIME_MODEL=e3sm``.
+Next set the ``CIME_MODEL`` environment variable for your model, e.g. ``export CIME_MODEL=<model>``.
 
 .. note::
 
