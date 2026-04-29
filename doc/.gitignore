@@ -4,3 +4,4 @@ source/Tools_api
 source/CIME_api
 source/_autosummary
 source/generated
+build/

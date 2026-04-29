@@ -68,10 +68,10 @@ As an example, on a MAC with 2 cores that has mpich with gnu fortran you would i
    > mpif90 fhello_world_mpi.F90 -o hello_world
    > mpirun -np 2 ./hello_world
 
-CESM Linux and Mac Support
+Linux and Mac Support
 ---------------------------
 
-The distribution of CESM includes machines called **homebrew** and **centos7-linux** in the file **$CIMEROOT/config/cesm/machines/config_machines.xml**.
+Your model distribution may include generic machine definitions (e.g., **homebrew** and **centos7-linux**) in the file **$CIMEROOT/config/$model/machines/config_machines.xml**.
 Please see the instructions in the file to create the directory structure and use these generic machine definitions.
 
 Steps for porting
@@ -85,7 +85,7 @@ Porting CIME involves several steps. The first step is to define your machine. Y
    In particular, you can create a **$HOME/.cime/config_machines.xml** file with the definition for your machine.
    A template to create this definition is provided in **$CIMEROOT/config/xml_schemas/config_machines_template.xml**. More details are provided in the template file.
    In addition, if you have a batch system, you will also need to add a **config_batch.xml** file to your **$HOME/.cime** directory.
-   All files in **$HOME/.cime/** are appended to the xml objects that are read into memory from the **$CIME/config/$model**, where **$model** is either ``e3sm`` or ``cesm``.
+   All files in **$HOME/.cime/** are appended to the xml objects that are read into memory from the **$CIME/config/$model** directory.
 
    .. note:: If you use method (2), you can download CIME updates without affecting your machine definitions in **$HOME/.cime**.
 
@@ -114,7 +114,7 @@ In what follows we outline the process for method (2) above:
 
 After running those steps correctly, you are ready to try a case at your target compset and resolution.
 
-Validating a CESM port with prognostic components
+Validating a port with prognostic components
 -------------------------------------------------
 
 The following port validation is recommended for any new machine.
@@ -133,15 +133,15 @@ possible.
 Users are responsible for their own validation process,
 especially with respect to science validation.
 
-These are the recommended steps for validating a port for the CESM model:
+These are the recommended steps for validating a port:
 
-1. Verify basic functionality of your port by performing the cheyenne "prealpha" tests on your machine. This can be done by issuing the following command:
+1. Verify basic functionality of your port by performing the "prealpha" tests on your machine. This can be done by issuing the following command:
 
    ::
 
-      ./create_test --xml-category prealpha --xml-machine cheyenne --xml-compiler intel --machine <your_machine_name> --compiler <your_compiler_name>
+      ./create_test --xml-category prealpha --xml-machine <reference_machine> --xml-compiler <reference_compiler> --machine <your_machine_name> --compiler <your_compiler_name>
 
-   This command will run the prealpha tests *defined* for cheyenne with the intel compiler, but will run them on *your* machine with *your* compiler.
+   This command will run the prealpha tests *defined* for the reference machine with the reference compiler, but will run them on *your* machine with *your* compiler.
    These tests will be run in the **$CIME_OUTPUT_ROOT**. To see the results of tests, you need to do the following:
 
    ::
@@ -153,11 +153,11 @@ These are the recommended steps for validating a port for the CESM model:
 2. Carry out ensemble consistency tests:
 
    This is described in ``$CIMEROOT/tools/statistical_ensemble_test/README``.
-   The CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
-   The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine (currently cheyenne).
+   The Ensemble Consistency Test (ECT) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
+   The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine.
    The python ECT tools are located in the pyCECT subdirectory ``$CIMEROOT/tools/statistical_ensemble_test/pyCECT``.
 
-   The verification tools in the CESM-ECT suite are:
+   The verification tools in the ECT suite are:
 
    ``CAM-ECT``: detects issues in CAM and CLM (12 month runs)
 
@@ -166,9 +166,8 @@ These are the recommended steps for validating a port for the CESM model:
    ``POP-ECT``: detects issues in POP and CICE (12 month runs)
 
    Follow the instructions in the **README** file to generate three ensemble runs for any of the above tests that are most relevant to your port.
-   Then please go to the `CESM2 ensemble verification website <http://www.cesm.ucar.edu/models/cesm2.0/verification>`_, where you can upload your files and subsequently obtain a quick response as to the success or failure of your verification.
 
-Performance tuning of a CESM port
+Performance tuning of a port
 -------------------------------------------------
 
 Once you have performed the verification that your port is successful,

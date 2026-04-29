@@ -19,6 +19,10 @@ Before submitting a case, it is a good idea to preview the run to ensure that th
 
 Example output:
 
+.. note::
+
+   The following is an example output. The specific paths, environment variables, and commands will vary depending on your model and machine configuration.
+
 .. code-block:: bash
 
   CASE INFO:
@@ -500,7 +504,7 @@ or a hybrid run or to back up to a previous restart date.
 Long-term Archiving
 ```````````````````
 Users may choose to follow their institution's preferred method for long-term
-archiving of model output. Previous releases of CESM provided an external
+archiving of model output. Previous releases of some CIME-driven models provided an external
 long-term archiver tool that supported mass tape storage and HPSS systems.
 However, with the industry migration away from tape archives, it is no longer
 feasible for CIME to support all the possible archival schemes available.
@@ -516,7 +520,7 @@ Scripts
 ```````
 Variables ``PRERUN_SCRIPT`` and ``POSTRUN_SCRIPT`` can each be used to name
 a script which should be executed immediately prior starting or
-following completion of the CESM executable within the batch
+following completion of the model executable within the batch
 environment.  The script is expected to be found in the case directory
 and will receive one argument which is the full path to that
 directory.  If the script is written in python and contains a

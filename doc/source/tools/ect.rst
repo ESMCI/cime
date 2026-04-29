@@ -1,33 +1,25 @@
 .. _ensemble-consistency-test:
 
 ==========================================
-CESM-ECT (CESM Ensemble Consistency Test):
+Ensemble Consistency Test (ECT):
 ==========================================
 
 .. contents::
        :local:
 
-CESM-ECT is a suite of tests to determine whether a new
+ECT is a suite of tests to determine whether a new
 simulation set up (new machine, compiler, etc.) is statistically
-distinguishable from an accepted ensemble.  The verification tools in
-the CESM-ECT suite are:
+distinguishable from an accepted ensemble. The verification tools in
+the ECT suite are:
 
 CAM-ECT - detects issues in CAM and CLM (12 month runs)
 UF-CAM-ECT - detects issues in CAM and CLM (9 time step runs)
 POP-ECT - detects issues in POP and CICE (12 month runs)
 
 The ECT process involves comparing runs generated with
-the new scenario ( 3 for CAM-ECT and UF-CAM-ECT, and 1 for POP-ECT)
-to an ensemble built on a trusted machine (currently
-cheyenne). The python ECT tools are located in the pyCECT
+the new scenario (3 for CAM-ECT and UF-CAM-ECT, and 1 for POP-ECT)
+to an ensemble built on a trusted machine. The python ECT tools are located in the pyCECT
 subdirectory or https://github.com/NCAR/PyCECT/releases.
-
--OR-
-
-We now provide a web server for CAM-ECT and UF-CAM-ECT,  where
-you can upload the (3) generated runs for comparison to our ensemble.
-Please see the webpage at http://www.cesm.ucar.edu/models/cesm2/verification/
-for further instructions.
 
 -------------------------------------
 Creating or obtaining a summary file:
@@ -35,15 +27,14 @@ Creating or obtaining a summary file:
 
 Before the test can be run, a summary file is needed of the ensemble
 runs to which the comparison will be made. Ensemble summary files
-(NetCDF) for existing tags for CAM-ECT, UF-CAM-ECT, and POP-ECT that
-were created by CSEG are located (respectively) in the CESM input data
-directories:
+(NetCDF) for existing tags for CAM-ECT, UF-CAM-ECT, and POP-ECT are
+located in the input data validation directories:
 
-$CESMDATAROOT/inputdata/validation/ensembles
-$CESMDATAROOT/inputdata/validation/uf_ensembles
-$CESMDATAROOT/inputdata/validation/pop_ensembles
+$CIME_INPUT_DATA_ROOT/validation/ensembles
+$CIME_INPUT_DATA_ROOT/validation/uf_ensembles
+$CIME_INPUT_DATA_ROOT/validation/pop_ensembles
 
-If none of our ensembles are suitable for your needs, then you may create
+If none of the available ensembles are suitable for your needs, then you may create
 your own ensemble (and summary file) using the following instructions:
 
 (1) To create a new ensemble, use the ensemble.py script in this directory.
@@ -65,16 +56,16 @@ POP-ECT 40
 
 CAM-ECT:
 
-python ensemble.py --case /glade/scratch/cesm_user/cesm_tag/ensemble/ensemble.cesm_tag.000 --mach cheyenne   --ensemble 151 --ect cam --project P99999999
+python ensemble.py --case /scratch/user/model_tag/ensemble/ensemble.model_tag.000 --mach <machine_name>   --ensemble 151 --ect cam --project <PROJECT_ID>
 
 
 UF-CAM-ECT:
 
-python ensemble.py --case /glade/scratch/cesm_user/cesm_tag/uf_ensemble/ensemble.cesm_tag.uf.000 --mach cheyenne  --ensemble 350 --uf --ect cam --project P99999999
+python ensemble.py --case /scratch/user/model_tag/uf_ensemble/ensemble.model_tag.uf.000 --mach <machine_name>  --ensemble 350 --uf --ect cam --project <PROJECT_ID>
 
 POP-ECT:
 
-python ensemble.py --case /glade/scratch/cesm_user/cesm_tag/uf_ensemble/ensemble.cesm_tag.000 --mach cheyenne  --ensemble 40 --ect pop --project P99999999
+python ensemble.py --case /scratch/user/model_tag/uf_ensemble/ensemble.model_tag.000 --mach <machine_name>  --ensemble 40 --ect pop --project <PROJECT_ID>
 
 Notes:
        (a) ensemble.py accepts (most of) the argumenets of create_newcase
@@ -98,7 +89,7 @@ Creating test runs:
 -------------------
 
 (1) Once an ensemble summary file has been created or chosen to
-use from $CESMDATAROOT/inputdata/validation, the simulation
+use from $CIME_INPUT_DATA_ROOT/validation, the simulation
 run(s) to be verified by ECT must be created via script ensemble.py.
 
 NOTE: It is important that the **same** resolution and compset be used in the
@@ -107,15 +98,15 @@ attributes give this information.
 
 (2) For example, for CAM-ECT:
 
-python ensemble.py --case /glade/scratch/cesm_user/cesm_tag/camcase.cesm_tag.000 --ect cam --mach cheyenne --project P99999999
+python ensemble.py --case /scratch/user/model_tag/camcase.model_tag.000 --ect cam --mach <machine_name> --project <PROJECT_ID>
 --compset   F2000climo --res f19_f19
 For example, for UF-CAM-ECT:
 
-python ensemble.py --case /glade/scratch/cesm_user/cesm_tag/uf.camcase.cesm_tag.000 --ect cam --uf --mach cheyenne --project P99999999 --compset   F2000climo --res f19_f19
+python ensemble.py --case /scratch/user/model_tag/uf.camcase.model_tag.000 --ect cam --uf --mach <machine_name> --project <PROJECT_ID> --compset   F2000climo --res f19_f19
 
 For example, for POP-ECT:
 
-python ensemble.py --case /glade/scratch/cesm_user/cesm_tag/popcase.cesm_tag.000 --ect pop --mach cheyenne  --project P99999999 --compset   G --res T62_g17
+python ensemble.py --case /scratch/user/model_tag/popcase.model_tag.000 --ect pop --mach <machine_name>  --project <PROJECT_ID> --compset   G --res T62_g17
 
 (3) Next verify the new simulation(s) with the pyCECT tool pyCECT.py (see
 README_pyCECT.rst with the pyCECT tools).

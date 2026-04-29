@@ -104,7 +104,7 @@ Also, some model configurations read data mid-month or run physics intermittentl
 In those cases, some variability is expected. The time variation typically is quite erratic and unpredictable if the problem is system performance variability.
 
 Sometimes when a job times out or overflows disk space, the restart files will get mangled.
-With the exception of the CAM and CLM history files, all the restart files have consistent sizes.
+With the exception of component history files, all the restart files have consistent sizes.
 
 Compare the restart files against the sizes of a previous restart. If they don't match, remove them and move the previous restart into place before resubmitting the job.
 See `Restarting a run <http://esmci.github.io/cime/users_guide/running-a-case.html#restarting-a-run>`_.
