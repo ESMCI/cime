@@ -1,0 +1,1 @@
+../../../devel/personal/dotfiles/config/distro/arch/.opencode/skills/cime-documentation-writer/SKILL.md
