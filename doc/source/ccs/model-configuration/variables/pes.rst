@@ -437,7 +437,7 @@ Changing the pe layout of the model has NO IMPACT on the scientific
 results. The basic order of operations and calling sequence are
 hardwired into the driver and do not change with the pe
 layout. However, models such as CESM and E3SM may impose some constraints in the
-tempororal evolution of the components.  For example, the prognostic
+temporal evolution of the components.  For example, the prognostic
 atmosphere model always run sequentially with the ice and land models
 for scientific reasons. As a result, running the atmosphere
 concurrently with the ice and land will result in idle processors at
