@@ -40,6 +40,10 @@ other options are specific to one mode or the other:
       ./case.build --clean ...
    or:
       ./case.build --clean-depends ...
+
+   To reset only the CMake cache (forcing CMake to re-configure on the next
+   build) while preserving compiled object files:
+      ./case.build --clean-cache
 """
 
 from standard_script_setup import *
@@ -48,6 +52,7 @@ import CIME.build as build
 from CIME.case import Case
 from CIME.utils import find_system_test, get_model
 from CIME.test_status import *
+
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -154,6 +159,15 @@ def parse_command_line(args, description):
         "files in the source tree or in SourceMods.",
     )
 
+    mutex_group.add_argument(
+        "--clean-cache",
+        action="store_true",
+        help="Remove the CMake cache (CMakeCache.txt) so CMake re-configures\n"
+        "on the next build. Compiled object files are preserved, so this is\n"
+        "much cheaper than --clean-all when you only need CMake to pick up\n"
+        "configuration changes.",
+    )
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     clean_depends = (
@@ -177,6 +191,7 @@ def parse_command_line(args, description):
         args.clean_all,
         buildlist,
         clean_depends,
+        args.clean_cache,
         not args.skip_provenance_check,
         args.separate_builds,
         args.ninja,
@@ -196,6 +211,7 @@ def _main_func(description):
         clean_all,
         buildlist,
         clean_depends,
+        clean_cache,
         save_build_provenance,
         separate_builds,
         ninja,
@@ -207,12 +223,18 @@ def _main_func(description):
     with Case(caseroot, read_only=False, record=True) as case:
         testname = case.get_value("TESTCASE")
 
-        if cleanlist is not None or clean_all or clean_depends is not None:
+        if (
+            cleanlist is not None
+            or clean_all
+            or clean_depends is not None
+            or clean_cache
+        ):
             build.clean(
                 case,
                 cleanlist=cleanlist,
                 clean_all=clean_all,
                 clean_depends=clean_depends,
+                clean_cache=clean_cache,
             )
         elif testname is not None:
             logging.warning(

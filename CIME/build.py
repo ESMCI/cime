@@ -977,6 +977,53 @@ def _create_build_metadata_for_component(config_dir, libroot, bldroot, case):
 
 
 ###############################################################################
+def _clean_cache_impl(case):
+    ###############################################################################
+    """Remove the CMake cache so the next build re-configures CMake without
+    discarding compiled object files.
+
+    Only ``CMakeCache.txt`` and the small CMake-generated bookkeeping files in
+    ``CMakeFiles`` (``cmake.check_cache``, ``CMakeCache*.txt``) are removed;
+    per-target object directories are left in place so incremental builds
+    continue to work.
+    """
+    exeroot = os.path.abspath(case.get_value("EXEROOT"))
+    case.load_env()
+    bldroot = os.path.join(exeroot, "cmake-bld")
+    if not os.path.isdir(bldroot):
+        logging.info("No cmake build directory found at {}".format(bldroot))
+        return
+
+    cache_file = os.path.join(bldroot, "CMakeCache.txt")
+    if os.path.isfile(cache_file):
+        logging.info("removing {}".format(cache_file))
+        os.remove(cache_file)
+    else:
+        logging.info("no CMakeCache.txt found at {}".format(cache_file))
+
+    # Also remove the small CMake bookkeeping files that reference the cache,
+    # but preserve per-target object directories under CMakeFiles/.
+    cmake_files_dir = os.path.join(bldroot, "CMakeFiles")
+    if os.path.isdir(cmake_files_dir):
+        stale = ["cmake.check_cache"]
+        stale += [
+            os.path.basename(p)
+            for p in glob.glob(os.path.join(cmake_files_dir, "CMakeCache*.txt"))
+        ]
+        for name in stale:
+            path = os.path.join(cmake_files_dir, name)
+            if os.path.isfile(path):
+                logging.info("removing {}".format(path))
+                os.remove(path)
+
+    # unlink Locked files directory so env_build.xml can be modified
+    unlock_file("env_build.xml", case.get_value("CASEROOT"))
+
+    case.set_value("BUILD_COMPLETE", "FALSE")
+    case.flush()
+
+
+###############################################################################
 def _clean_impl(case, cleanlist, clean_all, clean_depends):
     ###############################################################################
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
@@ -1342,12 +1389,17 @@ def case_build(
 
 
 ###############################################################################
-def clean(case, cleanlist=None, clean_all=False, clean_depends=None):
+def clean(case, cleanlist=None, clean_all=False, clean_depends=None, clean_cache=False):
     ###############################################################################
-    functor = lambda: _clean_impl(case, cleanlist, clean_all, clean_depends)
+    if clean_cache:
+        functor = lambda: _clean_cache_impl(case)
+        phase = "build.clean_cache"
+    else:
+        functor = lambda: _clean_impl(case, cleanlist, clean_all, clean_depends)
+        phase = "build.clean"
     return run_and_log_case_status(
         functor,
-        "build.clean",
+        phase,
         caseroot=case.get_value("CASEROOT"),
         gitinterface=case._gitinterface,
     )
