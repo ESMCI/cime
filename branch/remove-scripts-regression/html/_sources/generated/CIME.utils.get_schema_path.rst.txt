@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_schema\_path
+============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_schema_path
