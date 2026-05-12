@@ -132,6 +132,6 @@ def test_case_two_custom_prerun_action_without_drv_restart_pointer(
 
     # Verify DRV_RESTART_POINTER was NOT set
     for call in test._case.set_value.call_args_list:
-        assert call[0][0] != "DRV_RESTART_POINTER", (
-            "DRV_RESTART_POINTER should not be set when model doesn't support it"
-        )
+        assert (
+            call[0][0] != "DRV_RESTART_POINTER"
+        ), "DRV_RESTART_POINTER should not be set when model doesn't support it"
