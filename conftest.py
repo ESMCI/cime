@@ -1,3 +1,6 @@
+import atexit
+import functools
+import logging
 import os
 import sys
 
@@ -8,10 +11,13 @@ import pytest
 
 from CIME import utils
 from CIME.config import Config
+from CIME.utils import get_current_commit, get_model
 from CIME.XML.machines import Machines
 from CIME.tests.base import BaseTestCase
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
+
+TEST_RESULT = None
 
 
 def pytest_addoption(parser):
@@ -174,7 +180,7 @@ def configure_tests(
     else:
         TEST_ROOT = os.path.join(
             MACHINE.get_value("CIME_OUTPUT_ROOT"),
-            "scripts_regression_test.%s" % CIME.utils.get_timestamp(),
+            "scripts_regression_test.%s" % utils.get_timestamp(),
         )
 
     BaseTestCase.TEST_ROOT = TEST_ROOT
@@ -194,7 +200,7 @@ def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     if test_mpilib is not None:
         logging.info("Testing mpilib = %s" % test_mpilib)
     logging.info("Test root: %s" % test_root)
-    logging.info("Test driver: %s" % CIME.utils.get_cime_default_driver())
+    logging.info("Test driver: %s" % utils.get_cime_default_driver())
     logging.info("Python version {}\n".format(sys.version))
 
 def cleanup(test_root):
