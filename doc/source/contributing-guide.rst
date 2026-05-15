@@ -129,7 +129,7 @@ The options are broken down below.
 =======
 - ``-e CIME_MODEL=e3sm`` defines the model.
 - ``-v ${SRC_PATH}:/root/model`` passes through the model source.
-- ``-v ./storage:/root/storage`` persists data such as cases, baselines, archive, and inputdata. You can split the bind mounts if you only want to keep specific inputs or outputs.
+- ``-v ./storage:/root/storage`` persists data such as cases, baselines, archive, and inputdata. Files are created with world-readable permissions so they can be accessed from the host in real-time.
 - ``-w /root/model/cime`` sets the current working directory to CIME's root.
 >>>>>>> a025ea620 (chore: clean up the contributing guide)
 - ``ghcr.io/esmci/cime:latest`` container image.
@@ -144,3 +144,23 @@ You can also run CIME commands or tests without opening a shell.
 .. code-block:: bash
 
    docker run -it --rm --hostname docker -e CIME_MODEL=<model> -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
+
+Using Podman
+````````````
+Podman can be used as a drop-in replacement for Docker. Use ``podman unshare`` to run commands within Podman's user namespace, allowing access to files created in bind mounts.
+
+.. code-block:: bash
+
+   podman run -it --rm --hostname docker -e CIME_MODEL=<model> -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest bash
+
+Run tests directly:
+
+.. code-block:: bash
+
+   podman run -it --rm --hostname docker -e CIME_MODEL=<model> -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
+
+To access files in ``./storage`` from the host while the container is running, use ``podman unshare``:
+
+.. code-block:: bash
+
+   podman unshare ls -la ./storage
