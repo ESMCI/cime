@@ -1,12 +1,21 @@
 #!/bin/bash
 
-# Set up basic user, logname, and default group/user IDs
+# Use fixed paths for container resources, regardless of user namespace mapping
+# This ensures tools work with both Docker (root) and Podman (--userns=keep-id)
+CONTAINER_HOME="/root"
+export HOME="${CONTAINER_HOME}"
 export USER="$(id -nu)"
 export LOGNAME="${USER}"
 
-# Set static home path where .cime exists and container entrypoint options
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
-STORAGE_DIR="${HOME}/storage"
+STORAGE_DIR="${CONTAINER_HOME}/storage"
+
+# Make files in storage directory accessible from host in real-time
+# Set permissive umask so all new files are world-readable/writable
+if [[ -d "${STORAGE_DIR}" ]]; then
+    umask 000
+    chmod -R a+rwX "${STORAGE_DIR}" 2>/dev/null || true
+fi
 
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
@@ -53,9 +62,9 @@ function download_input_data() {
 # Link correct config_machines file based on CIME_MODEL, also set ESMFMKFILE for cesm
 function link_config_machines() {
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
-        ln -sf "${HOME}/.cime/config_machines.v2.xml" "${HOME}/.cime/config_machines.xml"
+        ln -sf "${CONTAINER_HOME}/.cime/config_machines.v2.xml" "${CONTAINER_HOME}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
-        ln -sf "${HOME}/.cime/config_machines.v3.xml" "${HOME}/.cime/config_machines.xml"
+        ln -sf "${CONTAINER_HOME}/.cime/config_machines.v3.xml" "${CONTAINER_HOME}/.cime/config_machines.xml"
     fi
 }
 
@@ -76,8 +85,8 @@ if [[ -e "${PWD}/.git" ]]; then
 fi
 
 if [[ "${CI:-false}" == "false" ]] && [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
-  source ${HOME}/.local/bin/env
-  source ${HOME}/.venv/bin/activate
+  source ${CONTAINER_HOME}/.local/bin/env
+  source ${CONTAINER_HOME}/.venv/bin/activate
 fi
 
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
