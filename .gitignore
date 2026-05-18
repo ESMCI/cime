@@ -23,9 +23,16 @@ scripts/Tools/JENKINS*
 # Ignore anything that are produced under scripts "cases" directory
 /scripts/cases/
 
-#Ignore Externals
-components
-libraries
-share
+# Ignore some other files
 test_coverage/**
 *.bak
+
+# AI coding tool local state
+.gemini/
+.codex/
+
+# Special for Claude Code user config
+.claude/*
+!.claude/CLAUDE.md
+CLAUDE.md
+CLAUDE.local.md

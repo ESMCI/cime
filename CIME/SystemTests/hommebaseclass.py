@@ -1,11 +1,12 @@
 """
 CIME HOMME test. This class inherits from SystemTestsCommon
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
 from CIME.status import append_testlog
-from CIME.utils import SharedArea
+from CIME.utils import SharedArea, new_lid, gzip_existing_file
 from CIME.test_status import *
 
 import shutil
@@ -19,6 +20,8 @@ class HommeBase(SystemTestsCommon):
         initialize an object interface to the SMS system test
         """
         SystemTestsCommon.__init__(self, case, **kwargs)
+        compiler = case.get_value("COMPILER")
+        logger.info(f"[DEBUG] Detected compiler: {compiler}")
         case.load_env()
         self.csnd = "not defined"
         self.cmakesuffix = self.csnd
@@ -36,6 +39,11 @@ class HommeBase(SystemTestsCommon):
             gmake = self._case.get_value("GMAKE")
             gmake_j = self._case.get_value("GMAKE_J")
             cprnc = self._case.get_value("CCSM_CPRNC")
+            is_debug = self._case.get_value("DEBUG")
+
+            # Assign LID at start
+            lid = new_lid(case=self._case)
+            log_path = os.path.join(exeroot, f"homme.bldlog.{lid}")
 
             if compare:
                 basename = basecmp
@@ -49,29 +57,45 @@ class HommeBase(SystemTestsCommon):
                 "ERROR in hommebaseclass: Must have cmakesuffix set up",
             )
 
+            logger.info(
+                f"[DEBUG] Machine: {mach}, Source root: {srcroot}, Total Procs: {procs}, Is Debug: {is_debug}"
+            )
+            logger.info("[DEBUG] Preparing to invoke CMake with constructed command:")
             cmake_cmd = "cmake -C {0}/components/homme/cmake/machineFiles/{1}{6}.cmake -DUSE_NUM_PROCS={2} {0}/components/homme -DHOMME_BASELINE_DIR={3}/{4} -DCPRNC_DIR={5}/..".format(
                 srcroot, mach, procs, baselinedir, basename, cprnc, self.cmakesuffix
             )
 
+            if is_debug:
+                cmake_cmd += " -DCMAKE_BUILD_TYPE=Debug"
+
             run_cmd_no_fail(
                 cmake_cmd,
-                arg_stdout="homme.bldlog",
+                arg_stdout=log_path,
                 combine_output=True,
                 from_dir=exeroot,
             )
             run_cmd_no_fail(
                 "{} -j{} VERBOSE=1 test-execs".format(gmake, gmake_j),
-                arg_stdout="homme.bldlog",
+                arg_stdout=log_path,
                 combine_output=True,
                 from_dir=exeroot,
             )
 
-            post_build(
-                self._case, [os.path.join(exeroot, "homme.bldlog")], build_complete=True
-            )
+            post_build(self._case, [log_path], build_complete=True)
+
+            # Prepend the LID as first line if log file exists
+            if os.path.exists(log_path):
+                with open(log_path, "r") as original:
+                    original_content = original.read()
+                with open(log_path, "w") as modified:
+                    modified.write(f"LID: {lid}\n" + original_content)
+                gzip_existing_file(log_path)
+            else:
+                logger.warning(
+                    f"[WARN] Build log does not exist: {log_path}. Skipping LID prepend and gzip step."
+                )
 
     def run_phase(self):
-
         rundir = self._case.get_value("RUNDIR")
         exeroot = self._case.get_value("EXEROOT")
         baseline = self._case.get_value("BASELINE_ROOT")
@@ -80,9 +104,8 @@ class HommeBase(SystemTestsCommon):
         basegen = self._case.get_value("BASEGEN_CASE")
         gmake = self._case.get_value("GMAKE")
 
-        log = os.path.join(rundir, "homme.log")
-        if os.path.exists(log):
-            os.remove(log)
+        lid = new_lid(case=self._case)
+        log = os.path.join(rundir, "homme.log." + lid)
 
         if generate:
             full_baseline_dir = os.path.join(baseline, basegen, "tests", "baseline")
@@ -129,6 +152,10 @@ class HommeBase(SystemTestsCommon):
         # appear on the dashboard. Otherwise, the TestStatus.log
         # is pretty useless for this test.
         append_testlog(open(log, "r").read())
+
+        if stat == 0:
+            # Gzip the log file to be consistent with other CIME cases (bldglogs)
+            gzip_existing_file(log)
 
         expect(stat == 0, "RUN FAIL for HOMME")
 

@@ -152,13 +152,15 @@ def _create_macros_cmake(
     # This impl is coupled to contents of Macros.cmake
     os_ = mach_obj.get_value("OS")
     mach = mach_obj.get_machine_name()
+    deprecated = "{}_{}.cmake".format(compiler, mach)
     macros = [
         "universal.cmake",
         os_ + ".cmake",
         compiler + ".cmake",
         "{}_{}.cmake".format(compiler, os),
         mach + ".cmake",
-        "{}_{}.cmake".format(compiler, mach),
+        "{}_{}.cmake".format(mach, compiler),
+        deprecated,
         "CMakeLists.txt",
     ]
     for macro in macros:
@@ -166,10 +168,19 @@ def _create_macros_cmake(
         mach_repo_macro = os.path.join(cmake_macros_dir, "..", mach, macro)
         case_macro = os.path.join(case_cmake_path, macro)
         if not os.path.exists(case_macro):
+            copied = False
             if os.path.exists(mach_repo_macro):
                 safe_copy(mach_repo_macro, case_cmake_path)
+                copied = True
             elif os.path.exists(repo_macro):
                 safe_copy(repo_macro, case_cmake_path)
+                copied = True
+
+            if copied and macro == deprecated:
+                logger.warning(
+                    "\nWARNING: Macros of the form COMPILER_MACHINE.cmake are deprecated "
+                    "and should be replaced with the form MACHINE_COMPILER.cmake\n"
+                )
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 

@@ -1,0 +1,18 @@
+spack:
+  specs:
+    - hdf5@1.12.3+cxx+fortran+hl+mpi+shared %gcc@13.3.0
+    - netcdf-c@4.9.2+mpi %gcc@13.3.0
+    - netcdf-fortran@4.6.1 %gcc@13.3.0
+    - parallel-netcdf@1.12.3 %gcc@13.3.0
+    - esmf@8.8.1+mpi+netcdf~pnetcdf~external-parallelio %gcc@13.3.0
+  concretizer:
+    unify: when_possible
+    reuse: true
+    targets:
+      granularity: generic
+      host_compatible: false
+  packages:
+    all:
+      target: [x86_64_v3]
+  view:
+    default: /opt/spack-envs/view

@@ -95,11 +95,14 @@ def _do_full_nl_gen_impl(case, test, generate_name, baseline_root=None):
 
     shutil.copytree(casedoc_dir, baseline_casedocs)
 
-    for item in glob.glob(os.path.join(test_dir, "user_nl*")):
-        preexisting_baseline = os.path.join(baseline_dir, os.path.basename(item))
-        if os.path.exists(preexisting_baseline):
-            os.remove(preexisting_baseline)
+    # Note: If it is ever the case that nml cmp/gen affects more files than
+    # just user_nl* and CaseDocs, this will break assumptions all across CIME.
 
+    # Remove any previous user_nl files
+    for item in glob.glob(os.path.join(baseline_dir, "user_nl*")):
+        os.remove(item)
+
+    for item in glob.glob(os.path.join(test_dir, "user_nl*")):
         safe_copy(item, baseline_dir, preserve_meta=False)
 
 

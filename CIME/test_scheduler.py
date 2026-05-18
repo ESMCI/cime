@@ -28,7 +28,6 @@ from CIME.utils import (
     get_project,
     get_timestamp,
     get_cime_default_driver,
-    clear_folder,
     CIMEError,
 )
 from CIME.config import Config
@@ -360,10 +359,7 @@ class TestScheduler(object):
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
                         if allow_baseline_overwrite and run_count == 0:
-                            if self._namelists_only:
-                                clear_folder(os.path.join(test_baseline, "CaseDocs"))
-                            else:
-                                clear_folder(test_baseline)
+                            pass
                         elif skip_tests_with_existing_baselines:
                             tests_to_skip.append(test_name)
                 expect(

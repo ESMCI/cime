@@ -1,1 +1,3 @@
 evv4esm
+pytest
+pytest-cov
