@@ -1368,9 +1368,16 @@ def copy_globs(globs_to_copy, output_directory, lid=None):
             )
 
 
-def copy_over_file(src_path, tgt_path):
+def copy_over_file(src_path, tgt_path, preserve_meta=True):
     """
-    Copy a file over a file that already exists
+    Copy a file over a file that already exists.
+
+    preserve_meta controls whether file metadata (permissions, timestamps) are
+    copied from src_path. When True and the caller owns the target, shutil.copy2
+    is used (contents + metadata). When False and the caller owns the target, the
+    contents are written to a fresh temp file (so the caller's umask takes effect)
+    which is then renamed atomically over the target. In either case, a read-only
+    owned target is made writable before the copy.
     """
     st = os.stat(tgt_path)
     owner_uid = st.st_uid
@@ -1388,17 +1395,36 @@ def copy_over_file(src_path, tgt_path):
                 )
             )
 
-    if owner_uid == os.getuid():
-        # I am the owner, copy file contents, permissions, and metadata
+    if owner_uid == os.getuid() and preserve_meta:
+        # I am the owner and metadata should be preserved: copy contents, permissions,
+        # and timestamps.
         try:
             shutil.copy2(src_path, tgt_path)
         # ignore same file error
         except shutil.SameFileError:
             pass
 
+    elif owner_uid == os.getuid():
+        # I am the owner but preserve_meta=False: copy src to a fresh temp file in the
+        # same directory so the OS applies the caller's umask (e.g. from SharedArea)
+        # naturally when creating the new file, then atomically replace the target.
+        tmp_path = tgt_path + f".safe_copy_tmp.{os.getpid()}"
+        try:
+            shutil.copyfile(src_path, tmp_path)
+            os.rename(tmp_path, tgt_path)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
+
     else:
-        # I am not the owner, just copy file contents
-        shutil.copyfile(src_path, tgt_path)
+        # I am not the owner: copy file contents only (cannot change permissions).
+        try:
+            shutil.copyfile(src_path, tgt_path)
+        except shutil.SameFileError:
+            pass
 
 
 def safe_copy(src_path, tgt_path, preserve_meta=True):
@@ -1428,7 +1454,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
     try:
         if os.path.isfile(src_path):
             if os.path.isfile(tgt_path):
-                copy_over_file(src_path, tgt_path)
+                copy_over_file(src_path, tgt_path, preserve_meta=preserve_meta)
 
             elif preserve_meta:
                 # We are making a new file, copy file contents, permissions, and metadata.
@@ -1436,7 +1462,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
                 shutil.copy2(src_path, tgt_path)
 
             else:
-                shutil.copy(src_path, tgt_path)
+                shutil.copyfile(src_path, tgt_path)
         else:
             # Some of the archived "files" are directories, like ADIOS BP output "files"
             if preserve_meta:
