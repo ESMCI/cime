@@ -93,6 +93,7 @@ def create_cdash_xml_boiler(
     utc_time,
     current_time,
     hostname,
+    description="",
 ):
     ###############################################################################
     site_elem = xmlet.Element("Site")
@@ -103,6 +104,8 @@ def create_cdash_xml_boiler(
     site_elem.attrib["OSName"] = "Linux"
     site_elem.attrib["Hostname"] = hostname
     site_elem.attrib["OSVersion"] = "Unknown"
+    if description:
+        site_elem.attrib["Description"] = description
 
     phase_elem = xmlet.SubElement(site_elem, phase)
 
@@ -123,6 +126,7 @@ def create_cdash_config_xml(
     current_time,
     hostname,
     data_rel_path,
+    description="",
 ):
     ###############################################################################
     site_elem, config_elem = create_cdash_xml_boiler(
@@ -132,6 +136,7 @@ def create_cdash_config_xml(
         utc_time,
         current_time,
         hostname,
+        description=description,
     )
 
     xmlet.SubElement(config_elem, "ConfigureCommand").text = "namelists"
@@ -168,6 +173,7 @@ def create_cdash_build_xml(
     current_time,
     hostname,
     data_rel_path,
+    description="",
 ):
     ###############################################################################
     site_elem, build_elem = create_cdash_xml_boiler(
@@ -177,6 +183,7 @@ def create_cdash_build_xml(
         utc_time,
         current_time,
         hostname,
+        description=description,
     )
 
     xmlet.SubElement(build_elem, "ConfigureCommand").text = "case.build"
@@ -215,6 +222,7 @@ def create_cdash_test_xml(
     current_time,
     hostname,
     data_rel_path,
+    description="",
 ):
     ###############################################################################
     site_elem, testing_elem = create_cdash_xml_boiler(
@@ -224,6 +232,7 @@ def create_cdash_test_xml(
         utc_time,
         current_time,
         hostname,
+        description=description,
     )
 
     test_list_elem = xmlet.SubElement(testing_elem, "TestList")
@@ -297,6 +306,7 @@ def create_cdash_xml_fakes(
     current_time,
     hostname,
     data_rel_path,
+    description="",
 ):
     ###############################################################################
 
@@ -308,6 +318,7 @@ def create_cdash_xml_fakes(
         current_time,
         hostname,
         data_rel_path,
+        description=description,
     )
 
     create_cdash_build_xml(
@@ -318,6 +329,7 @@ def create_cdash_xml_fakes(
         current_time,
         hostname,
         data_rel_path,
+        description=description,
     )
 
     create_cdash_test_xml(
@@ -328,6 +340,7 @@ def create_cdash_xml_fakes(
         current_time,
         hostname,
         data_rel_path,
+        description=description,
     )
 
 
@@ -481,6 +494,8 @@ def create_cdash_xml(
     else:
         tmproots = [None, first_result_case, os.getcwd()]
 
+    notes = f"Commit {git_commit}\nTotal testing time {time_info} seconds\n"
+
     # Try multiple tmproots if necessary. The default /tmp will be tried first
     # unless cdash_tmproot was provided. The location of the default can be
     # modified via the TMPDIR environment variable.
@@ -503,9 +518,7 @@ def create_cdash_xml(
 
                 # Make notes file
                 with notes_file.open(mode="w") as notes_fd:
-                    notes_fd.write(
-                        f"Commit {git_commit}\nTotal testing time {time_info} seconds\n"
-                    )
+                    notes_fd.write(notes)
 
                 create_cdash_xml_fakes(
                     results,
@@ -515,6 +528,7 @@ def create_cdash_xml(
                     current_time,
                     hostname,
                     testtime_dir,
+                    description=notes,
                 )
 
                 create_cdash_upload_xml(
