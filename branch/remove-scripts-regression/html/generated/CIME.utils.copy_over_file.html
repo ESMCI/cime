@@ -238,8 +238,14 @@
 <h1>CIME.utils.copy_over_file<a class="headerlink" href="#cime-utils-copy-over-file" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.utils.copy_over_file">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">copy_over_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.copy_over_file" title="Link to this definition"></a></dt>
-<dd><p>Copy a file over a file that already exists</p>
+<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">copy_over_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_meta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.copy_over_file" title="Link to this definition"></a></dt>
+<dd><p>Copy a file over a file that already exists.</p>
+<p>preserve_meta controls whether file metadata (permissions, timestamps) are
+copied from src_path. When True and the caller owns the target, shutil.copy2
+is used (contents + metadata). When False and the caller owns the target, the
+contents are written to a fresh temp file (so the caller’s umask takes effect)
+which is then renamed atomically over the target. In either case, a read-only
+owned target is made writable before the copy.</p>
 </dd></dl>
 
 </section>
