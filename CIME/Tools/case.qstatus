@@ -10,8 +10,6 @@ Typical usage is simply:
 from standard_script_setup import *
 
 from CIME.case import Case
-from CIME.test_status import *
-
 
 ###############################################################################
 def parse_command_line(args, description):

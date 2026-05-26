@@ -9,7 +9,7 @@ import os
 from CIME.build import post_build
 from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
-from CIME.test_status import *
+from CIME.test_status import BASELINE_PHASE, GENERATE_PHASE, TEST_PASS_STATUS
 from CIME.utils import expect, get_cime_root, run_cmd
 
 logger = logging.getLogger(__name__)

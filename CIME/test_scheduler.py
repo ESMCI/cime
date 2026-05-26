@@ -29,7 +29,21 @@ from CIME.locked_files import lock_file
 from CIME.provenance import get_recommended_test_time_based_on_past
 from CIME.status import append_status, append_testlog
 from CIME.SystemTests.test_mods import find_test_mods
-from CIME.test_status import *
+from CIME.test_status import (
+    CORE_PHASES,
+    CREATE_NEWCASE_PHASE,
+    MODEL_BUILD_PHASE,
+    RUN_PHASE,
+    SETUP_PHASE,
+    SHAREDLIB_BUILD_PHASE,
+    SUBMIT_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TEST_RERUN_COMMENT,
+    TestStatus,
+    XML_PHASE,
+)
 from CIME.utils import (
     TESTS_FAILED_ERR_CODE,
     CIMEError,

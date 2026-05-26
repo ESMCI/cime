@@ -13,12 +13,23 @@ from CIME.baselines.performance import (
 from CIME.case import Case
 from CIME.config import Config
 from CIME.hist_utils import NO_ORIGINAL, compare_baseline, generate_baseline
-from CIME.test_scheduler import NAMELIST_PHASE
-from CIME.test_status import *
+from CIME.test_status import (
+    ALL_PHASES,
+    BASELINE_PHASE,
+    GENERATE_PHASE,
+    MEMCOMP_PHASE,
+    NAMELIST_PHASE,
+    RUN_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    THROUGHPUT_PHASE,
+    TestStatus,
+)
 from CIME.test_utils import get_test_status_files
 from CIME.utils import (
     CIMEError,
     EnvironmentContext,
+    expect,
     get_scripts_root,
     match_any,
     parse_test_name,
