@@ -8,45 +8,53 @@ phases. All other phases need to handle their own status because
 they can be run outside the context of TestScheduler.
 """
 
+import glob
+import logging
 import os
-import traceback, stat, threading, time, glob
+import re
+import stat
+import sys
+import threading
+import time
+import traceback
 from collections import OrderedDict
 
-from CIME.XML.standard_module_setup import *
-from CIME.get_tests import get_recommended_test_time, get_build_groups, is_perf_test
+from CIME.build import post_build
+from CIME.case import Case
+from CIME.config import Config
+from CIME.cs_status_creator import create_cs_status
+from CIME.get_tests import get_build_groups, get_recommended_test_time, is_perf_test
+from CIME.hist_utils import generate_teststatus
+from CIME.locked_files import lock_file
+from CIME.provenance import get_recommended_test_time_based_on_past
 from CIME.status import append_status, append_testlog
+from CIME.SystemTests.test_mods import find_test_mods
+from CIME.test_status import *
 from CIME.utils import (
     TESTS_FAILED_ERR_CODE,
-    parse_test_name,
+    CIMEError,
+    convert_to_seconds,
+    expect,
+    get_cime_default_driver,
+    get_cime_root,
     get_full_test_name,
     get_model,
-    convert_to_seconds,
-    get_cime_root,
-    get_src_root,
-    get_tools_path,
-    get_template_path,
     get_project,
+    get_src_root,
+    get_template_path,
     get_timestamp,
-    get_cime_default_driver,
-    CIMEError,
+    get_tools_path,
+    parse_test_name,
+    run_cmd,
 )
-from CIME.config import Config
-from CIME.test_status import *
-from CIME.XML.machines import Machines
-from CIME.XML.generic_xml import GenericXML
-from CIME.XML.env_test import EnvTest
-from CIME.XML.env_mach_pes import EnvMachPes
-from CIME.XML.files import Files
-from CIME.XML.component import Component
-from CIME.XML.tests import Tests
-from CIME.case import Case
 from CIME.wait_for_tests import wait_for_tests
-from CIME.provenance import get_recommended_test_time_based_on_past
-from CIME.locked_files import lock_file
-from CIME.cs_status_creator import create_cs_status
-from CIME.hist_utils import generate_teststatus
-from CIME.build import post_build
-from CIME.SystemTests.test_mods import find_test_mods
+from CIME.XML.component import Component
+from CIME.XML.env_mach_pes import EnvMachPes
+from CIME.XML.env_test import EnvTest
+from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
+from CIME.XML.machines import Machines
+from CIME.XML.tests import Tests
 
 logger = logging.getLogger(__name__)
 

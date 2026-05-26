@@ -6,19 +6,18 @@ machines. Typically run with one of the arguments --compsets, --settings,
 information will be listed for each.
 """
 
+import argparse
+import logging
 import os
 import sys
-import logging
-import argparse
 
-from CIME.Tools.standard_script_setup import *
 from CIME import utils
-from CIME.XML.files import Files
+from CIME.config import Config
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
+from CIME.XML.files import Files
 from CIME.XML.grids import Grids
 from CIME.XML.machines import Machines
-from CIME.config import Config
 
 logger = logging.getLogger(__name__)
 

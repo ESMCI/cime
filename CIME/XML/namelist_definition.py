@@ -10,19 +10,21 @@ This module contains only one class, `NamelistDefinition`, inheriting from
 # Disable warnings due to using `standard_module_setup`
 # pylint:disable=wildcard-import,unused-wildcard-import
 
-import re
 import collections
+import logging
+import os
+import re
 
+from CIME.core.exceptions import CIMEError
 from CIME.namelist import (
-    fortran_namelist_base_value,
-    is_valid_fortran_namelist_literal,
+    Namelist,
     character_literal_to_string,
     expand_literal_list,
-    Namelist,
+    fortran_namelist_base_value,
     get_fortran_name_only,
+    is_valid_fortran_namelist_literal,
 )
-from CIME.core.exceptions import CIMEError
-from CIME.XML.standard_module_setup import *
+from CIME.utils import expect
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
 

@@ -1,11 +1,12 @@
+import logging
+import os
 from pathlib import Path
 
-from CIME.utils import safe_copy
-from CIME.XML.standard_module_setup import *
-from CIME.XML.env_build import EnvBuild
-from CIME.XML.env_mach_pes import EnvMachPes
-from CIME.XML.env_case import EnvCase
+from CIME.utils import expect, safe_copy
 from CIME.XML.env_batch import EnvBatch
+from CIME.XML.env_build import EnvBuild
+from CIME.XML.env_case import EnvCase
+from CIME.XML.env_mach_pes import EnvMachPes
 from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)

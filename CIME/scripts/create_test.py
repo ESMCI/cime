@@ -26,27 +26,30 @@ Script to create, build and run CIME tests. This script can:
 If this tool is missing any feature that you need, please add an issue on
 https://github.com/ESMCI/cime
 """
-from CIME.Tools.standard_script_setup import *
-from CIME import get_tests
-from CIME.test_scheduler import TestScheduler, RUN_PHASE
-from CIME import utils
-from CIME.utils import (
-    expect,
-    convert_to_seconds,
-    compute_total_time,
-    convert_to_babylonian_time,
-    run_cmd_no_fail,
-    get_cime_config,
-)
-from CIME.config import Config
-from CIME.XML.machines import Machines
-from CIME.case import Case
-from CIME.test_utils import get_tests_from_xml
+
+import argparse
+import glob
+import math
 from argparse import RawTextHelpFormatter
 
-import argparse, math, glob
+from CIME import get_tests, utils
+from CIME.case import Case
+from CIME.config import Config
+from CIME.test_scheduler import RUN_PHASE, TestScheduler
+from CIME.test_utils import get_tests_from_xml
+from CIME.Tools.standard_script_setup import *
+from CIME.utils import (
+    compute_total_time,
+    convert_to_babylonian_time,
+    convert_to_seconds,
+    expect,
+    get_cime_config,
+    run_cmd_no_fail,
+)
+from CIME.XML.machines import Machines
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_command_line(args, description):

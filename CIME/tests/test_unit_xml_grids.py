@@ -1,10 +1,6 @@
 import os
-import io
-import unittest
 import tempfile
-from contextlib import contextmanager
-from pathlib import Path
-from unittest import mock
+import unittest
 
 from CIME.core.exceptions import CIMEError
 from CIME.XML.grids import Grids

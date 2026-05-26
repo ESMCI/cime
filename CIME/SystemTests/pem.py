@@ -8,7 +8,8 @@ are modified the second time.
 (2) Run with half the number of tasks (suffix modpes)
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)

@@ -26,9 +26,12 @@ RUN state are no longer valid.
 
 """
 
-from CIME.XML.standard_module_setup import *
-import os, itertools
+import itertools
+import logging
+import os
+
 from CIME import expected_fails
+from CIME.utils import expect
 
 TEST_STATUS_FILENAME = "TestStatus"
 

@@ -3,10 +3,12 @@ CIME ERR test  This class inherits from ERS
 ERR tests short term archiving and restart capabilities
 """
 
-import glob, os
-from CIME.XML.standard_module_setup import *
+import glob
+import logging
+import os
+
 from CIME.SystemTests.restart_tests import RestartTest
-from CIME.utils import safe_copy, ls_sorted_by_fname
+from CIME.utils import expect, ls_sorted_by_fname, safe_copy
 
 logger = logging.getLogger(__name__)
 

@@ -1,15 +1,20 @@
 """
 FTP Server class.  Interact with a server using FTP protocol
 """
+
 # pylint: disable=super-init-not-called
-from CIME.XML.standard_module_setup import *
-from CIME.Servers.generic_server import GenericServer
-from CIME.utils import Timeout
+import logging
+import os
+import socket
 from ftplib import FTP as FTPpy
 from ftplib import all_errors as all_ftp_errors
-import socket
+
+from CIME.Servers.generic_server import GenericServer
+from CIME.utils import Timeout, expect
 
 logger = logging.getLogger(__name__)
+
+
 # I think that multiple inheritence would be useful here, but I couldnt make it work
 # in a py2/3 compatible way.
 class FTP(GenericServer):

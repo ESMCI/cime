@@ -3,8 +3,12 @@
 Get timing information from run
 """
 
+import argparse
+import os
+import sys
+
 from standard_script_setup import *
-import argparse, sys, os
+
 from CIME.case import Case
 from CIME.get_timing import get_timing
 

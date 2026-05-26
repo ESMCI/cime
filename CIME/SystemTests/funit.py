@@ -2,12 +2,15 @@
 CIME FUNIT test. This class inherits from SystemTestsCommon. It runs
 the fortran unit tests; grid and compset are ignored.
 """
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+
+import logging
+import os
+
 from CIME.build import post_build
 from CIME.status import append_testlog
-from CIME.utils import get_cime_root
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.test_status import *
+from CIME.utils import expect, get_cime_root, run_cmd
 
 logger = logging.getLogger(__name__)
 

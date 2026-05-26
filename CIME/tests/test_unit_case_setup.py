@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
+import contextlib
 import os
+import tempfile
 import stat
 import unittest
-import tempfile
-import contextlib
 from pathlib import Path
 from unittest import mock
 

@@ -1,9 +1,18 @@
-import CIME.wait_for_tests
-from CIME.utils import expect, run_cmd_no_fail, Timeout, convert_to_babylonian_time
-from CIME.case import Case
-
-import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
 import functools
+import glob
+import logging
+import os
+import re
+import shutil
+import signal
+import sys
+import tarfile
+import threading
+import time
+
+import CIME.wait_for_tests
+from CIME.case import Case
+from CIME.utils import expect, run_cmd_no_fail, Timeout, convert_to_babylonian_time
 
 
 ###############################################################################

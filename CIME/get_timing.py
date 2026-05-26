@@ -5,11 +5,14 @@ Library for implementing getTiming tool which gets timing
 information from a run.
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import safe_copy
-from CIME.status import append_case_status
+import datetime
+import glob
+import logging
+import os
+import re
 
-import datetime, glob, re
+from CIME.status import append_case_status
+from CIME.utils import expect, safe_copy
 
 logger = logging.getLogger(__name__)
 
@@ -651,8 +654,7 @@ class _TimingParser:
 
         self.write("\n")
         self.write(
-            "Runs Time in total seconds, seconds/model-day, and"
-            " model-years/wall-day \n"
+            "Runs Time in total seconds, seconds/model-day, and model-years/wall-day \n"
         )
         self.write(
             "CPL Run Time represents time in CPL pes alone, "

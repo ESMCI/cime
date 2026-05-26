@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-import unittest
 import tempfile
+import unittest
 from unittest import mock
 
 from CIME import utils

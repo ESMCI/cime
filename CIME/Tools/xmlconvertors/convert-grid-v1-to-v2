@@ -4,16 +4,19 @@
 Convert a grid file from v1 to v2.
 """
 
-import argparse, sys, os
+import argparse
+import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
+from collections import OrderedDict
+
 from standard_script_setup import *
+
 from CIME.utils import expect
 from CIME.XML.generic_xml import GenericXML
-import xml.etree.ElementTree as ET
 
-from collections import OrderedDict
 
 ###############################################################################
 def parse_command_line(args, description):

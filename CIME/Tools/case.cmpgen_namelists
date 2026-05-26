@@ -5,10 +5,12 @@ case.cmpgen_namelists - perform namelist baseline operations (compare,
 generate, or both) for this case.
 """
 
+from argparse import RawTextHelpFormatter
+
 from standard_script_setup import *
 
 from CIME.case import Case
-from argparse import RawTextHelpFormatter
+
 
 ###############################################################################
 def parse_command_line(args, description):

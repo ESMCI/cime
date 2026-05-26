@@ -10,9 +10,10 @@ ensures that the batch system is left in a clean state.
 from standard_script_setup import *
 
 import CIME.wait_for_tests
+from CIME.jenkins_generic_job import jenkins_generic_job
 from CIME.utils import expect, convert_to_seconds
 from CIME.XML.machines import Machines
-from CIME.jenkins_generic_job import jenkins_generic_job
+
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -29,9 +30,7 @@ OR
     > {0} -d
     \033[1;32m# Run the tests, generating a full set of baselines (useful for first run on a machine) \033[0m
     > {0} -g
-""".format(
-            os.path.basename(args[0])
-        ),
+""".format(os.path.basename(args[0])),
         description=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )

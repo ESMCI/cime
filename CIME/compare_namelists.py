@@ -1,4 +1,7 @@
-import os, re, logging
+import logging
+import os
+import re
+
 from CIME.core.exceptions import CIMEError
 from CIME.utils import expect
 

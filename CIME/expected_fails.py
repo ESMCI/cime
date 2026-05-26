@@ -2,7 +2,7 @@
 Contains the definition of a class to hold information on expected failures for a single test
 """
 
-from CIME.XML.standard_module_setup import *
+from CIME.utils import expect
 
 EXPECTED_FAILURE_COMMENT = "(EXPECTED FAILURE)"
 UNEXPECTED_FAILURE_COMMENT_START = "(UNEXPECTED"  # There will be some additional text after this, before the end parentheses

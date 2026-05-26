@@ -2,47 +2,52 @@
 Base class for CIME system tests
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.XML.env_run import EnvRun
-from CIME.XML.env_test import EnvTest
-from CIME.status import append_testlog
-from CIME.utils import (
-    CESM_LIKE_MODELS,
-    get_model,
-    safe_copy,
-    get_timestamp,
-    CIMEError,
-    expect,
-    get_current_commit,
-    SharedArea,
-    compset_lacks_cpl_log,
-)
-from CIME.test_status import *
-from CIME.hist_utils import (
-    copy_histfiles,
-    compare_test,
-    generate_teststatus,
-    compare_baseline,
-    get_ts_synopsis,
-    generate_baseline,
-)
-from CIME.config import Config
-from CIME.provenance import save_test_time
-from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
+import calendar
+import glob
+import gzip
+import logging
+import math
+import os
+import re
+import time
+import traceback
+from contextlib import ExitStack
+from datetime import datetime, timedelta
+
+import CIME.build as build
 from CIME.baselines.performance import (
     get_latest_cpl_logs,
-    perf_get_memory_list,
+    load_coupler_customization,
     perf_compare_memory_baseline,
     perf_compare_throughput_baseline,
+    perf_get_memory_list,
     perf_write_baseline,
-    load_coupler_customization,
 )
-import CIME.build as build
-from datetime import datetime, timedelta
-import glob, gzip, time, traceback, os, math, calendar
-
-from contextlib import ExitStack
-from typing import List, Tuple, Union
+from CIME.config import Config
+from CIME.hist_utils import (
+    compare_baseline,
+    compare_test,
+    copy_histfiles,
+    generate_baseline,
+    generate_teststatus,
+    get_ts_synopsis,
+)
+from CIME.locked_files import LOCKED_DIR, is_locked, lock_file
+from CIME.provenance import save_test_time
+from CIME.status import append_testlog
+from CIME.test_status import *
+from CIME.utils import (
+    CIMEError,
+    SharedArea,
+    expect,
+    get_current_commit,
+    get_model,
+    get_timestamp,
+    compset_lacks_cpl_log,
+    safe_copy,
+)
+from CIME.XML.env_run import EnvRun
+from CIME.XML.env_test import EnvTest
 
 logger = logging.getLogger(__name__)
 
@@ -96,9 +101,7 @@ def is_single_exe_case(case):
 
 
 class SystemTestsCommon(object):
-    def __init__(
-        self, case, expected=None, **kwargs
-    ):  # pylint: disable=unused-argument
+    def __init__(self, case, expected=None, **kwargs):  # pylint: disable=unused-argument
         """
         initialize a CIME system test object, if the locked env_run.orig.xml
         does not exist copy the current env_run.xml file.  If it does exist restore values
@@ -286,7 +289,7 @@ class SystemTestsCommon(object):
         h = restdatetime.hour
         m = restdatetime.minute
         s = restdatetime.second
-        self._rest_time += f"{(h*3600+m*60+s):05d}"
+        self._rest_time += f"{(h * 3600 + m * 60 + s):05d}"
 
         logger.info(
             "doing an {0} {1} initial test with restart file at {2} {1}".format(
@@ -358,7 +361,6 @@ class SystemTestsCommon(object):
             phase_status != TEST_PEND_STATUS or phase_comment == TEST_RERUN_COMMENT
         )
         if reset or (self._case.get_value("IS_FIRST_RUN") and rerunning):
-
             logging.warning(
                 "Resetting case due to detected re-run of phase {}".format(phase)
             )
@@ -796,9 +798,7 @@ class SystemTestsCommon(object):
 Expected to compare {} hist files, but only compared {}. It's possible
 that the hist_file_extension entry in config_archive.xml is not correct
 for some of your components.
-""".format(
-                self._expected_num_cmp, num_compared
-            )
+""".format(self._expected_num_cmp, num_compared)
 
         append_testlog(comments, self._orig_caseroot)
 
@@ -1351,9 +1351,7 @@ class TESTRUNPASS(FakeTest):
 echo Insta pass
 echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1379,9 +1377,7 @@ if [ -z "$TESTRUNDIFF_ALTERNATE" ]; then
 else
   cp {root}/scripts/tests/cpl.hi2.nc.test {rundir}/{case}.cpl.hi.0.nc
 fi
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1400,9 +1396,7 @@ echo Insta pass
 echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
 cp {root}/scripts/tests/cpl.hi2.nc.test {rundir}/{case}.cpl.hi.0.nc.rest
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         super(TESTTESTDIFF, self).build_phase(
             sharedlib_only=sharedlib_only, model_only=model_only
@@ -1428,9 +1422,7 @@ else
   echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
   cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
 fi
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1555,9 +1547,7 @@ sleep 300
 echo Slow pass
 echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1572,9 +1562,7 @@ class TESTMEMLEAKFAIL(FakeTest):
 echo Insta pass
 gunzip -c {testfile} > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1589,8 +1577,6 @@ class TESTMEMLEAKPASS(FakeTest):
 echo Insta pass
 gunzip -c {testfile} > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)

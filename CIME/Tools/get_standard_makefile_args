@@ -11,6 +11,7 @@ from CIME.build import get_standard_makefile_args
 from CIME.case import Case
 from CIME.test_status import *
 
+
 ###############################################################################
 def parse_command_line(args, description):
     ###############################################################################

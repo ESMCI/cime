@@ -42,11 +42,12 @@ parsed here). The only required elements are given by this example:
 </expectedFails>
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+import os
 
 from CIME import utils
-from CIME.XML.generic_xml import GenericXML
 from CIME.expected_fails import ExpectedFails
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

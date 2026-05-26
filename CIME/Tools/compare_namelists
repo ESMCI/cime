@@ -5,11 +5,15 @@ Compare namelists. Should be called by an ACME test. Designed
 to not be sensitive to order or whitespace.
 """
 
+import argparse
+import os
+import sys
+
 from standard_script_setup import *
+
 import CIME.compare_namelists
 from CIME.utils import expect
 
-import argparse, sys, os
 
 ###############################################################################
 def parse_command_line(args, description):

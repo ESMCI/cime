@@ -5,14 +5,18 @@ Dump what the CIME environment would be for a case.
 
 Only supports E3SM for now.
 """
-from standard_script_setup import *
-from CIME.XML.machines import Machines
-from CIME.test_scheduler import TestScheduler
-from CIME.utils import parse_test_name, expect, get_src_root
-from CIME.config import Config
-import CIME.get_tests
+import argparse
+import shutil
+import tempfile
 
-import argparse, tempfile, shutil
+from standard_script_setup import *
+
+import CIME.get_tests
+from CIME.config import Config
+from CIME.test_scheduler import TestScheduler
+from CIME.utils import expect, get_src_root
+from CIME.XML.machines import Machines
+
 
 ###############################################################################
 def parse_command_line(raw_args, description):

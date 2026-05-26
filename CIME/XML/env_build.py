@@ -1,7 +1,9 @@
 """
 Interface to the env_build.xml file.  This class inherits from EnvBase
 """
-from CIME.XML.standard_module_setup import *
+
+import logging
+import os
 
 from CIME import utils
 from CIME.XML.env_base import EnvBase

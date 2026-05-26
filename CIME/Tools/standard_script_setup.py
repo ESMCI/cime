@@ -1,11 +1,19 @@
 """
 Encapsulate the importing of python utils and logging setup, things
 that every script should do.
+
+This module is DEPRECATED for star imports. New scripts should use explicit
+imports instead of `from CIME.Tools.standard_script_setup import *`.
+
+The exports are maintained for backward compatibility.
 """
+
 # pylint: disable=unused-import
 
-import sys, os
-import __main__ as main
+import argparse  # noqa: F401
+import logging  # noqa: F401
+import os
+import sys
 
 
 def check_minimum_python_version(major, minor, warn_only=False):
@@ -48,7 +56,6 @@ sys.path.insert(0, cimeroot)
 # Important: Allows external tools to link up with CIME
 os.environ["CIMEROOT"] = cimeroot
 
-import CIME.utils
+import CIME.utils  # noqa: E402
 
 CIME.utils.stop_buffering_output()
-import argparse, logging

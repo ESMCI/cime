@@ -3,8 +3,8 @@
 import gzip
 import tempfile
 import unittest
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 from CIME.baselines import performance
 from CIME.tests.test_unit_system_tests import CPLLOG
@@ -300,7 +300,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_throughput_baseline(
+            below_tolerance, comment = performance.perf_compare_throughput_baseline(
                 case
             )
 
@@ -332,7 +332,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 None,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_throughput_baseline(
+            below_tolerance, comment = performance.perf_compare_throughput_baseline(
                 case
             )
 
@@ -364,7 +364,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_throughput_baseline(
+            below_tolerance, comment = performance.perf_compare_throughput_baseline(
                 case
             )
 
@@ -396,7 +396,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_throughput_baseline(
+            below_tolerance, comment = performance.perf_compare_throughput_baseline(
                 case
             )
 
@@ -433,7 +433,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
+            below_tolerance, comment = performance.perf_compare_memory_baseline(case)
 
         assert below_tolerance
         assert (
@@ -464,7 +464,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
+            below_tolerance, comment = performance.perf_compare_memory_baseline(case)
 
         assert below_tolerance is None
         assert comment == "Found 2 memory usage samples, need atleast 4"
@@ -524,7 +524,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 None,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
+            below_tolerance, comment = performance.perf_compare_memory_baseline(case)
 
         assert below_tolerance
         assert (
@@ -559,7 +559,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
+            below_tolerance, comment = performance.perf_compare_memory_baseline(case)
 
         assert not below_tolerance
         assert (
@@ -594,7 +594,7 @@ class TestUnitBaselinesPerformance(unittest.TestCase):
                 0.05,
             )
 
-            (below_tolerance, comment) = performance.perf_compare_memory_baseline(case)
+            below_tolerance, comment = performance.perf_compare_memory_baseline(case)
 
         assert below_tolerance
         assert (

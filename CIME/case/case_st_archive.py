@@ -4,21 +4,26 @@ case_st_archive, restore_from_archive, archive_last_restarts
 are members of class Case from file case.py
 """
 
-import shutil, glob, re, os
+import glob
+import logging
+import os
+import re
+import shutil
+from os.path import isdir, join
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import (
-    ls_sorted_by_mtime,
-    symlink_force,
-    safe_copy,
-    find_files,
-    batch_jobid,
-)
-from CIME.status import run_and_log_case_status
 from CIME.date import get_file_date
+from CIME.status import run_and_log_case_status
+from CIME.utils import (
+    batch_jobid,
+    expect,
+    find_files,
+    ls_sorted_by_mtime,
+    run_cmd,
+    safe_copy,
+    symlink_force,
+)
 from CIME.XML.archive import Archive
 from CIME.XML.files import Files
-from os.path import isdir, join
 
 logger = logging.getLogger(__name__)
 

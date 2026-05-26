@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import io
-import unittest
-import shutil
 import os
-import tempfile
 import re
-from CIME.cs_status import cs_status
+import shutil
+import tempfile
+import unittest
+
 from CIME import test_status
+from CIME.cs_status import cs_status
 from CIME.tests.custom_assertions_test_status import CustomAssertionsTestStatus
 
 

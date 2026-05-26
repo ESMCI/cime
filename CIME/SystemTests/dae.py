@@ -6,13 +6,14 @@ change any model state (restart files). Compares answers of two runs.
 
 """
 
-import os.path
-import logging
 import glob
 import gzip
+import logging
+import os.path
 
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.utils import expect
+
 
 ###############################################################################
 class DAE(SystemTestsCompareTwo):

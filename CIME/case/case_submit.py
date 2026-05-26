@@ -8,17 +8,19 @@ submit, check_case and check_da_settings are members of class Case in file case.
 """
 
 import configparser
-from CIME.XML.standard_module_setup import *
+import logging
+import os
+
 from CIME.core.exceptions import CIMEError
-from CIME.utils import expect, get_time_in_seconds
-from CIME.status import run_and_log_case_status
 from CIME.locked_files import (
-    unlock_file,
-    lock_file,
     check_lockedfile,
     check_lockedfiles,
+    lock_file,
+    unlock_file,
 )
+from CIME.status import run_and_log_case_status
 from CIME.test_status import *
+from CIME.utils import expect, get_time_in_seconds
 
 logger = logging.getLogger(__name__)
 

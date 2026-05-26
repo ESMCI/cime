@@ -6,7 +6,8 @@ This is an openmp test to determine that changing thread counts does not change 
 (2) do another initial run with nthrds=1 for all components (suffix: single_thread)
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)

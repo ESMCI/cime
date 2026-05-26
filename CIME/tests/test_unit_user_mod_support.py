@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import unittest
+import os
 import shutil
 import tempfile
-import os
-from CIME.user_mod_support import apply_user_mods, SHELL_COMMANDS_POST_SETUP
+import unittest
+
 from CIME.core.exceptions import CIMEError
+from CIME.user_mod_support import apply_user_mods, SHELL_COMMANDS_POST_SETUP
 
 # ========================================================================
 # Define some parameters
@@ -21,7 +22,6 @@ def _post_setup_command(name, caseroot):
 
 
 class TestUserModSupport(unittest.TestCase):
-
     # ========================================================================
     # Test helper functions
     # ========================================================================
