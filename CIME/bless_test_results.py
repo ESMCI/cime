@@ -1,24 +1,29 @@
-import CIME.compare_namelists, CIME.simple_compare
-from CIME.test_scheduler import NAMELIST_PHASE
-from CIME.utils import (
-    run_cmd,
-    get_scripts_root,
-    EnvironmentContext,
-    parse_test_name,
-    match_any,
-    CIMEError,
-)
-from CIME.config import Config
-from CIME.test_status import *
-from CIME.hist_utils import generate_baseline, compare_baseline, NO_ORIGINAL
-from CIME.case import Case
-from CIME.test_utils import get_test_status_files
+import logging
+import os
+import re
+import time
+
+import CIME.compare_namelists
+import CIME.simple_compare
 from CIME.baselines.performance import (
-    perf_compare_throughput_baseline,
     perf_compare_memory_baseline,
+    perf_compare_throughput_baseline,
     perf_write_baseline,
 )
-import os, time
+from CIME.case import Case
+from CIME.config import Config
+from CIME.hist_utils import NO_ORIGINAL, compare_baseline, generate_baseline
+from CIME.test_scheduler import NAMELIST_PHASE
+from CIME.test_status import *
+from CIME.test_utils import get_test_status_files
+from CIME.utils import (
+    CIMEError,
+    EnvironmentContext,
+    get_scripts_root,
+    match_any,
+    parse_test_name,
+    run_cmd,
+)
 
 logger = logging.getLogger(__name__)
 

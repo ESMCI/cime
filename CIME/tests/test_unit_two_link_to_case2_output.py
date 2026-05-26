@@ -10,10 +10,11 @@ SystemTestsCompareTwo._link_to_case2_output
 #
 # pylint:disable=protected-access
 
-import unittest
 import os
 import shutil
 import tempfile
+import unittest
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.tests.case_fake import CaseFake
 

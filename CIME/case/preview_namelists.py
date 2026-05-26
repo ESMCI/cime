@@ -3,9 +3,12 @@ API for preview namelist
 create_dirs and create_namelists are members of Class case from file case.py
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import import_and_run_sub_or_cmd, safe_copy
-import time, glob
+import glob
+import logging
+import os
+import time
+
+from CIME.utils import expect, import_and_run_sub_or_cmd, safe_copy
 
 logger = logging.getLogger(__name__)
 

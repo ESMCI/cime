@@ -2,45 +2,53 @@
 Base class for CIME system tests
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.XML.env_run import EnvRun
-from CIME.XML.env_test import EnvTest
-from CIME.status import append_testlog
-from CIME.utils import (
-    get_model,
-    safe_copy,
-    get_timestamp,
-    CIMEError,
-    expect,
-    get_current_commit,
-    SharedArea,
-    is_comp_standalone,
-)
-from CIME.test_status import *
-from CIME.hist_utils import (
-    copy_histfiles,
-    compare_test,
-    generate_teststatus,
-    compare_baseline,
-    get_ts_synopsis,
-    generate_baseline,
-)
-from CIME.config import Config
-from CIME.provenance import save_test_time, get_test_success
-from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
+import calendar
+import glob
+import gzip
+import logging
+import math
+import os
+import re
+import time
+import traceback
+from contextlib import ExitStack
+from datetime import datetime, timedelta
+
+import CIME.build as build
 from CIME.baselines.performance import (
     get_latest_cpl_logs,
-    perf_get_memory_list,
+    load_coupler_customization,
     perf_compare_memory_baseline,
     perf_compare_throughput_baseline,
+    perf_get_memory_list,
     perf_write_baseline,
-    load_coupler_customization,
 )
-import CIME.build as build
-from datetime import datetime, timedelta
-import glob, gzip, time, traceback, os, math, calendar
-
-from contextlib import ExitStack
+from CIME.config import Config
+from CIME.hist_utils import (
+    compare_baseline,
+    compare_test,
+    copy_histfiles,
+    generate_baseline,
+    generate_teststatus,
+    get_ts_synopsis,
+)
+from CIME.locked_files import LOCKED_DIR, is_locked, lock_file
+from CIME.provenance import get_test_success, save_test_time
+from CIME.status import append_testlog
+from CIME.test_status import *
+from CIME.utils import (
+    CIMEError,
+    SharedArea,
+    expect,
+    get_current_commit,
+    get_model,
+    get_timestamp,
+    is_comp_standalone,
+    run_cmd,
+    safe_copy,
+)
+from CIME.XML.env_run import EnvRun
+from CIME.XML.env_test import EnvTest
 
 logger = logging.getLogger(__name__)
 

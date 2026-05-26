@@ -4,10 +4,13 @@ Interface to the config_batch.xml file.  This class inherits from GenericXML.py
 The batch_system type="foo" blocks define most things. Machine-specific overrides
 can be defined by providing a batch_system MACH="mach" block.
 """
-from CIME.XML.standard_module_setup import *
-from CIME.XML.generic_xml import GenericXML
-from CIME.XML.files import Files
+
+import logging
+import os
+
 from CIME.utils import expect
+from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

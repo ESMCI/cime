@@ -10,9 +10,10 @@ ensures that the batch system is left in a clean state.
 from standard_script_setup import *
 
 import CIME.wait_for_tests
+from CIME.jenkins_generic_job import jenkins_generic_job
 from CIME.utils import expect
 from CIME.XML.machines import Machines
-from CIME.jenkins_generic_job import jenkins_generic_job
+
 
 ###############################################################################
 def parse_command_line(args, description):
