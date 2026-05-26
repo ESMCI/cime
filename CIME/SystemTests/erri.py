@@ -3,10 +3,13 @@ CIME ERRI test  This class inherits from ERR
 ERRI tests short term archiving and restart capabilities with "incomplete" (unzipped) log files
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.err import ERR
+import glob
+import gzip
+import logging
+import os
+import shutil
 
-import shutil, glob, gzip
+from CIME.SystemTests.err import ERR
 
 logger = logging.getLogger(__name__)
 

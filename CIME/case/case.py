@@ -5,46 +5,64 @@ Wrapper around all env XML for a case.
 All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
-from copy import deepcopy
+
+import getpass
+import glob
+import hashlib
+import logging
+import math
+import os
+import re
+import shutil
+import socket
 import sys
-import glob, os, shutil, math, time, hashlib, socket, getpass
-from CIME.XML.standard_module_setup import *
+import time
+from copy import deepcopy
 
 # pylint: disable=import-error,redefined-builtin
 from CIME import utils
+from CIME.aprun import get_aprun_cmd_for_case
 from CIME.config import Config
-from CIME.status import append_status
-from CIME.utils import expect, get_cime_root
-from CIME.utils import convert_to_type, get_model, set_model
-from CIME.utils import get_project, get_charge_account, check_name
-from CIME.utils import get_current_commit, safe_copy, get_cime_default_driver
 from CIME.gitinterface import GitInterface
 from CIME.locked_files import LOCKED_DIR, lock_file
-from CIME.XML.machines import Machines
-from CIME.XML.pes import Pes
-from CIME.XML.files import Files
-from CIME.XML.testlist import Testlist
+from CIME.status import append_status
+from CIME.user_mod_support import apply_user_mods
+from CIME.utils import (
+    check_name,
+    convert_to_type,
+    expect,
+    get_charge_account,
+    get_cime_default_driver,
+    get_cime_root,
+    get_current_commit,
+    get_model,
+    get_project,
+    safe_copy,
+    set_model,
+)
+from CIME.XML.archive import Archive
+from CIME.XML.batch import Batch
 from CIME.XML.component import Component
 from CIME.XML.compsets import Compsets
-from CIME.XML.grids import Grids
-from CIME.XML.batch import Batch
-from CIME.XML.workflow import Workflow
-from CIME.XML.postprocessing import Postprocessing
-from CIME.XML.pio import PIO
-from CIME.XML.archive import Archive
-from CIME.XML.env_test import EnvTest
-from CIME.XML.env_mach_specific import EnvMachSpecific
-from CIME.XML.env_case import EnvCase
-from CIME.XML.env_mach_pes import EnvMachPes
-from CIME.XML.env_build import EnvBuild
-from CIME.XML.env_run import EnvRun
 from CIME.XML.env_archive import EnvArchive
 from CIME.XML.env_batch import EnvBatch
-from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.env_build import EnvBuild
+from CIME.XML.env_case import EnvCase
+from CIME.XML.env_mach_pes import EnvMachPes
+from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.env_postprocessing import EnvPostprocessing
+from CIME.XML.env_run import EnvRun
+from CIME.XML.env_test import EnvTest
+from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.files import Files
 from CIME.XML.generic_xml import GenericXML
-from CIME.user_mod_support import apply_user_mods
-from CIME.aprun import get_aprun_cmd_for_case
+from CIME.XML.grids import Grids
+from CIME.XML.machines import Machines
+from CIME.XML.pes import Pes
+from CIME.XML.pio import PIO
+from CIME.XML.postprocessing import Postprocessing
+from CIME.XML.testlist import Testlist
+from CIME.XML.workflow import Workflow
 
 logger = logging.getLogger(__name__)
 
@@ -81,25 +99,25 @@ class Case(object):
 
     """
 
-    from CIME.case.case_setup import case_setup, _create_case_repo
-    from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
-    from CIME.case.case_test import case_test
-    from CIME.case.case_submit import check_DA_settings, check_case, submit
+    from CIME.case.case_clone import _copy_user_modified_to_clone, create_clone
+    from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
+    from CIME.case.case_run import case_run
+    from CIME.case.case_setup import _create_case_repo, case_setup
     from CIME.case.case_st_archive import (
+        archive_last_restarts,
         case_st_archive,
         restore_from_archive,
-        archive_last_restarts,
-        test_st_archive,
         test_env_archive,
+        test_st_archive,
     )
-    from CIME.case.case_run import case_run
-    from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
-    from CIME.case.preview_namelists import create_dirs, create_namelists
+    from CIME.case.case_submit import check_case, check_DA_settings, submit
+    from CIME.case.case_test import case_test
     from CIME.case.check_input_data import (
         check_all_input_data,
-        stage_refcase,
         check_input_data,
+        stage_refcase,
     )
+    from CIME.case.preview_namelists import create_dirs, create_namelists
 
     def __init__(self, case_root=None, read_only=True, record=False, non_local=False):
         if case_root is None:

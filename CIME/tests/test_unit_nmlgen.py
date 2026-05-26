@@ -1,9 +1,10 @@
-from collections import OrderedDict
 import tempfile
 import unittest
+from collections import OrderedDict
 from unittest import mock
 
 from CIME.nmlgen import NamelistGenerator
+
 
 # pylint: disable=protected-access
 class TestNamelistGenerator(unittest.TestCase):

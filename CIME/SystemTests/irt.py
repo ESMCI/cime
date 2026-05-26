@@ -11,9 +11,11 @@ This test the model's restart capability as well as the short term archiver's in
 
 """
 
+import logging
+import os
+
 from CIME.SystemTests.restart_tests import RestartTest
-from CIME.XML.standard_module_setup import *
-from CIME.utils import ls_sorted_by_fname
+from CIME.utils import expect, ls_sorted_by_fname
 
 logger = logging.getLogger(__name__)
 

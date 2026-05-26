@@ -1,7 +1,9 @@
+import os
+import sys
+
 import CIME.utils
-from CIME.utils import expect, convert_to_seconds, parse_test_name, get_cime_root
+from CIME.utils import convert_to_seconds, expect, get_cime_root, parse_test_name
 from CIME.XML.machines import Machines
-import sys, os
 
 # Expect that, if a model wants to use python-based test lists, they will have a file
 # $model/cime_config/tests.py , containing a test dictionary called _TESTS. Currently,
@@ -142,6 +144,7 @@ _CIME_TESTS = {
 }
 
 _ALL_TESTS.update(_CIME_TESTS)
+
 
 ###############################################################################
 def _get_key_data(raw_dict, key, the_type):

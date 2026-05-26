@@ -2,14 +2,22 @@
 CIME HOMME test. This class inherits from SystemTestsCommon
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+import logging
+import os
+import shutil
+
 from CIME.build import post_build
 from CIME.status import append_testlog
-from CIME.utils import SharedArea, new_lid, gzip_existing_file
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.test_status import *
-
-import shutil
+from CIME.utils import (
+    SharedArea,
+    expect,
+    gzip_existing_file,
+    new_lid,
+    run_cmd,
+    run_cmd_no_fail,
+)
 
 logger = logging.getLogger(__name__)
 

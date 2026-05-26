@@ -1,13 +1,18 @@
 """
 Interface to the env_mach_specific.xml file.  This class inherits from EnvBase
 """
-from CIME.XML.standard_module_setup import *
 
-from CIME.XML.env_base import EnvBase
-from CIME import utils
-from CIME.utils import transform_vars, get_cime_root
-import string, resource, platform
+import logging
+import os
+import platform
+import re
+import resource
+import string
 from collections import OrderedDict
+
+from CIME import utils
+from CIME.utils import expect, run_cmd, run_cmd_no_fail, transform_vars
+from CIME.XML.env_base import EnvBase
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +36,7 @@ RESOURCE_MAP = {
     "RLIMIT_SIGPENDING": ("maxsignal", "-i"),
     "RLIMIT_STACK": ("stacksize", "-s"),
 }
+
 
 # Is not of type EntryID but can use functions from EntryID (e.g
 # get_type) otherwise need to implement own functions and make GenericXML parent class

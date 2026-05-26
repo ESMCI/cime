@@ -3,15 +3,19 @@ Library for case.cmpgen_namelists.
 case_cmpgen_namelists is a member of Class case from file case.py
 """
 
-from CIME.XML.standard_module_setup import *
+import glob
+import logging
+import os
+import shutil
+import stat
+import sys
+import traceback
 
-from CIME.compare_namelists import is_namelist_file, compare_namelist_files
+from CIME.compare_namelists import compare_namelist_files, is_namelist_file
 from CIME.simple_compare import compare_files, compare_runconfigfiles
-from CIME.utils import safe_copy, SharedArea
 from CIME.status import append_status
 from CIME.test_status import *
-
-import os, shutil, traceback, stat, glob
+from CIME.utils import SharedArea, expect, safe_copy
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +45,11 @@ def _do_full_nl_comp(case, test, compare_name, baseline_root=None):
     comments = "NLCOMP\n"
     for item in all_items_to_compare:
         baseline_counterpart = os.path.join(
-            baseline_casedocs
-            if os.path.dirname(item).endswith("CaseDocs")
-            else baseline_dir,
+            (
+                baseline_casedocs
+                if os.path.dirname(item).endswith("CaseDocs")
+                else baseline_dir
+            ),
             os.path.basename(item),
         )
         if not os.path.exists(baseline_counterpart):

@@ -1,18 +1,26 @@
 # pylint: disable=import-error
-import queue, os, time, threading, socket, signal, shutil, glob, tempfile
-from pathlib import Path
+import glob
 
 # pylint: disable=import-error
 import logging
+import os
+import queue
+import shutil
+import signal
+import socket
+import tempfile
+import threading
+import time
 import xml.etree.ElementTree as xmlet
+from pathlib import Path
 
 import CIME.utils
-from CIME.core.exceptions import CIMEError
-from CIME.utils import expect, Timeout, run_cmd, run_cmd_no_fail, safe_copy
-from CIME.XML.machines import Machines
-from CIME.test_status import *
-from CIME.provenance import save_test_success
 from CIME.case.case import Case
+from CIME.core.exceptions import CIMEError
+from CIME.provenance import save_test_success
+from CIME.test_status import *
+from CIME.utils import Timeout, expect, run_cmd, run_cmd_no_fail, safe_copy
+from CIME.XML.machines import Machines
 
 SIGNAL_RECEIVED = False
 E3SM_MAIN_CDASH = "E3SM"

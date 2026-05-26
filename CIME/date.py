@@ -1,7 +1,9 @@
+import logging
 import re
-from CIME.XML.standard_module_setup import *
 
 logger = logging.getLogger(__name__)
+
+
 ###############################################################################
 def get_file_date(filename):
     ###############################################################################

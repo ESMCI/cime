@@ -2,10 +2,12 @@
 Interface to the config_postprocessing.xml file.  This class inherits from EntryID
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+import os
+
+from CIME.utils import expect
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
-from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,14 @@
-import CIME.compare_namelists, CIME.simple_compare
-from CIME.status import append_status
-from CIME.utils import EnvironmentContext, parse_test_name
-from CIME.test_status import *
-from CIME.hist_utils import compare_baseline, get_ts_synopsis
-from CIME.case import Case
-from CIME.test_utils import get_test_status_files
+import logging
+import os
 
-import os, logging
+import CIME.compare_namelists
+import CIME.simple_compare
+from CIME.case import Case
+from CIME.hist_utils import compare_baseline, get_ts_synopsis
+from CIME.status import append_status
+from CIME.test_status import *
+from CIME.test_utils import get_test_status_files
+from CIME.utils import EnvironmentContext, parse_test_name
 
 
 def append_status_cprnc_log(msg, logfile_name, test_dir):

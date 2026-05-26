@@ -47,13 +47,16 @@ In addition, they MAY require the following methods:
     Use this to do arbitrary actions immediately after running case two
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon, fix_single_exe_case
+import glob
+import logging
+import os
+import shutil
+
 from CIME.case import Case
 from CIME.config import Config
+from CIME.SystemTests.system_tests_common import SystemTestsCommon, fix_single_exe_case
 from CIME.test_status import *
-
-import shutil, os, glob
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 

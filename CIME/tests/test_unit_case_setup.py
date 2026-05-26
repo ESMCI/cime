@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-import unittest
-import tempfile
 import contextlib
+import os
+import tempfile
+import unittest
 from pathlib import Path
 from unittest import mock
 
