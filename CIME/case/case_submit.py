@@ -119,10 +119,12 @@ def _submit(
 
     if batch_system != "none" and env_batch_has_changed and not external_workflow:
         # May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)
-        logger.warning("""
+        logger.warning(
+            """
 env_batch.xml appears to have changed, regenerating batch scripts
 manual edits to these file will be lost!
-""")
+"""
+        )
         env_batch.make_all_batch_files(case)
 
     case.flush()
@@ -159,10 +161,12 @@ manual edits to these file will be lost!
 
         if env_batch.get_batch_system_type() != "none" and env_batch_has_changed:
             # May need to regen batch files if user made batch setting changes (e.g. walltime, queue, etc)
-            logger.warning("""
+            logger.warning(
+                """
 env_batch.xml appears to have changed, regenerating batch scripts
 manual edits to these file will be lost!
-""")
+"""
+            )
             env_batch.make_all_batch_files(case)
 
         unlock_file(os.path.basename(env_batch.filename), caseroot)

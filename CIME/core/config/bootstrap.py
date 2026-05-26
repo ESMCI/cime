@@ -39,9 +39,7 @@ def find_cimeroot(starting_dir: Optional[str] = None) -> str:
         resolved = os.path.abspath(starting_dir)
         if _is_cimeroot(resolved):
             return resolved
-        raise RuntimeError(
-            f"Specified directory is not a valid CIMEROOT: {resolved}"
-        )
+        raise RuntimeError(f"Specified directory is not a valid CIMEROOT: {resolved}")
 
     env_root = os.environ.get("CIMEROOT")
     if env_root and _is_cimeroot(env_root):

@@ -77,21 +77,48 @@ class TestSubclasses:
 class TestExternalCommandError:
     """Tests for ExternalCommandError and its retryable variant."""
 
-    def test_stores_returncode_and_command(self):
-        exc = ExternalCommandError("failed", returncode=42, command="make")
+    def test_stores_returncode_and_cmd(self):
+        exc = ExternalCommandError("failed", returncode=42, cmd="make all")
         assert exc.returncode == 42
-        assert exc.command == "make"
+        assert exc.cmd == "make all"
         assert str(exc) == "failed"
+
+    def test_stores_output_and_stderr(self):
+        exc = ExternalCommandError(
+            "failed",
+            returncode=1,
+            cmd="make",
+            output="Building...",
+            stderr="error: missing file",
+        )
+        assert exc.output == "Building..."
+        assert exc.stderr == "error: missing file"
 
     def test_defaults(self):
         exc = ExternalCommandError("failed")
         assert exc.returncode == 1
-        assert exc.command == ""
+        assert exc.cmd == ""
+        assert exc.output == ""
+        assert exc.stderr == ""
+
+    def test_command_property_deprecated(self):
+        """The command property is deprecated but still works."""
+        exc = ExternalCommandError("failed", cmd="make")
+        assert exc.command == "make"  # Deprecated property
+        assert exc.cmd == "make"  # Preferred attribute
+
+    def test_command_kwarg_deprecated(self):
+        """The command kwarg is deprecated but still works."""
+        exc = ExternalCommandError("failed", command="make")
+        assert exc.cmd == "make"
+        assert exc.command == "make"
 
     def test_retryable_is_external_command_error(self):
         assert issubclass(RetryableExternalCommandError, ExternalCommandError)
 
     def test_retryable_stores_fields(self):
-        exc = RetryableExternalCommandError("timeout", returncode=124, command="srun")
+        exc = RetryableExternalCommandError(
+            "timeout", returncode=124, cmd="srun ./model"
+        )
         assert exc.returncode == 124
-        assert exc.command == "srun"
+        assert exc.cmd == "srun ./model"
