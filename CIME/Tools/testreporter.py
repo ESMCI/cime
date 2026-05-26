@@ -3,21 +3,22 @@
 """
 Simple script to populate CESM test database with test results.
 """
+
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from CIME.Tools.standard_script_setup import *
+import glob
 
+from CIME.Tools.standard_script_setup import *
+from CIME.utils import expect
 from CIME.XML.env_build import EnvBuild
 from CIME.XML.env_case import EnvCase
 from CIME.XML.env_test import EnvTest
-from CIME.XML.test_reporter import TestReporter
-from CIME.utils import expect
 from CIME.XML.generic_xml import GenericXML
+from CIME.XML.test_reporter import TestReporter
 
-import glob
 
 ###############################################################################
 def parse_command_line(args):

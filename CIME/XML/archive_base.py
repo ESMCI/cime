@@ -1,9 +1,13 @@
 """
 Base class for archive files.  This class inherits from generic_xml.py
 """
-from CIME.XML.standard_module_setup import *
+
+import logging
+import os
+import re
+
+from CIME.utils import convert_to_type, expect
 from CIME.XML.generic_xml import GenericXML
-from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 

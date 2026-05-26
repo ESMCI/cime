@@ -8,10 +8,10 @@ import sys
 import time
 
 from CIME import utils
-from CIME.tests import base
 from CIME.case.case import Case
-from CIME.XML.env_run import EnvRun
+from CIME.tests import base
 from CIME.utils import find_system_test
+from CIME.XML.env_run import EnvRun
 
 try:
     collectionsAbc = collections.abc

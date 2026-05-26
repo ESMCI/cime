@@ -3,9 +3,10 @@ Generic Server class.  There should be little or no functionality in this class,
 to make sure that specific server classes maintain a consistant argument list and functionality
 so that they are interchangable objects
 """
+
 # pylint: disable=unused-argument
 
-from CIME.XML.standard_module_setup import *
+import logging
 from socket import _GLOBAL_DEFAULT_TIMEOUT
 
 logger = logging.getLogger(__name__)

@@ -13,10 +13,14 @@ branches, we do some git processing in this tool to ensure that only mainline
 merge commits are tested.
 """
 
-from standard_script_setup import *
-from CIME.utils import expect, run_cmd_no_fail, run_cmd
+import argparse
+import os
+import re
+import sys
 
-import argparse, sys, os, re
+from standard_script_setup import *
+
+from CIME.utils import expect, run_cmd, run_cmd_no_fail
 
 logger = logging.getLogger(__name__)
 

@@ -4,13 +4,12 @@
 This module contains unit tests for compare_test_results
 """
 
-import unittest
-import tempfile
 import os
 import shutil
+import tempfile
+import unittest
 
-from CIME import utils
-from CIME import compare_test_results
+from CIME import compare_test_results, utils
 from CIME.test_status import *
 from CIME.tests.case_fake import CaseFake
 

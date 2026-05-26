@@ -102,14 +102,15 @@ groups are separated by (optional) whitespace and comments, and nothing else.
 # (rather specific) pylint naming conventions.
 # pylint: disable=line-too-long,too-many-lines,invalid-name
 
+import logging
 import re
 from contextlib import contextmanager
+
+from CIME.utils import expect, string_in_list
 
 # Disable these because this is our standard setup
 # pylint: disable=wildcard-import,unused-wildcard-import
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, string_in_list
 
 logger = logging.getLogger(__name__)
 
@@ -250,7 +251,7 @@ def get_fortran_variable_indices(varname, varlen=1, allow_any_len=False):
     (1, -1, 1)
     """
     m = FORTRAN_NAME_REGEX.search(varname)
-    (minindex, maxindex, step) = (1, varlen, 1)
+    minindex, maxindex, step = (1, varlen, 1)
 
     if m.group(4) is not None:
         minindex = int(m.group(4))
@@ -893,7 +894,6 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
 
 
 class Namelist(object):
-
     """Class representing a Fortran namelist.
 
     Public methods:
@@ -1184,7 +1184,6 @@ class Namelist(object):
     def write(
         self, out_file, groups=None, append=False, format_="nml", sorted_groups=True
     ):
-
         """Write a the output data (normally fortran namelist) to the  out_file
 
         As with `parse`, the `out_file` argument can be either a file name, or a
@@ -1359,7 +1358,6 @@ class Namelist(object):
 
 
 class _NamelistEOF(Exception):
-
     """Exception thrown for an unexpected end-of-file in a namelist.
 
     This is an internal helper class, and should never be raised in a context
@@ -1381,7 +1379,6 @@ class _NamelistEOF(Exception):
 
 
 class _NamelistParseError(Exception):
-
     """Exception thrown when namelist input has a syntax error.
 
     This is an internal helper class, and should never be raised in a context
@@ -1403,7 +1400,6 @@ class _NamelistParseError(Exception):
 
 
 class _NamelistParser(object):  # pylint:disable=too-few-public-methods
-
     """Class to validate and read from Fortran namelist input.
 
     This is intended to be an internal helper class and should not be used
@@ -2222,7 +2218,7 @@ class _NamelistParser(object):  # pylint:disable=too-few-public-methods
                 break
             # and if it really is a literal, add it.
             values.append(literal)
-        (minindex, maxindex, step) = get_fortran_variable_indices(
+        minindex, maxindex, step = get_fortran_variable_indices(
             name, allow_any_len=True
         )
         if (minindex > 1 or maxindex > minindex or step > 1) and maxindex > 0:

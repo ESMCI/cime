@@ -2,11 +2,13 @@
 Interface to the archive.xml file.  This class inherits from GenericXML.py
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+import os
+from copy import deepcopy
+
 from CIME.config import Config
 from CIME.XML.archive_base import ArchiveBase
 from CIME.XML.files import Files
-from copy import deepcopy
 
 logger = logging.getLogger(__name__)
 

@@ -2,19 +2,19 @@
 Interface to the config_files.xml file.  This class inherits from EntryID.py
 """
 
-import re
+import logging
 import os
-from CIME.XML.standard_module_setup import *
+import re
 
-from CIME.XML.entry_id import EntryID
 from CIME.utils import (
     expect,
+    get_cime_default_driver,
     get_cime_root,
     get_config_path,
-    get_schema_path,
     get_model,
-    get_cime_default_driver,
+    get_schema_path,
 )
+from CIME.XML.entry_id import EntryID
 
 logger = logging.getLogger(__name__)
 

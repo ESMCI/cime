@@ -6,9 +6,9 @@ conduct an ensemble of simulations starting from different initial conditions.
 This class inherits from SystemTestsCommon.
 """
 
-import os
 import json
 import logging
+import os
 from shutil import copytree
 
 from CIME import test_status
@@ -50,9 +50,7 @@ class MVKConfig(ConfigBase):
         self._set_attribute("ref_case", "Baseline", "Name of the reference case.")
         self._set_attribute("test_case", "Test", "Name of the test case.")
 
-    def generate_namelist(
-        self, case, component, i, filename
-    ):  # pylint: disable=unused-argument
+    def generate_namelist(self, case, component, i, filename):  # pylint: disable=unused-argument
         """Generate per instance namelist.
 
         This method is called for each instance to generate the desired

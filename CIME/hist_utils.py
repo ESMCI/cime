@@ -2,23 +2,24 @@
 Functions for actions pertaining to history files.
 """
 
+import filecmp
 import logging
 import os
 import re
-import filecmp
 import shutil
 
-from CIME.XML.standard_module_setup import *
 from CIME.config import Config
+from CIME.core.exceptions import CIMEError
 from CIME.test_status import TEST_NO_BASELINES_COMMENT, TEST_STATUS_FILENAME
 from CIME.utils import (
+    SharedArea,
+    expect,
     get_current_commit,
     get_timestamp,
-    safe_copy,
-    SharedArea,
     parse_test_name,
+    run_cmd,
+    safe_copy,
 )
-from CIME.core.exceptions import CIMEError
 
 logger = logging.getLogger(__name__)
 

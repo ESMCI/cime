@@ -3,19 +3,21 @@
 """
 Generates a cylc workflow file for the case.  See https://cylc.github.io for details about cylc
 """
+
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from CIME.Tools.standard_script_setup import *
+import argparse
+import re
 
 from CIME.case import Case
+from CIME.Tools.standard_script_setup import *
 from CIME.utils import expect, transform_vars
 
-import argparse, re
-
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_command_line(args, description):

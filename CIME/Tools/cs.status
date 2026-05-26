@@ -8,11 +8,15 @@ Typical usage:
 Returns True if no errors occured (not based on test statuses).
 """
 
-from standard_script_setup import *
-import argparse, sys, os, logging, glob
-from CIME.utils import expect
-from CIME.cs_status import cs_status
+import argparse
+import glob
+import os
+import sys
+
+
 from CIME import test_status
+from CIME.cs_status import cs_status
+from CIME.utils import expect
 
 _PERFORMANCE_PHASES = [test_status.THROUGHPUT_PHASE, test_status.MEMCOMP_PHASE]
 

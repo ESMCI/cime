@@ -4,12 +4,14 @@ of the tests in one or more test suites
 """
 
 from __future__ import print_function
-from CIME.XML.standard_module_setup import *
-from CIME.XML.expected_fails_file import ExpectedFailsFile
-from CIME.test_status import TestStatus, SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS
+
 import os
 import sys
 from collections import defaultdict
+
+from CIME.test_status import SHAREDLIB_BUILD_PHASE, TEST_PEND_STATUS, TestStatus
+from CIME.utils import expect
+from CIME.XML.expected_fails_file import ExpectedFailsFile
 
 
 def cs_status(

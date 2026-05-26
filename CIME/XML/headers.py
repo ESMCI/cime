@@ -1,10 +1,11 @@
 """
 Interface to the config_headers.xml file.  This class inherits from EntryID.py
 """
-from CIME.XML.standard_module_setup import *
 
-from CIME.XML.generic_xml import GenericXML
+import logging
+
 from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

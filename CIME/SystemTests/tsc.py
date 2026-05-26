@@ -7,10 +7,9 @@ of simulations starting from different initial conditions.
 This class inherits from SystemTestsCommon.
 """
 
-import os
 import json
 import logging
-
+import os
 from shutil import copytree
 
 import CIME.test_status
@@ -117,7 +116,6 @@ class TSC(SystemTestsCommon):
             )
 
             with open(f"user_nl_{self.atmmod}_{iinst:04d}", "w+") as atmnlfile:
-
                 atmnlfile.write("ncdata  = '{}' \n".format(fatm_in))
 
                 atmnlfile.write("dtime = {} \n".format(dtime))

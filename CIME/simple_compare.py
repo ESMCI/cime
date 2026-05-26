@@ -1,6 +1,8 @@
-import os, re
+import os
+import re
 
 from CIME.utils import expect
+
 
 ###############################################################################
 def _normalize_string_value(value, case):

@@ -2,10 +2,10 @@
 Creates a test suite-specific cs.status file from a template
 """
 
-from CIME.XML.standard_module_setup import *
-import CIME.utils
 import os
 import stat
+
+import CIME.utils
 
 
 def create_cs_status(test_root, test_id, extra_args="", filename=None):

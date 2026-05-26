@@ -8,11 +8,13 @@ for the RUN phase specifically and will not terminate if the
 RUN phase didn't happen.
 """
 
-from standard_script_setup import *
+import argparse
+import os
+import sys
+
 
 import CIME.wait_for_tests
 
-import argparse, sys, os
 
 ###############################################################################
 def parse_command_line(args, description):

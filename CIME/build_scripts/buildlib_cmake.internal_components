@@ -5,7 +5,8 @@ build cime component model library.   This buildlib script is used by all cime i
 components.
 """
 
-import sys, os
+import os
+import sys
 
 _CIMEROOT = os.environ.get("CIMEROOT")
 if _CIMEROOT == None:
@@ -14,7 +15,7 @@ if _CIMEROOT == None:
     )
 sys.path.append(os.path.join(_CIMEROOT, "CIME", "Tools"))
 
-from standard_script_setup import *
+
 from CIME.buildlib import build_cime_component_lib, parse_input
 from CIME.case import Case
 

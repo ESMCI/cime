@@ -13,13 +13,14 @@ This module tests *some* functionality of CIME.XML.grids
 #
 # pylint:disable=line-too-long
 
-import unittest
 import os
 import shutil
 import string
 import tempfile
-from CIME.XML.grids import Grids, _ComponentGrids, _add_grid_info, _strip_grid_from_name
+import unittest
+
 from CIME.core.exceptions import CIMEError
+from CIME.XML.grids import Grids, _add_grid_info, _ComponentGrids, _strip_grid_from_name
 
 
 class TestGrids(unittest.TestCase):

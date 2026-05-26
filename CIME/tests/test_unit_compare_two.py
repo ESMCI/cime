@@ -9,16 +9,16 @@ This module contains unit tests of the core logic in SystemTestsCompareTwo.
 #
 # pylint:disable=protected-access
 
-import unittest
-from collections import namedtuple
 import functools
 import os
 import shutil
 import tempfile
+import unittest
+from collections import namedtuple
 from unittest import mock
 
-from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 import CIME.test_status as test_status
+from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.tests.case_fake import CaseFake
 
 # ========================================================================

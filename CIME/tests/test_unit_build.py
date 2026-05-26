@@ -3,7 +3,6 @@
 import os
 import unittest
 from unittest import mock
-from pathlib import Path
 
 from CIME import build
 from CIME.tests.utils import mock_case

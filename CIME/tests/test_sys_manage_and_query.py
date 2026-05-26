@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from CIME import utils
 from CIME.tests import base
 from CIME.XML.files import Files
 
