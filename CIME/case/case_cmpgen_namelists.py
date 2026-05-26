@@ -14,7 +14,13 @@ import traceback
 from CIME.compare_namelists import compare_namelist_files, is_namelist_file
 from CIME.simple_compare import compare_files, compare_runconfigfiles
 from CIME.status import append_status
-from CIME.test_status import *
+from CIME.test_status import (
+    NAMELIST_PHASE,
+    RUN_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TestStatus,
+)
 from CIME.utils import SharedArea, expect, safe_copy
 
 logger = logging.getLogger(__name__)

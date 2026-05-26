@@ -35,7 +35,24 @@ from CIME.hist_utils import (
 from CIME.locked_files import LOCKED_DIR, is_locked, lock_file
 from CIME.provenance import get_test_success, save_test_time
 from CIME.status import append_testlog
-from CIME.test_status import *
+from CIME.test_status import (
+    BASELINE_PHASE,
+    COMPARE_PHASE,
+    GENERATE_PHASE,
+    MEMCOMP_PHASE,
+    MEMLEAK_PHASE,
+    MODEL_BUILD_PHASE,
+    RUN_PHASE,
+    SHAREDLIB_BUILD_PHASE,
+    STARCHIVE_PHASE,
+    SUBMIT_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TEST_RERUN_COMMENT,
+    THROUGHPUT_PHASE,
+    TestStatus,
+)
 from CIME.utils import (
     CIMEError,
     SharedArea,

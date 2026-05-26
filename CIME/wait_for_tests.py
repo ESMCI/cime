@@ -18,7 +18,17 @@ import CIME.utils
 from CIME.case.case import Case
 from CIME.core.exceptions import CIMEError
 from CIME.provenance import save_test_success
-from CIME.test_status import *
+from CIME.test_status import (
+    CREATE_NEWCASE_PHASE,
+    NAMELIST_FAIL_STATUS,
+    NAMELIST_PHASE,
+    RUN_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TEST_STATUS_FILENAME,
+    TestStatus,
+)
 from CIME.utils import Timeout, expect, run_cmd, run_cmd_no_fail, safe_copy
 from CIME.XML.machines import Machines
 
