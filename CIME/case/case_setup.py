@@ -16,7 +16,13 @@ from CIME.config import Config
 from CIME.gitinterface import GitInterface
 from CIME.locked_files import check_lockedfiles, lock_file, unlock_file
 from CIME.status import append_case_status, run_and_log_case_status
-from CIME.test_status import *
+from CIME.test_status import (
+    SETUP_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TestStatus,
+)
 from CIME.utils import (
     CIMEError,
     batch_jobid,
