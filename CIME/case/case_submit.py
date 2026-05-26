@@ -19,7 +19,12 @@ from CIME.locked_files import (
     unlock_file,
 )
 from CIME.status import run_and_log_case_status
-from CIME.test_status import *
+from CIME.test_status import (
+    SUBMIT_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TestStatus,
+)
 from CIME.utils import expect, get_time_in_seconds
 
 logger = logging.getLogger(__name__)

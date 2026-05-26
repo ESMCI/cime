@@ -10,7 +10,12 @@ import tempfile
 import unittest
 
 from CIME import compare_test_results, utils
-from CIME.test_status import *
+from CIME.test_status import (
+    CREATE_NEWCASE_PHASE,
+    RUN_PHASE,
+    SETUP_PHASE,
+    TestStatus,
+)
 from CIME.tests.case_fake import CaseFake
 
 

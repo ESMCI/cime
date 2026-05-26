@@ -6,7 +6,15 @@ import CIME.simple_compare
 from CIME.case import Case
 from CIME.hist_utils import compare_baseline, get_ts_synopsis
 from CIME.status import append_status
-from CIME.test_status import *
+from CIME.test_status import (
+    BASELINE_PHASE,
+    NAMELIST_PHASE,
+    RUN_PHASE,
+    SETUP_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TestStatus,
+)
 from CIME.test_utils import get_test_status_files
 from CIME.utils import EnvironmentContext, parse_test_name
 

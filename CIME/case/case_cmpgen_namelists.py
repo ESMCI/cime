@@ -3,15 +3,25 @@ Library for case.cmpgen_namelists.
 case_cmpgen_namelists is a member of Class case from file case.py
 """
 
-from CIME.XML.standard_module_setup import *
+import glob
+import logging
+import os
+import shutil
+import stat
+import sys
+import traceback
 
-from CIME.compare_namelists import is_namelist_file, compare_namelist_files
+from CIME.compare_namelists import compare_namelist_files, is_namelist_file
 from CIME.simple_compare import compare_files, compare_runconfigfiles
-from CIME.utils import safe_copy, SharedArea, get_umask
 from CIME.status import append_status
-from CIME.test_status import *
-
-import os, shutil, traceback, stat, glob
+from CIME.test_status import (
+    NAMELIST_PHASE,
+    RUN_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TestStatus,
+)
+from CIME.utils import SharedArea, expect, safe_copy
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +51,11 @@ def _do_full_nl_comp(case, test, compare_name, baseline_root=None):
     comments = "NLCOMP\n"
     for item in all_items_to_compare:
         baseline_counterpart = os.path.join(
-            baseline_casedocs
-            if os.path.dirname(item).endswith("CaseDocs")
-            else baseline_dir,
+            (
+                baseline_casedocs
+                if os.path.dirname(item).endswith("CaseDocs")
+                else baseline_dir
+            ),
             os.path.basename(item),
         )
         if not os.path.exists(baseline_counterpart):
@@ -93,22 +105,7 @@ def _do_full_nl_gen_impl(case, test, generate_name, baseline_root=None):
     if os.path.isdir(baseline_casedocs):
         shutil.rmtree(baseline_casedocs)
 
-    # Do not preserve file metadata from the case tree. The baseline is a
-    # shared area, so its permissions must be determined by the active umask.
-    shutil.copytree(
-        casedoc_dir,
-        baseline_casedocs,
-        copy_function=shutil.copyfile,
-    )
-
-    # copytree still preserves directory metadata independently of its file
-    # copy function. Restore the permissions that newly-created directories
-    # would have under the current umask.
-    directory_mode = 0o777 & ~get_umask()
-    for root, dirs, _ in os.walk(baseline_casedocs):
-        for dirname in dirs:
-            os.chmod(os.path.join(root, dirname), directory_mode)
-    os.chmod(baseline_casedocs, directory_mode)
+    shutil.copytree(casedoc_dir, baseline_casedocs)
 
     # Note: If it is ever the case that nml cmp/gen affects more files than
     # just user_nl* and CaseDocs, this will break assumptions all across CIME.
