@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.build.get\_standard\_makefile\_args
+========================================
+
+.. currentmodule:: CIME.build
+
+.. autofunction:: get_standard_makefile_args
