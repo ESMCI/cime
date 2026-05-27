@@ -1,12 +1,16 @@
 """
 API for checking input for testcase
 """
-from CIME.XML.standard_module_setup import *
-from CIME.utils import SharedArea, find_files, safe_copy, expect
-from CIME.XML.inputdata import Inputdata
-import CIME.Servers
 
-import glob, hashlib, shutil
+import glob
+import hashlib
+import logging
+import os
+import shutil
+
+import CIME.Servers
+from CIME.utils import SharedArea, expect, find_files, safe_copy
+from CIME.XML.inputdata import Inputdata
 
 logger = logging.getLogger(__name__)
 # The inputdata_checksum.dat file will be read into this hash if it's available
@@ -24,7 +28,7 @@ def _download_checksum_file(rundir):
     # download and merge all available chksum files.
     while protocol is not None:
         protocol, address, user, passwd, chksum_file, _, _ = inputdata.get_next_server()
-        if protocol not in vars(CIME.Servers):
+        if not CIME.Servers.is_protocol_available(protocol):
             logger.info("Client protocol {} not enabled".format(protocol))
             continue
         logger.info(
@@ -414,7 +418,7 @@ def _check_input_data_impl(
     no_files_missing = True
     server = None
     if download:
-        if protocol not in vars(CIME.Servers):
+        if not CIME.Servers.is_protocol_available(protocol):
             logger.info("Client protocol {} not enabled".format(protocol))
             return False
         logger.info(

@@ -4,7 +4,8 @@ CIME performance test  This class inherits from SystemTestsCommon
 20 days performance test, no restart files written
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 
 logger = logging.getLogger(__name__)

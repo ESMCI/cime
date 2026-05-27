@@ -1,11 +1,13 @@
 """
 Interface to the config_component.xml files.  This class inherits from EntryID.py
 """
-from CIME.XML.standard_module_setup import *
 
+import logging
+import re
+
+from CIME.utils import expect
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
-from CIME.utils import get_cime_root
 
 logger = logging.getLogger(__name__)
 

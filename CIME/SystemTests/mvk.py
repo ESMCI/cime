@@ -6,23 +6,22 @@ conduct an ensemble of simulations starting from different initial conditions.
 This class inherits from SystemTestsCommon.
 """
 
-import os
 import json
 import logging
+import os
 from shutil import copytree
-
-from CIME import test_status
-from CIME import utils
-from CIME.status import append_testlog
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
-from CIME.case.case_setup import case_setup
-from CIME.XML.machines import Machines
-from CIME.config import ConfigBase
-from CIME.SystemTests import test_mods
-from CIME.namelist import Namelist
 
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
+
+from CIME import test_status, utils
+from CIME.case.case_setup import case_setup
+from CIME.config import ConfigBase
+from CIME.namelist import Namelist
+from CIME.status import append_testlog
+from CIME.SystemTests import test_mods
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.XML.machines import Machines
 
 version = evv4esm.__version_info__
 

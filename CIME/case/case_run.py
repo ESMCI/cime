@@ -2,16 +2,30 @@
 case_run is a member of Class Case
 '"""
 
-from CIME.XML.standard_module_setup import *
+import glob
+import logging
+import os
+import re
+import shutil
+import time
+
 from CIME.config import Config
-from CIME.utils import gzip_existing_file, new_lid
-from CIME.utils import run_sub_or_cmd, safe_copy, model_log, CIMEError
-from CIME.utils import batch_jobid, is_comp_standalone
-from CIME.status import append_status, run_and_log_case_status
+from CIME.core.exceptions import CIMEError
 from CIME.get_timing import get_timing
 from CIME.locked_files import check_lockedfiles
-
-import shutil, time, sys, os, glob
+from CIME.status import append_status, run_and_log_case_status
+from CIME.utils import (
+    batch_jobid,
+    expect,
+    gzip_existing_file,
+    is_comp_standalone,
+    model_log,
+    new_lid,
+    run_cmd,
+    run_cmd_no_fail,
+    run_sub_or_cmd,
+    safe_copy,
+)
 
 TERMINATION_TEXT = ("HAS ENDED", "END OF MODEL RUN", "SUCCESSFUL TERMINATION")
 

@@ -1,9 +1,7 @@
-import io
 import unittest
 from unittest import mock
 
 from CIME.hist_utils import copy_histfiles
-from CIME.XML.archive import Archive
 
 
 class TestHistUtils(unittest.TestCase):

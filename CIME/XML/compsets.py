@@ -2,11 +2,13 @@
 Common interface to XML files which follow the compsets format,
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.XML.generic_xml import GenericXML
+import logging
+
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
-from CIME.utils import CIMEError
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

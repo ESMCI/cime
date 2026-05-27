@@ -1,21 +1,20 @@
 import re
-import unittest
 import tempfile
+import unittest
 from contextlib import ExitStack
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 from CIME.bless_test_results import (
-    bless_test_results,
-    _bless_throughput,
     _bless_memory,
+    _bless_throughput,
     bless_history,
     bless_namelists,
+    bless_test_results,
     is_hist_bless_needed,
 )
 from CIME.test_status import ALL_PHASES, GENERATE_PHASE
 from CIME.tests import utils as test_utils
-from CIME.utils import CIMEError
 
 
 class TestUnitBlessTestResults(unittest.TestCase):

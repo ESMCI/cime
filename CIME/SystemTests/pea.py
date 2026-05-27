@@ -6,8 +6,10 @@ Builds runs and compares a single processor mpi model to a model built using mpi
 (2) do a run with mpi-serial (suffix mpi-serial)
 """
 
+import logging
+import os
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
-from CIME.XML.standard_module_setup import *
 from CIME.XML.machines import Machines
 
 logger = logging.getLogger(__name__)

@@ -1,9 +1,13 @@
 """
 WGET Server class.  Interact with a server using WGET protocol
 """
+
 # pylint: disable=super-init-not-called
-from CIME.XML.standard_module_setup import *
+import logging
+import os
+
 from CIME.Servers.generic_server import GenericServer
+from CIME.utils import run_cmd
 
 logger = logging.getLogger(__name__)
 
