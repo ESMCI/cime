@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.copy\_globs
+======================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: copy_globs
