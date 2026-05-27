@@ -81,7 +81,7 @@ The search for test names can be restricted to a single test list using::
 
 Omitting this results in searching all testlists listed in::
 
-    cime/config/{cesm,e3sm}/config_files.xml
+    cime/config/$model/config_files.xml
 
 The ``./scripts/query_testlists`` tool gathers descriptions of the tests and testlists available
 in the XML format, the components, and projects.
@@ -379,12 +379,12 @@ TESTMODS     Name of the directory under ``GROUP`` that contains any combination
 
   A test mod can contain any combination of ``user_nl_*``, ``shell_commands``, ``user_mods``, or ``params.py``.
 
-For example, the ``ERP`` test for an E3SM ``F-case`` can be modified to use a different radiation scheme by using ``eam-rrtmgp``::
+For example, the ``ERP`` test for an ``F-case`` can be modified to use a different radiation scheme by using ``eam-rrtmgp``::
 
   ERP_D_Ld3.ne4pg2_oQU480.F2010.pm-cpu_intel.eam-rrtmgp
 
-If ``TESTS_MODS_DIR`` was set to ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs`` then the
-directory containing the testmods would be ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg``.
+If ``TESTS_MODS_DIR`` was set to ``$SRCROOT/components/eam/cime_config/testdefs/testmods_dirs`` then the
+directory containing the testmods would be ``$SRCROOT/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg``.
 
 In this directory, you'd find a `shell_commands`` file containing the following::
 
@@ -444,7 +444,7 @@ Lets look at the output from ``./scripts/create_test SMS.f19_f19.A``. Here you c
 
 .. code-block:: bash
 
-  Creating test directory /home/jgfouca/e3sm/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
+  Creating test directory /home/user/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
   RUNNING TESTS:
     SMS.f19_f19.A.melvin_gnu
   Starting CREATE_NEWCASE for test SMS.f19_f19.A.melvin_gnu with 1 procs
@@ -461,7 +461,7 @@ Lets look at the output from ``./scripts/create_test SMS.f19_f19.A``. Here you c
   Finished RUN for test SMS.f19_f19.A.melvin_gnu in 35.068546 seconds (PASS). [COMPLETED 1 of 1]
   At test-scheduler close, state is:
   PASS SMS.f19_f19.A.melvin_gnu RUN
-    Case dir: /home/jgfouca/e3sm/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
+    Case dir: /home/user/scratch/SMS.f19_f19.A.melvin_gnu.20170504_163152_31aahy
   test-scheduler took 154.780044079 seconds
 
 The case is created in ``$CASEDIR`` which can be seen in the output above. The test status is stored in ``$CASEDIR/TestStatus``.

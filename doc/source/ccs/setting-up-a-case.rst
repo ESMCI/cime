@@ -238,85 +238,23 @@ The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple insta
         ``chmod 644 user_drof.streams.txt[extension``
   3. Edit the **user_drof.streams.txt.*** file.
 
-.. TODO:: remove cesm specific docs
+Customizing active component-specific namelist settings
+-------------------------------------------------------
 
-Customizing CESM active component-specific namelist settings
-------------------------------------------------------------
+Active components typically provide a ``buildnml`` script in their ``cime_config`` directory that generates the component's namelist variables. Component-specific CIME xml variables are set in the component's ``config_component.xml`` file and are used by the ``buildnml`` script to generate the namelist.
 
-CAM
-```
+To modify an active component's namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_<comp>** file, where ``<comp>`` is the component name. See the documentation at the top of each ``user_nl`` file for details.
 
-CIME calls **$SRCROOT/components/cam/cime_config/buildnml** to generate the CAM's namelist variables.
-
-CAM-specific CIME xml variables are set in **$SRCROOT/components/cam/cime_config/config_component.xml** and are used by CAM's **buildnml** script to generate the namelist.
-
-For complete documentation of namelist settings, see `CAM namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cam_nml.html>`_.
-
-To modify CAM namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_cam** file. (See the documentation for each file at the top of that file.)
-
-For example, to change the solar constant to 1363.27, modify **user_nl_cam** file to contain the following line at the end:
+For example, to modify a namelist variable for an atmosphere component, edit the corresponding ``user_nl`` file:
 ::
 
- solar_const=1363.27
+ <variable_name>=<value>
 
-To see the result, call ``preview_namelists`` and verify that the new value appears in **CaseDocs/atm_in**.
+To see the result, call ``preview_namelists`` and verify that the new value appears in the appropriate file under **CaseDocs/**.
 
-CLM
-```
+.. note::
 
-CIME calls **$SRCROOT/components/clm/cime_config/buildnml** to generate the CLM namelist variables.
-
-CLM-specific CIME xml variables are set in **$SRCROOT/components/clm/cime_config/config_component.xml** and are used by CLM's **buildnml** script to generate the namelist.
-
-For complete documentation of namelist settings, see `CLM namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/clm5_0_nml.html>`_.
-
-To modify CLM namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_clm** file.
-
-To see the result, call ``preview_namelists`` and verify that the changes appear correctly in **CaseDocs/lnd_in**.
-
-MOSART
-``````
-
-CIME calls **$SRCROOT/components/mosart/cime_config/buildnml** to generate the MOSART namelist variables.
-
-To modify MOSART namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_rtm** file.
-
-To see the result of your change, call ``preview_namelists`` and verify that the changes appear correctly in **CaseDocs/rof_in**.
-
-CICE
-````
-
-CIME calls **$SRCROOT/components/cice/cime_config/buildnml** to generate the CICE namelist variables.
-
-For complete documentation of namelist settings, see `CICE namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_nml.html>`_.
-
-To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_cice** file.
-(See the documentation for each file at the top of that file.)
-To see the result of your change, call ``preview_namelists`` and verify that the changes appear correctly in **CaseDocs/ice_in**.
-
-In addition, ``case.setup`` creates CICE's compile time `block decomposition variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cice_input.html>`_ in **env_build.xml**.
-
-POP2
-````
-
-CIME calls **$SRCROOT/components/pop2/cime_config/buildnml** to generate the POP2 namelist variables.
-
-For complete documentation of namelist settings, see `POP2 namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/pop2_nml.html>`_.
-
-To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_pop2** file.
-(See the documentation for each file at the top of that file.)
-To see the result of your change, call ``preview_namelists`` and verify that the changes appear correctly in **CaseDocs/ocn_in**.
-
-CISM
-````
-
-See `CISM namelist variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_nml.html>`_ for a complete description of the CISM runtime namelist variables. This includes variables that appear both in **cism_in** and in **cism.config**.
-
-To modify any of these settings, add the appropriate keyword/value pair at the end of the **user_nl_cism** file. (See the documentation for each file at the top of that file.)
-Note that there is no distinction between variables that will appear in **cism_in** and those that will appear in **cism.config**: simply add a new variable setting in **user_nl_cism**, and it will be added to the appropriate place in **cism_in** or **cism.config**.
-To see the result of your change, call ``preview_namelists`` and verify that the changes appear correctly in **CaseDocs/cism_in** and **CaseDocs/cism.config**.
-
-Some CISM runtime settings are sets via **env_run.xml**, as documented in `CISM runtime variables <https://www.cesm.ucar.edu/models/cesm2/settings/current/cism_input.html>`_.
+    Refer to your model's documentation for a complete list of namelist variables and their descriptions for each active component.
 
 Setting up the Case
 -------------------
@@ -359,6 +297,6 @@ Depends.*                       Lists of source code files that need special bui
 Macros.cmake                    File containing machine-specific makefile directives for your target platform/compiler. This file is created if it does not already exist. The user can modify the file to change certain aspects of the build, such as compiler flags. Running ``case.setup --clean`` will not remove the file once it has been created. However, if you remove or rename the Macros.make file, running ``case.setup`` recreates it.
 case.st_archive                 Script to perform short-term archiving to disk for your case output. Note that this script is run automatically by the normal CIME workflow.
 cmake_macros/                   Directory containing any CMake macros required for the machine/compiler combination.
-user_nl_xxx[_NNNN]              Files where all user modifications to component namelists are made. **xxx** is any one of the set of components targeted for the case. For example, for a full active CESM compset, **xxx** is cam, clm, or rtm, and so on. NNNN goes from 0001 to the number of instances of that component. (See :ref:`multiple instances<ccs-examples-multi-instance>`) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling ``case.setup --clean`` will *not remove* any user_nl files. Changing the number of instances in the **env_mach_pes.xml** file will cause only new user_nl files to be added to ``$CASEROOT``.
+user_nl_xxx[_NNNN]              Files where all user modifications to component namelists are made. **xxx** is any one of the set of components targeted for the case. For example, for a fully active compset, **xxx** could be the atmosphere, land, or river component name, and so on. NNNN goes from 0001 to the number of instances of that component. (See :ref:`multiple instances<ccs-examples-multi-instance>`) For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names. A user_nl file of a given name is created only once. Calling ``case.setup --clean`` will *not remove* any user_nl files. Changing the number of instances in the **env_mach_pes.xml** file will cause only new user_nl files to be added to ``$CASEROOT``.
 software_environment.txt        This file records some aspects of the computing system on which the case is built, such as the shell environment.
 =============================   ===============================================================================================================================
