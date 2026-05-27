@@ -2,11 +2,14 @@
 CIME ERI test  This class inherits from SystemTestsCommon
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import safe_copy
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+import glob
+import logging
+import os
+import shutil
 from stat import S_ISDIR, ST_CTIME, ST_MODE
-import shutil, glob, os
+
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.utils import expect, safe_copy
 
 logger = logging.getLogger(__name__)
 

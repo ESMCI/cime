@@ -6,17 +6,26 @@ if there is no queueing system.  A cesm workflow may include multiple
 jobs.
 submit, check_case and check_da_settings are members of class Case in file case.py
 """
+
 import configparser
-from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, CIMEError, get_time_in_seconds
-from CIME.status import run_and_log_case_status
+import logging
+import os
+
+from CIME.core.exceptions import CIMEError
 from CIME.locked_files import (
-    unlock_file,
-    lock_file,
     check_lockedfile,
     check_lockedfiles,
+    lock_file,
+    unlock_file,
 )
-from CIME.test_status import *
+from CIME.status import run_and_log_case_status
+from CIME.test_status import (
+    SUBMIT_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TestStatus,
+)
+from CIME.utils import expect, get_time_in_seconds
 
 logger = logging.getLogger(__name__)
 

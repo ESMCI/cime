@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import os
 import io
-import unittest
 import tempfile
+import unittest
 from contextlib import contextmanager
 from pathlib import Path
-from unittest import mock
 
 from CIME.XML.archive_base import ArchiveBase
 

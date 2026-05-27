@@ -1,6 +1,9 @@
-import sys, shutil, re
-from CIME.utils import run_cmd_no_fail
+import re
+import shutil
+import sys
 from pathlib import Path
+
+from CIME.utils import run_cmd_no_fail
 
 
 class GitInterface:

@@ -1,13 +1,16 @@
 """
 Interface to the config_tests.xml file.  This class inherits from GenericEntry
 """
-from CIME.XML.standard_module_setup import *
 
-from CIME.XML.generic_xml import GenericXML
-from CIME.XML.files import Files
-from CIME.utils import find_system_test, CIMEError
-from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
+import logging
+import os
+
+from CIME.core.exceptions import CIMEError
 from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
+from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
+from CIME.utils import find_system_test
+from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

@@ -2,16 +2,17 @@
 Interface to the config_machines.xml file.  This class inherits from GenericXML.py
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.XML.generic_xml import GenericXML
-from CIME.XML.files import Files
-from CIME.utils import CIMEError, expect, convert_to_unknown_type, get_cime_config
-
-import re
 import logging
+import os
+import re
 import socket
 from functools import partial
 from pathlib import Path
+
+from CIME.core.exceptions import CIMEError
+from CIME.utils import convert_to_unknown_type, expect, get_cime_config
+from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

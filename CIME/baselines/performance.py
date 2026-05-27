@@ -1,10 +1,11 @@
-import os
 import glob
-import re
 import gzip
 import logging
+import os
+import re
+
 from CIME.config import Config
-from CIME.utils import expect, get_src_root, get_current_commit, get_timestamp
+from CIME.utils import expect, get_current_commit, get_src_root, get_timestamp
 
 logger = logging.getLogger(__name__)
 

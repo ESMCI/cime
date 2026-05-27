@@ -5,11 +5,15 @@ Compare files in a normalized way. Used by create_test for
 diffing non-namelist files.
 """
 
+import argparse
+import os
+import sys
+
 from standard_script_setup import *
+
 import CIME.simple_compare
 from CIME.utils import expect
 
-import argparse, sys, os
 
 ###############################################################################
 def parse_command_line(args, description):

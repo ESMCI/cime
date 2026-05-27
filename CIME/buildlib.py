@@ -2,20 +2,23 @@
 common utilities for buildlib
 """
 
-from CIME.XML.standard_module_setup import *
+import argparse
+import logging
+import os
+
+from CIME.build import get_standard_makefile_args
 from CIME.case import Case
+from CIME.config import Config
 from CIME.utils import (
     parse_args_and_handle_standard_logging_options,
-    setup_standard_logging_options,
+    run_cmd,
     safe_copy,
+    setup_standard_logging_options,
 )
-from CIME.config import Config
-from CIME.build import get_standard_makefile_args
 from CIME.XML.files import Files
 
-import sys, os, argparse
-
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_input(argv):

@@ -5,11 +5,12 @@ This module contains unit tests of FakeCase from configure
 This is seperate from FakeCase that's under CIME/tests
 """
 
-import unittest
 import os
-from CIME.utils import get_model, CIMEError, GLOBAL, get_src_root
+import unittest
 
 from CIME.BuildTools.configure import FakeCase
+from CIME.core.exceptions import CIMEError
+from CIME.utils import get_model, get_src_root
 
 
 class TestFakeCase(unittest.TestCase):

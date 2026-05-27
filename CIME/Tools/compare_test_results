@@ -21,12 +21,14 @@ You may need to load modules for cprnc to work.
 
 """
 
+import argparse
+import os
+import sys
+
 from standard_script_setup import *
 
-from CIME.XML.machines import Machines
 from CIME.compare_test_results import compare_test_results
-
-import argparse, sys, os
+from CIME.XML.machines import Machines
 
 _MACHINE = Machines()
 

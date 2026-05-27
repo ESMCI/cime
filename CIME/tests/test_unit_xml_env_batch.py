@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 import os
-import unittest
 import tempfile
+import unittest
 from contextlib import ExitStack
 from unittest import mock
 
-from CIME.utils import CIMEError, expect
+from CIME.BuildTools.configure import FakeCase
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect
 from CIME.XML.env_batch import EnvBatch, get_job_deps
 from CIME.XML.env_workflow import EnvWorkflow
-from CIME.BuildTools.configure import FakeCase
 
 # pylint: disable=unused-argument
 

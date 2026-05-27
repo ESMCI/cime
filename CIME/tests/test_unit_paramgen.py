@@ -13,8 +13,9 @@ This module tests *some* functionality of CIME.ParamGen.paramgen's ParamGen clas
 #
 # pylint:disable=line-too-long
 
-import unittest
 import tempfile
+import unittest
+
 from CIME.ParamGen.paramgen import ParamGen
 
 ###############

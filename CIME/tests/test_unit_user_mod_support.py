@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import unittest
+import os
 import shutil
 import tempfile
-import os
+import unittest
+
+from CIME.core.exceptions import CIMEError
 from CIME.user_mod_support import apply_user_mods
-from CIME.utils import CIMEError
 
 # ========================================================================
 # Define some parameters
