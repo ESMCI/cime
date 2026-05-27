@@ -6,9 +6,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
 
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 from CIME.XML.grids import Grids
-
 
 TEST_CONFIG = """<grid_data version="2.0">
     <grids>

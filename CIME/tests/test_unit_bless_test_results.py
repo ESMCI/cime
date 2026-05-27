@@ -15,7 +15,7 @@ from CIME.bless_test_results import (
 )
 from CIME.test_status import ALL_PHASES, GENERATE_PHASE
 from CIME.tests import utils as test_utils
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 
 class TestUnitBlessTestResults(unittest.TestCase):
