@@ -14,6 +14,10 @@ class MCC(SystemTestsCompareTwo):
     def __init__(self, case, **kwargs):
         self._comp_classes = []
         self._test_instances = 3
+        ninst = case.get_value("NINST")
+        if ninst > 1:
+            self._test_instances = ninst
+            
         SystemTestsCompareTwo.__init__(
             self,
             case,
