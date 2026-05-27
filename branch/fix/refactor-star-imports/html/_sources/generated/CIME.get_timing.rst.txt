@@ -1,0 +1,35 @@
+﻿..
+  module.rst
+
+CIME.get\_timing
+================
+
+.. automodule:: CIME.get_timing
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    get_timing
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
