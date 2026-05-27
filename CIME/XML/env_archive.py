@@ -1,12 +1,15 @@
 """
 Interface to the env_archive.xml file.  This class inherits from EnvBase
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME import utils
 from CIME.XML.archive_base import ArchiveBase
 from CIME.XML.env_base import EnvBase
 
 logger = logging.getLogger(__name__)
+
+
 # pylint: disable=super-init-not-called
 class EnvArchive(ArchiveBase, EnvBase):
     def __init__(self, case_root=None, infile="env_archive.xml", read_only=False):

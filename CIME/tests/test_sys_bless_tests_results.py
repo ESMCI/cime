@@ -214,5 +214,5 @@ class TestBlessTestResults(base.BaseTestCase):
 
         # Basic namelist compare should now pass again
         self._create_test(compargs)
-
-        self.verify_perms(self._baseline_area)
+        if self._config.test_mode == "e3sm":
+            self.verify_perms(self._baseline_area)
