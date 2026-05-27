@@ -786,13 +786,18 @@ def get_ts_synopsis(comments):
     'ERROR Could not interpret CPRNC output'
     >>> get_ts_synopsis('file1=\nfile2=\n  diff_test: the two files seem to be IDENTICAL \n')
     ''
+    >>> get_ts_synopsis('Comparing hists\nPASS\n  Most recent bless: sha:abc\n')
+    ''
     """
     comments = comments.strip()
 
     if comments == "" or "\n" not in comments:
         return comments
 
-    if comments.endswith("PASS"):
+    # Check if comments indicate a passing comparison
+    # Comments end with "PASS" directly, or have "PASS" on its own line
+    # (the latter happens when bless messages are appended after PASS)
+    if comments.endswith("PASS") or re.search(r"\nPASS\n", comments):
         return ""
 
     # Empty synopsis when files are identicial

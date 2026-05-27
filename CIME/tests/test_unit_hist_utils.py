@@ -2,7 +2,7 @@ import io
 import unittest
 from unittest import mock
 
-from CIME.hist_utils import copy_histfiles
+from CIME.hist_utils import copy_histfiles, get_ts_synopsis
 from CIME.XML.archive import Archive
 
 
@@ -64,3 +64,22 @@ class TestHistUtils(unittest.TestCase):
             comments, num_copied = copy_histfiles(case, "base")
 
         assert num_copied == 1
+
+
+def test_get_ts_synopsis_pass_at_end():
+    """Comments ending with PASS should return empty string."""
+    assert get_ts_synopsis("stuff\nPASS") == ""
+
+
+def test_get_ts_synopsis_pass_on_own_line_with_multiple_lines_after():
+    """PASS on its own line followed by multiple lines of content.
+
+    Fix for #4932: When baseline comparison passes but additional content
+    (like bless messages) is appended after the PASS line, the synopsis
+    should still be empty.
+
+    Note: Most cases are covered by doctests in hist_utils.py. These tests
+    cover additional edge cases.
+    """
+    comments = "Comparing hists\nPASS\nBless info line 1\nBless info line 2\n"
+    assert get_ts_synopsis(comments) == ""
