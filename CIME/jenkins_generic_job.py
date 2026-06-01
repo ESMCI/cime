@@ -285,6 +285,7 @@ def jenkins_generic_job(
     pes_file,
     jenkins_id,
     queue,
+    driver,
 ):
     ###############################################################################
     """
@@ -377,6 +378,9 @@ def jenkins_generic_job(
 
     if save_timing:
         create_test_args.append("--save-timing")
+
+    if driver is not None:
+        create_test_args.append("--driver " + driver)
 
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
