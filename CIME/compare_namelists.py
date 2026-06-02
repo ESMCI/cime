@@ -207,6 +207,18 @@ def _parse_namelists(namelist_lines, filename):
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
     {'nml': {'val': ["'a brown cow'", "'a red hen'"]}}
+
+    >>> teststr = '''&nml
+    ... val = 1
+    ... /
+    ... &nml
+    ... val = 2
+    ... /
+    ... &nml
+    ... val = 3
+    ... /'''
+    >>> _parse_namelists(teststr.splitlines(), 'foo')
+    {'nml': {'val': '1'}, 'nml__2': {'val': '2'}, 'nml__3': {'val': '3'}}
     """
 
     comment_re = re.compile(r"^[#!]")
@@ -272,12 +284,15 @@ def _parse_namelists(namelist_lines, filename):
                 )
 
             current_namelist = namelist_re.match(line).groups()[0]
-            expect(
-                current_namelist not in rv,
-                "In file '{}', Duplicate namelist '{}'".format(
-                    filename, current_namelist
-                ),
-            )
+            # The Fortran standard allows multiple namelist groups with the
+            # same name (read sequentially). Use positional suffixes to
+            # distinguish them while preserving order for comparison.
+            if current_namelist in rv:
+                base_name = current_namelist.split("__")[0]
+                count = 2
+                while "{}__{}".format(base_name, count) in rv:
+                    count += 1
+                current_namelist = "{}__{}".format(base_name, count)
 
             rv[current_namelist] = {}
 
