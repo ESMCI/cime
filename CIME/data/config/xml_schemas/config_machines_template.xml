@@ -72,6 +72,12 @@
     <!-- GMAKE_J: optional number of threads to pass to the gmake flag -->
     <GMAKE_J>8</GMAKE_J>
 
+    <!-- BATCHED_BUILD: optional, if TRUE case.build will submit the build
+      as a batch job instead of building on the current (login) node.
+      Requires a batch system to be configured (BATCH_SYSTEM != none).
+      Default is FALSE. -->
+    <!-- <BATCHED_BUILD>FALSE</BATCHED_BUILD> -->
+
     <!-- BATCH_SYSTEM: batch system used on this machine,
       supported values are: none, cobalt, lsf, pbs, slurm -->
     <BATCH_SYSTEM>none</BATCH_SYSTEM>

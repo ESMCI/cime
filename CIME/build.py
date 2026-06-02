@@ -1093,6 +1093,135 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
 
 
 ###############################################################################
+def _submit_build_as_batch(
+    caseroot,
+    case,
+    sharedlib_only,
+    model_only,
+    buildlist,
+    save_build_provenance,
+    separate_builds,
+    ninja,
+):
+    ###############################################################################
+    """
+    Submit the build as a batch job when BATCHED_BUILD=TRUE.
+    Constructs the argument list, submits the .case.build batch script via the
+    batch system, polls for job completion, and returns the build success status.
+    """
+    batch_system = case.get_value("BATCH_SYSTEM")
+    if batch_system is None or batch_system == "none":
+        logger.warning(
+            "BATCHED_BUILD is TRUE but BATCH_SYSTEM is '{}'. "
+            "Falling back to interactive build.".format(batch_system)
+        )
+        return None  # caller will proceed with regular build
+
+    # Build the argument string that the batch script will receive via ARGS_FOR_SCRIPT.
+    # --no-batch-build is always included to prevent re-submission inside the batch job.
+    args = ["--no-batch-build"]
+    if sharedlib_only:
+        args.append("--sharedlib-only")
+    if model_only:
+        args.append("--model-only")
+    if not save_build_provenance:
+        args.append("--skip-provenance-check")
+    if separate_builds:
+        args.append("--separate-builds")
+    if ninja:
+        args.append("--ninja")
+    if buildlist:
+        args.extend(["--build"] + list(buildlist))
+
+    os.environ["ARGS_FOR_SCRIPT"] = " ".join(args)
+
+    env_batch = case.get_env("batch")
+
+    logger.info(
+        "BATCHED_BUILD is TRUE: submitting build as batch job "
+        "(args: {})".format(os.environ["ARGS_FOR_SCRIPT"])
+    )
+
+    try:
+        depid = env_batch.submit_jobs(
+            case,
+            job="case.build",
+            no_batch=False,
+            workflow=False,
+        )
+    except Exception as e:
+        raise RuntimeError(
+            "Failed to submit batch build job: {}".format(str(e))
+        )
+
+    jobid = depid.get("case.build") if depid else None
+    if not jobid:
+        raise RuntimeError(
+            "Batch build job submission did not return a job ID."
+        )
+
+    logger.info(
+        "Build submitted as batch job {}. Polling for completion...".format(jobid)
+    )
+
+    poll_interval = 30
+    # Allow up to 10 consecutive "not found" checks before the job appears in
+    # the queue (covers scheduling delay and systems where batch_query is not
+    # supported or returns non-zero for newly submitted jobs).
+    job_seen_in_queue = False
+    not_seen_count = 0
+    max_not_seen_before_seen = 10
+
+    time.sleep(5)  # short initial wait before first query
+
+    while True:
+        status = env_batch.get_status(jobid)
+        if status is not None:
+            job_seen_in_queue = True
+            not_seen_count = 0
+            logger.info(
+                "Build job {} in queue (status: {}). Next check in {} s.".format(
+                    jobid, status.strip(), poll_interval
+                )
+            )
+        else:
+            if job_seen_in_queue:
+                logger.info(
+                    "Build job {} no longer in queue. Build has finished.".format(jobid)
+                )
+                break
+            not_seen_count += 1
+            if not_seen_count >= max_not_seen_before_seen:
+                logger.warning(
+                    "Build job {} not visible in batch queue after {} checks "
+                    "(batch_query may be unavailable). Checking build status "
+                    "directly.".format(jobid, not_seen_count)
+                )
+                break
+            logger.debug(
+                "Build job {} not yet visible in queue ({}/{}). Waiting...".format(
+                    jobid, not_seen_count, max_not_seen_before_seen
+                )
+            )
+        time.sleep(poll_interval)
+
+    # Refresh case XML so we see the values written by the batch job.
+    case.read_xml()
+    build_complete = case.get_value("BUILD_COMPLETE")
+    build_status = case.get_value("BUILD_STATUS")
+
+    if build_complete and str(build_status) == "0":
+        logger.info("Batched build completed successfully.")
+        return True
+    else:
+        logger.error(
+            "Batched build failed (BUILD_COMPLETE={}, BUILD_STATUS={}).".format(
+                build_complete, build_status
+            )
+        )
+        return False
+
+###############################################################################
 def _case_build_impl(
     caseroot,
     case,
@@ -1367,6 +1496,27 @@ def case_build(
     dry_run=False,
 ):
     ###############################################################################
+    # When BATCHED_BUILD=TRUE and we are not already inside a batch build job,
+    # submit the build to the batch system instead of building interactively.
+    batched_build = case.get_value("BATCHED_BUILD")
+    batched_build_active = os.environ.get("CIME_BATCHED_BUILD_ACTIVE") == "TRUE"
+
+    if batched_build and not batched_build_active and not dry_run:
+        result = _submit_build_as_batch(
+            caseroot,
+            case,
+            sharedlib_only,
+            model_only,
+            buildlist,
+            save_build_provenance,
+            separate_builds,
+            ninja,
+        )
+        if result is not None:
+            # Batch submission was attempted (success or failure); return immediately.
+            return result
+        # result is None → no batch system available, fall through to interactive build.
+
     functor = lambda: _case_build_impl(
         caseroot,
         case,
