@@ -1118,8 +1118,7 @@ def _submit_build_as_batch(
         return None  # caller will proceed with regular build
 
     # Build the argument string that the batch script will receive via ARGS_FOR_SCRIPT.
-    # --no-batch-build is always included to prevent re-submission inside the batch job.
-    args = ["--no-batch-build"]
+    args = []
     if sharedlib_only:
         args.append("--sharedlib-only")
     if model_only:
@@ -1494,12 +1493,12 @@ def case_build(
     separate_builds=False,
     ninja=False,
     dry_run=False,
+    batched_build_active=False,
 ):
     ###############################################################################
     # When BATCHED_BUILD=TRUE and we are not already inside a batch build job,
     # submit the build to the batch system instead of building interactively.
     batched_build = case.get_value("BATCHED_BUILD")
-    batched_build_active = os.environ.get("CIME_BATCHED_BUILD_ACTIVE") == "TRUE"
 
     if batched_build and not batched_build_active and not dry_run:
         result = _submit_build_as_batch(
