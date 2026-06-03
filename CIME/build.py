@@ -1141,6 +1141,8 @@ def _submit_build_as_batch(
         "(args: {})".format(os.environ["ARGS_FOR_SCRIPT"])
     )
 
+    case.flush()
+
     try:
         depid = env_batch.submit_jobs(
             case,
