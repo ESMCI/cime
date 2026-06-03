@@ -1389,10 +1389,25 @@ class EnvBatch(EnvBase):
 
         return nodes
 
+    def _get_batch_system_child(self, name):
+        """
+        Find a child element by name, searching within every <batch_system> child.  This is necessary because
+        elements such as batch_query and batch_cancel live inside zero or more
+        <batch_system type="..."> blocks.
+        Returns the last matching node found (consistent with get_value behaviour),
+        or None if no match exists.
+        """
+        node = None
+        for bsnode in self.get_children("batch_system"):
+            cnode = self.get_optional_child(name, root=bsnode)
+            if cnode:
+                node = cnode
+        return node
+
     def get_status(self, jobid):
-        batch_query = self.get_optional_child("batch_query")
+        batch_query = self._get_batch_system_child("batch_query")
         if batch_query is None:
-            logger.warning("Batch queries not supported on this platform")
+            logger.warning(f"Batch queries not supported on platform {self._batchtype}")
         else:
             cmd = self.text(batch_query) + " "
             if self.has(batch_query, "per_job_arg"):
@@ -1409,9 +1424,9 @@ class EnvBatch(EnvBase):
                 return out.strip()
 
     def cancel_job(self, jobid):
-        batch_cancel = self.get_optional_child("batch_cancel")
+        batch_cancel = self._get_batch_system_child("batch_cancel")
         if batch_cancel is None:
-            logger.warning("Batch cancellation not supported on this platform")
+            logger.warning(f"Batch cancellation not supported on platform {self._batchtype}")
             return False
         else:
             cmd = self.text(batch_cancel) + " " + str(jobid)
