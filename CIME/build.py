@@ -1143,23 +1143,15 @@ def _submit_build_as_batch(
 
     case.flush()
 
-    try:
-        depid = env_batch.submit_jobs(
-            case,
-            job="case.build",
-            no_batch=False,
-            workflow=False,
-        )
-    except Exception as e:
-        raise RuntimeError(
-            "Failed to submit batch build job: {}".format(str(e))
-        )
+    depid = env_batch.submit_jobs(
+        case,
+        job="case.build",
+        no_batch=False,
+        workflow=False,
+    )
 
     jobid = depid.get("case.build") if depid else None
-    if not jobid:
-        raise RuntimeError(
-            "Batch build job submission did not return a job ID."
-        )
+    expect(jobid, "Batch build job submission did not return a job ID.")
 
     logger.info(
         "Build submitted as batch job {}. Polling for completion...".format(jobid)
@@ -1211,16 +1203,18 @@ def _submit_build_as_batch(
     build_complete = case.get_value("BUILD_COMPLETE")
     build_status = case.get_value("BUILD_STATUS")
 
-    if build_complete and build_status == 0:
-        logger.info("Batched build completed successfully.")
-        return True
+    if sharedlib_only:
+        expect(build_status == 0,
+               "Batched sharedlib build failed (BUILD_STATUS={}).".format(
+                   build_complete, build_status
+               ))
     else:
-        logger.error(
-            "Batched build failed (BUILD_COMPLETE={}, BUILD_STATUS={}).".format(
-                build_complete, build_status
-            )
-        )
-        return False
+        expect(build_complete and build_status == 0,
+               "Batched build failed (BUILD_COMPLETE={}, BUILD_STATUS={}).".format(
+                   build_complete, build_status
+               ))
+
+    logger.info("Batched build completed successfully.")
 
 ###############################################################################
 def _case_build_impl(
@@ -1510,7 +1504,7 @@ def case_build(
     batched_build = case.get_value("BATCHED_BUILD")
 
     if batched_build and not batched_build_active and not dry_run:
-        result = _submit_build_as_batch(
+        functor = lambda: _submit_build_as_batch(
             caseroot,
             case,
             sharedlib_only,
@@ -1520,22 +1514,20 @@ def case_build(
             separate_builds,
             ninja,
         )
-        if result is not None:
-            # Batch submission was attempted (success or failure); return immediately.
-            return result
-        # result is None → no batch system available, fall through to interactive build.
 
-    functor = lambda: _case_build_impl(
-        caseroot,
-        case,
-        sharedlib_only,
-        model_only,
-        buildlist,
-        save_build_provenance,
-        separate_builds,
-        ninja,
-        dry_run,
-    )
+    else:
+        functor = lambda: _case_build_impl(
+            caseroot,
+            case,
+            sharedlib_only,
+            model_only,
+            buildlist,
+            save_build_provenance,
+            separate_builds,
+            ninja,
+            dry_run,
+        )
+
     cb = "case.build"
     if sharedlib_only == True:
         cb = cb + " (SHAREDLIB_BUILD)"
