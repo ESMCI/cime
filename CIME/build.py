@@ -1085,10 +1085,10 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
     unlock_file("env_build.xml", case.get_value("CASEROOT"))
 
     # reset following values in xml files
-    case.set_value("SMP_BUILD", str(0))
-    case.set_value("NINST_BUILD", str(0))
-    case.set_value("BUILD_STATUS", str(0))
-    case.set_value("BUILD_COMPLETE", "FALSE")
+    case.set_value("SMP_BUILD", 0)
+    case.set_value("NINST_BUILD", 0)
+    case.set_value("BUILD_STATUS", 0)
+    case.set_value("BUILD_COMPLETE", False)
     case.flush()
 
 
@@ -1211,7 +1211,7 @@ def _submit_build_as_batch(
     build_complete = case.get_value("BUILD_COMPLETE")
     build_status = case.get_value("BUILD_STATUS")
 
-    if build_complete and str(build_status) == "0":
+    if build_complete and build_status == 0:
         logger.info("Batched build completed successfully.")
         return True
     else:
@@ -1386,60 +1386,67 @@ def _case_build_impl(
             buildlist,
         )
 
-        if not model_only:
-            logs = _build_libraries(
-                case,
-                exeroot,
-                sharedpath,
-                caseroot,
-                cimeroot,
-                libroot,
-                lid,
-                compiler,
-                buildlist,
-                comp_interface,
-                complist,
-            )
-
-        if not sharedlib_only:
-            if config.build_model_use_cmake:
-                logs.extend(
-                    _build_model_cmake(
-                        exeroot,
-                        complist,
-                        lid,
-                        buildlist,
-                        comp_interface,
-                        sharedpath,
-                        separate_builds,
-                        ninja,
-                        dry_run,
-                        case,
-                    )
-                )
-            else:
-                os.environ["INSTALL_SHAREDPATH"] = os.path.join(
-                    exeroot, sharedpath
-                )  # for MPAS makefile generators
-                logs.extend(
-                    _build_model(
-                        build_threaded,
-                        exeroot,
-                        incroot,
-                        complist,
-                        lid,
-                        caseroot,
-                        cimeroot,
-                        compiler,
-                        buildlist,
-                        comp_interface,
-                    )
+        try:
+            if not model_only:
+                logs = _build_libraries(
+                    case,
+                    exeroot,
+                    sharedpath,
+                    caseroot,
+                    cimeroot,
+                    libroot,
+                    lid,
+                    compiler,
+                    buildlist,
+                    comp_interface,
+                    complist,
                 )
 
-            if not buildlist:
-                # in case component build scripts updated the xml files, update the case object
-                case.read_xml()
-                # Note, doing buildlists will never result in the system thinking the build is complete
+            if not sharedlib_only:
+                if config.build_model_use_cmake:
+                    logs.extend(
+                        _build_model_cmake(
+                            exeroot,
+                            complist,
+                            lid,
+                            buildlist,
+                            comp_interface,
+                            sharedpath,
+                            separate_builds,
+                            ninja,
+                            dry_run,
+                            case,
+                        )
+                    )
+                else:
+                    os.environ["INSTALL_SHAREDPATH"] = os.path.join(
+                        exeroot, sharedpath
+                    )  # for MPAS makefile generators
+                    logs.extend(
+                        _build_model(
+                            build_threaded,
+                            exeroot,
+                            incroot,
+                            complist,
+                            lid,
+                            caseroot,
+                            cimeroot,
+                            compiler,
+                            buildlist,
+                            comp_interface,
+                        )
+                    )
+
+                if not buildlist:
+                    # in case component build scripts updated the xml files, update the case object
+                    case.read_xml()
+                    # Note, doing buildlists will never result in the system thinking the build is complete
+
+        except Exception:
+            case.set_value("BUILD_STATUS", 1)
+            case.set_value("BUILD_COMPLETE", False)
+            case.flush()
+            raise
 
     post_build(
         case,
