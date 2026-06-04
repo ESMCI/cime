@@ -1184,10 +1184,13 @@ def _submit_build_as_batch(
                 )
                 break
             not_seen_count += 1
-            expect(not_seen_count < max_not_seen_before_seen,
-                   "Build job {} not visible in batch queue after {} checks "
-                   "(batch_query may be unavailable). Failing build.".format(jobid, not_seen_count)
-                   )
+            expect(
+                not_seen_count < max_not_seen_before_seen,
+                "Build job {} not visible in batch queue after {} checks "
+                "(batch_query may be unavailable). Failing build.".format(
+                    jobid, not_seen_count
+                ),
+            )
             logger.debug(
                 "Build job {} not yet visible in queue ({}/{}). Status output was {}. Waiting...".format(
                     jobid, not_seen_count, max_not_seen_before_seen, status
@@ -1202,17 +1205,20 @@ def _submit_build_as_batch(
     build_status = case.get_value("BUILD_STATUS")
 
     if sharedlib_only:
-        expect(build_status == 0,
-               "Batched sharedlib build failed (BUILD_STATUS={}).".format(
-                   build_complete, build_status
-               ))
+        expect(
+            build_status == 0,
+            "Batched sharedlib build failed (BUILD_STATUS={}).".format(build_status),
+        )
     else:
-        expect(build_complete and build_status == 0,
-               "Batched build failed (BUILD_COMPLETE={}, BUILD_STATUS={}).".format(
-                   build_complete, build_status
-               ))
+        expect(
+            build_complete and build_status == 0,
+            "Batched build failed (BUILD_COMPLETE={}, BUILD_STATUS={}).".format(
+                build_complete, build_status
+            ),
+        )
 
     logger.info("Batched build completed successfully.")
+
 
 ###############################################################################
 def _case_build_impl(

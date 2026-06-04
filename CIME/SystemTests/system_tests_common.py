@@ -119,6 +119,7 @@ class SystemTestsCommon(object):
         self._ninja = False
         self._dry_run = False
         self._user_separate_builds = False
+        self._batched_build_active = False
         self._expected_num_cmp = None
         self._rest_n = None
         sc_file = os.path.join(caseroot, "shell_commands")

@@ -1426,7 +1426,9 @@ class EnvBatch(EnvBase):
     def cancel_job(self, jobid):
         batch_cancel = self._get_batch_system_child("batch_cancel")
         if batch_cancel is None:
-            logger.warning(f"Batch cancellation not supported on platform {self._batchtype}")
+            logger.warning(
+                f"Batch cancellation not supported on platform {self._batchtype}"
+            )
             return False
         else:
             cmd = self.text(batch_cancel) + " " + str(jobid)
