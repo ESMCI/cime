@@ -1169,10 +1169,10 @@ def _submit_build_as_batch(
 
     while True:
         status = env_batch.get_status(jobid)
-        if status is not None:
+        if status is not None and jobid in status:
             job_seen_in_queue = True
             not_seen_count = 0
-            logger.info(
+            logger.debug(
                 "Build job {} in queue (status: {}). Next check in {} s.".format(
                     jobid, status.strip(), poll_interval
                 )
@@ -1184,18 +1184,16 @@ def _submit_build_as_batch(
                 )
                 break
             not_seen_count += 1
-            if not_seen_count >= max_not_seen_before_seen:
-                logger.warning(
-                    "Build job {} not visible in batch queue after {} checks "
-                    "(batch_query may be unavailable). Checking build status "
-                    "directly.".format(jobid, not_seen_count)
-                )
-                break
+            expect(not_seen_count < max_not_seen_before_seen,
+                   "Build job {} not visible in batch queue after {} checks "
+                   "(batch_query may be unavailable). Failing build.".format(jobid, not_seen_count)
+                   )
             logger.debug(
-                "Build job {} not yet visible in queue ({}/{}). Waiting...".format(
-                    jobid, not_seen_count, max_not_seen_before_seen
+                "Build job {} not yet visible in queue ({}/{}). Status output was {}. Waiting...".format(
+                    jobid, not_seen_count, max_not_seen_before_seen, status
                 )
             )
+
         time.sleep(poll_interval)
 
     # Refresh case XML so we see the values written by the batch job.
