@@ -17,7 +17,7 @@ class MCC(SystemTestsCompareTwo):
         ninst = case.get_value("NINST")
         if ninst > 1:
             self._test_instances = ninst
-            
+
         SystemTestsCompareTwo.__init__(
             self,
             case,
