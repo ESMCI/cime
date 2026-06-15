@@ -89,7 +89,7 @@ class EnvBatch(EnvBase):
             bs_nodes = self.get_children("batch_system")
             for bsnode in bs_nodes:
                 cnode = self.get_optional_child(item, attribute, root=bsnode)
-                if cnode:
+                if cnode is not None:
                     node = cnode
         if node:
             value = self.text(node)
@@ -1400,7 +1400,7 @@ class EnvBatch(EnvBase):
         node = None
         for bsnode in self.get_children("batch_system"):
             cnode = self.get_optional_child(name, root=bsnode)
-            if cnode:
+            if cnode is not None:
                 node = cnode
         return node
 

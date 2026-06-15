@@ -1115,10 +1115,20 @@ def _submit_build_as_batch(
             "BATCHED_BUILD is TRUE but BATCH_SYSTEM is '{}'. "
             "Falling back to interactive build.".format(batch_system)
         )
-        return None  # caller will proceed with regular build
+        return _case_build_impl(
+            caseroot,
+            case,
+            sharedlib_only,
+            model_only,
+            buildlist,
+            save_build_provenance,
+            separate_builds,
+            ninja,
+            dry_run=False,
+        )
 
     # Build the argument string that the batch script will receive via ARGS_FOR_SCRIPT.
-    args = []
+    args = ["--no-batch-build"]
     if sharedlib_only:
         args.append("--sharedlib-only")
     if model_only:
@@ -1169,6 +1179,9 @@ def _submit_build_as_batch(
 
     while True:
         status = env_batch.get_status(jobid)
+        # This is tricky as sometimes a status is returned even if the job was completed
+        # a while ago, this is why we check that jobid is also in status. This may not be
+        # portable across batch systems other than slurm.
         if status is not None and jobid in status:
             job_seen_in_queue = True
             not_seen_count = 0
@@ -1218,6 +1231,7 @@ def _submit_build_as_batch(
         )
 
     logger.info("Batched build completed successfully.")
+    return True
 
 
 ###############################################################################

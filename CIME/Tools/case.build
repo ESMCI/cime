@@ -228,8 +228,6 @@ def _main_func(description):
         no_batch_build,
     ) = parse_command_line(sys.argv, description)
 
-    # If --no-batch-build is specified, pass batched_build_active=True to
-    # build.case_build so it skips batch submission even when BATCHED_BUILD=TRUE.
     success = True
     with Case(caseroot, read_only=False, record=True) as case:
         testname = case.get_value("TESTCASE")
