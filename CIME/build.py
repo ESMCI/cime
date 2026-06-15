@@ -1085,8 +1085,8 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
     unlock_file("env_build.xml", case.get_value("CASEROOT"))
 
     # reset following values in xml files
-    case.set_value("SMP_BUILD", 0)
-    case.set_value("NINST_BUILD", 0)
+    case.set_value("SMP_BUILD", "0")
+    case.set_value("NINST_BUILD", "0")
     case.set_value("BUILD_STATUS", 0)
     case.set_value("BUILD_COMPLETE", False)
     case.flush()
