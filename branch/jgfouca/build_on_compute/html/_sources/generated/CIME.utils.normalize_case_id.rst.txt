@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.normalize\_case\_id
+==============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: normalize_case_id
