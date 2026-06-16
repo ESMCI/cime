@@ -17,6 +17,8 @@ You do not need to change the default build settings to create the executable, b
 
 Below are some variables that affect the build process and output.
 
+Note: If BATCHED_BUILD is TRUE, some additional requirements must be met in order for builds to be submitted. The host model will need a case.build workflow, a template.case.build file, and driver env XML changes to add BATCHED_BUILD as a known env XML entry.
+
 +------------------+-----------------------------------------------------------+
 | Variable         | Description                                               |
 +==================+===========================================================+
@@ -26,6 +28,8 @@ Below are some variables that affect the build process and output.
 |                  | of optimization flags.                                    |
 +------------------+-----------------------------------------------------------+
 | GMAKE_J          | The number of threads GNU Make should use while building. |
++------------------+-----------------------------------------------------------+
+| BATCHED_BUILD    | Whether to batch submit build phases                      |
 +------------------+-----------------------------------------------------------+
 
 Building the Model
