@@ -175,7 +175,7 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
 
             pdb.set_trace()  # pylint: disable=forgotten-debug-statement
 
-        msg = error_prefix + " " + error_msg
+        msg = f"{error_prefix} {error_msg}"
         raise exc_type(msg)
 
 
