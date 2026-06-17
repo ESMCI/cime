@@ -115,6 +115,7 @@ creating the executable).</p>
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Configuring the Build</a><a class="headerlink" href="#configuring-the-build" title="Link to this heading"></a></h2>
 <p>You do not need to change the default build settings to create the executable, but it may be useful to change them to make optimal use of the system. CIME provides the <a class="reference internal" href="setting-up-a-case.html#ccs-xmlquery"><span class="std std-ref">xmlquery</span></a> and <a class="reference internal" href="setting-up-a-case.html#ccs-xmlchange"><span class="std std-ref">xmlchange</span></a> commands to view and modify the build settings.</p>
 <p>Below are some variables that affect the build process and output.</p>
+<p>Note: If BATCHED_BUILD is TRUE, some additional requirements must be met in order for builds to be submitted. The host model will need a case.build workflow, a template.case.build file, and driver env XML changes to add BATCHED_BUILD as a known env XML entry.</p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Variable</p></th>
@@ -131,6 +132,9 @@ of optimization flags.</p></td>
 </tr>
 <tr class="row-even"><td><p>GMAKE_J</p></td>
 <td><p>The number of threads GNU Make should use while building.</p></td>
+</tr>
+<tr class="row-odd"><td><p>BATCHED_BUILD</p></td>
+<td><p>Whether to batch submit build phases</p></td>
 </tr>
 </tbody>
 </table>

@@ -7,14 +7,14 @@ div.output-cell.container div.prompt {
 }
 
 div.code-cell.container div.prompt, div.output-cell.container div.prompt {
-	user-select: None;
+	user-select: none;
 	font-size: 13px;
 	font-family: "SFMono-Regular", Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
-	border: None;
+	border: none;
 	padding: 11px 0 0;
 	margin: 0 5px 0 0;
-	box-shadow: None;
-	wrap-option: None;
+	box-shadow: none;
+	wrap-option: none;
 	white-space: nowrap
 }
 
