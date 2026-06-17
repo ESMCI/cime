@@ -22,7 +22,7 @@ except ImportError:
 # suite_name : {
 #     "inherit" : (suite1, suite2, ...), # Optional. Suites to inherit tests from. Default is None. Tuple, list, or str.
 #     "time"    : "HH:MM:SS",            # Optional. Recommended upper-limit on test time.
-#     "share"   : True|False,            # Optional. If True, all tests in this suite share a build. Default is False.
+#     "share"   : True|False|"testname", # Optional. If True, all tests share a build (first in suite order leads). If a test name string, that test's build is shared. Default is False.
 #     "perf"    : True|False,            # Optional. If True, all tests in this suite will do performance tracking. Default is False.
 #     "tests"   : (test1, test2, ...)    # Optional. The list of tests for this suite. See above for format. Tuple, list, or str. This is the ONLY inheritable attribute.
 # }
@@ -90,6 +90,16 @@ _CIME_TESTS = {
             "SMS_P16.f19_g16.X",
         ),
     },
+    "cime_test_share3": {
+        "time": "0:10:00",
+        "share": "SMS_P8.f45_g37.A",
+        "tests": (
+            "SMS_P2.f45_g37.A",
+            "SMS_P4.f45_g37.A",
+            "SMS_P8.f45_g37.A",
+            "SMS_P16.f45_g37.A",
+        ),
+    },
     "cime_test_perf": {
         "time": "0:10:00",
         "perf": True,
@@ -144,6 +154,24 @@ _CIME_TESTS = {
 _ALL_TESTS.update(_CIME_TESTS)
 
 ###############################################################################
+def _short_test_name(full_test_name):
+    ###############################################################################
+    """
+    Return the test name without the machine_compiler component.
+
+    Full test name format: TEST.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]
+    Short test name format: TEST.GRID.COMPSET[.TESTMODS]
+
+    >>> _short_test_name("SMS_P2.f19_g16.A.melvin_gnu")
+    'SMS_P2.f19_g16.A'
+    >>> _short_test_name("SMS_P2.f19_g16.A.melvin_gnu.testmod")
+    'SMS_P2.f19_g16.A.testmod'
+    """
+    parts = full_test_name.split(".")
+    return ".".join(parts[:3] + parts[4:])
+
+
+###############################################################################
 def _get_key_data(raw_dict, key, the_type):
     ###############################################################################
     if key not in raw_dict:
@@ -174,7 +202,10 @@ def _get_key_data(raw_dict, key, the_type):
 def get_test_data(suite):
     ###############################################################################
     """
-    For a given suite, returns (inherit, time, share, perf, tests)
+    For a given suite, returns (inherit, time, share, perf, tests).
+
+    share is False, True, or a test name string. When share is a string, it
+    names the test in the suite whose build is used as the shared build.
     """
     raw_dict = _ALL_TESTS[suite]
     for key in raw_dict.keys():
@@ -183,10 +214,18 @@ def get_test_data(suite):
             "Unexpected test key '{}'".format(key),
         )
 
+    share_val = raw_dict.get("share", False)
+    expect(
+        isinstance(share_val, (bool, str)),
+        "Wrong type for share, {} is a {} but expected bool or str".format(
+            share_val, type(share_val)
+        ),
+    )
+
     return (
         _get_key_data(raw_dict, "inherit", tuple),
         _get_key_data(raw_dict, "time", str),
-        _get_key_data(raw_dict, "share", bool),
+        share_val,
         _get_key_data(raw_dict, "perf", bool),
         _get_key_data(raw_dict, "tests", tuple),
     )
@@ -274,30 +313,49 @@ def get_build_groups(tests):
     Given a list of tests, return a list of lists, with each list representing
     a group of tests that can share executables.
 
+    When a suite's share field is a test name string, that test is placed first
+    in its build group and acts as the build leader.
+
     >>> tests = ["SMS_P2.f19_g16.A.melvin_gnu", "SMS_P4.f19_g16.A.melvin_gnu", "SMS_P2.f19_g16.X.melvin_gnu", "SMS_P4.f19_g16.X.melvin_gnu", "TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu", "TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu"]
     >>> get_build_groups(tests)
     [('SMS_P2.f19_g16.A.melvin_gnu', 'SMS_P4.f19_g16.A.melvin_gnu'), ('SMS_P2.f19_g16.X.melvin_gnu', 'SMS_P4.f19_g16.X.melvin_gnu'), ('TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu',), ('TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu',)]
+    >>> tests2 = ["SMS_P2.f45_g37.A.melvin_gnu", "SMS_P4.f45_g37.A.melvin_gnu", "SMS_P8.f45_g37.A.melvin_gnu", "SMS_P16.f45_g37.A.melvin_gnu"]
+    >>> get_build_groups(tests2)
+    [('SMS_P8.f45_g37.A.melvin_gnu', 'SMS_P2.f45_g37.A.melvin_gnu', 'SMS_P4.f45_g37.A.melvin_gnu', 'SMS_P16.f45_g37.A.melvin_gnu')]
     """
-    build_groups = []  # list of tuples ([tests], set(suites))
-
-    # Get a list of suites that share exes
+    #
+    # Get share suites and their designated build leaders (if any)
+    #
     suites = get_test_suites()
-    share_suites = []
+    share_suites = []  # list of suites with exe sharing on
+    # suite -> short test name for specified leader if provided
+    share_suite_leaders = {}
     for suite in suites:
         share = get_test_data(suite)[2]
         if share:
             share_suites.append(suite)
+            if isinstance(share, str):
+                share_suite_leaders[suite] = share
 
-    # Divide tests up into build groups. Assumes that build-compatibility is transitive
+    #
+    # Divide tests up into build groups. Assumes that build-compatibility is transitive.
+    #
+
+    # list of tuples, groups tests with sharable builds ([tests], set(suites))
+    build_groups = []
     for test in tests:
         matched = False
 
+        # Find which suites have this test
         my_share_suites = set()
         for suite in share_suites:
             if suite_has_test(suite, test, skip_inherit=True):
                 my_share_suites.add(suite)
 
-        # Try to match this test with an existing build group
+        # Try to match this test with an existing build group. If there is
+        # any overlap in suites with an existing build group, then this test
+        # can be added to that build group. Again, this is all assumes build
+        # compatibility is transitive.
         if my_share_suites:
             for build_group_tests, build_group_suites in build_groups:
                 overlap = build_group_suites & my_share_suites
@@ -311,7 +369,34 @@ def get_build_groups(tests):
         if not matched:
             build_groups.append(([test], my_share_suites))
 
-    return [tuple(item[0]) for item in build_groups]
+    #
+    # Reorder each group to put the designated build leader first (string share)
+    #
+    final_groups = []
+    for group_tests, group_suites in build_groups:
+        # Due to transitivity, if there are multiple build leaders, we can
+        # just pick the first one.
+        leader_short = None
+        for suite in sorted(group_suites):
+            if suite in share_suite_leaders:
+                leader_short = share_suite_leaders[suite]
+                break
+
+        # If a designate build leader was found, ensure it comes first in the group
+        if leader_short is not None:
+            for i, t in enumerate(group_tests):
+                if _short_test_name(t) == leader_short:
+                    group_tests.insert(0, group_tests.pop(i))
+                    break
+            else:
+                expect(
+                    False,
+                    f"Designated share build leader '{leader_short}' not found in build group {group_tests}",
+                )
+
+        final_groups.append(tuple(group_tests))
+
+    return final_groups
 
 
 ###############################################################################
