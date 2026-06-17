@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.case\_build
-======================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: case_build

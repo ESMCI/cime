@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.compare\_namelists.compare\_namelist\_files
-================================================
-
-.. currentmodule:: CIME.compare_namelists
-
-.. autofunction:: compare_namelist_files

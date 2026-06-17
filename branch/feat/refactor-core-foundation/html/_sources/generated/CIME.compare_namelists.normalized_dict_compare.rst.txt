@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.compare\_namelists.normalized\_dict\_compare
-=================================================
-
-.. currentmodule:: CIME.compare_namelists
-
-.. autofunction:: normalized_dict_compare

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.touch
-================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: touch

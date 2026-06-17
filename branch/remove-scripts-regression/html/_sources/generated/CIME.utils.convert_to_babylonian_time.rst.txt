@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.convert\_to\_babylonian\_time
-========================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: convert_to_babylonian_time

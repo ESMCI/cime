@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.buildlib.parse\_input
-==========================
-
-.. currentmodule:: CIME.buildlib
-
-.. autofunction:: parse_input

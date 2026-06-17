@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_current\_submodule\_status
-==========================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_current_submodule_status
