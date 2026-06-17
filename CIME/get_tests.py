@@ -323,12 +323,13 @@ def get_build_groups(tests):
     >>> get_build_groups(tests2)
     [('SMS_P8.f45_g37.A.melvin_gnu', 'SMS_P2.f45_g37.A.melvin_gnu', 'SMS_P4.f45_g37.A.melvin_gnu', 'SMS_P16.f45_g37.A.melvin_gnu')]
     """
-    build_groups = []  # list of tuples ([tests], set(suites))
-
+    #
     # Get share suites and their designated build leaders (if any)
+    #
     suites = get_test_suites()
-    share_suites = []
-    share_suite_leaders = {}  # suite -> short test name for string share values
+    share_suites = []  # list of suites with exe sharing on
+    # suite -> short test name for specified leader if provided
+    share_suite_leaders = {}
     for suite in suites:
         share = get_test_data(suite)[2]
         if share:
@@ -336,16 +337,25 @@ def get_build_groups(tests):
             if isinstance(share, str):
                 share_suite_leaders[suite] = share
 
-    # Divide tests up into build groups. Assumes that build-compatibility is transitive
+    #
+    # Divide tests up into build groups. Assumes that build-compatibility is transitive.
+    #
+
+    # list of tuples, groups tests with sharable builds ([tests], set(suites))
+    build_groups = []
     for test in tests:
         matched = False
 
+        # Find which suites have this test
         my_share_suites = set()
         for suite in share_suites:
             if suite_has_test(suite, test, skip_inherit=True):
                 my_share_suites.add(suite)
 
-        # Try to match this test with an existing build group
+        # Try to match this test with an existing build group. If there is
+        # any overlap in suites with an existing build group, then this test
+        # can be added to that build group. Again, this is all assumes build
+        # compatibility is transitive.
         if my_share_suites:
             for build_group_tests, build_group_suites in build_groups:
                 overlap = build_group_suites & my_share_suites
@@ -359,15 +369,20 @@ def get_build_groups(tests):
         if not matched:
             build_groups.append(([test], my_share_suites))
 
+    #
     # Reorder each group to put the designated build leader first (string share)
+    #
     final_groups = []
     for group_tests, group_suites in build_groups:
+        # Due to transitivity, if there are multiple build leaders, we can
+        # just pick the first one.
         leader_short = None
-        for suite in group_suites:
+        for suite in sorted(group_suites):
             if suite in share_suite_leaders:
                 leader_short = share_suite_leaders[suite]
                 break
 
+        # If a designate build leader was found, ensure it comes first in the group
         if leader_short is not None:
             for i, t in enumerate(group_tests):
                 if _short_test_name(t) == leader_short:
@@ -376,9 +391,7 @@ def get_build_groups(tests):
             else:
                 expect(
                     False,
-                    "Designated share build leader '{}' not found in build group {}".format(
-                        leader_short, group_tests
-                    ),
+                    f"Designated share build leader '{leader_short}' not found in build group {group_tests}",
                 )
 
         final_groups.append(tuple(group_tests))
