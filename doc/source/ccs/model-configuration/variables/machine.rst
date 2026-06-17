@@ -84,6 +84,7 @@ The following is an example of a version 2.0 ``config_machines.xml`` file. This 
                 <CCSM_CPRNC>/storage/tools/cprnc</CCSM_CPRNC>
                 <GMAKE>make</GMAKE>
                 <GMAKE_J>4</GMAKE_J>
+                <BATCHED_BUILD>FALSE</BATCHED_BUILD>
                 <TESTS>e3sm_developer</TESTS>
                 <BATCH_SYSTEM>none</BATCH_SYSTEM>
                 <SUPPORTED_BY>boutte3@llnl.gov</SUPPORTED_BY>
@@ -146,6 +147,7 @@ CCSM_CPRNC                  Location of the cprnc tool.
 PERL5LIB                    Perl library path.
 GMAKE                       GNU-compatible make tool.
 GMAKE_J                     Number of threads for gmake.
+BATCHED_BUILD               Optional, builds will be done through batch submissions
 TESTS                       List of tests to run on the machine.
 NTEST_PARALLEL_JOBS         Number of parallel jobs for testing.
 BATCH_SYSTEM                Batch system used on the machine.
@@ -348,6 +350,8 @@ Version 3.0
                     <!-- Occurrences min: 0 max: 1-->
                     <GMAKE_J></GMAKE_J>
                     <!-- Occurrences min: 0 max: 1-->
+                    <BATCHED_BUILD></BATCHED_BUILD>
+                    <!-- Occurrences min: 0 max: 1-->
                     <TESTS></TESTS>
                     <!-- Occurrences min: 0 max: 1-->
                     <NTEST_PARALLEL_JOBS></NTEST_PARALLEL_JOBS>
@@ -519,6 +523,8 @@ Version 2.0
                     <GMAKE></GMAKE>
                     <!-- Occurrences min: 0 max: 1-->
                     <GMAKE_J></GMAKE_J>
+                    <!-- Occurrences min: 0 max: 1-->
+                    <BATCHED_BUILD></BATCHED_BUILD>
                     <!-- Occurrences min: 0 max: 1-->
                     <TESTS></TESTS>
                     <!-- Occurrences min: 0 max: 1-->

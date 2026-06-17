@@ -119,6 +119,7 @@ class SystemTestsCommon(object):
         self._ninja = False
         self._dry_run = False
         self._user_separate_builds = False
+        self._batched_build_active = False
         self._expected_num_cmp = None
         self._rest_n = None
         sc_file = os.path.join(caseroot, "shell_commands")
@@ -419,6 +420,7 @@ class SystemTestsCommon(object):
         dry_run=False,
         separate_builds=False,
         skip_submit=False,
+        batched_build_active=False,
     ):
         """
         Do NOT override this method, this method is the framework that
@@ -429,6 +431,7 @@ class SystemTestsCommon(object):
         self._ninja = ninja
         self._dry_run = dry_run
         self._user_separate_builds = separate_builds
+        self._batched_build_active = batched_build_active
 
         was_run_pend = self._test_status.current_is(RUN_PHASE, TEST_PEND_STATUS)
 
@@ -507,6 +510,7 @@ class SystemTestsCommon(object):
             ninja=self._ninja,
             dry_run=self._dry_run,
             separate_builds=self._user_separate_builds,
+            batched_build_active=self._batched_build_active,
         )
         logger.info("build_indv complete")
 

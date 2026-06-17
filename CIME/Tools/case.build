@@ -86,6 +86,13 @@ def parse_command_line(args, description):
         )
 
     parser.add_argument(
+        "--no-batch-build",
+        action="store_true",
+        help="Skip batch submission even if BATCHED_BUILD is TRUE for this machine. "
+        "Use this when you are already on a compute node or want to build interactively.",
+    )
+
+    parser.add_argument(
         "--skip-submit",
         action="store_true",
         help="Sets the current test phase to RUN, skipping the SUBMIT phase. This "
@@ -197,6 +204,7 @@ def parse_command_line(args, description):
         args.ninja,
         args.dry_run,
         args.skip_submit,
+        args.no_batch_build,
     )
 
 
@@ -217,6 +225,7 @@ def _main_func(description):
         ninja,
         dry_run,
         skip_submit,
+        no_batch_build,
     ) = parse_command_line(sys.argv, description)
 
     success = True
@@ -269,6 +278,7 @@ def _main_func(description):
                 dry_run=dry_run,
                 separate_builds=separate_builds,
                 skip_submit=skip_submit,
+                batched_build_active=no_batch_build,
             )
 
         else:
@@ -282,6 +292,7 @@ def _main_func(description):
                 separate_builds=separate_builds,
                 ninja=ninja,
                 dry_run=dry_run,
+                batched_build_active=no_batch_build,
             )
 
     sys.exit(0 if success else 1)

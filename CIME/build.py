@@ -1085,11 +1085,153 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
     unlock_file("env_build.xml", case.get_value("CASEROOT"))
 
     # reset following values in xml files
-    case.set_value("SMP_BUILD", str(0))
-    case.set_value("NINST_BUILD", str(0))
-    case.set_value("BUILD_STATUS", str(0))
-    case.set_value("BUILD_COMPLETE", "FALSE")
+    case.set_value("SMP_BUILD", "0")
+    case.set_value("NINST_BUILD", "0")
+    case.set_value("BUILD_STATUS", 0)
+    case.set_value("BUILD_COMPLETE", False)
     case.flush()
+
+
+###############################################################################
+def _submit_build_as_batch(
+    caseroot,
+    case,
+    sharedlib_only,
+    model_only,
+    buildlist,
+    save_build_provenance,
+    separate_builds,
+    ninja,
+):
+    ###############################################################################
+    """
+    Submit the build as a batch job when BATCHED_BUILD=TRUE.
+    Constructs the argument list, submits the .case.build batch script via the
+    batch system, polls for job completion, and returns the build success status.
+    """
+    batch_system = case.get_value("BATCH_SYSTEM")
+    if batch_system is None or batch_system == "none":
+        logger.warning(
+            "BATCHED_BUILD is TRUE but BATCH_SYSTEM is '{}'. "
+            "Falling back to interactive build.".format(batch_system)
+        )
+        return _case_build_impl(
+            caseroot,
+            case,
+            sharedlib_only,
+            model_only,
+            buildlist,
+            save_build_provenance,
+            separate_builds,
+            ninja,
+            dry_run=False,
+        )
+
+    # Build the argument string that the batch script will receive via ARGS_FOR_SCRIPT.
+    args = ["--no-batch-build"]
+    if sharedlib_only:
+        args.append("--sharedlib-only")
+    if model_only:
+        args.append("--model-only")
+    if not save_build_provenance:
+        args.append("--skip-provenance-check")
+    if separate_builds:
+        args.append("--separate-builds")
+    if ninja:
+        args.append("--ninja")
+    if buildlist:
+        args.extend(["--build"] + list(buildlist))
+
+    os.environ["ARGS_FOR_SCRIPT"] = " ".join(args)
+
+    env_batch = case.get_env("batch")
+
+    logger.info(
+        "BATCHED_BUILD is TRUE: submitting build as batch job "
+        "(args: {})".format(os.environ["ARGS_FOR_SCRIPT"])
+    )
+
+    case.flush()
+
+    depid = env_batch.submit_jobs(
+        case,
+        job="case.build",
+        no_batch=False,
+        workflow=False,
+    )
+
+    jobid = depid.get("case.build") if depid else None
+    expect(jobid, "Batch build job submission did not return a job ID.")
+
+    logger.info(
+        "Build submitted as batch job {}. Polling for completion...".format(jobid)
+    )
+
+    poll_interval = 30
+    # Allow up to 10 consecutive "not found" checks before the job appears in
+    # the queue (covers scheduling delay and systems where batch_query is not
+    # supported or returns non-zero for newly submitted jobs).
+    job_seen_in_queue = False
+    not_seen_count = 0
+    max_not_seen_before_seen = 10
+
+    time.sleep(5)  # short initial wait before first query
+
+    while True:
+        status = env_batch.get_status(jobid)
+        # This is tricky as sometimes a status is returned even if the job was completed
+        # a while ago, this is why we check that jobid is also in status. This may not be
+        # portable across batch systems other than slurm.
+        if status is not None and jobid in status:
+            job_seen_in_queue = True
+            not_seen_count = 0
+            logger.debug(
+                "Build job {} in queue (status: {}). Next check in {} s.".format(
+                    jobid, status.strip(), poll_interval
+                )
+            )
+        else:
+            if job_seen_in_queue:
+                logger.info(
+                    "Build job {} no longer in queue. Build has finished.".format(jobid)
+                )
+                break
+            not_seen_count += 1
+            expect(
+                not_seen_count < max_not_seen_before_seen,
+                "Build job {} not visible in batch queue after {} checks "
+                "(batch_query may be unavailable). Failing build.".format(
+                    jobid, not_seen_count
+                ),
+            )
+            logger.debug(
+                "Build job {} not yet visible in queue ({}/{}). Status output was {}. Waiting...".format(
+                    jobid, not_seen_count, max_not_seen_before_seen, status
+                )
+            )
+
+        time.sleep(poll_interval)
+
+    # Refresh case XML so we see the values written by the batch job.
+    case.read_xml()
+    build_complete = case.get_value("BUILD_COMPLETE")
+    build_status = case.get_value("BUILD_STATUS")
+
+    if sharedlib_only:
+        expect(
+            build_status == 0,
+            "Batched sharedlib build failed (BUILD_STATUS={}).".format(build_status),
+        )
+    else:
+        expect(
+            build_complete and build_status == 0,
+            "Batched build failed (BUILD_COMPLETE={}, BUILD_STATUS={}).".format(
+                build_complete, build_status
+            ),
+        )
+
+    logger.info("Batched build completed successfully.")
+    return True
 
 
 ###############################################################################
@@ -1256,60 +1398,67 @@ def _case_build_impl(
             buildlist,
         )
 
-        if not model_only:
-            logs = _build_libraries(
-                case,
-                exeroot,
-                sharedpath,
-                caseroot,
-                cimeroot,
-                libroot,
-                lid,
-                compiler,
-                buildlist,
-                comp_interface,
-                complist,
-            )
-
-        if not sharedlib_only:
-            if config.build_model_use_cmake:
-                logs.extend(
-                    _build_model_cmake(
-                        exeroot,
-                        complist,
-                        lid,
-                        buildlist,
-                        comp_interface,
-                        sharedpath,
-                        separate_builds,
-                        ninja,
-                        dry_run,
-                        case,
-                    )
-                )
-            else:
-                os.environ["INSTALL_SHAREDPATH"] = os.path.join(
-                    exeroot, sharedpath
-                )  # for MPAS makefile generators
-                logs.extend(
-                    _build_model(
-                        build_threaded,
-                        exeroot,
-                        incroot,
-                        complist,
-                        lid,
-                        caseroot,
-                        cimeroot,
-                        compiler,
-                        buildlist,
-                        comp_interface,
-                    )
+        try:
+            if not model_only:
+                logs = _build_libraries(
+                    case,
+                    exeroot,
+                    sharedpath,
+                    caseroot,
+                    cimeroot,
+                    libroot,
+                    lid,
+                    compiler,
+                    buildlist,
+                    comp_interface,
+                    complist,
                 )
 
-            if not buildlist:
-                # in case component build scripts updated the xml files, update the case object
-                case.read_xml()
-                # Note, doing buildlists will never result in the system thinking the build is complete
+            if not sharedlib_only:
+                if config.build_model_use_cmake:
+                    logs.extend(
+                        _build_model_cmake(
+                            exeroot,
+                            complist,
+                            lid,
+                            buildlist,
+                            comp_interface,
+                            sharedpath,
+                            separate_builds,
+                            ninja,
+                            dry_run,
+                            case,
+                        )
+                    )
+                else:
+                    os.environ["INSTALL_SHAREDPATH"] = os.path.join(
+                        exeroot, sharedpath
+                    )  # for MPAS makefile generators
+                    logs.extend(
+                        _build_model(
+                            build_threaded,
+                            exeroot,
+                            incroot,
+                            complist,
+                            lid,
+                            caseroot,
+                            cimeroot,
+                            compiler,
+                            buildlist,
+                            comp_interface,
+                        )
+                    )
+
+                if not buildlist:
+                    # in case component build scripts updated the xml files, update the case object
+                    case.read_xml()
+                    # Note, doing buildlists will never result in the system thinking the build is complete
+
+        except Exception:
+            case.set_value("BUILD_STATUS", 1)
+            case.set_value("BUILD_COMPLETE", False)
+            case.flush()
+            raise
 
     post_build(
         case,
@@ -1365,19 +1514,38 @@ def case_build(
     separate_builds=False,
     ninja=False,
     dry_run=False,
+    batched_build_active=False,
 ):
     ###############################################################################
-    functor = lambda: _case_build_impl(
-        caseroot,
-        case,
-        sharedlib_only,
-        model_only,
-        buildlist,
-        save_build_provenance,
-        separate_builds,
-        ninja,
-        dry_run,
-    )
+    # When BATCHED_BUILD=TRUE and we are not already inside a batch build job,
+    # submit the build to the batch system instead of building interactively.
+    batched_build = case.get_value("BATCHED_BUILD")
+
+    if batched_build and not batched_build_active and not dry_run:
+        functor = lambda: _submit_build_as_batch(
+            caseroot,
+            case,
+            sharedlib_only,
+            model_only,
+            buildlist,
+            save_build_provenance,
+            separate_builds,
+            ninja,
+        )
+
+    else:
+        functor = lambda: _case_build_impl(
+            caseroot,
+            case,
+            sharedlib_only,
+            model_only,
+            buildlist,
+            save_build_provenance,
+            separate_builds,
+            ninja,
+            dry_run,
+        )
+
     cb = "case.build"
     if sharedlib_only == True:
         cb = cb + " (SHAREDLIB_BUILD)"
