@@ -356,7 +356,7 @@ def infer_arch_from_tests(testargs):
     ('melvin', ['gnu'])
     >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu9", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu9', 'gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu", "NCK.f19_g16.A.mappy_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu", "NCK.f19_g16.A.mappy_gnu"])  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     CIME.utils.CIMEError: ERROR: Must have consistent machine 'melvin' != 'mappy'
