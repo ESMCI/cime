@@ -73,17 +73,26 @@ class TestSharedlibBuildPhaseFusion:
             from_dir=_TEST_DIR,
         )
 
-    def test_not_bypassed_when_not_batched(self):
-        """When _batched_build is False, run sharedlib-only regardless of serialization."""
+    def test_no_batch_build_flag_appended_when_not_batched(self):
+        """When _batched_build is False, --no-batch-build is appended to prevent
+        case.build from independently submitting a batch job."""
         ts = _make_scheduler(serialize_sharedlib_builds=False, batched_build=False)
         ts._sharedlib_build_phase(_TEST_NAME)
 
         ts._shell_cmd_for_phase.assert_called_once_with(
             _TEST_NAME,
-            "./case.build --sharedlib-only",
+            "./case.build --sharedlib-only --no-batch-build",
             SHAREDLIB_BUILD_PHASE,
             from_dir=_TEST_DIR,
         )
+
+    def test_no_batch_build_flag_appended_when_serialized_and_not_batched(self):
+        """--no-batch-build is appended when both serialize=True and batched=False."""
+        ts = _make_scheduler(serialize_sharedlib_builds=True, batched_build=False)
+        ts._sharedlib_build_phase(_TEST_NAME)
+
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--no-batch-build" in cmd
 
     def test_non_first_test_unaffected(self):
         """Non-build-group-leader path is unchanged by the new fusion logic."""
@@ -120,20 +129,29 @@ class TestModelBuildPhaseFusion:
         assert cmd == "./case.build"
 
     def test_model_only_when_serialized(self):
-        """When serialize_sharedlib_builds is True, still use --model-only even if batched."""
+        """When serialize_sharedlib_builds is True, use --model-only (batched=True, no --no-batch-build)."""
         ts = _make_scheduler(serialize_sharedlib_builds=True, batched_build=True)
         ts._model_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
         assert cmd == "./case.build --model-only"
 
-    def test_model_only_when_not_batched(self):
-        """When _batched_build is False, always use --model-only."""
+    def test_no_batch_build_flag_appended_when_not_batched(self):
+        """When _batched_build is False, --no-batch-build is appended to prevent
+        case.build from independently submitting a batch job."""
         ts = _make_scheduler(serialize_sharedlib_builds=False, batched_build=False)
         ts._model_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert cmd == "./case.build --model-only"
+        assert cmd == "./case.build --model-only --no-batch-build"
+
+    def test_no_batch_build_flag_appended_when_serialized_and_not_batched(self):
+        """--no-batch-build is appended when both serialize=True and batched=False."""
+        ts = _make_scheduler(serialize_sharedlib_builds=True, batched_build=False)
+        ts._model_build_phase(_TEST_NAME)
+
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--no-batch-build" in cmd
 
     def test_full_build_uses_model_build_phase_label(self):
         """The fused call should still be labelled MODEL_BUILD_PHASE."""
@@ -181,20 +199,16 @@ class TestNoBatchBuildFlag:
     """Tests for the no_batch_build=True constructor behaviour."""
 
     def test_no_batch_build_disables_batched_build(self):
-        """no_batch_build=True must set _batched_build to False."""
+        """no_batch_build=True must set _batched_build to False, causing
+        --no-batch-build to be appended to case.build calls."""
         ts = _make_scheduler(serialize_sharedlib_builds=False, batched_build=True)
         # Simulate the __init__ logic: no_batch_build overrides _batched_build
         ts._batched_build = False  # as __init__ would do when no_batch_build=True
 
         ts._sharedlib_build_phase(_TEST_NAME)
 
-        # Should NOT be bypassed because _batched_build is now False
-        ts._shell_cmd_for_phase.assert_called_once_with(
-            _TEST_NAME,
-            "./case.build --sharedlib-only",
-            SHAREDLIB_BUILD_PHASE,
-            from_dir=_TEST_DIR,
-        )
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert cmd == "./case.build --sharedlib-only --no-batch-build"
 
     def test_no_batch_build_init_param_sets_attribute(self):
         """TestScheduler.__init__ sets _batched_build=False when no_batch_build=True."""

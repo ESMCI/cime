@@ -1057,9 +1057,12 @@ class TestScheduler(object):
         if self._batched_build and not self._config.serialize_sharedlib_builds:
             return True, ""
 
+        cmd = "./case.build --sharedlib-only"
+        if not self._batched_build:
+            cmd += " --no-batch-build"
         return self._shell_cmd_for_phase(
             test,
-            "./case.build --sharedlib-only",
+            cmd,
             SHAREDLIB_BUILD_PHASE,
             from_dir=test_dir,
         )
@@ -1104,8 +1107,11 @@ class TestScheduler(object):
                 test, "./case.build", MODEL_BUILD_PHASE, from_dir=test_dir
             )
 
+        cmd = "./case.build --model-only"
+        if not self._batched_build:
+            cmd += " --no-batch-build"
         return self._shell_cmd_for_phase(
-            test, "./case.build --model-only", MODEL_BUILD_PHASE, from_dir=test_dir
+            test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
         )
 
     ###########################################################################
