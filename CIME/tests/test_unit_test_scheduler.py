@@ -179,9 +179,7 @@ class TestModelBuildPhaseFusion:
         with mock.patch("CIME.test_scheduler.post_build") as post_build_mock:
             with mock.patch("CIME.test_scheduler.Case") as MockCase:
                 case_mock = mock.MagicMock()
-                MockCase.return_value.__enter__ = mock.MagicMock(
-                    return_value=case_mock
-                )
+                MockCase.return_value.__enter__ = mock.MagicMock(return_value=case_mock)
                 MockCase.return_value.__exit__ = mock.MagicMock(return_value=False)
                 success, _ = ts._model_build_phase(follower)
 

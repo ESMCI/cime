@@ -446,7 +446,11 @@ class SystemTestsCommon(object):
 
                 start_time = time.time()
                 try:
-                    if not model_only and not sharedlib_only and phase_name == SHAREDLIB_BUILD_PHASE:
+                    if (
+                        not model_only
+                        and not sharedlib_only
+                        and phase_name == SHAREDLIB_BUILD_PHASE
+                    ):
                         # Fuse!
                         pass
                     else:
