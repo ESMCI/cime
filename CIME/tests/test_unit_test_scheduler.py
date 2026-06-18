@@ -13,7 +13,6 @@ The ``no_batch_build`` constructor flag forces ``_batched_build = False``
 regardless of the machine setting.
 """
 
-import pytest
 from unittest import mock
 
 from CIME import test_scheduler
