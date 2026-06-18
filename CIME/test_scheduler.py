@@ -1199,7 +1199,7 @@ class TestScheduler(object):
             return 1
         elif phase == MODEL_BUILD_PHASE:
             # Model builds now happen in parallel
-            return self._model_build_cost
+            return 1 if self._batched_build else self._model_build_cost
         else:
             return 1
 
