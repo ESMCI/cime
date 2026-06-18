@@ -3,11 +3,11 @@ This module contains a class that extends unittest.TestCase, adding custom asser
 can be used when testing TestStatus.
 """
 
-from CIME.XML.standard_module_setup import *
-
-import unittest
 import re
+import unittest
+
 from CIME import test_status
+from CIME.utils import expect
 
 
 class CustomAssertionsTestStatus(unittest.TestCase):

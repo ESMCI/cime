@@ -3,7 +3,8 @@ CIME smoke test  This class inherits from SystemTestsCommon
 It does a startup run with restarts off and optionally compares to or generates baselines
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 
 logger = logging.getLogger(__name__)

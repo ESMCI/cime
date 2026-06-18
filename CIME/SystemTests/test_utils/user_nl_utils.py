@@ -2,8 +2,8 @@
 This module contains functions for working with user_nl files in system tests.
 """
 
-import os
 import glob
+import os
 
 
 def append_to_user_nl_files(caseroot, component, contents):

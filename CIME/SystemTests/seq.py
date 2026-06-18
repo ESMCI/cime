@@ -1,7 +1,9 @@
 """
 sequencing bfb test (10 day seq,conc tests)
 """
-from CIME.XML.standard_module_setup import *
+
+import logging
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)

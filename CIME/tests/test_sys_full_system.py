@@ -2,10 +2,7 @@
 
 import os
 
-from CIME import get_tests
-from CIME import test_status
-from CIME import utils
-from CIME import wait_for_tests
+from CIME import get_tests, test_status, utils, wait_for_tests
 from CIME.tests import base
 
 

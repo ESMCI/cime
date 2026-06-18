@@ -2,17 +2,16 @@
 
 import glob
 import os
-import tempfile
-import time
-import signal
 import shutil
+import signal
 import stat
 import sys
+import tempfile
+import time
 import unittest
 
 from CIME import utils
 from CIME.config import Config
-from CIME.XML.machines import Machines
 
 
 def typed_os_environ(key, default_value, expected_type=None):

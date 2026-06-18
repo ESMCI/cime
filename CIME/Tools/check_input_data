@@ -18,10 +18,12 @@ To obtain missing datasets from the input data server(s) use:
 This script is automatically called by the case control system, when the case is built and submitted.
 So manual usage of this script is optional.
 """
+import argparse
+
 from standard_script_setup import *
+
 from CIME.case import Case
 
-import argparse
 
 ###############################################################################
 def parse_command_line(args, description):
