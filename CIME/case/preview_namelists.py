@@ -109,6 +109,39 @@ def create_namelists(self, component=None):
                 component, models
             )
         )
+    #
+    # Run any namelists for the post-processing component if it exists
+    #
+    # NOTE: This bit is copied from Case.flush
+    # TODO: make it a little function?
+    run_postprocess = self.get_value("RUN_POSTPROCESSING")
+    if run_postprocess:
+        _postprocessing_spec_file = self.get_value("POSTPROCESSING_SPEC_FILE")
+        if _postprocessing_spec_file is not None:
+            have_postprocessing = os.path.isfile(_postprocessing_spec_file)
+        else:
+            have_postprocessing = False
+
+        # Run buildnml for the post-processing component if buildnml exists
+        # NOTE: This copies the handling of buildnml for components in the section above
+        # TODO: Make it into a little subroutine?
+        if have_postprocessing:
+            config_dir = os.path.dirname(_postprocessing_spec_file)
+            cmd = os.path.join(config_dir, "buildnml")
+            if ( os.path.exists(cmd) ):
+                # NOTE: In order to name the specific postprocessing component, there would need to be
+                # a new XML variable with something like POSTPROC_NAME
+                compname = "postprocessor"
+                logger.info("Create namelist for postprocessing component {}".format(compname))
+                import_and_run_sub_or_cmd(
+                    cmd,
+                    (caseroot),
+                    "buildnml",
+                    (self, caseroot, compname),
+                    config_dir,
+                    compname,
+                    case=self,
+                )
 
     # Save namelists to docdir
     if not os.path.isdir(docdir):
@@ -128,6 +161,7 @@ def create_namelists(self, component=None):
         "nuopc.runconfig",
         "*streams*txt*",
         "*streams.xml",
+        "*.yml",
         "*stxt",
         "*maps.rc",
         "*cism*.config*",
