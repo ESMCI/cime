@@ -2,6 +2,8 @@ import io
 import unittest
 from unittest import mock
 
+import pytest
+
 from CIME.hist_utils import copy_histfiles, get_ts_synopsis
 from CIME.XML.archive import Archive
 
@@ -85,7 +87,11 @@ def test_get_ts_synopsis_pass_on_own_line_with_multiple_lines_after():
     assert get_ts_synopsis(comments) == ""
 
 
-def test_get_ts_synopsis_pass_is_case_sensitive_and_exact():
+@pytest.mark.parametrize(
+    "variant",
+    ["Pass", "pass", "PASSING", "passed", "  PASS", "PASS extra"],
+)
+def test_get_ts_synopsis_pass_is_case_sensitive_and_exact(variant):
     """Only the exact token 'PASS' on its own line marks success.
 
     Variants like 'Pass', 'pass', 'PASSING', or indented '  PASS' must NOT
@@ -95,10 +101,7 @@ def test_get_ts_synopsis_pass_is_case_sensitive_and_exact():
     the catch-all if nothing matches).
     """
     catch_all = "ERROR Could not interpret CPRNC output"
-    for variant in ("Pass", "pass", "PASSING", "passed", "  PASS", "PASS extra"):
-        assert (
-            get_ts_synopsis(f"header\n{variant}") == catch_all
-        ), f"variant {variant!r} should not short-circuit"
+    assert get_ts_synopsis(f"header\n{variant}") == catch_all
 
 
 def test_get_ts_synopsis_pass_handles_crlf_line_endings():
