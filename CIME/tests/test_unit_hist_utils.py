@@ -83,3 +83,31 @@ def test_get_ts_synopsis_pass_on_own_line_with_multiple_lines_after():
     """
     comments = "Comparing hists\nPASS\nBless info line 1\nBless info line 2\n"
     assert get_ts_synopsis(comments) == ""
+
+
+def test_get_ts_synopsis_pass_is_case_sensitive_and_exact():
+    """Only the exact token 'PASS' on its own line marks success.
+
+    Variants like 'Pass', 'pass', 'PASSING', or indented '  PASS' must NOT
+    short-circuit to an empty synopsis. _compare_hists is the sole producer
+    of the PASS marker and always writes it verbatim and unindented; anything
+    else falls through to the normal failure-detection logic (and ultimately
+    the catch-all if nothing matches).
+    """
+    catch_all = "ERROR Could not interpret CPRNC output"
+    for variant in ("Pass", "pass", "PASSING", "passed", "  PASS", "PASS extra"):
+        assert (
+            get_ts_synopsis(f"header\n{variant}") == catch_all
+        ), f"variant {variant!r} should not short-circuit"
+
+
+def test_get_ts_synopsis_pass_handles_crlf_line_endings():
+    """PASS on a CRLF-terminated line is still recognized as success.
+
+    In practice _compare_hists writes LF-terminated strings on Unix, but the
+    regex tolerates an optional CR so that comments originating from any
+    platform-normalized source (Windows-edited bless logs, etc.) are not
+    misreported as 'ERROR Could not interpret CPRNC output'.
+    """
+    assert get_ts_synopsis("header\r\nPASS\r\n") == ""
+    assert get_ts_synopsis("header\r\nPASS\r\n  Most recent bless: abc123\r\n") == ""
