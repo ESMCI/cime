@@ -1,6 +1,7 @@
 """
 Interface to the testspec.xml file.  This class inherits from generic_xml.py
 """
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.generic_xml import GenericXML

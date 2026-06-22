@@ -1,6 +1,7 @@
 """
 Interface to the config_tests.xml file.  This class inherits from GenericEntry
 """
+
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.generic_xml import GenericXML

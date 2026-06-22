@@ -1,6 +1,7 @@
 """
 Interface to the config_inputdata.xml file.  This class inherits from GenericXML.py
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
