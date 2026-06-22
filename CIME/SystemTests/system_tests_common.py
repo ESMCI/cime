@@ -446,10 +446,18 @@ class SystemTestsCommon(object):
 
                 start_time = time.time()
                 try:
-                    self.build_phase(
-                        sharedlib_only=(phase_name == SHAREDLIB_BUILD_PHASE),
-                        model_only=(phase_name == MODEL_BUILD_PHASE),
-                    )
+                    if (
+                        not model_only
+                        and not sharedlib_only
+                        and phase_name == SHAREDLIB_BUILD_PHASE
+                    ):
+                        # Fuse!
+                        pass
+                    else:
+                        self.build_phase(
+                            sharedlib_only=sharedlib_only,
+                            model_only=model_only,
+                        )
                 except (
                     BaseException
                 ) as e:  # We want KeyboardInterrupts to generate FAIL status
