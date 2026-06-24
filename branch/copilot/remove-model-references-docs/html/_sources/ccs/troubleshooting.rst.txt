@@ -106,10 +106,7 @@ For instance, on the last day of every simulated month, the model typically writ
 Also, some model configurations read data mid-month or run physics intermittently at a timestep longer than one day.
 In those cases, some variability is expected. The time variation typically is quite erratic and unpredictable if the problem is system performance variability.
 
-Sometimes when a job times out or overflows disk space, the restart files will get mangled.
-With the exception of component history files, all the restart files have consistent sizes.
-
-Compare the restart files against the sizes of a previous restart. If they don't match, remove them and move the previous restart into place before resubmitting the job.
+Sometimes when a job times out or overflows disk space, the restart files will get mangled. Since restart files normally have consistent sizes across runs, compare them against a previous restart -- if they don't match, remove them and move the previous restart into place before resubmitting the job.
 See :ref:`restarting-a-run`.
 
 It is not uncommon for nodes to fail on HPC systems or for access to large file systems to hang. Before you file a bug report, make sure a case fails consistently in the same place.
