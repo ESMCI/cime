@@ -347,6 +347,8 @@ The XML variable ``$GET_REFCASE`` is a flag that if set will automatically pre-s
 
 - If ``$GET_REFCASE`` is ``FALSE``, then the data is assumed to already exist in ``$RUNDIR``.
 
+.. _restarting-a-run:
+
 Restarting a Run
 `````````````````
 Active components (and some data components) write restart files
