@@ -68,6 +68,7 @@ _CMD_ARGS_FOR_BUILD = (
     "TORCH_DIR",
 )
 
+
 def check_ninja(case):
     # Ninja path is currently hardcoded! Probably want to change this.
     srcroot = case.get_value("SRCROOT")
@@ -82,6 +83,7 @@ def check_ninja(case):
         return False
     else:
         return True
+
 
 class CmakeTmpBuildDir(object):
     """
@@ -751,7 +753,7 @@ def _build_libraries(
     buildlist,
     comp_interface,
     complist,
-    ninja
+    ninja,
 ):
     ###############################################################################
 

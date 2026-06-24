@@ -93,6 +93,7 @@ def _xml_phase_patches():
         mock.patch("os.path.exists", return_value=True),
     ]
 
+
 # ---------------------------------------------------------------------------
 # _xml_phase: GMAKE_J = MAX_TASKS_PER_NODE for batched builds
 # ---------------------------------------------------------------------------
