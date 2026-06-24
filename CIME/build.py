@@ -68,6 +68,20 @@ _CMD_ARGS_FOR_BUILD = (
     "TORCH_DIR",
 )
 
+def check_ninja(case):
+    # Ninja path is currently hardcoded! Probably want to change this.
+    srcroot = case.get_value("SRCROOT")
+    ninja_path = os.path.join(srcroot, "externals/ninja/bin")
+
+    # Check exe by querying version
+    nstat, _, nerr = run_cmd(f"{ninja_path}/ninja --version")
+    if nstat != 0:
+        logger.warning(
+            f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
+        )
+        return False
+    else:
+        return True
 
 class CmakeTmpBuildDir(object):
     """
@@ -509,15 +523,11 @@ def _build_model_cmake(
         ninja_path = os.path.join(srcroot, "externals/ninja/bin")
         if ninja:
             # Make sure ninja exe works!
-            nstat, _, nerr = run_cmd(f"{ninja_path}/ninja --version")
-            if nstat != 0:
-                logger.warning(
-                    f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
-                )
-                ninja = False
-            else:
+            if check_ninja(case):
                 cmake_args += " -GNinja "
                 cmake_env += "PATH={}:$PATH ".format(ninja_path)
+            else:
+                ninja = False
 
         # Glue all pieces together:
         #  - cmake environment
@@ -741,6 +751,7 @@ def _build_libraries(
     buildlist,
     comp_interface,
     complist,
+    ninja
 ):
     ###############################################################################
 
@@ -819,6 +830,14 @@ def _build_libraries(
 
     # generate Makefile macro
     generate_makefile_macro(case, caseroot)
+
+    if ninja:
+        check_ninja(case)
+        ninja = False
+    else:
+        # We cannot know if the various buildlib scripts support ninja.
+        # Just set an env var to let them know ninja was requested.
+        os.environ["CIME_SHAREDLIB_NINJA"] = "TRUE"
 
     for lib in libs:
         if buildlist is not None and lib not in buildlist:
@@ -1420,6 +1439,7 @@ def _case_build_impl(
                     buildlist,
                     comp_interface,
                     complist,
+                    ninja,
                 )
 
             if not sharedlib_only:
