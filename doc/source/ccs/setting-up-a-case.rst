@@ -28,18 +28,18 @@ To print detailed information about variables, including their description, type
 
     ./xmlquery --listall --full
 
-To view a specific group, replace ``<group>`` with the desired group name.
+To view a specific group, replace ``GROUP`` with the desired group name.
 
 .. code-block:: bash
 
-    ./xmlquery --subgroup <group> --listall
+    ./xmlquery --subgroup GROUP --listall
 
-You can search for partial matches using the ``-p`` or ``--partial`` option (can take a regex) and replacing ``<search_string>`` with the string you want to search for. This will return all variables that contain the search string in their name or value.
+You can search for partial matches using the ``-p`` or ``--partial`` option (can take a regex) and replacing ``SEARCH_STRING`` with the string you want to search for. This will return all variables that contain the search string in their name or value.
 
 .. code-block:: bash
 
     # e.g. ./xmlquery --partial STOP, ./xmlquery --partial 'STOP_(N|O)'
-    ./xmlquery --partial <search_string>
+    ./xmlquery --partial SEARCH_STRING
 
 Variables can be printed without being resolved by using the ``--no-resolve`` option.
 
@@ -61,19 +61,19 @@ The ``xmlchange`` command is used to modify the configuration of a case. The fol
 
 .. code-block:: bash
     
-    ./xmlchange <variable>=<value>
+    ./xmlchange VARIABLE=VALUE
 
 The `value` can be literal or a reference to another value. When using a reference, it must be prefixed with `$`.
 
 .. code-block:: bash
 
-    ./xmlchange <variable>=$<variable>
+    ./xmlchange VARIABLE=$VARIABLE
 
 The reference can also define the `subgroup`. This is usful when a variable exists under multiple subgroups and a specific one needs to be referenced. The `subgroup` and `variable` are delimited with `::`.
 
 .. code-block:: bash
 
-    ./xmlchange <variable>=$<subgroup>::<variable>
+    ./xmlchange VARIABLE=$SUBGROUP::VARIABLE
 
 Some variables can exist in multiple groups. To change a variable in a specific group, use the ``--subgroup`` option.
 
@@ -95,7 +95,7 @@ For example, if a model's atmosphere model (DATM) was located in the directory `
 
 Users can customize a component models's namelist in two ways:
 
-1. By editing the ``$CASEROOT/user_nl_<comp>`` files
+1. By editing the ``$CASEROOT/user_nl_COMP`` files
 
   These files should be modified via keyword-value pairs that correspond to new namelist or input data settings.  They use the
   syntax of Fortran namelists.
@@ -159,9 +159,9 @@ The namelist file for DATM is **datm_in** (or **datm_in_NNN** for multiple insta
 - To modify the contents of a DATM stream file, first run ``preview_namelists`` to list the *streams.txt* files in the **CaseDocs/** directory. Then, in the same directory:
 
   1. Make a *copy* of the file with the string *"user_"* prepended.
-        ``> cp datm.streams.txt.[extension] user_datm.streams.txt[extension.``
+        ``> cp datm.streams.txt.EXTENSION user_datm.streams.txt.EXTENSION``
   2. **Change the permissions of the file to be writeable.** (chmod 644)
-        ``chmod 644 user_datm.streams.txt[extension``
+        ``chmod 644 user_datm.streams.txt.EXTENSION``
   3. Edit the **user_datm.streams.txt.*** file.
 
 **Example**
@@ -180,9 +180,9 @@ The namelist file for DOCN is **docn_in** (or **docn_in_NNN** for multiple insta
 - To modify the contents of a DOCN stream file, first run ``preview_namelists`` to list the *streams.txt* files in the **CaseDocs/** directory. Then, in the same directory:
 
   1. Make a *copy* of the file with the string *"user_"* prepended.
-        ``> cp docn.streams.txt.[extension] user_docn.streams.txt[extension.``
+        ``> cp docn.streams.txt.EXTENSION user_docn.streams.txt.EXTENSION``
   2. **Change the permissions of the file to be writeable.** (chmod 644)
-        ``chmod 644 user_docn.streams.txt[extension``
+        ``chmod 644 user_docn.streams.txt.EXTENSION``
   3. Edit the **user_docn.streams.txt.*** file.
 
 **Example**
@@ -201,9 +201,9 @@ The namelist file for DICE is ``dice_in`` (or ``dice_in_NNN`` for multiple insta
 - To modify the contents of a DICE stream file, first run ``preview_namelists`` to list the *streams.txt* files in the **CaseDocs/** directory. Then, in the same directory:
 
   1. Make a *copy* of the file with the string *"user_"* prepended.
-        ``> cp dice.streams.txt.[extension] user_dice.streams.txt[extension.``
+        ``> cp dice.streams.txt.EXTENSION user_dice.streams.txt.EXTENSION``
   2. **Change the permissions of the file to be writeable.** (chmod 644)
-        ``chmod 644 user_dice.streams.txt[extension``
+        ``chmod 644 user_dice.streams.txt.EXTENSION``
   3. Edit the **user_dice.streams.txt.*** file.
 
 Data Land (DLND)
@@ -217,9 +217,9 @@ The namelist file for DLND is ``dlnd_in`` (or ``dlnd_in_NNN`` for multiple insta
 - To modify the contents of a DLND stream file, first run ``preview_namelists`` to list the *streams.txt* files in the **CaseDocs/** directory. Then, in the same directory:
 
   1. Make a *copy* of the file with the string *"user_"* prepended.
-        ``> cp dlnd.streams.txt.[extension] user_dlnd.streams.txt[extension.``
+        ``> cp dlnd.streams.txt.EXTENSION user_dlnd.streams.txt.EXTENSION``
   2. **Change the permissions of the file to be writeable.** (chmod 644)
-        ``chmod 644 user_dlnd.streams.txt[extension``
+        ``chmod 644 user_dlnd.streams.txt.EXTENSION``
   3. Edit the **user_dlnd.streams.txt.*** file.
 
 Data River (DROF)
@@ -233,9 +233,9 @@ The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple insta
 - To modify the contents of a DROF stream file, first run ``preview_namelists`` to list the *streams.txt* files in the **CaseDocs/** directory. Then, in the same directory:
 
   1. Make a *copy* of the file with the string *"user_"* prepended.
-        ``> cp drof.streams.txt.[extension] user_drof.streams.txt[extension.``
+        ``> cp drof.streams.txt.EXTENSION user_drof.streams.txt.EXTENSION``
   2. **Change the permissions of the file to be writeable.** (chmod 644)
-        ``chmod 644 user_drof.streams.txt[extension``
+        ``chmod 644 user_drof.streams.txt.EXTENSION``
   3. Edit the **user_drof.streams.txt.*** file.
 
 Customizing active component-specific namelist settings
@@ -243,12 +243,12 @@ Customizing active component-specific namelist settings
 
 Active components typically provide a ``buildnml`` script in their ``cime_config`` directory that generates the component's namelist variables. Component-specific CIME xml variables are set in the component's ``config_component.xml`` file and are used by the ``buildnml`` script to generate the namelist.
 
-To modify an active component's namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_<comp>** file, where ``<comp>`` is the component name. See the documentation at the top of each ``user_nl`` file for details.
+To modify an active component's namelist settings, add the appropriate keyword/value pair at the end of the **$CASEROOT/user_nl_COMP** file, where ``COMP`` is the component name. See the documentation at the top of each ``user_nl`` file for details.
 
 For example, to modify a namelist variable for an atmosphere component, edit the corresponding ``user_nl`` file:
 ::
 
- <variable_name>=<value>
+ VARIABLE_NAME=VALUE
 
 To see the result, call ``preview_namelists`` and verify that the new value appears in the appropriate file under **CaseDocs/**.
 
@@ -278,7 +278,7 @@ If you set the ``CASE_GIT_REPOSITORY`` variable to a valid Git repository URL, t
 
 .. code-block:: bash
 
-    ./xmlchange CASE_GIT_REPOSITORY=<repository>
+    ./xmlchange CASE_GIT_REPOSITORY=REPOSITORY
 
 .. note::
 
