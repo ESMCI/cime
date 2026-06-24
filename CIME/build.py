@@ -753,7 +753,7 @@ def _build_libraries(
     buildlist,
     comp_interface,
     complist,
-    ninja,
+    ninja=False,
 ):
     ###############################################################################
 
@@ -1441,7 +1441,7 @@ def _case_build_impl(
                     buildlist,
                     comp_interface,
                     complist,
-                    ninja,
+                    ninja=ninja,
                 )
 
             if not sharedlib_only:
