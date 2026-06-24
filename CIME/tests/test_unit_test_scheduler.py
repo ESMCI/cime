@@ -297,7 +297,9 @@ class TestXmlPhaseGmakeJ:
             MockCase.return_value.__enter__ = mock.MagicMock(return_value=case_mock)
             MockCase.return_value.__exit__ = mock.MagicMock(return_value=False)
             # Stack all other patches
-            with patches[0], patches[1], patches[2], patches[3], patches[4], patches[5], patches[6]:
+            with patches[0], patches[1], patches[2], patches[3], patches[4], patches[
+                5
+            ], patches[6]:
                 ts._xml_phase(_TEST_NAME)
 
         return case_mock
