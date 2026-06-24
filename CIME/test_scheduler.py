@@ -252,7 +252,11 @@ class TestScheduler(object):
         if no_batch_build:
             self._batched_build = False
 
-        if self._config.calculate_mode_build_cost:
+        # Compute cost on current node of doing the model build
+        if self._batched_build:
+            # Low cost on current node because build won't be done here
+            self._model_build_cost = 1
+        elif self._config.calculate_mode_build_cost:
             # Current build system is unlikely to be able to productively use more than 16 cores
             self._model_build_cost = min(
                 16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
@@ -991,6 +995,10 @@ class TestScheduler(object):
             if self._model_build_cost > self._proc_pool:
                 case.set_value("GMAKE_J", self._proc_pool)
                 self._model_build_cost = self._proc_pool
+            elif self._batched_build:
+                # May as well use whole node for batched builds
+                max_tasks = self._machobj.get_value("MAX_TASKS_PER_NODE")
+                case.set_value("GMAKE_J", max_tasks)
 
         return True, ""
 
@@ -1199,7 +1207,7 @@ class TestScheduler(object):
             return 1
         elif phase == MODEL_BUILD_PHASE:
             # Model builds now happen in parallel
-            return 1 if self._batched_build else self._model_build_cost
+            return self._model_build_cost
         else:
             return 1
 
