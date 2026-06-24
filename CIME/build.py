@@ -508,8 +508,15 @@ def _build_model_cmake(
         cmake_env = ""
         ninja_path = os.path.join(srcroot, "externals/ninja/bin")
         if ninja:
-            cmake_args += " -GNinja "
-            cmake_env += "PATH={}:$PATH ".format(ninja_path)
+            # Make sure ninja exe works!
+            nstat, _, nerr = run_cmd(f"{ninja_path}/ninja --version")
+            if nstat != 0:
+                logger.warning(
+                    f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
+                )
+            else:
+                cmake_args += " -GNinja "
+                cmake_env += "PATH={}:$PATH ".format(ninja_path)
 
         # Glue all pieces together:
         #  - cmake environment
