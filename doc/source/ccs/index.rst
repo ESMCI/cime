@@ -18,7 +18,7 @@ The first thing to do is clone the model repository into ``$SRCROOT``.
 
 All examples will be run from ``$CIMEROOT`` which is should exist under ``$SRCROOT`` e.g. (``$CIMEROOT`` would be ``$SRCROOT/cime``).
 
-Next set the ``CIME_MODEL`` environment variable for your model, e.g. ``export CIME_MODEL=<model>``.
+Next set the ``CIME_MODEL`` environment variable for your model, e.g. ``export CIME_MODEL=<your-model>`` (see :ref:`Setting up your environment for CCS <ccs-env-setup>` for valid values).
 
 .. note::
 
@@ -155,16 +155,18 @@ Customizations
 The CCS allows for a number of customizations to be made to a case.
 
 
+.. _ccs-env-setup:
+
 Setting up your environment for CCS
 ```````````````````````````````````
 After you've cloned the model repository, you'll need to set up your environment to use the CCS.
 
 First you'll need to let CIME know which model configuration to use by setting the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
-**<model>** with the appropriate text. Current possibilities are "e3sm", "cesm", or "ufs".
+**<your-model>** with the appropriate text. Current possibilities are "e3sm", "cesm", or "ufs".
 
 ::
 
-    export CIME_MODEL=<model>
+    export CIME_MODEL=<your-model>
 
 There are a number of possible ways to set CIME variables.
 For variables that can be set in more than one way, the order of precedence is:
