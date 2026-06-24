@@ -514,6 +514,7 @@ def _build_model_cmake(
                 logger.warning(
                     f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
                 )
+                ninja = False
             else:
                 cmake_args += " -GNinja "
                 cmake_env += "PATH={}:$PATH ".format(ninja_path)
