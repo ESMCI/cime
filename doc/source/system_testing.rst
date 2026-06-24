@@ -379,12 +379,12 @@ TESTMODS     Name of the directory under ``GROUP`` that contains any combination
 
   A test mod can contain any combination of ``user_nl_*``, ``shell_commands``, ``user_mods``, or ``params.py``.
 
-For example, the ``ERP`` test for an ``F-case`` can be modified to use a different radiation scheme by using ``eam-rrtmgp``::
+For example, the ``ERP`` test for an E3SM ``F-case`` can be modified to use a different radiation scheme by using ``eam-rrtmgp``, where ``pm-cpu_intel`` is the E3SM-specific machine/compiler combination (Perlmutter CPU partition with Intel compiler)::
 
   ERP_D_Ld3.ne4pg2_oQU480.F2010.pm-cpu_intel.eam-rrtmgp
 
-If ``TESTS_MODS_DIR`` was set to ``$SRCROOT/components/eam/cime_config/testdefs/testmods_dirs`` then the
-directory containing the testmods would be ``$SRCROOT/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg``.
+If ``TESTS_MODS_DIR`` was set to ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs`` then the
+directory containing the testmods would be ``$E3SM/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg``.
 
 In this directory, you'd find a `shell_commands`` file containing the following::
 
