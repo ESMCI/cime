@@ -71,21 +71,85 @@ As an example, on a MAC with 2 cores that has mpich with gnu fortran you would i
 Linux and Mac Support
 ---------------------------
 
-Your model distribution may include generic machine definitions (e.g., **homebrew** and **centos7-linux**) in the file **$CIMEROOT/config/$model/machines/config_machines.xml**.
+Your model distribution may include generic machine definitions in the model's ``config_machines.xml`` file.
+The location of this file is model-dependent and is set by the ``MACHINES_SPEC_FILE`` entry in the model's ``config_files.xml`` (see :ref:`MACHINES_SPEC_FILE <model_config_machines>`); refer to your model repository for the exact path.
 Please see the instructions in the file to create the directory structure and use these generic machine definitions.
+
+.. _config-machines-schema-versions:
+
+About config_machines.xml
+---------------------------
+
+The ``config_machines.xml`` file describes the machines on which CIME-driven models can be built and run.
+Both its location and the XML schema(s) it must conform to are **model-dependent**.
+
+The schema(s) advertised by a model are declared as ``<schema>`` children of the ``MACHINES_SPEC_FILE`` entry in that model's ``config_files.xml``.
+The XSD applied at validation time is then selected from the ``version`` attribute on the root ``<config_machines>`` element of the file being loaded.
+The two supported schemas are:
+
+**Version 2.0 (monolithic)** — ``$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd``
+   A single file contains the full definition for every supported machine.
+   Each ``<machine MACH="...">`` block carries its own ``<NODENAME_REGEX>`` (used by CIME to auto-detect the machine), and ``<machine>`` must appear at least once at the top level.
+
+   .. code-block:: xml
+
+      <config_machines version="2.0">
+        <machine MACH="mymachine">
+          <DESC>...</DESC>
+          <NODENAME_REGEX>mymachine.*</NODENAME_REGEX>
+          <OS>LINUX</OS>
+          ...
+        </machine>
+        <machine MACH="othermachine">
+          ...
+        </machine>
+      </config_machines>
+
+**Version 3.0 (per-machine directory)** — ``$CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd``
+   The top-level ``config_machines.xml`` only holds a registry that maps each machine to its node-name regex.
+   The full definition for each machine lives in its own subdirectory (``<machines_dir>/<MACH>/config_machines.xml``) next to that machine's ``config_batch.xml`` and ``*.cmake`` files.
+   Top-level ``<machine>`` blocks are optional, ``<NODENAME_REGEX>`` is removed from individual ``<machine>`` blocks, and the v3 schema additionally accepts a ``<TORCH_DIR>`` element per machine.
+
+   .. code-block:: xml
+
+      <config_machines version="3.0">
+        <NODENAME_REGEX>
+          <value MACH="mymachine">mymachine.*</value>
+          <value MACH="othermachine">other.*</value>
+        </NODENAME_REGEX>
+      </config_machines>
+
+   Per-machine file (``<machines_dir>/mymachine/config_machines.xml``):
+
+   .. code-block:: xml
+
+      <config_machines version="3.0">
+        <machine MACH="mymachine">
+          <DESC>...</DESC>
+          <OS>LINUX</OS>
+          ...
+        </machine>
+      </config_machines>
+
+Not every model registers both schemas. Refer to the ``MACHINES_SPEC_FILE`` entry in your model's ``config_files.xml`` to see which schema versions are available; if no ``version`` attribute is present on the ``<schema>`` entry, the model accepts a single unversioned schema matching the **2.0** layout.
+
+See :ref:`MACHINES_SPEC_FILE <model_config_machines>` for the full element reference for both schema versions.
 
 Steps for porting
 ---------------------------
 
 Porting CIME involves several steps. The first step is to define your machine. You can do this in one of two ways:
 
-1. You can edit **$CIMEROOT/config/$model/machines/config_machines.xml** and add an appropriate section for your machine.
+1. You can edit the model's ``config_machines.xml`` directly (the path is given by ``MACHINES_SPEC_FILE`` in the model's ``config_files.xml``) and add an appropriate section for your machine.
+   For a **version 3.0** layout, instead add (or update) a ``<value MACH="...">`` entry under the top-level ``<NODENAME_REGEX>`` and create a ``<machines_dir>/<your_machine>/`` subdirectory containing the per-machine ``config_machines.xml``, ``config_batch.xml`` and ``*.cmake`` files.
 
 2. You can use your **$HOME/.cime** directory (see :ref:`customizing-cime`).
    In particular, you can create a **$HOME/.cime/config_machines.xml** file with the definition for your machine.
-   A template to create this definition is provided in **$CIMEROOT/config/xml_schemas/config_machines_template.xml**. More details are provided in the template file.
+   A template to create this definition is provided in **$CIMEROOT/CIME/data/config/xml_schemas/config_machines_template.xml**. More details are provided in the template file.
    In addition, if you have a batch system, you will also need to add a **config_batch.xml** file to your **$HOME/.cime** directory.
-   All files in **$HOME/.cime/** are appended to the xml objects that are read into memory from the **$CIME/config/$model** directory.
+   All files in **$HOME/.cime/** are appended to the xml objects that are read into memory from the directory containing the model's ``MACHINES_SPEC_FILE``.
+
+   .. note:: When the model uses the **version 3.0** schema, the per-machine override is read from **$HOME/.cime/<your_machine>/config_machines.xml** (and a top-level **$HOME/.cime/config_machines.xml** may be used to register the ``NODENAME_REGEX``).
 
    .. note:: If you use method (2), you can download CIME updates without affecting your machine definitions in **$HOME/.cime**.
 
@@ -97,18 +161,22 @@ In what follows we outline the process for method (2) above:
 
    This file contains all the information you must set in order to configure a new machine to be CIME-compliant.
 
-   Fill in the contents of **$HOME/.cime/config_machines.xml** that are specific to your machine. For more details see :ref:`the config_machines.xml file <model_config>`.
+   Fill in the contents of **$HOME/.cime/config_machines.xml** that are specific to your machine. For more details see :ref:`MACHINES_SPEC_FILE <model_config_machines>` and :ref:`the schema overview above <config-machines-schema-versions>`.
 
-   Check to ensure that your **config_machines.xml** file conforms to the CIME schema definition by doing the following:
+   Check to ensure that your **config_machines.xml** file conforms to the CIME schema definition by validating it against the XSD that matches the ``version`` declared on its root element:
    ::
 
-      xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+      # version 2.0 (also used when the model registers only an unversioned schema)
+      xmllint --noout --schema $CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+
+      # version 3.0
+      xmllint --noout --schema $CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd $HOME/.cime/config_machines.xml
 
 -  If you find that you need to introduce compiler settings specific to your machine, create a **$HOME/.cime/*.cmake** file.
-   The default compiler settings are defined in **$CIME/config/$model/machines/cmake_macros/**.
+   The default compiler settings are defined in the ``cmake_macros/`` directory that lives alongside the model's ``MACHINES_SPEC_FILE``.
 
 -  If you have a batch system, you may also need to create a **$HOME/.cime/config_batch.xml** file.
-   Out-of-the-box batch settings are set in **$CIME/config/$model/machines/config_batch.xml**.
+   Out-of-the-box batch settings are set in the ``config_batch.xml`` file that lives alongside the model's ``MACHINES_SPEC_FILE`` (its path is given by ``BATCH_SPEC_FILE`` in the model's ``config_files.xml``).
 
 -  Once you have defined a basic configuration for your machine in your **$HOME/.cime** xml files, run the :ref:`unittest <contributing-guide-running-tests>`.
 
