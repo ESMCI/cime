@@ -185,6 +185,10 @@ After running those steps correctly, you are ready to try a case at your target 
 Validating a port with prognostic components
 -------------------------------------------------
 
+.. note::
+
+   This section is specific to CESM (and NorESM). Consult your model's documentation for the equivalent procedure.
+
 The following port validation is recommended for any new machine.
 Carrying out these steps does not guarantee the model is running
 properly in all cases nor that the model is scientifically valid on
