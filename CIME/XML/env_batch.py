@@ -816,7 +816,6 @@ class EnvBatch(EnvBase):
 
         startindex = 0
         jobs = []
-        firstjob = job
         if job is not None:
             expect(job in alljobs, "Do not know about batch job {}".format(job))
             startindex = alljobs.index(job)
@@ -830,12 +829,7 @@ class EnvBatch(EnvBase):
                 prereq = self._env_workflow.get_value(
                     "prereq", subgroup=job, resolved=False
                 )
-                if (
-                    external_workflow
-                    or prereq is None
-                    or job == firstjob
-                    or (dry_run and prereq == "$BUILD_COMPLETE")
-                ):
+                if external_workflow or prereq is None or dry_run:
                     prereq = True
                 else:
                     prereq = case.get_resolved_value(prereq)
