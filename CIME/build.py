@@ -834,12 +834,12 @@ def _build_libraries(
     generate_makefile_macro(case, caseroot)
 
     if ninja:
-        check_ninja(case)
-        ninja = False
-    else:
-        # We cannot know if the various buildlib scripts support ninja.
-        # Just set an env var to let them know ninja was requested.
-        os.environ["CIME_SHAREDLIB_NINJA"] = "TRUE"
+        if check_ninja(case):
+            # We cannot know if the various buildlib scripts support ninja.
+            # Just set an env var to let them know ninja was requested.
+            os.environ["CIME_SHAREDLIB_NINJA"] = "TRUE"
+        else:
+            ninja = False
 
     for lib in libs:
         if buildlist is not None and lib not in buildlist:
