@@ -69,6 +69,22 @@ _CMD_ARGS_FOR_BUILD = (
 )
 
 
+def check_ninja(case):
+    # Ninja path is currently hardcoded! Probably want to change this.
+    srcroot = case.get_value("SRCROOT")
+    ninja_path = os.path.join(srcroot, "externals/ninja/bin")
+
+    # Check exe by querying version
+    nstat, _, nerr = run_cmd(f"{ninja_path}/ninja --version")
+    if nstat != 0:
+        logger.warning(
+            f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
+        )
+        return False
+    else:
+        return True
+
+
 class CmakeTmpBuildDir(object):
     """
     Use to create a temporary cmake build dir for the purposes of querying
@@ -508,8 +524,12 @@ def _build_model_cmake(
         cmake_env = ""
         ninja_path = os.path.join(srcroot, "externals/ninja/bin")
         if ninja:
-            cmake_args += " -GNinja "
-            cmake_env += "PATH={}:$PATH ".format(ninja_path)
+            # Make sure ninja exe works!
+            if check_ninja(case):
+                cmake_args += " -GNinja "
+                cmake_env += "PATH={}:$PATH ".format(ninja_path)
+            else:
+                ninja = False
 
         # Glue all pieces together:
         #  - cmake environment
@@ -733,6 +753,7 @@ def _build_libraries(
     buildlist,
     comp_interface,
     complist,
+    ninja=False,
 ):
     ###############################################################################
 
@@ -811,6 +832,14 @@ def _build_libraries(
 
     # generate Makefile macro
     generate_makefile_macro(case, caseroot)
+
+    if ninja:
+        if check_ninja(case):
+            # We cannot know if the various buildlib scripts support ninja.
+            # Just set an env var to let them know ninja was requested.
+            os.environ["CIME_SHAREDLIB_NINJA"] = "TRUE"
+        else:
+            ninja = False
 
     for lib in libs:
         if buildlist is not None and lib not in buildlist:
@@ -1412,6 +1441,7 @@ def _case_build_impl(
                     buildlist,
                     comp_interface,
                     complist,
+                    ninja=ninja,
                 )
 
             if not sharedlib_only:

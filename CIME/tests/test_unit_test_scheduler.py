@@ -11,6 +11,9 @@ False on the model config, the sharedlib and model build phases are fused:
 When either condition is not met the original two-phase behaviour is kept.
 The ``no_batch_build`` constructor flag forces ``_batched_build = False``
 regardless of the machine setting.
+
+The _xml_phase sets GMAKE_J to MAX_TASKS_PER_NODE when batched builds are
+enabled so the entire compute node is used for the build job.
 """
 
 from unittest import mock
@@ -26,6 +29,7 @@ from CIME.test_status import TEST_PASS_STATUS, SHAREDLIB_BUILD_PHASE
 
 _TEST_NAME = "SMS_P2.f19_g16.A.melvin_gnu"
 _TEST_DIR = "/fake/testroot/{}".format(_TEST_NAME)
+_MAX_TASKS_PER_NODE = 64
 
 
 def _make_scheduler(serialize_sharedlib_builds, batched_build, build_group=None):
@@ -41,6 +45,119 @@ def _make_scheduler(serialize_sharedlib_builds, batched_build, build_group=None)
     ts._get_test_dir = mock.MagicMock(return_value=_TEST_DIR)
     ts._shell_cmd_for_phase = mock.MagicMock(return_value=(True, ""))
     return ts
+
+
+def _make_xml_scheduler(batched_build, model_build_cost=1, proc_pool=16):
+    """Return a bare TestScheduler populated with the attributes _xml_phase needs."""
+    bg = (_TEST_NAME,)
+    ts = object.__new__(test_scheduler.TestScheduler)
+    ts._build_groups = [bg]
+    ts._build_group_exeroots = {bg: None}
+    ts._tests = {_TEST_NAME: (TEST_START, TEST_PASS_STATUS)}
+    ts._config = mock.MagicMock()
+    ts._config.common_sharedlibroot = False
+    ts._batched_build = batched_build
+    ts._model_build_cost = model_build_cost
+    ts._proc_pool = proc_pool
+    ts._get_test_dir = mock.MagicMock(return_value=_TEST_DIR)
+    ts._cime_driver = "mct"  # avoid nuopc-specific os.path.exists check
+    ts._test_id = "testid_0"
+    ts._test_data = {}
+    ts._baseline_gen_name = None
+    ts._baseline_cmp_name = None
+    ts._baseline_root = "/fake/baseline"
+    ts._clean = False
+    ts._save_timing = False
+    ts._output_root = "/fake/output"
+    ts._non_local = False
+    ts._test_root = "/fake/tests"
+    ts._machobj = mock.MagicMock()
+    ts._machobj.get_value.side_effect = lambda key, **kw: {
+        "MAX_TASKS_PER_NODE": _MAX_TASKS_PER_NODE,
+        "TEST_MEMLEAK_TOLERANCE": None,
+        "TEST_TPUT_TOLERANCE": None,
+        "CCSM_CPRNC": "/fake/cprnc",
+    }.get(key)
+    return ts
+
+
+def _xml_phase_patches():
+    """Return a list of patches needed to run _xml_phase in isolation."""
+    return [
+        mock.patch("CIME.test_scheduler.EnvTest"),
+        mock.patch("CIME.test_scheduler.Files"),
+        mock.patch("CIME.test_scheduler.Component"),
+        mock.patch("CIME.test_scheduler.Tests"),
+        mock.patch("CIME.test_scheduler.lock_file"),
+        mock.patch("CIME.test_scheduler.is_perf_test", return_value=False),
+        mock.patch("os.path.exists", return_value=True),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# _xml_phase: GMAKE_J = MAX_TASKS_PER_NODE for batched builds
+# ---------------------------------------------------------------------------
+
+
+class TestXmlPhaseGmakeJ:
+    """Tests for the _xml_phase feature that sets GMAKE_J to MAX_TASKS_PER_NODE
+    when batched builds are enabled, so the entire compute node is used."""
+
+    def _run_xml_phase(self, ts):
+        """Run _xml_phase under all necessary mocks; return the case mock."""
+        case_mock = mock.MagicMock()
+        case_mock.get_value.return_value = "/fake/exeroot"
+
+        patches = _xml_phase_patches()
+        with mock.patch("CIME.test_scheduler.Case") as MockCase:
+            MockCase.return_value.__enter__ = mock.MagicMock(return_value=case_mock)
+            MockCase.return_value.__exit__ = mock.MagicMock(return_value=False)
+            # Stack all other patches
+            with patches[0], patches[1], patches[2], patches[3], patches[4], patches[
+                5
+            ], patches[6]:
+                ts._xml_phase(_TEST_NAME)
+
+        return case_mock
+
+    def test_gmake_j_set_to_max_tasks_per_node_when_batched(self):
+        """When _batched_build is True, GMAKE_J must be set to MAX_TASKS_PER_NODE."""
+        ts = _make_xml_scheduler(batched_build=True)
+        case_mock = self._run_xml_phase(ts)
+
+        case_mock.set_value.assert_any_call("GMAKE_J", _MAX_TASKS_PER_NODE)
+        ts._machobj.get_value.assert_any_call("MAX_TASKS_PER_NODE")
+
+    def test_gmake_j_not_set_to_max_tasks_when_not_batched(self):
+        """When _batched_build is False, GMAKE_J must NOT be set to MAX_TASKS_PER_NODE."""
+        ts = _make_xml_scheduler(batched_build=False)
+        case_mock = self._run_xml_phase(ts)
+
+        set_value_calls = [str(c) for c in case_mock.set_value.call_args_list]
+        gmake_j_calls = [c for c in set_value_calls if "GMAKE_J" in c]
+        assert not gmake_j_calls, (
+            "GMAKE_J should not be set when batched_build is False, "
+            f"but got: {gmake_j_calls}"
+        )
+
+    def test_gmake_j_capped_to_proc_pool_when_model_build_cost_exceeds_pool(self):
+        """When model_build_cost > proc_pool, GMAKE_J is reduced to proc_pool
+        regardless of batched_build. This verifies the cost-cap path takes
+        priority over the batched-build path."""
+        proc_pool = 8
+        ts = _make_xml_scheduler(
+            batched_build=True, model_build_cost=32, proc_pool=proc_pool
+        )
+        case_mock = self._run_xml_phase(ts)
+
+        case_mock.set_value.assert_any_call("GMAKE_J", proc_pool)
+        # The MAX_TASKS_PER_NODE path should NOT have been taken
+        max_tasks_calls = [
+            c
+            for c in ts._machobj.get_value.call_args_list
+            if c == mock.call("MAX_TASKS_PER_NODE")
+        ]
+        assert not max_tasks_calls
 
 
 # ---------------------------------------------------------------------------
