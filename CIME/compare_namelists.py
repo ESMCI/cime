@@ -207,6 +207,18 @@ def _parse_namelists(namelist_lines, filename):
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
     {'nml': {'val': ["'a brown cow'", "'a red hen'"]}}
+
+    >>> teststr = '''&nml
+    ... val = 1
+    ... /
+    ... &nml
+    ... val = 2
+    ... /
+    ... &nml
+    ... val = 3
+    ... /'''
+    >>> _parse_namelists(teststr.splitlines(), 'foo')
+    {'nml': {'val': '1'}, 'nml__2': {'val': '2'}, 'nml__3': {'val': '3'}}
     """
 
     comment_re = re.compile(r"^[#!]")
@@ -272,12 +284,14 @@ def _parse_namelists(namelist_lines, filename):
                 )
 
             current_namelist = namelist_re.match(line).groups()[0]
-            expect(
-                current_namelist not in rv,
-                "In file '{}', Duplicate namelist '{}'".format(
-                    filename, current_namelist
-                ),
-            )
+            # The Fortran standard allows multiple namelist groups with the
+            # same name (read sequentially). Use positional suffixes to
+            # distinguish them while preserving order for comparison.
+            if current_namelist in rv:
+                count = 2
+                while "{}__{}".format(current_namelist, count) in rv:
+                    count += 1
+                current_namelist = "{}__{}".format(current_namelist, count)
 
             rv[current_namelist] = {}
 
@@ -636,11 +650,45 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
       BASE: csw_specifier dict item DMS = 1.0*value.nc
       COMP: csw_specifier dict item DMS = 1.0*other.nc
     <BLANKLINE>
+
+    >>> gold = '''&nml
+    ... val = 1
+    ... /
+    ... &nml
+    ... val = 2
+    ... /
+    ... &nml
+    ... val = 3
+    ... /'''
+    >>> comp = '''&nml
+    ... val = 1
+    ... /
+    ... &nml
+    ... val = 20
+    ... /'''
+    >>> comments = _compare_namelists(_parse_namelists(gold.splitlines(), 'g'),\
+    _parse_namelists(comp.splitlines(), 'c'), None)
+    >>> print(comments)
+      BASE: val = 2
+      COMP: val = 20
+    Missing namelist: nml (occurrence 3)
+    <BLANKLINE>
     """
+
+    def _display_name(namelist):
+        """Translate internal 'nml__3' to 'nml (occurrence 3)'."""
+        if "__" in namelist:
+            parts = namelist.rsplit("__", 1)
+            if parts[1].isdigit():
+                return "{} (occurrence {})".format(parts[0], parts[1])
+        return namelist
+
     different_namelists = {}
     for namelist, gold_names in gold_namelists.items():
         if namelist not in comp_namelists:
-            different_namelists[namelist] = ["Missing namelist: {}\n".format(namelist)]
+            different_namelists[namelist] = [
+                "Missing namelist: {}\n".format(_display_name(namelist))
+            ]
         else:
             comp_names = comp_namelists[namelist]
             for name, gold_value in gold_names.items():
@@ -663,7 +711,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
     for namelist in comp_namelists:
         if namelist not in gold_namelists:
             different_namelists[namelist] = [
-                "Found extra namelist: {}\n".format(namelist)
+                "Found extra namelist: {}\n".format(_display_name(namelist))
             ]
 
     comments = ""
@@ -671,7 +719,9 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
         if len(nlcomment) == 1:
             comments += nlcomment[0]
         else:
-            comments += "Differences in namelist '{}':\n".format(namelist)
+            comments += "Differences in namelist '{}':\n".format(
+                _display_name(namelist)
+            )
             comments += "".join(nlcomment)
 
     return comments
