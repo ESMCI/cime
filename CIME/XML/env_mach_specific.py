@@ -300,6 +300,14 @@ class EnvMachSpecific(EnvBase):
                         )
                     )
 
+        srcroot = case.get_value("SRCROOT")
+        ninja_bin = os.path.join(srcroot, "externals", "ninja", "bin")
+        if os.path.isdir(ninja_bin):
+            ninja_path = f"{ninja_bin}{os.pathsep}$PATH"
+            if envs_to_set is None:
+                envs_to_set = []
+            envs_to_set.append(("PATH", ninja_path))
+
         if envs_to_set is not None:
             for env_name, env_value in envs_to_set:
                 if shell == "sh":
