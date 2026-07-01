@@ -72,10 +72,9 @@ _CMD_ARGS_FOR_BUILD = (
 def check_ninja(case):
     # Ninja path is currently hardcoded! Probably want to change this.
     srcroot = case.get_value("SRCROOT")
-    ninja_path = os.path.join(srcroot, "externals/ninja/bin")
 
     # Check exe by querying version
-    nstat, _, nerr = run_cmd(f"{ninja_path}/ninja --version")
+    nstat, _, nerr = run_cmd(f"ninja --version")
     if nstat != 0:
         logger.warning(
             f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
@@ -492,7 +491,6 @@ def _build_model_cmake(
     bldlog = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
     srcroot = case.get_value("SRCROOT")
     gmake_j = case.get_value("GMAKE_J")
-    gmake = case.get_value("GMAKE")
 
     # make sure bldroot and libroot exist
     for build_dir in [bldroot, libroot]:
@@ -522,12 +520,10 @@ def _build_model_cmake(
         # Call CMake
         cmake_args = get_standard_cmake_args(case, sharedpath)
         cmake_env = ""
-        ninja_path = os.path.join(srcroot, "externals/ninja/bin")
         if ninja:
             # Make sure ninja exe works!
             if check_ninja(case):
                 cmake_args += " -GNinja "
-                cmake_env += "PATH={}:$PATH ".format(ninja_path)
             else:
                 ninja = False
 
@@ -578,11 +574,7 @@ def _build_model_cmake(
     for model in buildlist:
         t1 = time.time()
 
-        make_cmd = "{}{} -j {}".format(
-            do_timing,
-            gmake if not ninja else "{} -v".format(os.path.join(ninja_path, "ninja")),
-            gmake_j,
-        )
+        make_cmd = f"{do_timing}cmake --build . -j{gmake_j} -v"
         if model != "cpl":
             make_cmd += " {}".format(model)
             curr_log = os.path.join(exeroot, "{}.bldlog.{}".format(model, lid))
@@ -1096,7 +1088,7 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
             cmake_path = os.path.join(cmake_comp_root, clean_item)
             if os.path.exists(cmake_path):
                 # Item was created by cmake build system
-                clean_cmd = "cd {} && {} clean".format(cmake_path, gmake)
+                clean_cmd = f"cd {cmake_path} && cmake --build . -t clean -v"
             else:
                 # Item was created by classic build system
                 # do I need this? generate_makefile_macro(case, caseroot, clean_item)

@@ -36,7 +36,6 @@ class HommeBase(SystemTestsCommon):
             baseline = self._case.get_value("BASELINE_ROOT")
             basecmp = self._case.get_value("BASECMP_CASE")
             compare = self._case.get_value("COMPARE_BASELINE")
-            gmake = self._case.get_value("GMAKE")
             gmake_j = self._case.get_value("GMAKE_J")
             cprnc = self._case.get_value("CCSM_CPRNC")
             is_debug = self._case.get_value("DEBUG")
@@ -75,7 +74,7 @@ class HommeBase(SystemTestsCommon):
                 from_dir=exeroot,
             )
             run_cmd_no_fail(
-                "{} -j{} VERBOSE=1 test-execs".format(gmake, gmake_j),
+                f"cmake --build . -j{gmake_j} -v -t test-execs",
                 arg_stdout=log_path,
                 combine_output=True,
                 from_dir=exeroot,
@@ -102,7 +101,6 @@ class HommeBase(SystemTestsCommon):
         compare = self._case.get_value("COMPARE_BASELINE")
         generate = self._case.get_value("GENERATE_BASELINE")
         basegen = self._case.get_value("BASEGEN_CASE")
-        gmake = self._case.get_value("GMAKE")
 
         lid = new_lid(case=self._case)
         log = os.path.join(rundir, "homme.log." + lid)
@@ -110,7 +108,7 @@ class HommeBase(SystemTestsCommon):
         if generate:
             full_baseline_dir = os.path.join(baseline, basegen, "tests", "baseline")
             stat = run_cmd(
-                "{} -j 4 baseline".format(gmake),
+                "cmake --build . -j4 -v -t baseline",
                 arg_stdout=log,
                 combine_output=True,
                 from_dir=exeroot,
@@ -127,7 +125,7 @@ class HommeBase(SystemTestsCommon):
 
         elif compare:
             stat = run_cmd(
-                "{} -j 4 check".format(gmake),
+                "cmake --build . -j4 -v -t check"
                 arg_stdout=log,
                 combine_output=True,
                 from_dir=exeroot,
@@ -135,14 +133,14 @@ class HommeBase(SystemTestsCommon):
 
         else:
             stat = run_cmd(
-                "{} -j 4 baseline".format(gmake),
+                "cmake --build . -j4 -v -t baseline"
                 arg_stdout=log,
                 combine_output=True,
                 from_dir=exeroot,
             )[0]
             if stat == 0:
                 stat = run_cmd(
-                    "{} -j 4 check".format(gmake),
+                    "cmake --build . -j4 -v -t check"
                     arg_stdout=log,
                     combine_output=True,
                     from_dir=exeroot,
