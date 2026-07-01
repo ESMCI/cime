@@ -70,21 +70,22 @@ def parse_command_line(args, description):
         help="Case directory to build.\n" "Default is current directory.",
     )
 
-    if get_model() == "e3sm":
-        parser.add_argument(
-            "--ninja",
-            action="store_true",
-            help="Use ninja backed for CMake (instead of gmake). "
-            "The ninja backend is better at scanning fortran dependencies but "
-            "seems to be less reliable across different platforms and compilers.",
-        )
+    parser.add_argument(
+        "--ninja",
+        action="store_true",
+        help="Use ninja backed for CMake (instead of gmake). "
+        "The ninja backend is better at scanning fortran dependencies but "
+        "seems to be less reliable across different platforms and compilers.",
+    )
 
-        parser.add_argument(
-            "--gmake",
-            action="store_true",
-            help="Use gmake backed for CMake (instead of ninja). "
-            "Slower, but potentially more reliable",
-        )
+    parser.add_argument(
+        "--gmake",
+        action="store_true",
+        help="Use gmake backed for CMake (instead of ninja). "
+        "Slower, but potentially more reliable",
+    )
+
+    if get_model() == "e3sm":
 
         parser.add_argument(
             "--separate-builds",
@@ -195,12 +196,15 @@ def parse_command_line(args, description):
 
     if get_model() != "e3sm":
         args.separate_builds = False
-        args.ninja = False
-    else:
-        expect(not (args.ninja and args.gmake),
-               "Cannot request both gmake and ninja cmake backends")
-        # If ninja was requested or gmake was not explicitly requested, use ninja
-        if not args.gmake:
+
+    cmake_backend = case.get_value("CMAKE_BACKEND")
+    expect(not (args.ninja and args.gmake),
+           "Cannot request both gmake and ninja cmake backends")
+
+    # If no backend was explicitly requested, we will use ninja only if
+    # that's the default cmake backend for this machine
+    if (not args.ninja and not args.gmake):
+        if cmake_backend is not None and cmake_backend.lower() == "ninja":
             args.ninja = True
 
     return (
