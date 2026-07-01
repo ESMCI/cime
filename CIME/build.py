@@ -837,7 +837,7 @@ def _build_libraries(
         if check_ninja(case):
             # We cannot know if the various buildlib scripts support ninja.
             # Just set an env var to let them know ninja was requested.
-            os.environ["CIME_SHAREDLIB_NINJA"] = "TRUE"
+            os.environ["CMAKE_GENERATOR"] = "Ninja"
         else:
             ninja = False
 

@@ -80,6 +80,13 @@ def parse_command_line(args, description):
         )
 
         parser.add_argument(
+            "--gmake",
+            action="store_true",
+            help="Use gmake backed for CMake (instead of ninja). "
+            "Slower, but potentially more reliable",
+        )
+
+        parser.add_argument(
             "--separate-builds",
             action="store_true",
             help="Build each component one at a time, separately, with output going to separate logs",
@@ -189,6 +196,12 @@ def parse_command_line(args, description):
     if get_model() != "e3sm":
         args.separate_builds = False
         args.ninja = False
+    else:
+        expect(not (args.ninja and args.gmake),
+               "Cannot request both gmake and ninja cmake backends")
+        # If ninja was requested or gmake was not explicitly requested, use ninja
+        if not args.gmake:
+            args.ninja = True
 
     return (
         args.caseroot,
