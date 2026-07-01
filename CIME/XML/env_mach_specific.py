@@ -147,6 +147,14 @@ class EnvMachSpecific(EnvBase):
         if env_nodes is not None:
             envs_to_set = self._compute_env_actions(env_nodes, case, job=job)
 
+        srcroot = case.get_value("SRCROOT")
+        ninja_bin = os.path.join(srcroot, "externals", "ninja", "bin")
+        if os.path.isdir(ninja_bin):
+            ninja_path = ninja_bin + os.pathsep + os.environ.get("PATH", "")
+            if envs_to_set is None:
+                envs_to_set = []
+            envs_to_set.append(("PATH", ninja_path))
+
         return envs_to_set
 
     def load_env(self, case, force_method=None, job=None, verbose=False):
@@ -166,13 +174,6 @@ class EnvMachSpecific(EnvBase):
             self._load_envs(envs_to_set, verbose=verbose)
 
         self._set_resources_for_case(case)
-
-        # Make ninja access convenient if it exists.
-        srcroot = case.get_value("SRCROOT")
-        ninja_bin = os.path.join(srcroot, "externals", "ninja", "bin")
-        if os.path.isdir(ninja_bin):
-            os.environ["PATH"] = ninja_bin + os.pathsep + os.environ.get("PATH", "")
-            logger.debug("Added {} to PATH".format(ninja_bin))
 
         return [] if envs_to_set is None else envs_to_set
 
