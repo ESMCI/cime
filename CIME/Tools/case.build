@@ -73,7 +73,7 @@ def parse_command_line(args, description):
     parser.add_argument(
         "--ninja",
         action="store_true",
-        help="Use ninja backed for CMake (instead of gmake). "
+        help="Use ninja backend for CMake (instead of gmake). "
         "The ninja backend is better at scanning fortran dependencies but "
         "seems to be less reliable across different platforms and compilers.",
     )
@@ -81,7 +81,7 @@ def parse_command_line(args, description):
     parser.add_argument(
         "--gmake",
         action="store_true",
-        help="Use gmake backed for CMake (instead of ninja). "
+        help="Use gmake backend for CMake (instead of ninja). "
         "Slower, but potentially more reliable",
     )
 

@@ -576,7 +576,7 @@ def _build_model_cmake(
 
         make_cmd = f"{do_timing}cmake --build . -j{gmake_j} -v"
         if model != "cpl":
-            make_cmd += " {}".format(model)
+            make_cmd += f" -t {model}"
             curr_log = os.path.join(exeroot, "{}.bldlog.{}".format(model, lid))
             model_name = model
         else:

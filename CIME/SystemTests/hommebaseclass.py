@@ -125,7 +125,7 @@ class HommeBase(SystemTestsCommon):
 
         elif compare:
             stat = run_cmd(
-                "cmake --build . -j4 -v -t check"
+                "cmake --build . -j4 -v -t check",
                 arg_stdout=log,
                 combine_output=True,
                 from_dir=exeroot,
@@ -133,14 +133,14 @@ class HommeBase(SystemTestsCommon):
 
         else:
             stat = run_cmd(
-                "cmake --build . -j4 -v -t baseline"
+                "cmake --build . -j4 -v -t baseline",
                 arg_stdout=log,
                 combine_output=True,
                 from_dir=exeroot,
             )[0]
             if stat == 0:
                 stat = run_cmd(
-                    "cmake --build . -j4 -v -t check"
+                    "cmake --build . -j4 -v -t check",
                     arg_stdout=log,
                     combine_output=True,
                     from_dir=exeroot,
