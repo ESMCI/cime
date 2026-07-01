@@ -19,6 +19,8 @@ Below are some variables that affect the build process and output.
 
 Note: If BATCHED_BUILD is TRUE, some additional requirements must be met in order for builds to be submitted. The host model will need a case.build workflow, a template.case.build file, and driver env XML changes to add BATCHED_BUILD as a known env XML entry.
 
+Note: If CMAKE_BACKEND is something other than gmake, it will be up to the host model to ensure that the environment can support that backend.
+
 +------------------+-----------------------------------------------------------+
 | Variable         | Description                                               |
 +==================+===========================================================+
@@ -30,6 +32,8 @@ Note: If BATCHED_BUILD is TRUE, some additional requirements must be met in orde
 | GMAKE_J          | The number of threads GNU Make should use while building. |
 +------------------+-----------------------------------------------------------+
 | BATCHED_BUILD    | Whether to batch submit build phases                      |
++------------------+-----------------------------------------------------------+
+| CMAKE_BACKEND    | The CMake backend to use                                  |
 +------------------+-----------------------------------------------------------+
 
 Building the Model

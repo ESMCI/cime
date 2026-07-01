@@ -516,11 +516,31 @@ def parse_command_line(args, description):
         "tests will have their 'BUILD_SHAREDLIB' phase reset to 'PEND'.",
     )
 
+    parser.add_argument(
+        "--ninja",
+        action="store_true",
+        help="Use ninja backend for CMake (instead of gmake). "
+        "The ninja backend is better at scanning fortran dependencies but "
+        "seems to be less reliable across different platforms and compilers.",
+    )
+
+    parser.add_argument(
+        "--gmake",
+        action="store_true",
+        help="Use gmake backend for CMake (instead of ninja). "
+        "Slower, but potentially more reliable.",
+    )
+
     CIME.utils.add_mail_type_args(parser)
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     CIME.utils.resolve_mail_type_args(args)
+
+    expect(
+        not (args.ninja and args.gmake),
+        "Cannot request both gmake and ninja cmake backends",
+    )
 
     if args.force_rebuild:
         expect(
@@ -807,6 +827,8 @@ def parse_command_line(args, description):
         args.workflow,
         args.chksum,
         args.force_rebuild,
+        args.ninja,
+        args.gmake,
         args.driver,
     )
 
@@ -971,6 +993,8 @@ def create_test(
     workflow,
     chksum,
     force_rebuild,
+    ninja,
+    gmake,
     driver,
 ):
     ###############################################################################
@@ -1015,6 +1039,8 @@ def create_test(
         workflow=workflow,
         chksum=chksum,
         force_rebuild=force_rebuild,
+        ninja=ninja,
+        gmake=gmake,
         driver=driver,
     )
 
@@ -1122,6 +1148,8 @@ def _main_func(description=None):
         workflow,
         chksum,
         force_rebuild,
+        ninja,
+        gmake,
         driver,
     ) = parse_command_line(sys.argv, description)
 
@@ -1178,6 +1206,8 @@ def _main_func(description=None):
             workflow,
             chksum,
             force_rebuild,
+            ninja,
+            gmake,
             driver,
         )
         run_count += 1

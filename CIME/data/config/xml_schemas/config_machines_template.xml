@@ -78,6 +78,10 @@
       Default is FALSE. -->
     <!-- <BATCHED_BUILD>FALSE</BATCHED_BUILD> -->
 
+    <!-- CMAKE_BACKEND: optional, if set, it will tell cmake which backend to use.
+      Default is unset which means use gmake. -->
+    <!-- <CMAKE_BACKEND>ninja</CMAKE_BACKEND> -->
+
     <!-- BATCH_SYSTEM: batch system used on this machine,
       supported values are: none, cobalt, lsf, pbs, slurm -->
     <BATCH_SYSTEM>none</BATCH_SYSTEM>

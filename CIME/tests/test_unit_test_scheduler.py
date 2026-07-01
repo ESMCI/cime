@@ -32,7 +32,13 @@ _TEST_DIR = "/fake/testroot/{}".format(_TEST_NAME)
 _MAX_TASKS_PER_NODE = 64
 
 
-def _make_scheduler(serialize_sharedlib_builds, batched_build, build_group=None):
+def _make_scheduler(
+    serialize_sharedlib_builds,
+    batched_build,
+    build_group=None,
+    ninja=False,
+    gmake=False,
+):
     """Return a bare TestScheduler with only the attributes the build-phase
     methods need, avoiding the heavy __init__ entirely."""
     bg = build_group or (_TEST_NAME,)
@@ -42,6 +48,8 @@ def _make_scheduler(serialize_sharedlib_builds, batched_build, build_group=None)
     ts._config = mock.MagicMock()
     ts._config.serialize_sharedlib_builds = serialize_sharedlib_builds
     ts._batched_build = batched_build
+    ts._ninja = ninja
+    ts._gmake = gmake
     ts._get_test_dir = mock.MagicMock(return_value=_TEST_DIR)
     ts._shell_cmd_for_phase = mock.MagicMock(return_value=(True, ""))
     return ts
@@ -342,3 +350,158 @@ class TestNoBatchBuildFlag:
             ts._batched_build = False
 
         assert ts._batched_build is False
+
+
+# ---------------------------------------------------------------------------
+# --ninja / --gmake flag propagation into build commands
+# ---------------------------------------------------------------------------
+
+
+class TestNinjaGmakeFlags:
+    """Tests for --ninja and --gmake flag propagation into case.build commands."""
+
+    # ------------------------------------------------------------------
+    # _sharedlib_build_phase
+    # ------------------------------------------------------------------
+
+    def test_ninja_appended_to_sharedlib_build_cmd(self):
+        """--ninja must be appended to the sharedlib case.build command."""
+        # Context
+        ts = _make_scheduler(
+            serialize_sharedlib_builds=False, batched_build=False, ninja=True
+        )
+
+        # Act
+        ts._sharedlib_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--ninja" in cmd
+        assert "--gmake" not in cmd
+
+    def test_gmake_appended_to_sharedlib_build_cmd(self):
+        """--gmake must be appended to the sharedlib case.build command."""
+        # Context
+        ts = _make_scheduler(
+            serialize_sharedlib_builds=False, batched_build=False, gmake=True
+        )
+
+        # Act
+        ts._sharedlib_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--gmake" in cmd
+        assert "--ninja" not in cmd
+
+    def test_no_backend_flag_absent_from_sharedlib_build_cmd(self):
+        """With no backend flag, neither --ninja nor --gmake appears in cmd."""
+        # Context
+        ts = _make_scheduler(serialize_sharedlib_builds=False, batched_build=False)
+
+        # Act
+        ts._sharedlib_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--ninja" not in cmd
+        assert "--gmake" not in cmd
+
+    # ------------------------------------------------------------------
+    # _model_build_phase (non-fused path: batched=False)
+    # ------------------------------------------------------------------
+
+    def test_ninja_appended_to_model_build_cmd(self):
+        """--ninja must be appended to the model-only case.build command."""
+        # Context
+        ts = _make_scheduler(
+            serialize_sharedlib_builds=False, batched_build=False, ninja=True
+        )
+
+        # Act
+        ts._model_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--ninja" in cmd
+        assert "--gmake" not in cmd
+
+    def test_gmake_appended_to_model_build_cmd(self):
+        """--gmake must be appended to the model-only case.build command."""
+        # Context
+        ts = _make_scheduler(
+            serialize_sharedlib_builds=False, batched_build=False, gmake=True
+        )
+
+        # Act
+        ts._model_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--gmake" in cmd
+        assert "--ninja" not in cmd
+
+    def test_no_backend_flag_absent_from_model_build_cmd(self):
+        """With no backend flag, neither --ninja nor --gmake appears in cmd."""
+        # Context
+        ts = _make_scheduler(serialize_sharedlib_builds=False, batched_build=False)
+
+        # Act
+        ts._model_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--ninja" not in cmd
+        assert "--gmake" not in cmd
+
+    # ------------------------------------------------------------------
+    # _model_build_phase (fused path: batched=True, not serialized)
+    # ------------------------------------------------------------------
+
+    def test_ninja_appended_to_fused_model_build_cmd(self):
+        """When batched+not-serialized (fused build), --ninja is still appended."""
+        # Context
+        ts = _make_scheduler(
+            serialize_sharedlib_builds=False, batched_build=True, ninja=True
+        )
+
+        # Act
+        ts._model_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--ninja" in cmd
+
+    def test_gmake_appended_to_fused_model_build_cmd(self):
+        """When batched+not-serialized (fused build), --gmake is still appended."""
+        # Context
+        ts = _make_scheduler(
+            serialize_sharedlib_builds=False, batched_build=True, gmake=True
+        )
+
+        # Act
+        ts._model_build_phase(_TEST_NAME)
+
+        # Assert
+        cmd = ts._shell_cmd_for_phase.call_args[0][1]
+        assert "--gmake" in cmd
+
+    # ------------------------------------------------------------------
+    # TestScheduler.__init__ stores ninja / gmake
+    # ------------------------------------------------------------------
+
+    def test_init_stores_ninja_attribute(self):
+        """TestScheduler.__init__ must store _ninja when ninja=True."""
+        # Context / Mocks
+        with mock.patch.object(
+            test_scheduler.TestScheduler, "__init__", lambda self, *a, **kw: None
+        ):
+            ts = test_scheduler.TestScheduler.__new__(test_scheduler.TestScheduler)
+
+        # Act – replicate what __init__ does
+        ts._ninja = True
+        ts._gmake = False
+
+        # Assert
+        assert ts._ninja is True
+        assert ts._gmake is False

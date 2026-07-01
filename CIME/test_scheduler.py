@@ -215,6 +215,8 @@ class TestScheduler(object):
         chksum=False,
         force_rebuild=False,
         no_batch_build=False,
+        ninja=False,
+        gmake=False,
         driver=None,
     ):
         ###########################################################################
@@ -309,6 +311,9 @@ class TestScheduler(object):
         self._clean = clean
 
         self._namelists_only = namelists_only
+
+        self._ninja = ninja
+        self._gmake = gmake
 
         self._walltime = walltime
 
@@ -1068,6 +1073,10 @@ class TestScheduler(object):
         cmd = "./case.build --sharedlib-only"
         if not self._batched_build:
             cmd += " --no-batch-build"
+        if self._ninja:
+            cmd += " --ninja"
+        elif self._gmake:
+            cmd += " --gmake"
         return self._shell_cmd_for_phase(
             test,
             cmd,
@@ -1107,15 +1116,21 @@ class TestScheduler(object):
                     first_test
                 )
 
+        cmd = "./case.build"
+        if self._ninja:
+            cmd += " --ninja"
+        elif self._gmake:
+            cmd += " --gmake"
+
         # When BATCHED_BUILD is enabled and sharedlib builds are not serialized,
         # the sharedlib phase was skipped; run a full build (sharedlib + model)
         # here in a single batch job submission.
         if self._batched_build and not self._config.serialize_sharedlib_builds:
             return self._shell_cmd_for_phase(
-                test, "./case.build", MODEL_BUILD_PHASE, from_dir=test_dir
+                test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
             )
 
-        cmd = "./case.build --model-only"
+        cmd += " --model-only"
         if not self._batched_build:
             cmd += " --no-batch-build"
         return self._shell_cmd_for_phase(
