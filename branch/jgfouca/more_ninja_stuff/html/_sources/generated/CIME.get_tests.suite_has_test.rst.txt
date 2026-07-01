@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.suite\_has\_test
+================================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: suite_has_test

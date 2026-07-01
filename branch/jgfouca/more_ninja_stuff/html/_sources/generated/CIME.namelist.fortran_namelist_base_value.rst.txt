@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.fortran\_namelist\_base\_value
+============================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: fortran_namelist_base_value

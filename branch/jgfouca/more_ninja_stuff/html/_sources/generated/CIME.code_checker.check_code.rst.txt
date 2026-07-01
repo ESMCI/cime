@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.code\_checker.check\_code
+==============================
+
+.. currentmodule:: CIME.code_checker
+
+.. autofunction:: check_code
