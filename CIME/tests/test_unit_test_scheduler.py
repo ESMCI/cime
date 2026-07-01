@@ -33,7 +33,11 @@ _MAX_TASKS_PER_NODE = 64
 
 
 def _make_scheduler(
-    serialize_sharedlib_builds, batched_build, build_group=None, ninja=False, gmake=False
+    serialize_sharedlib_builds,
+    batched_build,
+    build_group=None,
+    ninja=False,
+    gmake=False,
 ):
     """Return a bare TestScheduler with only the attributes the build-phase
     methods need, avoiding the heavy __init__ entirely."""

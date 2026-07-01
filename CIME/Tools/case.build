@@ -197,8 +197,10 @@ def parse_command_line(args, description):
     if get_model() != "e3sm":
         args.separate_builds = False
 
-    expect(not (args.ninja and args.gmake),
-           "Cannot request both gmake and ninja cmake backends")
+    expect(
+        not (args.ninja and args.gmake),
+        "Cannot request both gmake and ninja cmake backends",
+    )
 
     return (
         args.caseroot,

@@ -69,12 +69,9 @@ _CMD_ARGS_FOR_BUILD = (
 )
 
 
-def check_ninja(case):
-    # Ninja path is currently hardcoded! Probably want to change this.
-    srcroot = case.get_value("SRCROOT")
-
+def check_ninja():
     # Check exe by querying version
-    nstat, _, nerr = run_cmd(f"ninja --version")
+    nstat, _, nerr = run_cmd("ninja --version")
     if nstat != 0:
         logger.warning(
             f"Ninja exe does not appear to be usable: {nerr}\nFalling back to gmake"
@@ -522,7 +519,7 @@ def _build_model_cmake(
         cmake_env = ""
         if ninja:
             # Make sure ninja exe works!
-            if check_ninja(case):
+            if check_ninja():
                 cmake_args += " -GNinja "
             else:
                 ninja = False
@@ -826,7 +823,7 @@ def _build_libraries(
     generate_makefile_macro(case, caseroot)
 
     if ninja:
-        if check_ninja(case):
+        if check_ninja():
             # We cannot know if the various buildlib scripts support ninja.
             # Just set an env var to let them know ninja was requested.
             os.environ["CMAKE_GENERATOR"] = "Ninja"
