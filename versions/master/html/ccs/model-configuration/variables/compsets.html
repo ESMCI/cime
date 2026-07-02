@@ -176,7 +176,7 @@ Each <code class="docutils literal notranslate"><span class="pre">value</span></
 <p>Every file listed in <code class="docutils literal notranslate"><span class="pre">COMPSETS_SPEC_FILE</span></code> will be searched to compile possible compsets to call <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> with.</p>
 <p>CIME will note which component’s config_compsets.xml had the matching compset name and that component will be treated as
 the <strong>primary component</strong> As an example, the primary component for a compset that has a prognostic atmosphere,
-land and cice (in prescribed mode) and a data ocean is the atmosphere component (for cesm this is CAM) because the compset
+land and cice (in prescribed mode) and a data ocean is the atmosphere component (e.g. CAM in CESM) because the compset
 is defined, using the above example, in <code class="docutils literal notranslate"><span class="pre">$SRCROOT/components/cam/cime_config/config_compsets.xml</span></code>
 In a compset where all components are prognostic, the primary component will be <strong>allactive</strong>.</p>
 </section>

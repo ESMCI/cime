@@ -164,21 +164,77 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 </pre></div>
 </div>
 </section>
-<section id="cesm-linux-and-mac-support">
-<h2>CESM Linux and Mac Support<a class="headerlink" href="#cesm-linux-and-mac-support" title="Link to this heading"></a></h2>
-<p>The distribution of CESM includes machines called <strong>homebrew</strong> and <strong>centos7-linux</strong> in the file <strong>$CIMEROOT/config/cesm/machines/config_machines.xml</strong>.
+<section id="linux-and-mac-support">
+<h2>Linux and Mac Support<a class="headerlink" href="#linux-and-mac-support" title="Link to this heading"></a></h2>
+<p>Your model distribution may include generic machine definitions in the model’s <code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code> file.
+The location of this file is model-dependent and is set by the <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code> entry in the model’s <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code> (see <a class="reference internal" href="variables/machine.html#model-config-machines"><span class="std std-ref">MACHINES_SPEC_FILE</span></a>); refer to your model repository for the exact path.
 Please see the instructions in the file to create the directory structure and use these generic machine definitions.</p>
+</section>
+<section id="about-config-machines-xml">
+<span id="config-machines-schema-versions"></span><h2>About config_machines.xml<a class="headerlink" href="#about-config-machines-xml" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code> file describes the machines on which CIME-driven models can be built and run.
+Both its location and the XML schema(s) it must conform to are <strong>model-dependent</strong>.</p>
+<p>The schema(s) advertised by a model are declared as <code class="docutils literal notranslate"><span class="pre">&lt;schema&gt;</span></code> children of the <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code> entry in that model’s <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.
+The XSD applied at validation time is then selected from the <code class="docutils literal notranslate"><span class="pre">version</span></code> attribute on the root <code class="docutils literal notranslate"><span class="pre">&lt;config_machines&gt;</span></code> element of the file being loaded.
+The two supported schemas are:</p>
+<dl>
+<dt><strong>Version 2.0 (monolithic)</strong> — <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd</span></code></dt><dd><p>A single file contains the full definition for every supported machine.
+Each <code class="docutils literal notranslate"><span class="pre">&lt;machine</span> <span class="pre">MACH=&quot;...&quot;&gt;</span></code> block carries its own <code class="docutils literal notranslate"><span class="pre">&lt;NODENAME_REGEX&gt;</span></code> (used by CIME to auto-detect the machine), and <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> must appear at least once at the top level.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;2.0&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;mymachine&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;DESC&gt;</span>...<span class="nt">&lt;/DESC&gt;</span>
+<span class="w">    </span><span class="nt">&lt;NODENAME_REGEX&gt;</span>mymachine.*<span class="nt">&lt;/NODENAME_REGEX&gt;</span>
+<span class="w">    </span><span class="nt">&lt;OS&gt;</span>LINUX<span class="nt">&lt;/OS&gt;</span>
+<span class="w">    </span>...
+<span class="w">  </span><span class="nt">&lt;/machine&gt;</span>
+<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;othermachine&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span>...
+<span class="w">  </span><span class="nt">&lt;/machine&gt;</span>
+<span class="nt">&lt;/config_machines&gt;</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>Version 3.0 (per-machine directory)</strong> — <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd</span></code></dt><dd><p>The top-level <code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code> only holds a registry that maps each machine to its node-name regex.
+The full definition for each machine lives in its own subdirectory (<code class="docutils literal notranslate"><span class="pre">&lt;machines_dir&gt;/&lt;MACH&gt;/config_machines.xml</span></code>) next to that machine’s <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code> files.
+Top-level <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> blocks are optional, <code class="docutils literal notranslate"><span class="pre">&lt;NODENAME_REGEX&gt;</span></code> is removed from individual <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> blocks, and the v3 schema additionally accepts a <code class="docutils literal notranslate"><span class="pre">&lt;TORCH_DIR&gt;</span></code> element per machine.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;3.0&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;NODENAME_REGEX&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;mymachine&quot;</span><span class="nt">&gt;</span>mymachine.*<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;othermachine&quot;</span><span class="nt">&gt;</span>other.*<span class="nt">&lt;/value&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/NODENAME_REGEX&gt;</span>
+<span class="nt">&lt;/config_machines&gt;</span>
+</pre></div>
+</div>
+<p>Per-machine file (<code class="docutils literal notranslate"><span class="pre">&lt;machines_dir&gt;/mymachine/config_machines.xml</span></code>):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;3.0&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;mymachine&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;DESC&gt;</span>...<span class="nt">&lt;/DESC&gt;</span>
+<span class="w">    </span><span class="nt">&lt;OS&gt;</span>LINUX<span class="nt">&lt;/OS&gt;</span>
+<span class="w">    </span>...
+<span class="w">  </span><span class="nt">&lt;/machine&gt;</span>
+<span class="nt">&lt;/config_machines&gt;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Not every model registers both schemas. Refer to the <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code> entry in your model’s <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code> to see which schema versions are available; if no <code class="docutils literal notranslate"><span class="pre">version</span></code> attribute is present on the <code class="docutils literal notranslate"><span class="pre">&lt;schema&gt;</span></code> entry, the model accepts a single unversioned schema matching the <strong>2.0</strong> layout.</p>
+<p>See <a class="reference internal" href="variables/machine.html#model-config-machines"><span class="std std-ref">MACHINES_SPEC_FILE</span></a> for the full element reference for both schema versions.</p>
 </section>
 <section id="steps-for-porting">
 <h2>Steps for porting<a class="headerlink" href="#steps-for-porting" title="Link to this heading"></a></h2>
 <p>Porting CIME involves several steps. The first step is to define your machine. You can do this in one of two ways:</p>
 <ol class="arabic">
-<li><p>You can edit <strong>$CIMEROOT/config/$model/machines/config_machines.xml</strong> and add an appropriate section for your machine.</p></li>
+<li><p>You can edit the model’s <code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code> directly (the path is given by <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code> in the model’s <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>) and add an appropriate section for your machine.
+For a <strong>version 3.0</strong> layout, instead add (or update) a <code class="docutils literal notranslate"><span class="pre">&lt;value</span> <span class="pre">MACH=&quot;...&quot;&gt;</span></code> entry under the top-level <code class="docutils literal notranslate"><span class="pre">&lt;NODENAME_REGEX&gt;</span></code> and create a <code class="docutils literal notranslate"><span class="pre">&lt;machines_dir&gt;/&lt;your_machine&gt;/</span></code> subdirectory containing the per-machine <code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code> files.</p></li>
 <li><p>You can use your <strong>$HOME/.cime</strong> directory (see <a class="reference internal" href="customize-cime.html#customizing-cime"><span class="std std-ref">Customize CIME</span></a>).
 In particular, you can create a <strong>$HOME/.cime/config_machines.xml</strong> file with the definition for your machine.
-A template to create this definition is provided in <strong>$CIMEROOT/config/xml_schemas/config_machines_template.xml</strong>. More details are provided in the template file.
+A template to create this definition is provided in <strong>$CIMEROOT/CIME/data/config/xml_schemas/config_machines_template.xml</strong>. More details are provided in the template file.
 In addition, if you have a batch system, you will also need to add a <strong>config_batch.xml</strong> file to your <strong>$HOME/.cime</strong> directory.
-All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the <strong>$CIME/config/$model</strong>, where <strong>$model</strong> is either <code class="docutils literal notranslate"><span class="pre">e3sm</span></code> or <code class="docutils literal notranslate"><span class="pre">cesm</span></code>.</p>
+All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that are read into memory from the directory containing the model’s <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When the model uses the <strong>version 3.0</strong> schema, the per-machine override is read from <strong>$HOME/.cime/&lt;your_machine&gt;/config_machines.xml</strong> (and a top-level <strong>$HOME/.cime/config_machines.xml</strong> may be used to register the <code class="docutils literal notranslate"><span class="pre">NODENAME_REGEX</span></code>).</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you use method (2), you can download CIME updates without affecting your machine definitions in <strong>$HOME/.cime</strong>.</p>
@@ -193,22 +249,30 @@ All files in <strong>$HOME/.cime/</strong> are appended to the xml objects that 
 <ul>
 <li><p>Create a <strong>$HOME/.cime</strong> directory and create a <strong>config_machines.xml</strong> file in that directory.</p>
 <p>This file contains all the information you must set in order to configure a new machine to be CIME-compliant.</p>
-<p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <a class="reference internal" href="index.html#model-config"><span class="std std-ref">the config_machines.xml file</span></a>.</p>
-<p>Check to ensure that your <strong>config_machines.xml</strong> file conforms to the CIME schema definition by doing the following:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+<p>Fill in the contents of <strong>$HOME/.cime/config_machines.xml</strong> that are specific to your machine. For more details see <a class="reference internal" href="variables/machine.html#model-config-machines"><span class="std std-ref">MACHINES_SPEC_FILE</span></a> and <a class="reference internal" href="#config-machines-schema-versions"><span class="std std-ref">the schema overview above</span></a>.</p>
+<p>Check to ensure that your <strong>config_machines.xml</strong> file conforms to the CIME schema definition by validating it against the XSD that matches the <code class="docutils literal notranslate"><span class="pre">version</span></code> declared on its root element:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># version 2.0 (also used when the model registers only an unversioned schema)
+xmllint --noout --schema $CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+
+# version 3.0
+xmllint --noout --schema $CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd $HOME/.cime/config_machines.xml
 </pre></div>
 </div>
 </li>
 <li><p>If you find that you need to introduce compiler settings specific to your machine, create a <strong>$HOME/.cime/*.cmake</strong> file.
-The default compiler settings are defined in <strong>$CIME/config/$model/machines/cmake_macros/</strong>.</p></li>
+The default compiler settings are defined in the <code class="docutils literal notranslate"><span class="pre">cmake_macros/</span></code> directory that lives alongside the model’s <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code>.</p></li>
 <li><p>If you have a batch system, you may also need to create a <strong>$HOME/.cime/config_batch.xml</strong> file.
-Out-of-the-box batch settings are set in <strong>$CIME/config/$model/machines/config_batch.xml</strong>.</p></li>
+Out-of-the-box batch settings are set in the <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> file that lives alongside the model’s <code class="docutils literal notranslate"><span class="pre">MACHINES_SPEC_FILE</span></code> (its path is given by <code class="docutils literal notranslate"><span class="pre">BATCH_SPEC_FILE</span></code> in the model’s <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>).</p></li>
 <li><p>Once you have defined a basic configuration for your machine in your <strong>$HOME/.cime</strong> xml files, run the <a class="reference internal" href="../../contributing-guide.html#contributing-guide-running-tests"><span class="std std-ref">unittest</span></a>.</p></li>
 </ul>
 <p>After running those steps correctly, you are ready to try a case at your target compset and resolution.</p>
 </section>
-<section id="validating-a-cesm-port-with-prognostic-components">
-<h2>Validating a CESM port with prognostic components<a class="headerlink" href="#validating-a-cesm-port-with-prognostic-components" title="Link to this heading"></a></h2>
+<section id="validating-a-port-with-prognostic-components">
+<h2>Validating a port with prognostic components<a class="headerlink" href="#validating-a-port-with-prognostic-components" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section is specific to CESM (and NorESM). Consult your model’s documentation for the equivalent procedure.</p>
+</div>
 <p>The following port validation is recommended for any new machine.
 Carrying out these steps does not guarantee the model is running
 properly in all cases nor that the model is scientifically valid on
@@ -222,13 +286,13 @@ integrate forward to identify any potential problems as early as
 possible.</p>
 <p>Users are responsible for their own validation process,
 especially with respect to science validation.</p>
-<p>These are the recommended steps for validating a port for the CESM model:</p>
+<p>These are the recommended steps for validating a port:</p>
 <ol class="arabic">
-<li><p>Verify basic functionality of your port by performing the cheyenne “prealpha” tests on your machine. This can be done by issuing the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">prealpha</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span> <span class="n">cheyenne</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="n">intel</span> <span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">your_machine_name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">your_compiler_name</span><span class="o">&gt;</span>
+<li><p>Verify basic functionality of your port by performing the “prealpha” tests on your machine. This can be done by issuing the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">category</span> <span class="n">prealpha</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">reference_machine</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">xml</span><span class="o">-</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">reference_compiler</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">machine</span> <span class="o">&lt;</span><span class="n">your_machine_name</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">compiler</span> <span class="o">&lt;</span><span class="n">your_compiler_name</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>This command will run the prealpha tests <em>defined</em> for cheyenne with the intel compiler, but will run them on <em>your</em> machine with <em>your</em> compiler.
+<p>This command will run the prealpha tests <em>defined</em> for the reference machine with the reference compiler, but will run them on <em>your</em> machine with <em>your</em> compiler.
 These tests will be run in the <strong>$CIME_OUTPUT_ROOT</strong>. To see the results of tests, you need to do the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt; $CIME_OUTPUT_ROOT/cs.status.[testid]
 </pre></div>
@@ -237,20 +301,19 @@ These tests will be run in the <strong>$CIME_OUTPUT_ROOT</strong>. To see the re
 </li>
 <li><p>Carry out ensemble consistency tests:</p>
 <p>This is described in <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/tools/statistical_ensemble_test/README</span></code>.
-The CESM-ECT (CESM Ensemble Consistency Test) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
-The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine (currently cheyenne).
+The Ensemble Consistency Test (ECT) determines whether a new simulation set up (new machine, compiler, etc.) is statistically distinguishable from an accepted ensemble.
+The ECT process involves comparing several runs (3) generated with the new scenario to an ensemble built on a trusted machine.
 The python ECT tools are located in the pyCECT subdirectory <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/tools/statistical_ensemble_test/pyCECT</span></code>.</p>
-<p>The verification tools in the CESM-ECT suite are:</p>
+<p>The verification tools in the ECT suite are:</p>
 <p><code class="docutils literal notranslate"><span class="pre">CAM-ECT</span></code>: detects issues in CAM and CLM (12 month runs)</p>
 <p><code class="docutils literal notranslate"><span class="pre">UF-CAM-ECT</span></code>: detects issues in CAM and CLM (9 time step runs)</p>
 <p><code class="docutils literal notranslate"><span class="pre">POP-ECT</span></code>: detects issues in POP and CICE (12 month runs)</p>
-<p>Follow the instructions in the <strong>README</strong> file to generate three ensemble runs for any of the above tests that are most relevant to your port.
-Then please go to the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/verification">CESM2 ensemble verification website</a>, where you can upload your files and subsequently obtain a quick response as to the success or failure of your verification.</p>
+<p>Follow the instructions in the <strong>README</strong> file to generate three ensemble runs for any of the above tests that are most relevant to your port.</p>
 </li>
 </ol>
 </section>
-<section id="performance-tuning-of-a-cesm-port">
-<h2>Performance tuning of a CESM port<a class="headerlink" href="#performance-tuning-of-a-cesm-port" title="Link to this heading"></a></h2>
+<section id="performance-tuning-of-a-port">
+<h2>Performance tuning of a port<a class="headerlink" href="#performance-tuning-of-a-port" title="Link to this heading"></a></h2>
 <p>Once you have performed the verification that your port is successful,
 you will want to determine the optimal pe-layout for your target
 configurations (i.e. compset/resolution combinations).  See the file

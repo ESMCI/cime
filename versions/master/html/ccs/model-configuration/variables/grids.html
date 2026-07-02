@@ -514,12 +514,12 @@ The <strong>INSTALL</strong> file in the <strong>gen_domain_files/</strong> dire
 <li><p>If you are adding a new ocn or rtm grid, create a new rtm-&gt;ocn mapping file. (Otherwise you can skip this step.)
 The process for mapping from the runoff grid to the ocean grid is currently undergoing many changes.
 At this time, if you are running with a new ocean or runoff grid, please contact Michael Levy (mlevy_AT_ucar_DOT_edu) for assistance. If you are running with standard ocean and runoff grids, the mapping file should already exist and you do not need to generate it.</p></li>
-<li><p>CESM specific: If you are adding a new atmosphere grid, this means you are also generating a new land grid, and you will need to create a new CLM surface dataset. (Otherwise you can skip this step).
-You need to first generate mapping files for CLM surface dataset (since this is a non-standard grid).</p>
+<li><p>If you are adding a new atmosphere grid, this means you are also generating a new land grid, and you may need to create a new land surface dataset. (Otherwise you can skip this step).
+You need to first generate mapping files for the land surface dataset (since this is a non-standard grid).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  &gt; cd $CIMEROOT/../components/clm/tools/mkmapdata
   &gt; ./mkmapdata.sh --gridfile &lt;lnd SCRIP grid file&gt; --res &lt;atm resolution name&gt; --gridtype global
 
-These mapping files are then used to generate CLM surface dataset. Below is an example for a current day surface dataset (model year 2000).
+These mapping files are then used to generate the land surface dataset. Below is an example for a current day surface dataset (model year 2000).
 
 ::
 
@@ -530,7 +530,7 @@ These mapping files are then used to generate CLM surface dataset. Below is an e
 </li>
 <li><p>Create grid file needed for create_newcase.
 The next step is to add the necessary new entries in the appropriate <code class="docutils literal notranslate"><span class="pre">config_grids.xml</span></code> file.
-You will need to modify <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/config/cesm/config_grids.xml</span></code> or <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/config/e3sm/config_grids.xml</span></code> depending on the value of <code class="docutils literal notranslate"><span class="pre">$CIME_MODEL</span></code>.
+You will need to modify <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/config/$model/config_grids.xml</span></code> depending on the value of <code class="docutils literal notranslate"><span class="pre">$CIME_MODEL</span></code>.
 You will need to:</p>
 <ul class="simple">
 <li><p>add a single  <code class="docutils literal notranslate"><span class="pre">&lt;model_grid&gt;</span></code> entry</p></li>

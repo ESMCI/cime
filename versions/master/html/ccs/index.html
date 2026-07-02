@@ -138,7 +138,7 @@
 <h2><a class="toc-backref" href="#id2" role="doc-backlink">Quick start</a><a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
 <p>The first thing to do is clone the model repository into <code class="docutils literal notranslate"><span class="pre">$SRCROOT</span></code>.</p>
 <p>All examples will be run from <code class="docutils literal notranslate"><span class="pre">$CIMEROOT</span></code> which is should exist under <code class="docutils literal notranslate"><span class="pre">$SRCROOT</span></code> e.g. (<code class="docutils literal notranslate"><span class="pre">$CIMEROOT</span></code> would be <code class="docutils literal notranslate"><span class="pre">$SRCROOT/cime</span></code>).</p>
-<p>Next set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> evnironment variable for your model, e.g. <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">CIME_MODEL=e3sm</span></code>.</p>
+<p>Next set the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable for your model, e.g. <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">CIME_MODEL=&lt;your-model&gt;</span></code> (see <a class="reference internal" href="#ccs-env-setup"><span class="std std-ref">Setting up your environment for CCS</span></a> for valid values).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Check if your machine is supported by the model.</p>
@@ -290,11 +290,11 @@ as the <em>grid</em> or sometimes the <em>resolution</em>.</p>
 </section>
 </section>
 <section id="setting-up-your-environment-for-ccs">
-<h2><a class="toc-backref" href="#id12" role="doc-backlink">Setting up your environment for CCS</a><a class="headerlink" href="#setting-up-your-environment-for-ccs" title="Link to this heading"></a></h2>
+<span id="ccs-env-setup"></span><h2><a class="toc-backref" href="#id12" role="doc-backlink">Setting up your environment for CCS</a><a class="headerlink" href="#setting-up-your-environment-for-ccs" title="Link to this heading"></a></h2>
 <p>After you’ve cloned the model repository, you’ll need to set up your environment to use the CCS.</p>
 <p>First you’ll need to let CIME know which model configuration to use by setting the <code class="docutils literal notranslate"><span class="pre">CIME_MODEL</span></code> environment variable. In bash, use <strong>export</strong> as shown and replace
-<strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are “e3sm”, “cesm”, or “ufs”.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">model</span><span class="o">&gt;</span>
+<strong>&lt;your-model&gt;</strong> with the appropriate text. Current possibilities are “e3sm”, “cesm”, or “ufs”.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CIME_MODEL</span><span class="o">=&lt;</span><span class="n">your</span><span class="o">-</span><span class="n">model</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>There are a number of possible ways to set CIME variables.
