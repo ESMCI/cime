@@ -50,6 +50,7 @@
   <xs:element name="GMAKE" type="xs:string"/>
   <xs:element name="GMAKE_J" type="xs:integer"/>
   <xs:element name="BATCHED_BUILD" type="upperBoolean"/>
+  <xs:element name="CMAKE_BACKEND" type="xs:string"/>
   <xs:element name="TESTS" type="xs:string"/>
   <xs:element name="NTEST_PARALLEL_JOBS" type="xs:integer"/>
   <xs:element name="BATCH_SYSTEM" type="xs:NCName"/>
@@ -171,6 +172,8 @@
         <!-- BATCHED_BUILD: if TRUE, case.build will submit the build to the batch system
              instead of building on the current node. Requires a batch system to be configured. -->
         <xs:element ref="BATCHED_BUILD" minOccurs="0" maxOccurs="1"/>
+        <!-- CMAKE_BACKEND: Tells CMake what backend to use -->
+        <xs:element ref="CMAKE_BACKEND" minOccurs="0" maxOccurs="1"/>
         <!-- TESTS: (acme only) list of tests to run on this machine -->
         <xs:element ref="TESTS" minOccurs="0" maxOccurs="1"/>
         <!-- NTEST_PARALLEL_JOBS: number of parallel jobs create_test will launch -->

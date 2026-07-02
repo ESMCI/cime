@@ -70,14 +70,22 @@ def parse_command_line(args, description):
         help="Case directory to build.\n" "Default is current directory.",
     )
 
+    parser.add_argument(
+        "--ninja",
+        action="store_true",
+        help="Use ninja backend for CMake (instead of gmake). "
+        "The ninja backend is better at scanning fortran dependencies but "
+        "seems to be less reliable across different platforms and compilers.",
+    )
+
+    parser.add_argument(
+        "--gmake",
+        action="store_true",
+        help="Use gmake backend for CMake (instead of ninja). "
+        "Slower, but potentially more reliable",
+    )
+
     if get_model() == "e3sm":
-        parser.add_argument(
-            "--ninja",
-            action="store_true",
-            help="Use ninja backed for CMake (instead of gmake). "
-            "The ninja backend is better at scanning fortran dependencies but "
-            "seems to be less reliable across different platforms and compilers.",
-        )
 
         parser.add_argument(
             "--separate-builds",
@@ -188,7 +196,11 @@ def parse_command_line(args, description):
 
     if get_model() != "e3sm":
         args.separate_builds = False
-        args.ninja = False
+
+    expect(
+        not (args.ninja and args.gmake),
+        "Cannot request both gmake and ninja cmake backends",
+    )
 
     return (
         args.caseroot,
@@ -202,6 +214,7 @@ def parse_command_line(args, description):
         not args.skip_provenance_check,
         args.separate_builds,
         args.ninja,
+        args.gmake,
         args.dry_run,
         args.skip_submit,
         args.no_batch_build,
@@ -223,6 +236,7 @@ def _main_func(description):
         save_build_provenance,
         separate_builds,
         ninja,
+        gmake,
         dry_run,
         skip_submit,
         no_batch_build,
@@ -231,6 +245,13 @@ def _main_func(description):
     success = True
     with Case(caseroot, read_only=False, record=True) as case:
         testname = case.get_value("TESTCASE")
+
+        # If no backend was explicitly requested, we will use ninja only if
+        # that's the default cmake backend for this machine
+        cmake_backend = case.get_value("CMAKE_BACKEND")
+        if not ninja and not gmake:
+            if cmake_backend is not None and cmake_backend.lower() == "ninja":
+                ninja = True
 
         if (
             cleanlist is not None
