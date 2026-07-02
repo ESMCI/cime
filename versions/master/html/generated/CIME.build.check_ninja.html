@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.build.CmakeTmpBuildDir &mdash; CIME master documentation</title>
+  <title>CIME.build.check_ninja &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.buildlib" href="CIME.buildlib.html" />
-    <link rel="prev" title="CIME.build.xml_to_make_variable" href="CIME.build.xml_to_make_variable.html" /> 
+    <link rel="next" title="CIME.build.clean" href="CIME.build.clean.html" />
+    <link rel="prev" title="CIME.build.case_build" href="CIME.build.case_build.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -74,7 +74,10 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.bless_test_results.html">CIME.bless_test_results</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="CIME.build.html">CIME.build</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.case_build.html">CIME.build.case_build</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.build.check_ninja.html">CIME.build.check_ninja</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.build.check_ninja</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.build.check_ninja"><code class="docutils literal notranslate"><span class="pre">check_ninja()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.clean.html">CIME.build.clean</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.generate_makefile_macro.html">CIME.build.generate_makefile_macro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.get_standard_cmake_args.html">CIME.build.get_standard_cmake_args</a></li>
@@ -82,10 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.post_build.html">CIME.build.post_build</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.uses_kokkos.html">CIME.build.uses_kokkos</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.build.xml_to_make_variable.html">CIME.build.xml_to_make_variable</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.build.CmakeTmpBuildDir</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.build.CmakeTmpBuildDir"><code class="docutils literal notranslate"><span class="pre">CmakeTmpBuildDir</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.build.CmakeTmpBuildDir.html">CIME.build.CmakeTmpBuildDir</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
@@ -134,9 +134,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
           <li class="breadcrumb-item"><a href="CIME.build.html">CIME.build</a></li>
-      <li class="breadcrumb-item active">CIME.build.CmakeTmpBuildDir</li>
+      <li class="breadcrumb-item active">CIME.build.check_ninja</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.build.CmakeTmpBuildDir.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.build.check_ninja.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -144,38 +144,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cime-build-cmaketmpbuilddir">
-<h1>CIME.build.CmakeTmpBuildDir<a class="headerlink" href="#cime-build-cmaketmpbuilddir" title="Link to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="CIME.build.CmakeTmpBuildDir">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.build.</span></span><span class="sig-name descname"><span class="pre">CmakeTmpBuildDir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">macroloc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rootdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmpdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/build.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.build.CmakeTmpBuildDir" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Use to create a temporary cmake build dir for the purposes of querying
-Macros.</p>
-<blockquote>
-<div><p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></p></td>
-<td><p>macroloc: The dir containing the cmake macros, default is pwd.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_full_tmpdir</span></code></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#CIME.build.CmakeTmpBuildDir.get_makefile_vars" title="CIME.build.CmakeTmpBuildDir.get_makefile_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_makefile_vars</span></code></a></p></td>
-<td><p>Run cmake and process output to a list of variable settings</p></td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
-<dl class="py method">
-<dt class="sig sig-object py" id="CIME.build.CmakeTmpBuildDir.get_makefile_vars">
-<span class="sig-name descname"><span class="pre">get_makefile_vars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmake_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/build.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.build.CmakeTmpBuildDir.get_makefile_vars" title="Link to this definition"></a></dt>
-<dd><p>Run cmake and process output to a list of variable settings</p>
-<p>case can be None if caller is providing their own cmake args</p>
-</dd></dl>
-
-</dd></dl>
+  <section id="cime-build-check-ninja">
+<h1>CIME.build.check_ninja<a class="headerlink" href="#cime-build-check-ninja" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.build.check_ninja">
+<span class="sig-prename descclassname"><span class="pre">CIME.build.</span></span><span class="sig-name descname"><span class="pre">check_ninja</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/build.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.build.check_ninja" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -183,8 +157,8 @@ Macros.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.build.xml_to_make_variable.html" class="btn btn-neutral float-left" title="CIME.build.xml_to_make_variable" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.buildlib.html" class="btn btn-neutral float-right" title="CIME.buildlib" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.build.case_build.html" class="btn btn-neutral float-left" title="CIME.build.case_build" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.build.clean.html" class="btn btn-neutral float-right" title="CIME.build.clean" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

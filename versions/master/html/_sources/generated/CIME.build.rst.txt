@@ -20,6 +20,7 @@ CIME.build
                 :template: autosummary/base.rst
                 
                     case_build
+                    check_ninja
                     clean
                     generate_makefile_macro
                     get_standard_cmake_args

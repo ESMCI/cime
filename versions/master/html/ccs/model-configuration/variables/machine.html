@@ -232,6 +232,7 @@
 <span class="w">          </span><span class="nt">&lt;GMAKE&gt;</span>make<span class="nt">&lt;/GMAKE&gt;</span>
 <span class="w">          </span><span class="nt">&lt;GMAKE_J&gt;</span>4<span class="nt">&lt;/GMAKE_J&gt;</span>
 <span class="w">          </span><span class="nt">&lt;BATCHED_BUILD&gt;</span>FALSE<span class="nt">&lt;/BATCHED_BUILD&gt;</span>
+<span class="w">          </span><span class="nt">&lt;CMAKE_BACKEND&gt;</span>Ninja<span class="nt">&lt;/CMAKE_BACKEND&gt;</span>
 <span class="w">          </span><span class="nt">&lt;TESTS&gt;</span>e3sm_developer<span class="nt">&lt;/TESTS&gt;</span>
 <span class="w">          </span><span class="nt">&lt;BATCH_SYSTEM&gt;</span>none<span class="nt">&lt;/BATCH_SYSTEM&gt;</span>
 <span class="w">          </span><span class="nt">&lt;SUPPORTED_BY&gt;</span>boutte3@llnl.gov<span class="nt">&lt;/SUPPORTED_BY&gt;</span>
@@ -349,61 +350,64 @@
 <tr class="row-even"><td><p>BATCHED_BUILD</p></td>
 <td><p>Optional, builds will be done through batch submissions</p></td>
 </tr>
-<tr class="row-odd"><td><p>TESTS</p></td>
+<tr class="row-odd"><td><p>CMAKE_BACKEND</p></td>
+<td><p>Optional, tells CMake which backend to use</p></td>
+</tr>
+<tr class="row-even"><td><p>TESTS</p></td>
 <td><p>List of tests to run on the machine.</p></td>
 </tr>
-<tr class="row-even"><td><p>NTEST_PARALLEL_JOBS</p></td>
+<tr class="row-odd"><td><p>NTEST_PARALLEL_JOBS</p></td>
 <td><p>Number of parallel jobs for testing.</p></td>
 </tr>
-<tr class="row-odd"><td><p>BATCH_SYSTEM</p></td>
+<tr class="row-even"><td><p>BATCH_SYSTEM</p></td>
 <td><p>Batch system used on the machine.</p></td>
 </tr>
-<tr class="row-even"><td><p>ALLOCATE_SPARE_NODES</p></td>
+<tr class="row-odd"><td><p>ALLOCATE_SPARE_NODES</p></td>
 <td><p>Allocate spare nodes.</p></td>
 </tr>
-<tr class="row-odd"><td><p>SUPPORTED_BY</p></td>
+<tr class="row-even"><td><p>SUPPORTED_BY</p></td>
 <td><p>Contact information for support.</p></td>
 </tr>
-<tr class="row-even"><td><p>MAX_TASKS_PER_NODE</p></td>
+<tr class="row-odd"><td><p>MAX_TASKS_PER_NODE</p></td>
 <td><p>Maximum number of tasks per node. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-odd"><td><p>MEM_PER_TASK</p></td>
+<tr class="row-even"><td><p>MEM_PER_TASK</p></td>
 <td><p>Memory per task. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-even"><td><p>MAX_MEM_PER_NODE</p></td>
+<tr class="row-odd"><td><p>MAX_MEM_PER_NODE</p></td>
 <td><p>Maximum memory per node. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-odd"><td><p>MAX_GPUS_PER_NODE</p></td>
+<tr class="row-even"><td><p>MAX_GPUS_PER_NODE</p></td>
 <td><p>Maximum GPUs per node. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-even"><td><p>MAX_MPITASKS_PER_NODE</p></td>
+<tr class="row-odd"><td><p>MAX_MPITASKS_PER_NODE</p></td>
 <td><p>Maximum MPI tasks per node. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-odd"><td><p>MAX_CPUTASKS_PER_GPU_NODE</p></td>
+<tr class="row-even"><td><p>MAX_CPUTASKS_PER_GPU_NODE</p></td>
 <td><p>Maximum CPU tasks per GPU node. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-even"><td><p>MPI_GPU_WRAPPER_SCRIPT</p></td>
+<tr class="row-odd"><td><p>MPI_GPU_WRAPPER_SCRIPT</p></td>
 <td><p>MPI GPU wrapper script. Multiple values may be defined by the compiler attribute.</p></td>
 </tr>
-<tr class="row-odd"><td><p>COSTPES_PER_NODE</p></td>
+<tr class="row-even"><td><p>COSTPES_PER_NODE</p></td>
 <td><p>Cost per node.</p></td>
 </tr>
-<tr class="row-even"><td><p>PROJECT_REQUIRED</p></td>
+<tr class="row-odd"><td><p>PROJECT_REQUIRED</p></td>
 <td><p>Indicates if a project is required.</p></td>
 </tr>
-<tr class="row-odd"><td><p>RUNDIR</p></td>
+<tr class="row-even"><td><p>RUNDIR</p></td>
 <td><p>Directory for running the case.</p></td>
 </tr>
-<tr class="row-even"><td><p>EXEROOT</p></td>
+<tr class="row-odd"><td><p>EXEROOT</p></td>
 <td><p>Directory for executable files.</p></td>
 </tr>
-<tr class="row-odd"><td><p>TEST_TPUT_TOLERANCE</p></td>
+<tr class="row-even"><td><p>TEST_TPUT_TOLERANCE</p></td>
 <td><p>Throughput tolerance for tests.</p></td>
 </tr>
-<tr class="row-even"><td><p>TEST_MEMLEAK_TOLERANCE</p></td>
+<tr class="row-odd"><td><p>TEST_MEMLEAK_TOLERANCE</p></td>
 <td><p>Memory leak tolerance for tests.</p></td>
 </tr>
-<tr class="row-odd"><td><p>MAX_GB_OLD_TEST_DATA</p></td>
+<tr class="row-even"><td><p>MAX_GB_OLD_TEST_DATA</p></td>
 <td><p>Maximum GB of old test data.</p></td>
 </tr>
 </tbody>
@@ -636,6 +640,8 @@
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;BATCHED_BUILD&gt;&lt;/BATCHED_BUILD&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;CMAKE_BACKEND&gt;&lt;/CMAKE_BACKEND&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;TESTS&gt;&lt;/TESTS&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;NTEST_PARALLEL_JOBS&gt;&lt;/NTEST_PARALLEL_JOBS&gt;</span>
@@ -809,6 +815,8 @@
 <span class="w">        </span><span class="nt">&lt;GMAKE_J&gt;&lt;/GMAKE_J&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;BATCHED_BUILD&gt;&lt;/BATCHED_BUILD&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;CMAKE_BACKEND&gt;&lt;/CMAKE_BACKEND&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;TESTS&gt;&lt;/TESTS&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
