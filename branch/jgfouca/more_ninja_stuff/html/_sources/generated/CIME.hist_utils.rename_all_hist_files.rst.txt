@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.hist\_utils.rename\_all\_hist\_files
-=========================================
-
-.. currentmodule:: CIME.hist_utils
-
-.. autofunction:: rename_all_hist_files

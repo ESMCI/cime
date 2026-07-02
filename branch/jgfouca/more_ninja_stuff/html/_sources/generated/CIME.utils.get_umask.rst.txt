@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_umask
-=====================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_umask

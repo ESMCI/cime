@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.buildlib.build\_cime\_component\_lib
-=========================================
-
-.. currentmodule:: CIME.buildlib
-
-.. autofunction:: build_cime_component_lib

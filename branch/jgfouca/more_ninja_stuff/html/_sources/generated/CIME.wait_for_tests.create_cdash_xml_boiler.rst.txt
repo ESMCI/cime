@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.wait\_for\_tests.create\_cdash\_xml\_boiler
-================================================
-
-.. currentmodule:: CIME.wait_for_tests
-
-.. autofunction:: create_cdash_xml_boiler

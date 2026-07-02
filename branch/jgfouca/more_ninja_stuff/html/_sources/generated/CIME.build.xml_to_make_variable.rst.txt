@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.xml\_to\_make\_variable
-==================================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: xml_to_make_variable

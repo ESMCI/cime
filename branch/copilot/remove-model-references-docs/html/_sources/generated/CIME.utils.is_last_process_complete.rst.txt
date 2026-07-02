@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.is\_last\_process\_complete
-======================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: is_last_process_complete
