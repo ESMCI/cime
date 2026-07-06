@@ -1732,7 +1732,6 @@ class Case(object):
             os.path.join(toolsdir, "xmlchange"),
             os.path.join(toolsdir, "xmlquery"),
             os.path.join(toolsdir, "pelayout"),
-            os.path.join(toolsdir, "wait_for_tests"),
         )
         try:
             for exefile in exefiles:
@@ -1749,6 +1748,7 @@ class Case(object):
             os.path.join(toolsdir, "Makefile"),
             os.path.join(toolsdir, "mkSrcfiles"),
             os.path.join(toolsdir, "mkDepends"),
+            os.path.join(toolsdir, "wait_for_tests"),
         ]
 
         # used on Titan
