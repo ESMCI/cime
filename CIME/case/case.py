@@ -1748,6 +1748,7 @@ class Case(object):
             os.path.join(toolsdir, "Makefile"),
             os.path.join(toolsdir, "mkSrcfiles"),
             os.path.join(toolsdir, "mkDepends"),
+            os.path.join(toolsdir, "wait_for_tests"),
         ]
 
         # used on Titan
