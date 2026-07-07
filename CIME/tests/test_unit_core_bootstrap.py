@@ -6,7 +6,7 @@ import sys
 import pytest
 
 from CIME.core.config.bootstrap import (
-    _ensure_paths,
+    _prepend_sys_path,
     _is_cimeroot,
     bootstrap_cime,
     check_minimum_python_version,
@@ -93,7 +93,7 @@ class TestBootstrapCime:
         assert sys.path.count(root_str) == 1
 
 
-class TestEnsurePaths:
+class TestPrependSysPath:
     def setup_method(self):
         self._orig_path = sys.path[:]
 
@@ -103,14 +103,14 @@ class TestEnsurePaths:
     def test_inserts_in_order(self, tmp_path):
         a = str(tmp_path / "a")
         b = str(tmp_path / "b")
-        _ensure_paths([a, b])
+        _prepend_sys_path([a, b])
         assert sys.path[0] == a
         assert sys.path[1] == b
 
     def test_moves_existing_entry(self, tmp_path):
         p = str(tmp_path / "x")
         sys.path.append(p)
-        _ensure_paths([p])
+        _prepend_sys_path([p])
         assert sys.path[0] == p
         assert sys.path.count(p) == 1
 

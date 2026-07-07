@@ -88,14 +88,13 @@ def bootstrap_cime(
         The resolved CIMEROOT path.
     """
     root = find_cimeroot(cimeroot)
-    tools_path = os.path.join(root, "CIME", "Tools")
+    tools_path = get_tools_path(root)
 
-    # Build the list of paths to ensure are in sys.path
     paths_to_add: List[str] = [root, tools_path]
     if extra_paths:
         paths_to_add.extend(str(p) for p in extra_paths)
 
-    _ensure_paths(paths_to_add)
+    _prepend_sys_path(paths_to_add)
 
     if set_env:
         os.environ["CIMEROOT"] = root
@@ -103,15 +102,21 @@ def bootstrap_cime(
     return root
 
 
-def _ensure_paths(paths: Sequence[str]) -> None:
-    """Ensure each path is in sys.path, inserted at the front in order.
+def _prepend_sys_path(paths: Sequence[str]) -> None:
+    """Prepend paths to the front of ``sys.path``, order-preserving and deduped.
 
-    Paths already present are moved to the correct position rather than
-    duplicated.
+    Each path is converted to an absolute path and placed at the front of
+    ``sys.path`` such that ``paths[0]`` ends up at index 0, ``paths[1]`` at
+    index 1, and so on. If a path is already present it is removed first, so
+    the entry is repositioned to the front rather than duplicated.
+
+    Args:
+        paths: Paths to place at the front of ``sys.path``, highest priority
+            first.
     """
     for i, p in enumerate(paths):
         absp = os.path.abspath(p)
-        # Remove existing entry if present (to re-position)
+        # Remove any existing entry so the path is repositioned, not duplicated.
         if absp in sys.path:
             sys.path.remove(absp)
         sys.path.insert(i, absp)
