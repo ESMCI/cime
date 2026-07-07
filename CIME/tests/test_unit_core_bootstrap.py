@@ -103,16 +103,34 @@ class TestPrependSysPath:
     def test_inserts_in_order(self, tmp_path):
         a = str(tmp_path / "a")
         b = str(tmp_path / "b")
+
+        # Context
+        existing = [p for p in sys.path if p not in (a, b)]
+
+        # Act
         _prepend_sys_path([a, b])
+
+        # Assert
         assert sys.path[0] == a
         assert sys.path[1] == b
+        for p in existing:
+            assert p in sys.path
 
     def test_moves_existing_entry(self, tmp_path):
         p = str(tmp_path / "x")
+
+        # Context
         sys.path.append(p)
+        existing = [x for x in sys.path if x != p]
+
+        # Act
         _prepend_sys_path([p])
+
+        # Assert
         assert sys.path[0] == p
         assert sys.path.count(p) == 1
+        for x in existing:
+            assert x in sys.path
 
     def test_duplicate_in_input_uses_first_occurrence_position(self, tmp_path):
         # sys.path = [A, B, C]; paths = [C, D, C]
@@ -134,6 +152,8 @@ class TestPrependSysPath:
         assert sys.path[1] == D
         assert sys.path.count(C) == 1
         assert sys.path.count(D) == 1
+        assert A in sys.path
+        assert B in sys.path
 
     def test_duplicate_in_input_warns(self, tmp_path):
         # Duplicate paths in the input list should raise a UserWarning so
