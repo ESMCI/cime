@@ -114,6 +114,40 @@ class TestPrependSysPath:
         assert sys.path[0] == p
         assert sys.path.count(p) == 1
 
+    def test_duplicate_in_input_uses_first_occurrence_position(self, tmp_path):
+        # sys.path = [A, B, C]; paths = [C, D, C]
+        # C appears twice in paths; first-occurrence wins so the effective
+        # list is [C, D].  C must land at index 0, D at index 1.
+        A = str(tmp_path / "A")
+        B = str(tmp_path / "B")
+        C = str(tmp_path / "C")
+        D = str(tmp_path / "D")
+
+        # Context
+        sys.path[:] = [A, B, C]
+
+        # Act
+        _prepend_sys_path([C, D, C])
+
+        # Assert
+        assert sys.path[0] == C
+        assert sys.path[1] == D
+        assert sys.path.count(C) == 1
+        assert sys.path.count(D) == 1
+
+    def test_duplicate_in_input_warns(self, tmp_path):
+        # Duplicate paths in the input list should raise a UserWarning so
+        # callers are alerted that import precedence may be affected.
+        C = str(tmp_path / "C")
+        D = str(tmp_path / "D")
+
+        # Context
+        sys.path[:] = []
+
+        # Act / Assert
+        with pytest.warns(UserWarning, match="Duplicate paths"):
+            _prepend_sys_path([C, D, C])
+
 
 class TestGetToolsPath:
     def test_returns_tools_dir(self, tmp_path):

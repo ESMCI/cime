@@ -18,6 +18,7 @@ Typical usage (future, after wiring)::
 
 import os
 import sys
+import warnings
 from typing import List, Optional, Sequence
 
 
@@ -110,12 +111,38 @@ def _prepend_sys_path(paths: Sequence[str]) -> None:
     index 1, and so on. If a path is already present it is removed first, so
     the entry is repositioned to the front rather than duplicated.
 
+    Duplicate entries within ``paths`` itself are collapsed to the first
+    occurrence before any insertion, so positions are stable regardless of
+    how many times a path appears in the input. A ``UserWarning`` is issued
+    when duplicates are detected, since they may indicate a caller bug that
+    would silently affect import precedence.
+
     Args:
         paths: Paths to place at the front of ``sys.path``, highest priority
             first.
+
+    Warns:
+        UserWarning: If ``paths`` contains duplicate entries.
+
+    Example:
+        Given ``sys.path = [A, B, C]`` and ``paths = [C, D, C]``, the
+        duplicate ``C`` is collapsed to its first occurrence, giving an
+        effective prepend list of ``[C, D]``.  The result is::
+
+            sys.path == [C, D, A, B]
     """
-    for i, p in enumerate(paths):
-        absp = os.path.abspath(p)
+    # Deduplicate while preserving first-occurrence order.
+    abs_paths = [os.path.abspath(p) for p in paths]
+    unique = list(dict.fromkeys(abs_paths))
+    duplicates = [p for p in unique if abs_paths.count(p) > 1]
+    if duplicates:
+        warnings.warn(
+            f"Duplicate paths passed to _prepend_sys_path: {duplicates}. "
+            "First occurrence takes precedence; this may affect import order.",
+            UserWarning,
+            stacklevel=2,
+        )
+    for i, absp in enumerate(unique):
         # Remove any existing entry so the path is repositioned, not duplicated.
         if absp in sys.path:
             sys.path.remove(absp)
