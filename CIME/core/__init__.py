@@ -1,5 +1,5 @@
 """
-CIME core package — DI-based abstractions for filesystem, process, environment,
+CIME core package — Dependency Injection (DI) based abstractions for filesystem, process, environment,
 clock, and configuration bootstrap.
 
 These protocols are designed for constructor injection so that business logic
