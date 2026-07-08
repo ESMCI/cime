@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.fixup\_sys\_path
+===========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: fixup_sys_path
