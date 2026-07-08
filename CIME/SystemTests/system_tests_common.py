@@ -1093,6 +1093,80 @@ for some of your components.
         return
 
 
+def _yyyymmdd_elapsed_str(start, end):
+    """Format elapsed model time from two YYYYMMDD-encoded date stamps.
+
+    Coupler log lines record model dates as ``YYYYMMDD`` integers (e.g.
+    ``51231`` for year 5, December 31).  Subtracting these raw integers
+    produces a nonsensical result because the encoding mixes year, month, and
+    day-of-month fields.  This function decodes both stamps and returns a
+    human-readable elapsed-time string with only the non-zero components.
+
+    ``datetime`` is intentionally not used here for two reasons:
+
+    1. **Non-Gregorian calendars.**  CIME cases can run with a 360-day or
+       NO_LEAP calendar, where dates such as February 30 (``YYYYMMDD =
+       XXXX0230``) are valid.  ``datetime.strptime`` only understands the
+       Gregorian calendar and raises ``ValueError`` on those dates.
+
+    2. **timedelta gives days, not years/months/days.**  Even on a Gregorian
+       run, ``datetime`` subtraction returns a ``timedelta`` whose only field
+       is ``days``.  Decomposing that back into years, months, and days still
+       requires knowing the calendar's day-count per month and year — so the
+       same approximation would be needed anyway.
+
+    The day-borrow and month-borrow arithmetic uses a 30-day approximation
+    because the exact model calendar (360-day, NO_LEAP, Gregorian, …) is not
+    available at this call site.  The result is intentionally approximate;
+    the message is cosmetic — it has no effect on pass/fail decisions.
+
+    Args:
+        start: Model date stamp at run start encoded as ``YYYYMMDD``
+            (int or float).
+        end: Model date stamp at run end encoded as ``YYYYMMDD``
+            (int or float).
+
+    Returns:
+        str: Human-readable elapsed time, e.g.
+            ``"4 years, 11 months, 29 days"``.  Returns ``"0 days"`` when
+            start and end are identical or the decoded difference is zero.
+
+    Examples:
+        >>> _yyyymmdd_elapsed_str(10102, 51231)
+        '4 years, 11 months, 29 days'
+        >>> _yyyymmdd_elapsed_str(10101, 20101)
+        '1 year'
+        >>> _yyyymmdd_elapsed_str(10101, 10101)
+        '0 days'
+    """
+
+    def _decode(stamp):
+        s = int(stamp)
+        return s // 10000, (s // 100) % 100, s % 100
+
+    y0, m0, d0 = _decode(start)
+    y1, m1, d1 = _decode(end)
+
+    years = y1 - y0
+    months = m1 - m0
+    days = d1 - d0
+
+    if days < 0:
+        days += 30  # 30-day approximation; calendar is unknown at this point
+        months -= 1
+    if months < 0:
+        months += 12
+        years -= 1
+
+    parts = []
+    for val, unit in ((years, "year"), (months, "month"), (days, "day")):
+        if val > 0:
+            label = unit if val == 1 else f"{unit}s"
+            parts.append(f"{val} {label}")
+
+    return ", ".join(parts) if parts else "0 days"
+
+
 def perf_check_for_memory_leak(case, tolerance):
     leak = False
     comment = ""
@@ -1105,9 +1179,6 @@ def perf_check_for_memory_leak(case, tolerance):
         except RuntimeError:
             return False, "insufficient data for memleak test"
 
-        # last day - second day, skip first day, can be too low while initializing
-        elapsed_days = int(memlist[-1][0]) - int(memlist[1][0])
-
         finalmem, originalmem = float(memlist[-1][1]), float(memlist[1][1])
 
         memdiff = -1 if originalmem <= 0 else (finalmem - originalmem) / originalmem
@@ -1119,10 +1190,13 @@ def perf_check_for_memory_leak(case, tolerance):
             leak = False
             comment = ""
         else:
+            # Skip the first sample (can be artificially low during init);
+            # report elapsed time between the second and last samples.
+            elapsed = _yyyymmdd_elapsed_str(memlist[1][0], memlist[-1][0])
             leak = True
             comment = (
-                "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
-                    originalmem, finalmem, elapsed_days
+                "memleak detected, memory went from {:f} to {:f} in {:s}".format(
+                    originalmem, finalmem, elapsed
                 )
             )
 
