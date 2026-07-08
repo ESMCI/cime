@@ -5,7 +5,8 @@ Interface to the config_machines.xml file.  This class inherits from GenericXML.
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import CIMEError, expect, convert_to_unknown_type, get_cime_config
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect, convert_to_unknown_type, get_cime_config
 
 import re
 import logging
