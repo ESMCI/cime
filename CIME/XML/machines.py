@@ -399,11 +399,25 @@ class Machines(GenericXML):
         elif name == "MPILIB":
             value = self.get_default_MPIlib(attributes)
         else:
-            node = self.get_optional_child(
-                name, root=self.machine_node, attributes=attributes
-            )
-            if node is not None:
-                value = self.text(node)
+            # Automatically add compiler and mpi selectors
+            if attributes is None:
+                attribute_list = [{"compiler" : self.get_value("COMPILER"), "mpilib" : self.get_value("MPILIB")},
+                                  {"compiler" : self.get_value("COMPILER")},
+                                  {"mpilib" : self.get_value("MPILIB")},
+                                  {}]
+                for attributes in attribute_list:
+                    node = self.get_optional_child(
+                        name, root=self.machine_node, attributes=attributes
+                    )
+                    if node is not None:
+                        value = self.text(node)
+                        break
+            else:
+                node = self.get_optional_child(
+                    name, root=self.machine_node, attributes=attributes
+                )
+                if node is not None:
+                    value = self.text(node)
 
         if resolved:
             if value is not None:
@@ -430,7 +444,7 @@ class Machines(GenericXML):
         )
         # if no match with attributes, try without
         if supported_values is None:
-            supported_values = self.get_value(listname, attributes=None)
+            supported_values = self.get_value(listname, attributes={})
 
         expect(
             supported_values is not None,
@@ -460,25 +474,30 @@ class Machines(GenericXML):
                 ),
             )
         else:
-            value = self.get_field_from_list("COMPILERS")
+            value = self.get_field_from_list("COMPILERS", attributes={})
         return value
 
     def get_default_MPIlib(self, attributes=None):
         """
         Get the MPILIB to use from the list of MPILIBS
         """
+        if attributes is None:
+            attributes = {"compiler": self.get_value("COMPILER")}
         return self.get_field_from_list("MPILIBS", attributes=attributes)
 
     def is_valid_compiler(self, compiler):
         """
         Check the compiler is valid for the current machine
         """
-        return self.get_field_from_list("COMPILERS", reqval=compiler) is not None
+        return self.get_field_from_list("COMPILERS", attributes={}, reqval=compiler) is not None
 
     def is_valid_MPIlib(self, mpilib, attributes=None):
         """
         Check the MPILIB is valid for the current machine
         """
+        if attributes is None:
+            attributes = {"compiler": self.get_value("COMPILER")}
+
         return (
             mpilib == "mpi-serial"
             or self.get_field_from_list("MPILIBS", reqval=mpilib, attributes=attributes)

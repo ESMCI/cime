@@ -248,6 +248,12 @@ class TestScheduler(object):
 
         self._config = Config.instance()
 
+        self._compiler = (
+            self._machobj.get_default_compiler() if compiler is None else compiler
+        )
+        # Some machine settings may depend on compiler
+        self._machobj.set_value("COMPILER", self._compiler)
+
         self._batched_build = self._machobj.get_value("BATCHED_BUILD")
         if no_batch_build:
             self._batched_build = False
@@ -302,9 +308,6 @@ class TestScheduler(object):
         self._test_root = os.path.abspath(self._test_root)
         self._test_id = test_id if test_id is not None else get_timestamp()
 
-        self._compiler = (
-            self._machobj.get_default_compiler() if compiler is None else compiler
-        )
 
         self._clean = clean
 
@@ -1330,7 +1333,7 @@ class TestScheduler(object):
         elif procs_needed > self._proc_pool:
             # This test is asking for more than we can ever provide
             # This should only ever happen for RUN_PHASE
-            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool (self._proc_pool)"
+            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool ({self._proc_pool})"
             expect(next_phase == RUN_PHASE, msg)
 
             # CIME phase won't be run, so we need to update TEST_STATUS ourselves
