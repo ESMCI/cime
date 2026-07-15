@@ -401,10 +401,15 @@ class Machines(GenericXML):
         else:
             # Automatically add compiler and mpi selectors
             if attributes is None:
-                attribute_list = [{"compiler" : self.get_value("COMPILER"), "mpilib" : self.get_value("MPILIB")},
-                                  {"compiler" : self.get_value("COMPILER")},
-                                  {"mpilib" : self.get_value("MPILIB")},
-                                  {}]
+                attribute_list = [
+                    {
+                        "compiler": self.get_value("COMPILER"),
+                        "mpilib": self.get_value("MPILIB"),
+                    },
+                    {"compiler": self.get_value("COMPILER")},
+                    {"mpilib": self.get_value("MPILIB")},
+                    {},
+                ]
                 for attributes in attribute_list:
                     node = self.get_optional_child(
                         name, root=self.machine_node, attributes=attributes
@@ -489,7 +494,10 @@ class Machines(GenericXML):
         """
         Check the compiler is valid for the current machine
         """
-        return self.get_field_from_list("COMPILERS", attributes={}, reqval=compiler) is not None
+        return (
+            self.get_field_from_list("COMPILERS", attributes={}, reqval=compiler)
+            is not None
+        )
 
     def is_valid_MPIlib(self, mpilib, attributes=None):
         """

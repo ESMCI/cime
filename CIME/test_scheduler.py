@@ -308,7 +308,6 @@ class TestScheduler(object):
         self._test_root = os.path.abspath(self._test_root)
         self._test_id = test_id if test_id is not None else get_timestamp()
 
-
         self._clean = clean
 
         self._namelists_only = namelists_only
