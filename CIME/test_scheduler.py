@@ -337,7 +337,6 @@ class TestScheduler(object):
 
         # Compute baseline_root. Need to set some properties on machobj in order for
         # the baseline_root to resolve correctly.
-        self._machobj.set_value("COMPILER", self._compiler)
         self._machobj.set_value("PROJECT", self._project)
         self._baseline_root = (
             os.path.abspath(baseline_root)
