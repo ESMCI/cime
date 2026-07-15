@@ -399,17 +399,21 @@ class Machines(GenericXML):
         elif name == "MPILIB":
             value = self.get_default_MPIlib(attributes)
         else:
-            # Automatically add compiler and mpi selectors
+            # Automatically add compiler and mpi selectors.
             if attributes is None:
+                compiler = self.get_value("COMPILER")
+                mpilib = self.get_value("MPILIB")
                 attribute_list = [
                     {
-                        "compiler": self.get_value("COMPILER"),
-                        "mpilib": self.get_value("MPILIB"),
+                        "compiler": compiler,
+                        "mpilib": mpilib,
                     },
-                    {"compiler": self.get_value("COMPILER")},
-                    {"mpilib": self.get_value("MPILIB")},
+                    {"compiler": compiler},
+                    {"mpilib": mpilib},
                     {},
                 ]
+                # get_optional_child will only return if all attributes match,
+                # so gradually search for less-specific matches
                 for attributes in attribute_list:
                     node = self.get_optional_child(
                         name, root=self.machine_node, attributes=attributes

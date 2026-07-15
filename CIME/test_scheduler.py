@@ -251,8 +251,10 @@ class TestScheduler(object):
         self._compiler = (
             self._machobj.get_default_compiler() if compiler is None else compiler
         )
-        # Some machine settings may depend on compiler
+        # Some machine settings may depend on compiler or mpilib
         self._machobj.set_value("COMPILER", self._compiler)
+        if self._mpilib is not None:
+            self._machobj.set_value("MPILIB", self._mpilib)
 
         self._batched_build = self._machobj.get_value("BATCHED_BUILD")
         if no_batch_build:
