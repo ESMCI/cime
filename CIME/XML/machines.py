@@ -401,7 +401,7 @@ class Machines(GenericXML):
         else:
             attribute_list = []
             if name == "COMPILERS":
-                pass # COMPILERS does not support selectors
+                pass  # COMPILERS does not support selectors
             elif name == "MPILIBS":
                 # MPILIBS only supports compiler selector
                 compiler = self.get_value("COMPILER")
@@ -496,10 +496,7 @@ class Machines(GenericXML):
         """
         Check the compiler is valid for the current machine
         """
-        return (
-            self.get_field_from_list("COMPILERS", reqval=compiler)
-            is not None
-        )
+        return self.get_field_from_list("COMPILERS", reqval=compiler) is not None
 
     def is_valid_MPIlib(self, mpilib):
         """
@@ -507,8 +504,7 @@ class Machines(GenericXML):
         """
         return (
             mpilib == "mpi-serial"
-            or self.get_field_from_list("MPILIBS", reqval=mpilib)
-            is not None
+            or self.get_field_from_list("MPILIBS", reqval=mpilib) is not None
         )
 
     def has_batch_system(self):

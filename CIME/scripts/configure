@@ -142,6 +142,7 @@ def parse_command_line(args):
     opts["compiler"] = compiler
     opts["os"] = machobj.get_value("OS")
     opts["comp_interface"] = args.comp_interface
+    machobj.set_value("COMPILER", compiler)
 
     if args.clean:
         files = [
@@ -168,11 +169,12 @@ def parse_command_line(args):
     elif "MPILIB" in os.environ:
         mpilib = os.environ["MPILIB"]
     else:
-        mpilib = machobj.get_default_MPIlib(attributes={"compiler": compiler})
+        mpilib = machobj.get_default_MPIlib()
         os.environ["MPILIB"] = mpilib
 
+    machobj.set_value("MPILIB", mpilib)
     expect(
-        opts["machobj"].is_valid_MPIlib(mpilib, attributes={"compiler": compiler}),
+        opts["machobj"].is_valid_MPIlib(mpilib),
         "Invalid MPI library name given in MPILIB environment variable: %s" % mpilib,
     )
     opts["mpilib"] = mpilib
