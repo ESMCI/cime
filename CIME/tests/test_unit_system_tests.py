@@ -11,7 +11,8 @@ from pathlib import Path
 from CIME.config import Config
 from CIME.SystemTests.system_tests_common import (
     SystemTestsCommon,
-    _yyyymmdd_elapsed_str,
+    _format_elapsed_model_time,
+    _days_in_month,
 )
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
@@ -232,10 +233,10 @@ class TestUnitSystemTests:
         )
 
         perf_get_memory_list.return_value = [
-            (10102, 1000.0),   # year 1, Jan 2  – skipped (init sample)
-            (10104, 2000.0),   # year 1, Jan 4  – originalmem
-            (10106, 3000.0),   # year 1, Jan 6
-            (10108, 3000.0),   # year 1, Jan 8  – finalmem  (memdiff = 0.5 > tol)
+            (10102, 1000.0),  # year 1, Jan 2  – skipped (init sample)
+            (10104, 2000.0),  # year 1, Jan 4  – originalmem
+            (10106, 3000.0),  # year 1, Jan 6
+            (10108, 3000.0),  # year 1, Jan 8  – finalmem  (memdiff = 0.5 > tol)
         ]
 
         with tempfile.TemporaryDirectory() as tempdir:
@@ -258,6 +259,7 @@ class TestUnitSystemTests:
                 "mct",
                 None,
                 0.01,
+                "GREGORIAN",  # CALENDAR, consumed only when a leak is found
             )
 
             common = SystemTestsCommon(case)
@@ -266,9 +268,7 @@ class TestUnitSystemTests:
 
             common._check_for_memleak()
 
-            expected_comment = (
-                "memleak detected, memory went from 2000.000000 to 3000.000000 in 4 days"
-            )
+            expected_comment = "memleak detected, memory went from 2000.000000 to 3000.000000 in 4 days"
 
             common._test_status.set_status.assert_any_call(
                 "MEMLEAK", "FAIL", comments=expected_comment
@@ -292,10 +292,10 @@ class TestUnitSystemTests:
         )
 
         perf_get_memory_list.return_value = [
-            (10102, 3040.0),   # year 1, Jan 2  – skipped (init sample)
-            (10104, 3002.0),   # year 1, Jan 4  – originalmem
-            (10106, 3030.0),   # year 1, Jan 6
-            (10108, 3008.0),   # year 1, Jan 8  – finalmem  (memdiff ≈ 0.002 < tol)
+            (10102, 3040.0),  # year 1, Jan 2  – skipped (init sample)
+            (10104, 3002.0),  # year 1, Jan 4  – originalmem
+            (10106, 3030.0),  # year 1, Jan 6
+            (10108, 3008.0),  # year 1, Jan 8  – finalmem  (memdiff ≈ 0.002 < tol)
         ]
 
         with tempfile.TemporaryDirectory() as tempdir:
@@ -630,18 +630,18 @@ class TestUnitSystemTests:
 
 
 # ---------------------------------------------------------------------------
-# pytest-style tests for _yyyymmdd_elapsed_str
+# pytest-style tests for _format_elapsed_model_time
 # ---------------------------------------------------------------------------
 
 
-class TestYYYYMMDDElapsedStr:
-    """Unit tests for _yyyymmdd_elapsed_str helper.
+class TestFormatElapsedModelTime:
+    """Unit tests for _format_elapsed_model_time helper.
 
     The helper converts two YYYYMMDD-encoded model-date stamps (stored as
     float/int by the coupler-log parser) into a human-readable elapsed-time
-    string.  All calculations are approximate (30-day month borrow) because
-    the exact calendar (360-day, NO_LEAP, Gregorian …) is not available at
-    this call site and the message is cosmetic-only.
+    string.  Month/year borrows are exact for the case's calendar
+    (``NO_LEAP`` or ``GREGORIAN``), which is passed in from the case
+    ``CALENDAR`` variable; the default is ``NO_LEAP``.
     """
 
     # ------------------------------------------------------------------
@@ -650,12 +650,12 @@ class TestYYYYMMDDElapsedStr:
 
     def test_same_day_returns_zero_days(self):
         """Same start and end stamp produces '0 days'."""
-        assert _yyyymmdd_elapsed_str(10115, 10115) == "0 days"
+        assert _format_elapsed_model_time(10115, 10115) == "0 days"
 
     def test_zero_components_after_borrowing_returns_zero_days(self):
         """Edge case where all computed components are zero."""
         # year=0, month=0, day=0 after arithmetic → fall through to default
-        assert _yyyymmdd_elapsed_str(0, 0) == "0 days"
+        assert _format_elapsed_model_time(0, 0) == "0 days"
 
     # ------------------------------------------------------------------
     # days-only cases
@@ -663,15 +663,15 @@ class TestYYYYMMDDElapsedStr:
 
     def test_one_day_singular(self):
         """A one-day difference uses the singular 'day'."""
-        assert _yyyymmdd_elapsed_str(10101, 10102) == "1 day"
+        assert _format_elapsed_model_time(10101, 10102) == "1 day"
 
     def test_multiple_days_same_month(self):
         """Several days within the same month are reported correctly."""
-        assert _yyyymmdd_elapsed_str(10104, 10108) == "4 days"
+        assert _format_elapsed_model_time(10104, 10108) == "4 days"
 
     def test_many_days_no_month_borrow_needed(self):
         """Large day delta that does not require borrowing."""
-        assert _yyyymmdd_elapsed_str(10101, 10128) == "27 days"
+        assert _format_elapsed_model_time(10101, 10128) == "27 days"
 
     # ------------------------------------------------------------------
     # months-only cases
@@ -679,11 +679,11 @@ class TestYYYYMMDDElapsedStr:
 
     def test_one_month_singular(self):
         """Exactly one month difference, same day, uses singular 'month'."""
-        assert _yyyymmdd_elapsed_str(10201, 10301) == "1 month"
+        assert _format_elapsed_model_time(10201, 10301) == "1 month"
 
     def test_multiple_months_same_year(self):
         """Several months within the same year, same day-of-month."""
-        assert _yyyymmdd_elapsed_str(10101, 10601) == "5 months"
+        assert _format_elapsed_model_time(10101, 10601) == "5 months"
 
     # ------------------------------------------------------------------
     # years-only cases
@@ -691,11 +691,11 @@ class TestYYYYMMDDElapsedStr:
 
     def test_one_year_singular(self):
         """Exactly one year difference, same month/day, uses singular 'year'."""
-        assert _yyyymmdd_elapsed_str(10101, 20101) == "1 year"
+        assert _format_elapsed_model_time(10101, 20101) == "1 year"
 
     def test_multiple_years_same_month_day(self):
         """Several full years, no residual months or days."""
-        assert _yyyymmdd_elapsed_str(10101, 30101) == "2 years"
+        assert _format_elapsed_model_time(10101, 30101) == "2 years"
 
     # ------------------------------------------------------------------
     # combined-component cases
@@ -705,56 +705,87 @@ class TestYYYYMMDDElapsedStr:
         """All three components non-zero."""
         # start: year=1, month=1, day=2  →  end: year=5, month=12, day=31
         # years=4, months=11, days=29
-        assert _yyyymmdd_elapsed_str(10102, 51231) == "4 years, 11 months, 29 days"
+        assert _format_elapsed_model_time(10102, 51231) == "4 years, 11 months, 29 days"
 
     def test_all_singular_components(self):
         """Each component equals 1 (singular forms in every slot)."""
         # start: year=1, month=1, day=1  →  end: year=2, month=2, day=2
         # years=1, months=1, days=1
-        assert _yyyymmdd_elapsed_str(10101, 20202) == "1 year, 1 month, 1 day"
+        assert _format_elapsed_model_time(10101, 20202) == "1 year, 1 month, 1 day"
 
     def test_years_and_months_no_days(self):
         """Year and month components present but days component is zero."""
         # start: year=1, month=3, day=15  →  end: year=3, month=7, day=15
         # years=2, months=4, days=0
-        assert _yyyymmdd_elapsed_str(10315, 30715) == "2 years, 4 months"
+        assert _format_elapsed_model_time(10315, 30715) == "2 years, 4 months"
 
     def test_years_and_days_no_months(self):
         """Year and day components present but months component is zero."""
         # start: year=1, month=6, day=1  →  end: year=4, month=6, day=10
         # years=3, months=0, days=9
-        assert _yyyymmdd_elapsed_str(10601, 40610) == "3 years, 9 days"
+        assert _format_elapsed_model_time(10601, 40610) == "3 years, 9 days"
 
     def test_months_and_days_no_years(self):
         """Month and day components present but years component is zero."""
         # start: year=1, month=2, day=10  →  end: year=1, month=5, day=15
         # years=0, months=3, days=5
-        assert _yyyymmdd_elapsed_str(10210, 10515) == "3 months, 5 days"
+        assert _format_elapsed_model_time(10210, 10515) == "3 months, 5 days"
 
     # ------------------------------------------------------------------
     # borrow cases
     # ------------------------------------------------------------------
 
     def test_day_borrow_from_month(self):
-        """End day less than start day triggers a 30-day borrow from months."""
+        """End day less than start day borrows the true length of Feb."""
         # start: year=1, month=2, day=5  →  end: year=1, month=3, day=1
-        # raw: years=0, months=1, days=-4  →  days=26, months=0
-        assert _yyyymmdd_elapsed_str(10205, 10301) == "26 days"
+        # raw: years=0, months=1, days=-4
+        # borrow Feb (NO_LEAP → 28): days = -4 + 28 = 24, months = 0
+        assert _format_elapsed_model_time(10205, 10301) == "24 days"
 
     def test_month_borrow_from_year(self):
         """End month less than start month triggers a 12-month borrow from years."""
         # start: year=1, month=12, day=1  →  end: year=2, month=1, day=1
         # raw: years=1, months=-11, days=0  →  months=1, years=0
-        assert _yyyymmdd_elapsed_str(11201, 20101) == "1 month"
+        assert _format_elapsed_model_time(11201, 20101) == "1 month"
 
     def test_both_day_and_month_borrow(self):
         """Both day and month borrows occur in the same calculation."""
         # start: year=2, month=12, day=20  →  end: year=3, month=1, day=5
         # raw: years=1, months=-11, days=-15
-        # day borrow:  days=15, months=-12
-        # month borrow: months=0, years=0
-        # result: "15 days"
-        assert _yyyymmdd_elapsed_str(21220, 30105) == "15 days"
+        # day borrow (Dec → 31 days): days = -15 + 31 = 16, months = -12
+        # month borrow: months = 0, years = 0
+        # result: "16 days"
+        assert _format_elapsed_model_time(21220, 30105) == "16 days"
+
+    # ------------------------------------------------------------------
+    # calendar-aware borrow cases
+    # ------------------------------------------------------------------
+
+    def test_february_borrow_no_leap(self):
+        """A borrow across February on a NO_LEAP calendar uses 28 days."""
+        # start: year=4, month=2, day=5  →  end: year=4, month=3, day=1
+        # borrow Feb (NO_LEAP → 28): days = -4 + 28 = 24
+        assert _format_elapsed_model_time(40205, 40301, "NO_LEAP") == "24 days"
+
+    def test_february_borrow_gregorian_leap_year(self):
+        """A borrow across a leap-year February on GREGORIAN uses 29 days."""
+        # start: year=2000, month=2, day=5  →  end: year=2000, month=3, day=1
+        # borrow Feb (GREGORIAN, 2000 is leap → 29): days = -4 + 29 = 25
+        assert _format_elapsed_model_time(20000205, 20000301, "GREGORIAN") == "25 days"
+
+    def test_february_borrow_gregorian_non_leap_year(self):
+        """A borrow across a non-leap February on GREGORIAN uses 28 days."""
+        # start: year=2001, month=2, day=5  →  end: year=2001, month=3, day=1
+        # borrow Feb (GREGORIAN, 2001 not leap → 28): days = -4 + 28 = 24
+        assert _format_elapsed_model_time(20010205, 20010301, "GREGORIAN") == "24 days"
+
+    def test_calendar_type_is_case_insensitive(self):
+        """The calendar name is matched case-insensitively."""
+        assert _format_elapsed_model_time(20000205, 20000301, "gregorian") == "25 days"
+
+    def test_calendar_defaults_to_no_leap(self):
+        """Omitting the calendar defaults to NO_LEAP behavior."""
+        assert _format_elapsed_model_time(40205, 40301) == "24 days"
 
     # ------------------------------------------------------------------
     # float input (mirrors how the coupler log stores the stamp)
@@ -762,7 +793,10 @@ class TestYYYYMMDDElapsedStr:
 
     def test_float_stamps_accepted(self):
         """Stamps stored as float by the coupler-log parser are handled."""
-        assert _yyyymmdd_elapsed_str(10102.0, 51231.0) == "4 years, 11 months, 29 days"
+        assert (
+            _format_elapsed_model_time(10102.0, 51231.0)
+            == "4 years, 11 months, 29 days"
+        )
 
     # ------------------------------------------------------------------
     # large / long-run case
@@ -771,4 +805,53 @@ class TestYYYYMMDDElapsedStr:
     def test_century_scale_run(self):
         """Stamps spanning many decades produce a sensible result."""
         # start: year=1 Jan 1  →  end: year=100 Jan 1  →  99 years
-        assert _yyyymmdd_elapsed_str(10101, 1000101) == "99 years"
+        assert _format_elapsed_model_time(10101, 1000101) == "99 years"
+
+
+# ---------------------------------------------------------------------------
+# pytest-style tests for _days_in_month
+# ---------------------------------------------------------------------------
+
+
+class TestDaysInMonth:
+    """Unit tests for the calendar-aware _days_in_month helper."""
+
+    def test_thirty_one_day_month(self):
+        """January always has 31 days."""
+        assert _days_in_month(2000, 1, "GREGORIAN") == 31
+
+    def test_thirty_day_month(self):
+        """April always has 30 days."""
+        assert _days_in_month(2000, 4, "GREGORIAN") == 30
+
+    def test_february_no_leap_calendar(self):
+        """February is always 28 days on a NO_LEAP calendar, even a leap year."""
+        assert _days_in_month(2000, 2, "NO_LEAP") == 28
+
+    def test_february_gregorian_leap_year(self):
+        """February gains a day in a Gregorian leap year."""
+        assert _days_in_month(2000, 2, "GREGORIAN") == 29
+
+    def test_february_gregorian_non_leap_year(self):
+        """February has 28 days in a Gregorian non-leap year."""
+        assert _days_in_month(2001, 2, "GREGORIAN") == 28
+
+    def test_february_gregorian_century_non_leap(self):
+        """A non-400 century year is not a leap year under the Gregorian rule."""
+        assert _days_in_month(1900, 2, "GREGORIAN") == 28
+
+    def test_february_gregorian_400_year_leap(self):
+        """A year divisible by 400 is a leap year under the Gregorian rule."""
+        assert _days_in_month(2000, 2, "GREGORIAN") == 29
+
+    def test_calendar_case_insensitive(self):
+        """Calendar name comparison is case-insensitive."""
+        assert _days_in_month(2000, 2, "gregorian") == 29
+
+    def test_unknown_calendar_treated_as_no_leap(self):
+        """Any non-GREGORIAN calendar name falls back to no-leap behavior."""
+        assert _days_in_month(2000, 2, "360_day") == 28
+
+    def test_default_calendar_is_no_leap(self):
+        """Omitting the calendar defaults to no-leap February."""
+        assert _days_in_month(2000, 2) == 28

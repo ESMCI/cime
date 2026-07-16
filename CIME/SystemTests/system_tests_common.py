@@ -1093,7 +1093,49 @@ for some of your components.
         return
 
 
-def _yyyymmdd_elapsed_str(start, end):
+def _days_in_month(year, month, calendar_type="NO_LEAP"):
+    """Return the number of days in a model calendar month.
+
+    CIME cases run with one of two calendars, which share the standard
+    twelve-month Gregorian month lengths and differ only in whether February
+    gains a leap day:
+
+    * ``NO_LEAP`` (a.k.a. 365-day): every February has 28 days.
+    * ``GREGORIAN``: February has 29 days in leap years, following the
+      proleptic Gregorian leap rule.
+
+    Args:
+        year: Gregorian year the month belongs to.  Only consulted for
+            ``GREGORIAN`` February.
+        month: Month number in ``1..12``.
+        calendar_type: Model calendar name (case-insensitive).  Any value
+            other than ``GREGORIAN`` is treated as a no-leap calendar.
+
+    Returns:
+        int: Number of days in the requested month.
+
+    Examples:
+        >>> _days_in_month(1, 2, "NO_LEAP")
+        28
+        >>> _days_in_month(2000, 2, "GREGORIAN")
+        29
+        >>> _days_in_month(2001, 2, "GREGORIAN")
+        28
+    """
+    days_per_month = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    days = days_per_month[month - 1]
+
+    if (
+        month == 2
+        and str(calendar_type).upper() == "GREGORIAN"
+        and calendar.isleap(year)
+    ):
+        days = 29
+
+    return days
+
+
+def _format_elapsed_model_time(start, end, calendar_type="NO_LEAP"):
     """Format elapsed model time from two YYYYMMDD-encoded date stamps.
 
     Coupler log lines record model dates as ``YYYYMMDD`` integers (e.g.
@@ -1102,29 +1144,24 @@ def _yyyymmdd_elapsed_str(start, end):
     day-of-month fields.  This function decodes both stamps and returns a
     human-readable elapsed-time string with only the non-zero components.
 
-    ``datetime`` is intentionally not used here for two reasons:
-
-    1. **Non-Gregorian calendars.**  CIME cases can run with a 360-day or
-       NO_LEAP calendar, where dates such as February 30 (``YYYYMMDD =
-       XXXX0230``) are valid.  ``datetime.strptime`` only understands the
-       Gregorian calendar and raises ``ValueError`` on those dates.
-
-    2. **timedelta gives days, not years/months/days.**  Even on a Gregorian
-       run, ``datetime`` subtraction returns a ``timedelta`` whose only field
-       is ``days``.  Decomposing that back into years, months, and days still
-       requires knowing the calendar's day-count per month and year — so the
-       same approximation would be needed anyway.
-
-    The day-borrow and month-borrow arithmetic uses a 30-day approximation
-    because the exact model calendar (360-day, NO_LEAP, Gregorian, …) is not
-    available at this call site.  The result is intentionally approximate;
-    the message is cosmetic — it has no effect on pass/fail decisions.
+    ``datetime`` is intentionally not used here.  CIME cases run with a
+    ``NO_LEAP`` (365-day) or ``GREGORIAN`` calendar, and ``datetime`` only
+    understands the Gregorian calendar — it raises ``ValueError`` on
+    ``NO_LEAP`` dates such as ``YYYY0229`` in a non-leap year.  Even on a
+    Gregorian run, ``datetime`` subtraction yields a ``timedelta`` whose only
+    field is ``days``; decomposing that back into years/months/days still
+    requires the per-month day counts.  Both needs are met directly by
+    :func:`_days_in_month`, which is calendar-aware, so the elapsed value is
+    exact for the case's calendar rather than an approximation.
 
     Args:
         start: Model date stamp at run start encoded as ``YYYYMMDD``
             (int or float).
         end: Model date stamp at run end encoded as ``YYYYMMDD``
             (int or float).
+        calendar_type: Model calendar name (case-insensitive), typically the
+            value of the case ``CALENDAR`` variable.  Controls February's
+            length when a day-borrow crosses it.  Defaults to ``NO_LEAP``.
 
     Returns:
         str: Human-readable elapsed time, e.g.
@@ -1132,12 +1169,16 @@ def _yyyymmdd_elapsed_str(start, end):
             start and end are identical or the decoded difference is zero.
 
     Examples:
-        >>> _yyyymmdd_elapsed_str(10102, 51231)
+        >>> _format_elapsed_model_time(10102, 51231)
         '4 years, 11 months, 29 days'
-        >>> _yyyymmdd_elapsed_str(10101, 20101)
+        >>> _format_elapsed_model_time(10101, 20101)
         '1 year'
-        >>> _yyyymmdd_elapsed_str(10101, 10101)
+        >>> _format_elapsed_model_time(10101, 10101)
         '0 days'
+        >>> _format_elapsed_model_time(10205, 10301, "NO_LEAP")
+        '24 days'
+        >>> _format_elapsed_model_time(20000205, 20000301, "GREGORIAN")
+        '25 days'
     """
 
     def _decode(stamp):
@@ -1152,7 +1193,12 @@ def _yyyymmdd_elapsed_str(start, end):
     days = d1 - d0
 
     if days < 0:
-        days += 30  # 30-day approximation; calendar is unknown at this point
+        # Borrow one month, using the true length of the month immediately
+        # preceding the end month for the case's calendar.
+        borrow_year, borrow_month = y1, m1 - 1
+        if borrow_month == 0:
+            borrow_year, borrow_month = y1 - 1, 12
+        days += _days_in_month(borrow_year, borrow_month, calendar_type)
         months -= 1
     if months < 0:
         months += 12
@@ -1191,13 +1237,15 @@ def perf_check_for_memory_leak(case, tolerance):
             comment = ""
         else:
             # Skip the first sample (can be artificially low during init);
-            # report elapsed time between the second and last samples.
-            elapsed = _yyyymmdd_elapsed_str(memlist[1][0], memlist[-1][0])
+            # report elapsed time between the second and last samples using
+            # the case's calendar so month/year borrows are exact.
+            calendar_type = case.get_value("CALENDAR") or "NO_LEAP"
+            elapsed = _format_elapsed_model_time(
+                memlist[1][0], memlist[-1][0], calendar_type
+            )
             leak = True
-            comment = (
-                "memleak detected, memory went from {:f} to {:f} in {:s}".format(
-                    originalmem, finalmem, elapsed
-                )
+            comment = "memleak detected, memory went from {:f} to {:f} in {:s}".format(
+                originalmem, finalmem, elapsed
             )
 
     return leak, comment
