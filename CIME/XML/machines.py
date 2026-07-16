@@ -399,23 +399,22 @@ class Machines(GenericXML):
         elif name == "MPILIB":
             value = self.get_default_MPIlib()
         else:
-            # Read COMPILER/MPILIB directly from custom_settings (not via get_value) to
-            # avoid circular recursion when resolving the MPILIBS list.
-            compiler = self.custom_settings.get("COMPILER")
-            mpilib = self.custom_settings.get("MPILIB")
-            attribute_list = []
-            if compiler and mpilib:
-                attribute_list.append({"compiler": compiler, "mpilib": mpilib})
-            if compiler:
-                attribute_list.append({"compiler": compiler})
-            if mpilib:
-                attribute_list.append({"mpilib": mpilib})
-            attribute_list.append({})
+            compiler = self.get_value("COMPILER")
+            mpilib = self.get_value("MPILIB")
+            attribute_list = [
+                {
+                    "compiler": compiler,
+                    "mpilib": mpilib,
+                },
+                {"compiler": compiler},
+                {"mpilib": mpilib},
+                {},
+            ]
             # get_optional_child will only return if all attributes match,
             # so gradually search for less-specific matches
-            for attrs in attribute_list:
+            for attributes in attribute_list:
                 node = self.get_optional_child(
-                    name, root=self.machine_node, attributes=attrs
+                    name, root=self.machine_node, attributes=attributes
                 )
                 if node is not None:
                     value = self.text(node)
