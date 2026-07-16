@@ -141,6 +141,9 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
     <OS>ubuntu</OS>
     <COMPILERS>gnu,gnugpu,intel</COMPILERS>
     <MPILIBS>mpi-serial,openmpi,mpich2</MPILIBS>
+    <MPILIBS compiler="intel">impi,mpi-serial</MPILIBS>
+    <GMAKE_J>8</GMAKE_J>
+    <GMAKE_J mpilib="openmpi">16</GMAKE_J>
     <PROJECT>custom</PROJECT>
     <SAVE_TIMING_DIR>/data/timings</SAVE_TIMING_DIR>
     <SAVE_TIMING_DIR_PROJECTS>testing</SAVE_TIMING_DIR_PROJECTS>
@@ -150,7 +153,6 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>/data/baselines/$COMPILER</BASELINE_ROOT>
     <CCSM_CPRNC>/data/tools/cprnc</CCSM_CPRNC>
-    <GMAKE_J>8</GMAKE_J>
     <TESTS>e3sm_developer</TESTS>
     <NTEST_PARALLEL_JOBS>4</NTEST_PARALLEL_JOBS>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
@@ -346,3 +348,51 @@ class TestUnitXMLMachines(unittest.TestCase):
         assert self.machine.is_valid_compiler("gnu")
 
         assert not self.machine.is_valid_compiler("bogus")
+
+    def test_get_value_without_compiler_returns_generic(self):
+        """get_value returns the generic value when no compiler is set in custom_settings."""
+        self.machine.set_machine("multi-compiler")
+
+        assert self.machine.get_value("MPILIBS") == "mpi-serial,openmpi,mpich2"
+
+    def test_get_value_with_compiler_returns_compiler_specific(self):
+        """get_value auto-injects compiler from custom_settings and returns its specific value."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("COMPILER", "intel")
+
+        assert self.machine.get_value("MPILIBS") == "impi,mpi-serial"
+
+    def test_get_value_compiler_falls_back_to_generic_when_no_match(self):
+        """get_value falls back to the generic value when no compiler-specific node exists."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("COMPILER", "gnu")
+
+        # No <MPILIBS compiler="gnu"> node, so the generic value is returned.
+        assert self.machine.get_value("MPILIBS") == "mpi-serial,openmpi,mpich2"
+
+    def test_get_value_explicit_attributes_take_precedence_over_injection(self):
+        """Explicit attributes passed to get_value override auto-injection from custom_settings."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("COMPILER", "gnu")
+
+        # Even though COMPILER=gnu is in custom_settings, the explicit compiler="intel"
+        # attribute should win.
+        assert (
+            self.machine.get_value("MPILIBS", attributes={"compiler": "intel"})
+            == "impi,mpi-serial"
+        )
+
+    def test_get_value_with_mpilib_returns_mpilib_specific(self):
+        """get_value auto-injects mpilib from custom_settings and returns its specific value."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("MPILIB", "openmpi")
+
+        assert self.machine.get_value("GMAKE_J") == 16
+
+    def test_get_value_mpilib_falls_back_to_generic_when_no_match(self):
+        """get_value falls back to the generic value when no mpilib-specific node exists."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("MPILIB", "mpi-serial")
+
+        # No <GMAKE_J mpilib="mpi-serial"> node, so the generic value is returned.
+        assert self.machine.get_value("GMAKE_J") == 8
