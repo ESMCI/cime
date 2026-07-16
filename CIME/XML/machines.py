@@ -380,13 +380,18 @@ class Machines(GenericXML):
     # pylint: disable=arguments-differ
     def get_value(self, name, resolved=True, subgroup=None):
         """
-        Get Value of fields in the config_machines.xml file
+        Get Value of fields in the config_machines.xml file. Note that most
+        config machines fields support compiler="..." and mpilib="..."
+        selectors. These are handled automatically but be sure to set_value
+        COMPILER or MPILIB correctly.
         """
         if self.machine_node is None:
             logger.debug("Machine object has no machine defined")
             return None
 
+        # Make sure no client is trying to pass attributes
         expect(type(resolved) is bool, "Wrong type for resolved")
+
         expect(subgroup is None, "This class does not support subgroups")
         value = None
 
