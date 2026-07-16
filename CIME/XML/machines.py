@@ -399,17 +399,24 @@ class Machines(GenericXML):
         elif name == "MPILIB":
             value = self.get_default_MPIlib()
         else:
-            compiler = self.get_value("COMPILER")
-            mpilib = self.get_value("MPILIB")
-            attribute_list = [
-                {
-                    "compiler": compiler,
-                    "mpilib": mpilib,
-                },
-                {"compiler": compiler},
-                {"mpilib": mpilib},
-                {},
-            ]
+            attribute_list = []
+            if name == "COMPILERS":
+                pass # COMPILERS does not support selectors
+            elif name == "MPILIBS":
+                # MPILIBS only supports compiler selector
+                compiler = self.get_value("COMPILER")
+                attribute_list.append({"compiler": compiler})
+            else:
+                # All other fields support both
+                compiler = self.get_value("COMPILER")
+                mpilib = self.get_value("MPILIB")
+                attribute_list.append({"compiler": compiler, "mpilib": mpilib})
+                attribute_list.append({"compiler": compiler})
+                attribute_list.append({"mpilib": mpilib})
+
+            # All fields support no selector
+            attribute_list.append(dict())
+
             # get_optional_child will only return if all attributes match,
             # so gradually search for less-specific matches
             for attributes in attribute_list:
@@ -427,6 +434,10 @@ class Machines(GenericXML):
                 value = os.environ[name]
 
             value = convert_to_unknown_type(value)
+
+        # Cache compiler/mpilib
+        if name in ["COMPILER", "MPILIB"]:
+            self.custom_settings[name] = value
 
         return value
 
