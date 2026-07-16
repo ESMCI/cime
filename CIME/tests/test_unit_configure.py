@@ -14,9 +14,8 @@ class TestConfigure(unittest.TestCase):
         self.mach_obj = Machines()
         self.compiler = self.mach_obj.get_default_compiler()
         self.sysos = self.mach_obj.get_value("OS")
-        self.mpilib = self.mach_obj.get_default_MPIlib(
-            attributes={"compiler": self.compiler}
-        )
+        self.mach_obj.set_value("COMPILER", self.compiler)
+        self.mpilib = self.mach_obj.get_default_MPIlib()
         self.debug = "FALSE"
         self.comp_interface = "nuopc"
 

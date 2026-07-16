@@ -370,17 +370,16 @@ class TestUnitXMLMachines(unittest.TestCase):
         # No <MPILIBS compiler="gnu"> node, so the generic value is returned.
         assert self.machine.get_value("MPILIBS") == "mpi-serial,openmpi,mpich2"
 
-    def test_get_value_explicit_attributes_take_precedence_over_injection(self):
-        """Explicit attributes passed to get_value override auto-injection from custom_settings."""
+    def test_get_value_with_compiler_and_mpilib_uses_priority_order(self):
+        """With both COMPILER and MPILIB set, compiler+mpilib is most specific, then compiler, then mpilib."""
         self.machine.set_machine("multi-compiler")
-        self.machine.set_value("COMPILER", "gnu")
+        self.machine.set_value("COMPILER", "intel")
+        self.machine.set_value("MPILIB", "openmpi")
 
-        # Even though COMPILER=gnu is in custom_settings, the explicit compiler="intel"
-        # attribute should win.
-        assert (
-            self.machine.get_value("MPILIBS", attributes={"compiler": "intel"})
-            == "impi,mpi-serial"
-        )
+        # compiler-only match found for MPILIBS before mpilib-only is tried
+        assert self.machine.get_value("MPILIBS") == "impi,mpi-serial"
+        # no compiler-only GMAKE_J, so mpilib-only match is used
+        assert self.machine.get_value("GMAKE_J") == 16
 
     def test_get_value_with_mpilib_returns_mpilib_specific(self):
         """get_value auto-injects mpilib from custom_settings and returns its specific value."""

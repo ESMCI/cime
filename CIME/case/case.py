@@ -1456,24 +1456,24 @@ class Case(object):
             )
 
         self.set_value("COMPILER", compiler)
+        machobj.set_value("COMPILER", compiler)
 
         if mpilib is None:
-            mpilib = machobj.get_default_MPIlib({"compiler": compiler})
+            mpilib = machobj.get_default_MPIlib()
         else:
             expect(
-                machobj.is_valid_MPIlib(mpilib, {"compiler": compiler}),
+                machobj.is_valid_MPIlib(mpilib),
                 "MPIlib {} is not supported on machine {}".format(mpilib, machine_name),
             )
         self.set_value("MPILIB", mpilib)
+        machobj.set_value("MPILIB", mpilib)
         for name in (
             "MAX_TASKS_PER_NODE",
             "MAX_MPITASKS_PER_NODE",
             "MAX_CPUTASKS_PER_GPU_NODE",
             "MAX_GPUS_PER_NODE",
         ):
-            dmax = machobj.get_value(name, {"compiler": compiler})
-            if not dmax:
-                dmax = machobj.get_value(name)
+            dmax = machobj.get_value(name)
             if dmax:
                 self.set_value(name, dmax)
             elif name == "MAX_CPUTASKS_PER_GPU_NODE":

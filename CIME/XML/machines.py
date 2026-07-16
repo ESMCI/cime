@@ -378,7 +378,7 @@ class Machines(GenericXML):
         return machine
 
     # pylint: disable=arguments-differ
-    def get_value(self, name, attributes=None, resolved=True, subgroup=None):
+    def get_value(self, name, resolved=True, subgroup=None):
         """
         Get Value of fields in the config_machines.xml file
         """
@@ -392,41 +392,34 @@ class Machines(GenericXML):
         if name in self.custom_settings:
             return self.custom_settings[name]
 
-        # COMPILER and MPILIB are special, if called without arguments they get the default value from the
+        # COMPILER and MPILIB are special; they return the default value from the
         # COMPILERS and MPILIBS lists in the file.
         if name == "COMPILER":
             value = self.get_default_compiler()
         elif name == "MPILIB":
-            value = self.get_default_MPIlib(attributes)
+            value = self.get_default_MPIlib()
         else:
-            # Automatically add compiler and mpi selectors.
-            if attributes is None:
-                compiler = self.get_value("COMPILER")
-                mpilib = self.get_value("MPILIB")
-                attribute_list = [
-                    {
-                        "compiler": compiler,
-                        "mpilib": mpilib,
-                    },
-                    {"compiler": compiler},
-                    {"mpilib": mpilib},
-                    {},
-                ]
-                # get_optional_child will only return if all attributes match,
-                # so gradually search for less-specific matches
-                for attributes in attribute_list:
-                    node = self.get_optional_child(
-                        name, root=self.machine_node, attributes=attributes
-                    )
-                    if node is not None:
-                        value = self.text(node)
-                        break
-            else:
+            # Read COMPILER/MPILIB directly from custom_settings (not via get_value) to
+            # avoid circular recursion when resolving the MPILIBS list.
+            compiler = self.custom_settings.get("COMPILER")
+            mpilib = self.custom_settings.get("MPILIB")
+            attribute_list = []
+            if compiler and mpilib:
+                attribute_list.append({"compiler": compiler, "mpilib": mpilib})
+            if compiler:
+                attribute_list.append({"compiler": compiler})
+            if mpilib:
+                attribute_list.append({"mpilib": mpilib})
+            attribute_list.append({})
+            # get_optional_child will only return if all attributes match,
+            # so gradually search for less-specific matches
+            for attrs in attribute_list:
                 node = self.get_optional_child(
-                    name, root=self.machine_node, attributes=attributes
+                    name, root=self.machine_node, attributes=attrs
                 )
                 if node is not None:
                     value = self.text(node)
+                    break
 
         if resolved:
             if value is not None:
@@ -438,22 +431,19 @@ class Machines(GenericXML):
 
         return value
 
-    def get_field_from_list(self, listname, reqval=None, attributes=None):
+    def get_field_from_list(self, listname, reqval=None):
         """
         Some of the fields have lists of valid values in the xml, parse these
         lists and return the first value if reqval is not provided and reqval
         if it is a valid setting for the machine
         """
         expect(self.machine_node is not None, "Machine object has no machine defined")
-        supported_values = self.get_value(listname, attributes=attributes)
+        supported_values = self.get_value(listname)
         logger.debug(
             "supported values for {} on {} is {}".format(
                 listname, self.machine, supported_values
             )
         )
-        # if no match with attributes, try without
-        if supported_values is None:
-            supported_values = self.get_value(listname, attributes={})
 
         expect(
             supported_values is not None,
@@ -483,36 +473,31 @@ class Machines(GenericXML):
                 ),
             )
         else:
-            value = self.get_field_from_list("COMPILERS", attributes={})
+            value = self.get_field_from_list("COMPILERS")
         return value
 
-    def get_default_MPIlib(self, attributes=None):
+    def get_default_MPIlib(self):
         """
         Get the MPILIB to use from the list of MPILIBS
         """
-        if attributes is None:
-            attributes = {"compiler": self.get_value("COMPILER")}
-        return self.get_field_from_list("MPILIBS", attributes=attributes)
+        return self.get_field_from_list("MPILIBS")
 
     def is_valid_compiler(self, compiler):
         """
         Check the compiler is valid for the current machine
         """
         return (
-            self.get_field_from_list("COMPILERS", attributes={}, reqval=compiler)
+            self.get_field_from_list("COMPILERS", reqval=compiler)
             is not None
         )
 
-    def is_valid_MPIlib(self, mpilib, attributes=None):
+    def is_valid_MPIlib(self, mpilib):
         """
         Check the MPILIB is valid for the current machine
         """
-        if attributes is None:
-            attributes = {"compiler": self.get_value("COMPILER")}
-
         return (
             mpilib == "mpi-serial"
-            or self.get_field_from_list("MPILIBS", reqval=mpilib, attributes=attributes)
+            or self.get_field_from_list("MPILIBS", reqval=mpilib)
             is not None
         )
 
