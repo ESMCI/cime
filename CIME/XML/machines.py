@@ -386,6 +386,7 @@ class Machines(GenericXML):
             logger.debug("Machine object has no machine defined")
             return None
 
+        expect(type(resolved) is bool, "Wrong type for resolved")
         expect(subgroup is None, "This class does not support subgroups")
         value = None
 
