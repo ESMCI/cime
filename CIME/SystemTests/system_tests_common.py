@@ -42,6 +42,7 @@ from datetime import datetime, timedelta
 import glob, gzip, time, traceback, os, math, calendar
 
 from contextlib import ExitStack
+from typing import List, Tuple, Union
 
 logger = logging.getLogger(__name__)
 
@@ -1039,7 +1040,7 @@ for some of your components.
         return
 
 
-def _days_in_month(year, month, calendar_type="NO_LEAP"):
+def _days_in_month(year: int, month: int, calendar_type: str = "NO_LEAP") -> int:
     """Return the number of days in a model calendar month.
 
     CIME cases run with one of two calendars, which share the standard
@@ -1081,7 +1082,11 @@ def _days_in_month(year, month, calendar_type="NO_LEAP"):
     return days
 
 
-def _format_elapsed_model_time(start, end, calendar_type="NO_LEAP"):
+def _format_elapsed_model_time(
+    start: Union[int, float],
+    end: Union[int, float],
+    calendar_type: str = "NO_LEAP",
+) -> str:
     """Format elapsed model time from two YYYYMMDD-encoded date stamps.
 
     Coupler log lines record model dates as ``YYYYMMDD`` integers (e.g.
@@ -1127,7 +1132,7 @@ def _format_elapsed_model_time(start, end, calendar_type="NO_LEAP"):
         '25 days'
     """
 
-    def _decode(stamp):
+    def _decode(stamp: Union[int, float]) -> Tuple[int, int, int]:
         s = int(stamp)
         return s // 10000, (s // 100) % 100, s % 100
 
@@ -1150,7 +1155,7 @@ def _format_elapsed_model_time(start, end, calendar_type="NO_LEAP"):
         months += 12
         years -= 1
 
-    parts = []
+    parts: List[str] = []
     for val, unit in ((years, "year"), (months, "month"), (days, "day")):
         if val > 0:
             label = unit if val == 1 else f"{unit}s"
