@@ -24,6 +24,8 @@ def _download_checksum_file(rundir):
     # download and merge all available chksum files.
     while protocol is not None:
         protocol, address, user, passwd, chksum_file, _, _ = inputdata.get_next_server()
+        if protocol is None:
+            continue
         if not CIME.Servers.is_protocol_available(protocol):
             logger.info("Client protocol {} not enabled".format(protocol))
             continue
@@ -414,6 +416,8 @@ def _check_input_data_impl(
     no_files_missing = True
     server = None
     if download:
+        if protocol is None:
+            return False
         if not CIME.Servers.is_protocol_available(protocol):
             logger.info("Client protocol {} not enabled".format(protocol))
             return False
