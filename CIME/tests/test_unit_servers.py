@@ -1,7 +1,7 @@
 """Unit tests for CIME.Servers lazy loading.
 
 These tests verify:
-1. Lazy loading behavior (no subprocess at import time)
+1. Lazy loading behavior (no shutil.which() / executable availability checks at import time)
 2. Backward compatibility with existing usage patterns
 3. is_protocol_available() API
 """
@@ -12,26 +12,44 @@ import pytest
 class TestServersLazyLoading:
     """Tests for lazy loading of server modules."""
 
-    def test_import_does_not_run_which(self):
+    def test_import_does_not_run_which(self, monkeypatch):
         """Importing CIME.Servers should not run shutil.which()."""
-        import CIME.Servers
-
-        assert CIME.Servers is not None
-
-    def test_availability_not_checked_at_import(self):
-        """Availability flags should be unchecked after import."""
         import importlib
+        import shutil
         import sys
 
+        def _boom(*_args, **_kwargs):
+            raise AssertionError("shutil.which() should not be called at import time")
+
+        monkeypatch.setattr(shutil, "which", _boom)
+
         # Force reimport
-        for mod in list(sys.modules.keys()):
-            if "CIME.Servers" in mod:
+        for mod in list(sys.modules):
+            if mod == "CIME.Servers" or mod.startswith("CIME.Servers."):
                 del sys.modules[mod]
 
+        importlib.import_module("CIME.Servers")
+
+    def test_availability_checked_lazily_and_cached(self, monkeypatch):
+        """Availability checks should run on first access and then be cached."""
         import CIME.Servers
 
-        assert CIME.Servers is not None
+        calls = {"n": 0}
 
+        def _fake_which(_cmd):
+            calls["n"] += 1
+            return None
+
+        monkeypatch.setattr(CIME.Servers, "which", _fake_which)
+        CIME.Servers.is_protocol_available.cache_clear()
+
+        assert calls["n"] == 0  # no availability checks at import time
+
+        _ = CIME.Servers.has_svn
+        assert calls["n"] == 1
+
+        _ = CIME.Servers.has_svn
+        assert calls["n"] == 1
 
 class TestProtocolAvailability:
     """Tests for is_protocol_available() API."""
