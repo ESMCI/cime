@@ -5,8 +5,8 @@ Server availability is detected lazily on first access to avoid
 running executables at import time.
 """
 
+import shutil
 from functools import lru_cache
-from shutil import which
 
 
 @lru_cache(maxsize=None)
@@ -29,11 +29,11 @@ def is_protocol_available(protocol: str) -> bool:
         except ImportError:
             return False
     elif protocol == "svn":
-        return which("svn") is not None
+        return shutil.which("svn") is not None
     elif protocol == "wget":
-        return which("wget") is not None
+        return shutil.which("wget") is not None
     elif protocol == "gftp":
-        return which("globus-url-copy") is not None
+        return shutil.which("globus-url-copy") is not None
     return False
 
 

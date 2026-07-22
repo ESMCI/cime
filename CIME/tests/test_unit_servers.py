@@ -32,6 +32,8 @@ class TestServersLazyLoading:
 
     def test_availability_checked_lazily_and_cached(self, monkeypatch):
         """Availability checks should run on first access and then be cached."""
+        import shutil
+
         import CIME.Servers
 
         calls = {"n": 0}
@@ -40,7 +42,7 @@ class TestServersLazyLoading:
             calls["n"] += 1
             return None
 
-        monkeypatch.setattr(CIME.Servers, "which", _fake_which)
+        monkeypatch.setattr(shutil, "which", _fake_which)
         CIME.Servers.is_protocol_available.cache_clear()
 
         assert calls["n"] == 0  # no availability checks at import time
