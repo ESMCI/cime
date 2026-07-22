@@ -51,6 +51,7 @@ class TestServersLazyLoading:
         _ = CIME.Servers.has_svn
         assert calls["n"] == 1
 
+
 class TestProtocolAvailability:
     """Tests for is_protocol_available() API."""
 
