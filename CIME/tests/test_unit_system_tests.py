@@ -807,6 +807,73 @@ class TestFormatElapsedModelTime:
         # start: year=1 Jan 1  →  end: year=100 Jan 1  →  99 years
         assert _format_elapsed_model_time(10101, 1000101) == "99 years"
 
+    # ------------------------------------------------------------------
+    # multi-borrow cases (regression for single-borrow bug)
+    # ------------------------------------------------------------------
+
+    def test_multi_borrow_jan31_to_mar1_no_leap(self):
+        """Jan 31 → Mar 1 requires borrowing both Feb and Jan (NO_LEAP).
+
+        Single-borrow bug: borrowing Feb(28) leaves days = -30 + 28 = -2,
+        still negative.  A second borrow of Jan(31) gives days = -2 + 31 = 29.
+        months goes -2 then -3; month normalisation: months=9, years=-1 → but
+        years was 0, so the loop continues; total months=-3+12=9, years=-1.
+        Wait — let us re-derive:
+
+        start = 10131 → y=1, m=1, d=31
+        end   = 10301 → y=1, m=3, d=1
+        raw: years=0, months=2, days=-30
+
+        Borrow 1 (Feb=28): days=-2, months=1
+        Borrow 2 (Jan=31): days=29, months=0  → loop exits
+        months=0 ≥ 0, no month normalisation needed.
+
+        Result: 0 years, 0 months, 29 days → "29 days"
+        """
+        assert _format_elapsed_model_time(10131, 10301) == "29 days"
+
+    def test_multi_borrow_jan31_to_mar1_gregorian_leap(self):
+        """Jan 31 → Mar 1 on GREGORIAN leap year (Feb=29) → 30 days.
+
+        start = 20000131 → y=2000, m=1, d=31
+        end   = 20000301 → y=2000, m=3, d=1
+        raw: years=0, months=2, days=-30
+
+        Borrow 1 (Feb 2000=29): days=-1, months=1
+        Borrow 2 (Jan=31):      days=30, months=0  → loop exits
+
+        Result: "30 days"
+        """
+        assert _format_elapsed_model_time(20000131, 20000301, "GREGORIAN") == "30 days"
+
+    def test_multi_borrow_jan31_to_mar1_gregorian_non_leap(self):
+        """Jan 31 → Mar 1 on GREGORIAN non-leap year (Feb=28) → 29 days.
+
+        start = 20010131 → y=2001, m=1, d=31
+        end   = 20010301 → y=2001, m=3, d=1
+        raw: years=0, months=2, days=-30
+
+        Borrow 1 (Feb 2001=28): days=-2, months=1
+        Borrow 2 (Jan=31):      days=29, months=0  → loop exits
+
+        Result: "29 days"
+        """
+        assert _format_elapsed_model_time(20010131, 20010301, "GREGORIAN") == "29 days"
+
+    def test_multi_borrow_across_year_boundary(self):
+        """Multi-borrow spanning a year boundary produces correct output.
+
+        start = 11215 → y=1, m=12, d=15
+        end   = 20210 → y=2, m=2,  d=10
+        raw: years=1, months=-10, days=-5
+
+        Borrow 1 (Jan=31): days=26, months=-11
+        months < 0: months=1, years=0
+
+        Result: "1 month, 26 days"
+        """
+        assert _format_elapsed_model_time(11215, 20210) == "1 month, 26 days"
+
 
 # ---------------------------------------------------------------------------
 # pytest-style tests for _days_in_month

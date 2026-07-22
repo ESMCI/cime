@@ -850,9 +850,7 @@ class SystemTestsCommon(object):
 Expected to compare {} hist files, but only compared {}. It's possible
 that the hist_file_extension entry in config_archive.xml is not correct
 for some of your components.
-""".format(
-                self._expected_num_cmp, num_compared
-            )
+""".format(self._expected_num_cmp, num_compared)
 
         append_testlog(comments, self._orig_caseroot)
 
@@ -1159,6 +1157,10 @@ def _format_elapsed_model_time(
     :func:`_days_in_month`, which is calendar-aware, so the elapsed value is
     exact for the case's calendar rather than an approximation.
 
+    Day borrows walk backwards through months until ``days >= 0``; a single
+    borrow is not always sufficient (e.g. Jan 31 → Mar 1 crosses a short
+    February, requiring two borrows).
+
     Args:
         start: Model date stamp at run start encoded as ``YYYYMMDD``
             (int or float).
@@ -1184,6 +1186,8 @@ def _format_elapsed_model_time(
         '24 days'
         >>> _format_elapsed_model_time(20000205, 20000301, "GREGORIAN")
         '25 days'
+        >>> _format_elapsed_model_time(10131, 10301)
+        '29 days'
     """
 
     def _decode(stamp: Union[int, float]) -> Tuple[int, int, int]:
@@ -1198,14 +1202,19 @@ def _format_elapsed_model_time(
     days = d1 - d0
 
     if days < 0:
-        # Borrow one month, using the true length of the month immediately
-        # preceding the end month for the case's calendar.
+        # Walk backwards through months, borrowing each month's true length,
+        # until days is non-negative.  A single borrow is not always enough
+        # (e.g. Jan 31 → Mar 1 requires borrowing both Feb and Jan).
         borrow_year, borrow_month = y1, m1 - 1
         if borrow_month == 0:
             borrow_year, borrow_month = y1 - 1, 12
-        days += _days_in_month(borrow_year, borrow_month, calendar_type)
-        months -= 1
-    if months < 0:
+        while days < 0:
+            days += _days_in_month(borrow_year, borrow_month, calendar_type)
+            months -= 1
+            borrow_month -= 1
+            if borrow_month == 0:
+                borrow_year, borrow_month = borrow_year - 1, 12
+    while months < 0:
         months += 12
         years -= 1
 
@@ -1336,9 +1345,7 @@ class TESTRUNPASS(FakeTest):
 echo Insta pass
 echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1364,9 +1371,7 @@ if [ -z "$TESTRUNDIFF_ALTERNATE" ]; then
 else
   cp {root}/scripts/tests/cpl.hi2.nc.test {rundir}/{case}.cpl.hi.0.nc
 fi
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1385,9 +1390,7 @@ echo Insta pass
 echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
 cp {root}/scripts/tests/cpl.hi2.nc.test {rundir}/{case}.cpl.hi.0.nc.rest
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         super(TESTTESTDIFF, self).build_phase(
             sharedlib_only=sharedlib_only, model_only=model_only
@@ -1413,9 +1416,7 @@ else
   echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
   cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
 fi
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1526,9 +1527,7 @@ sleep 300
 echo Slow pass
 echo SUCCESSFUL TERMINATION > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1543,9 +1542,7 @@ class TESTMEMLEAKFAIL(FakeTest):
 echo Insta pass
 gunzip -c {testfile} > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
@@ -1560,8 +1557,6 @@ class TESTMEMLEAKPASS(FakeTest):
 echo Insta pass
 gunzip -c {testfile} > {rundir}/{log}.log.$LID
 cp {root}/scripts/tests/cpl.hi1.nc.test {rundir}/{case}.cpl.hi.0.nc
-""".format(
-            testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case
-        )
+""".format(testfile=testfile, rundir=rundir, log=self._cpllog, root=cimeroot, case=case)
         self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
