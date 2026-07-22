@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_cime\_default\_driver
+=====================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_cime_default_driver
