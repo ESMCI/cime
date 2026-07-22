@@ -41,6 +41,7 @@ from datetime import datetime, timedelta
 import glob, gzip, time, traceback, os, math, calendar
 
 from contextlib import ExitStack
+from typing import List, Tuple, Union
 
 logger = logging.getLogger(__name__)
 
@@ -1093,6 +1094,141 @@ for some of your components.
         return
 
 
+def _days_in_month(year: int, month: int, calendar_type: str = "NO_LEAP") -> int:
+    """Return the number of days in a model calendar month.
+
+    CIME cases run with one of two calendars, which share the standard
+    twelve-month Gregorian month lengths and differ only in whether February
+    gains a leap day:
+
+    * ``NO_LEAP`` (a.k.a. 365-day): every February has 28 days.
+    * ``GREGORIAN``: February has 29 days in leap years, following the
+      proleptic Gregorian leap rule.
+
+    Args:
+        year: Gregorian year the month belongs to.  Only consulted for
+            ``GREGORIAN`` February.
+        month: Month number in ``1..12``.
+        calendar_type: Model calendar name (case-insensitive).  Any value
+            other than ``GREGORIAN`` is treated as a no-leap calendar.
+
+    Returns:
+        int: Number of days in the requested month.
+
+    Examples:
+        >>> _days_in_month(1, 2, "NO_LEAP")
+        28
+        >>> _days_in_month(2000, 2, "GREGORIAN")
+        29
+        >>> _days_in_month(2001, 2, "GREGORIAN")
+        28
+    """
+    days_per_month = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    days = days_per_month[month - 1]
+
+    if (
+        month == 2
+        and str(calendar_type).upper() == "GREGORIAN"
+        and calendar.isleap(year)
+    ):
+        days = 29
+
+    return days
+
+
+def _format_elapsed_model_time(
+    start: Union[int, float],
+    end: Union[int, float],
+    calendar_type: str = "NO_LEAP",
+) -> str:
+    """Format elapsed model time from two YYYYMMDD-encoded date stamps.
+
+    Coupler log lines record model dates as ``YYYYMMDD`` integers (e.g.
+    ``51231`` for year 5, December 31).  Subtracting these raw integers
+    produces a nonsensical result because the encoding mixes year, month, and
+    day-of-month fields.  This function decodes both stamps and returns a
+    human-readable elapsed-time string with only the non-zero components.
+
+    ``datetime`` is intentionally not used here.  CIME cases run with a
+    ``NO_LEAP`` (365-day) or ``GREGORIAN`` calendar, and ``datetime`` only
+    understands the Gregorian calendar — it raises ``ValueError`` on
+    ``NO_LEAP`` dates such as ``YYYY0229`` in a non-leap year.  Even on a
+    Gregorian run, ``datetime`` subtraction yields a ``timedelta`` whose only
+    field is ``days``; decomposing that back into years/months/days still
+    requires the per-month day counts.  Both needs are met directly by
+    :func:`_days_in_month`, which is calendar-aware, so the elapsed value is
+    exact for the case's calendar rather than an approximation.
+
+    Day borrows walk backwards through months until ``days >= 0``; a single
+    borrow is not always sufficient (e.g. Jan 31 → Mar 1 crosses a short
+    February, requiring two borrows).
+
+    Args:
+        start: Model date stamp at run start encoded as ``YYYYMMDD``
+            (int or float).
+        end: Model date stamp at run end encoded as ``YYYYMMDD``
+            (int or float).
+        calendar_type: Model calendar name (case-insensitive), typically the
+            value of the case ``CALENDAR`` variable.  Controls February's
+            length when a day-borrow crosses it.  Defaults to ``NO_LEAP``.
+
+    Returns:
+        str: Human-readable elapsed time, e.g.
+            ``"4 years, 11 months, 29 days"``.  Returns ``"0 days"`` when
+            start and end are identical or the decoded difference is zero.
+
+    Examples:
+        >>> _format_elapsed_model_time(10102, 51231)
+        '4 years, 11 months, 29 days'
+        >>> _format_elapsed_model_time(10101, 20101)
+        '1 year'
+        >>> _format_elapsed_model_time(10101, 10101)
+        '0 days'
+        >>> _format_elapsed_model_time(10205, 10301, "NO_LEAP")
+        '24 days'
+        >>> _format_elapsed_model_time(20000205, 20000301, "GREGORIAN")
+        '25 days'
+        >>> _format_elapsed_model_time(10131, 10301)
+        '29 days'
+    """
+
+    def _decode(stamp: Union[int, float]) -> Tuple[int, int, int]:
+        s = int(stamp)
+        return s // 10000, (s // 100) % 100, s % 100
+
+    y0, m0, d0 = _decode(start)
+    y1, m1, d1 = _decode(end)
+
+    years = y1 - y0
+    months = m1 - m0
+    days = d1 - d0
+
+    if days < 0:
+        # Walk backwards through months, borrowing each month's true length,
+        # until days is non-negative.  A single borrow is not always enough
+        # (e.g. Jan 31 → Mar 1 requires borrowing both Feb and Jan).
+        borrow_year, borrow_month = y1, m1 - 1
+        if borrow_month == 0:
+            borrow_year, borrow_month = y1 - 1, 12
+        while days < 0:
+            days += _days_in_month(borrow_year, borrow_month, calendar_type)
+            months -= 1
+            borrow_month -= 1
+            if borrow_month == 0:
+                borrow_year, borrow_month = borrow_year - 1, 12
+    while months < 0:
+        months += 12
+        years -= 1
+
+    parts: List[str] = []
+    for val, unit in ((years, "year"), (months, "month"), (days, "day")):
+        if val > 0:
+            label = unit if val == 1 else f"{unit}s"
+            parts.append(f"{val} {label}")
+
+    return ", ".join(parts) if parts else "0 days"
+
+
 def perf_check_for_memory_leak(case, tolerance):
     leak = False
     comment = ""
@@ -1105,9 +1241,6 @@ def perf_check_for_memory_leak(case, tolerance):
         except RuntimeError:
             return False, "insufficient data for memleak test"
 
-        # last day - second day, skip first day, can be too low while initializing
-        elapsed_days = int(memlist[-1][0]) - int(memlist[1][0])
-
         finalmem, originalmem = float(memlist[-1][1]), float(memlist[1][1])
 
         memdiff = -1 if originalmem <= 0 else (finalmem - originalmem) / originalmem
@@ -1119,11 +1252,16 @@ def perf_check_for_memory_leak(case, tolerance):
             leak = False
             comment = ""
         else:
+            # Skip the first sample (can be artificially low during init);
+            # report elapsed time between the second and last samples using
+            # the case's calendar so month/year borrows are exact.
+            calendar_type = case.get_value("CALENDAR") or "NO_LEAP"
+            elapsed = _format_elapsed_model_time(
+                memlist[1][0], memlist[-1][0], calendar_type
+            )
             leak = True
-            comment = (
-                "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
-                    originalmem, finalmem, elapsed_days
-                )
+            comment = "memleak detected, memory went from {:f} to {:f} in {:s}".format(
+                originalmem, finalmem, elapsed
             )
 
     return leak, comment
