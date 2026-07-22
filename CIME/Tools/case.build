@@ -59,7 +59,6 @@ from CIME.test_status import (
 from CIME.utils import find_system_test, get_model
 
 
-
 ###############################################################################
 def parse_command_line(args, description):
     ###############################################################################
