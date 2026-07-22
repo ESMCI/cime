@@ -4,15 +4,15 @@
 This tool provide command-line access to provenance-saving functionality
 """
 
+import logging
+
 from standard_script_setup import *
 
 from CIME.case import Case
 from CIME.config import Config
+from CIME.get_timing import get_timing
 from CIME.provenance import *
 from CIME.utils import get_lids
-from CIME.get_timing import get_timing
-
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -4,6 +4,7 @@ This script compares xml files
 """
 
 from standard_script_setup import *
+
 from CIME.case import Case
 from CIME.locked_files import check_lockedfiles
 

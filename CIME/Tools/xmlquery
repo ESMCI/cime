@@ -97,12 +97,14 @@ There are two usage modes:
      - The env_mach_specific.xml and env_archive.xml files are not supported by this tool.
 """
 
+import re
+import sys
+import textwrap
+
 from standard_script_setup import *
 
 from CIME.case import Case
-from CIME.utils import expect, convert_to_string
-
-import textwrap, sys, re
+from CIME.utils import convert_to_string, expect
 
 logger = logging.getLogger("xmlquery")
 unsupported_files = ["env_mach_specific.xml", "env_archive.xml"]

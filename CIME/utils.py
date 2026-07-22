@@ -3,12 +3,27 @@ Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
 
-import shlex
 import configparser
-import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
+import errno
+import filecmp
+import fnmatch
+import glob
+import gzip
+import importlib
 import importlib.util
-import errno, signal, warnings, filecmp
+import io
+import logging
+import os
+import random
+import re
+import shlex
+import shutil
+import signal
 import stat as statlib
+import string
+import sys
+import time
+import warnings
 from argparse import Action
 from contextlib import contextmanager
 

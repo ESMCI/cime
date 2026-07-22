@@ -14,9 +14,10 @@ reused whenever a user reruns an initial case.
 
 import os
 import shutil
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
+
 from CIME.SystemTests.system_tests_common import INIT_GENERATED_FILES_DIRNAME
+from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
+from CIME.utils import expect
 
 
 class REUSEINITFILES(SystemTestsCompareTwo):

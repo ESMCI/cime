@@ -1,6 +1,10 @@
 # These routines were moved from utils.py to avoid circular dependancies
-import time, os, sys, logging
-from CIME.utils import Timeout, CASE_SUCCESS, CASE_FAILURE
+import logging
+import os
+import sys
+import time
+
+from CIME.utils import CASE_FAILURE, CASE_SUCCESS, Timeout
 
 logger = logging.getLogger(__name__)
 
