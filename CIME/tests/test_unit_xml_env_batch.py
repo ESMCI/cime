@@ -578,7 +578,8 @@ class TestXMLEnvBatch(unittest.TestCase):
 
     def test_get_submit_args_job_queue(self):
         with tempfile.NamedTemporaryFile() as tfile:
-            tfile.write(b"""<?xml version="1.0"?>
+            tfile.write(
+                b"""<?xml version="1.0"?>
 <file id="env_batch.xml" version="2.0">
   <header>
       These variables may be changed anytime during a run, they
@@ -611,7 +612,8 @@ class TestXMLEnvBatch(unittest.TestCase):
     </queues>
   </batch_system>
 </file>
-""")
+"""
+            )
 
             tfile.seek(0)
 
@@ -633,7 +635,8 @@ class TestXMLEnvBatch(unittest.TestCase):
     @mock.patch.dict(os.environ, {"TEST": "GOOD"})
     def test_get_submit_args(self):
         with tempfile.NamedTemporaryFile() as tfile:
-            tfile.write(b"""<?xml version="1.0"?>
+            tfile.write(
+                b"""<?xml version="1.0"?>
 <file id="env_batch.xml" version="2.0">
   <header>
       These variables may be changed anytime during a run, they
@@ -690,7 +693,8 @@ class TestXMLEnvBatch(unittest.TestCase):
     </queues>
   </batch_system>
 </file>
-""")
+"""
+            )
 
             tfile.seek(0)
 
