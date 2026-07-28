@@ -6,6 +6,8 @@ import tempfile
 from contextlib import ExitStack
 from unittest import mock
 
+import pytest
+
 from CIME.core.exceptions import CIMEError
 from CIME.utils import expect
 from CIME.XML.env_batch import EnvBatch, get_job_deps
@@ -13,6 +15,46 @@ from CIME.XML.env_workflow import EnvWorkflow
 from CIME.BuildTools.configure import FakeCase
 
 # pylint: disable=unused-argument
+
+
+@pytest.mark.parametrize(
+    "walltime,walltime_format,expected",
+    [
+        ("01:10:00", None, "70m"),
+        ("00:10:30", None, "11m"),
+        ("01:10:00", "%M", "70"),
+        ("01:10:00", "%Mm", "70m"),
+        ("01:10:00", "%Hh", "1.17h"),
+        ("02:00:00", "%Hh", "2h"),
+        ("00:00:30", "%Ss", "30s"),
+        ("48:00:00", "%Dd", "2d"),
+        ("36:00:00", "%Dd", "1.5d"),
+    ],
+)
+def test_flux_walltime(walltime, walltime_format, expected):
+    # Act
+    output = EnvBatch._flux_walltime(walltime, walltime_format)
+
+    # Assert
+    assert output == expected
+
+
+@pytest.mark.parametrize(
+    "walltime_format",
+    [
+        "%H",
+        "%S",
+        "%D",
+        "%H:%M:%S",
+        "%Hm",
+        "%Md",
+        "minutes",
+    ],
+)
+def test_flux_walltime_invalid_format(walltime_format):
+    with pytest.raises(CIMEError, match="not valid for flux"):
+        EnvBatch._flux_walltime("01:10:00", walltime_format)
+
 
 XML_BASE = b"""<?xml version="1.0"?>
 <file id="env_batch.xml" version="2.0">
@@ -810,6 +852,308 @@ class TestXMLEnvBatch(unittest.TestCase):
         )
         env_workflow.set_value.assert_any_call(
             "JOB_WALLCLOCK_TIME", "05:00:00", subgroup="case.run"
+        )
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_value", return_value=None)
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict
+    @mock.patch(
+        "CIME.XML.env_batch.EnvBatch.get_queue_specs",
+        return_value=[
+            1,
+            1,
+            "case.run",
+            None,
+            None,
+            "12:00:00",
+            1,
+            1,
+            False,
+        ],
+    )
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_flux_walltime_minutes(
+        self, get_default_queue, select_best_queue, get_queue_specs, text, get_value
+    ):
+        # Context
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            (
+                "case.run",
+                {
+                    "template": "template.case.run",
+                    "prereq": "$BUILD_COMPLETE and not $TEST",
+                },
+            )
+        ]
+
+        def case_get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "01:10:00"
+
+            return mock.MagicMock()
+
+        case.get_value = case_get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+        batch.set_batch_system_type("flux")
+
+        # Act
+        batch.set_job_defaults(batch_jobs, case)
+
+        # Assert
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call(
+            "JOB_WALLCLOCK_TIME", "70m", subgroup="case.run"
+        )
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_value", return_value=None)
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict
+    @mock.patch(
+        "CIME.XML.env_batch.EnvBatch.get_queue_specs",
+        return_value=[
+            1,
+            1,
+            "case.run",
+            None,
+            None,
+            "12:00:00",
+            1,
+            1,
+            False,
+        ],
+    )
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_flux_walltime_partial_minute(
+        self, get_default_queue, select_best_queue, get_queue_specs, text, get_value
+    ):
+        # Context
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            (
+                "case.run",
+                {
+                    "template": "template.case.run",
+                    "prereq": "$BUILD_COMPLETE and not $TEST",
+                },
+            )
+        ]
+
+        def case_get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "00:10:30"
+
+            return mock.MagicMock()
+
+        case.get_value = case_get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+        batch.set_batch_system_type("flux")
+
+        # Act
+        batch.set_job_defaults(batch_jobs, case)
+
+        # Assert partial minutes round up so the job is not cut short
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call(
+            "JOB_WALLCLOCK_TIME", "11m", subgroup="case.run"
+        )
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_value")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict
+    @mock.patch(
+        "CIME.XML.env_batch.EnvBatch.get_queue_specs",
+        return_value=[
+            1,
+            1,
+            "case.run",
+            None,
+            None,
+            "12:00:00",
+            1,
+            1,
+            False,
+        ],
+    )
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_flux_walltime_format_minutes(
+        self, get_default_queue, select_best_queue, get_queue_specs, text, get_value
+    ):
+        # Context, walltime_format %M emits bare total minutes for flux
+        get_value.side_effect = lambda name, *args, **kwargs: (
+            "%M" if name == "walltime_format" else None
+        )
+
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            (
+                "case.run",
+                {
+                    "template": "template.case.run",
+                    "prereq": "$BUILD_COMPLETE and not $TEST",
+                },
+            )
+        ]
+
+        def case_get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "01:10:00"
+
+            return mock.MagicMock()
+
+        case.get_value = case_get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+        batch.set_batch_system_type("flux")
+
+        # Act
+        batch.set_job_defaults(batch_jobs, case)
+
+        # Assert
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call(
+            "JOB_WALLCLOCK_TIME", "70", subgroup="case.run"
+        )
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_value")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict
+    @mock.patch(
+        "CIME.XML.env_batch.EnvBatch.get_queue_specs",
+        return_value=[
+            1,
+            1,
+            "case.run",
+            None,
+            None,
+            "12:00:00",
+            1,
+            1,
+            False,
+        ],
+    )
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_flux_walltime_format_fsd(
+        self, get_default_queue, select_best_queue, get_queue_specs, text, get_value
+    ):
+        # Context, walltime_format %Hh emits FSD hours for flux
+        get_value.side_effect = lambda name, *args, **kwargs: (
+            "%Hh" if name == "walltime_format" else None
+        )
+
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            (
+                "case.run",
+                {
+                    "template": "template.case.run",
+                    "prereq": "$BUILD_COMPLETE and not $TEST",
+                },
+            )
+        ]
+
+        def case_get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "01:10:00"
+
+            return mock.MagicMock()
+
+        case.get_value = case_get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+        batch.set_batch_system_type("flux")
+
+        # Act
+        batch.set_job_defaults(batch_jobs, case)
+
+        # Assert
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call(
+            "JOB_WALLCLOCK_TIME", "1.17h", subgroup="case.run"
+        )
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_value")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict
+    @mock.patch(
+        "CIME.XML.env_batch.EnvBatch.get_queue_specs",
+        return_value=[
+            1,
+            1,
+            "case.run",
+            None,
+            None,
+            "12:00:00",
+            1,
+            1,
+            False,
+        ],
+    )
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_flux_walltime_format_fsd_minutes(
+        self, get_default_queue, select_best_queue, get_queue_specs, text, get_value
+    ):
+        # Context, walltime_format %Mm emits FSD minutes for flux
+        get_value.side_effect = lambda name, *args, **kwargs: (
+            "%Mm" if name == "walltime_format" else None
+        )
+
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            (
+                "case.run",
+                {
+                    "template": "template.case.run",
+                    "prereq": "$BUILD_COMPLETE and not $TEST",
+                },
+            )
+        ]
+
+        def case_get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "01:10:00"
+
+            return mock.MagicMock()
+
+        case.get_value = case_get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+        batch.set_batch_system_type("flux")
+
+        # Act
+        batch.set_job_defaults(batch_jobs, case)
+
+        # Assert
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call(
+            "JOB_WALLCLOCK_TIME", "70m", subgroup="case.run"
         )
 
     @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
