@@ -1,0 +1,26 @@
+﻿..
+  module.rst
+
+CIME.non\_py
+============
+
+.. automodule:: CIME.non_py
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.hist\_utils.cprnc
+======================
+
+.. currentmodule:: CIME.hist_utils
+
+.. autofunction:: cprnc

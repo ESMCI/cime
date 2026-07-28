@@ -1,0 +1,32 @@
+..
+  class.rst
+
+CIME.date.date
+==============
+
+.. currentmodule:: CIME.date
+
+.. autoclass:: date
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~date.__init__
+                    ~date.day
+                    ~date.hms_to_second
+                    ~date.hour
+                    ~date.minute
+                    ~date.month
+                    ~date.second
+                    ~date.second_of_day
+                    ~date.second_to_hms
+                    ~date.year
+        
+    

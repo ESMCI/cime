@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.merge\_literal\_lists
+===================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: merge_literal_lists
