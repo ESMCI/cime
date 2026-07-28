@@ -482,7 +482,9 @@ class EnvBatch(EnvBase):
                         )
 
             walltime_format = self.get_value("walltime_format")
-            if walltime_format:
+            if self._batchtype == "flux":
+                walltime = self._flux_walltime(walltime, walltime_format)
+            elif walltime_format:
                 seconds = convert_to_seconds(walltime)
                 full_bab_time = convert_to_babylonian_time(seconds)
                 walltime = format_time(walltime_format, "%H:%M:%S", full_bab_time)
@@ -496,6 +498,56 @@ class EnvBatch(EnvBase):
             logger.debug(
                 "Job {} queue {} walltime {}".format(job, self.text(queue), walltime)
             )
+
+    @staticmethod
+    def _flux_walltime(walltime, walltime_format):
+        """Converts a walltime for Flux's ``-t/--time-limit``.
+
+        Flux accepts minutes or Flux Standard Duration (FSD, RFC 23)
+        rather than ``HH:MM:SS``. Unlike :func:`CIME.utils.format_time`,
+        which rearranges fields positionally, ``%H``, ``%M`` and ``%S``
+        here expand to the *total* duration expressed in that unit, so a
+        literal FSD suffix in the format yields a valid FSD value, e.g.
+        ``%Mm`` on ``01:10:00`` gives ``70m`` and ``%Hh`` gives ``1.17h``.
+        Partial values round up at two decimal places so the job is never
+        allotted less time than requested. Without a format, the default
+        is FSD minutes.
+
+        Only formats producing values Flux accepts are permitted: ``%M``
+        (bare minutes) or a specifier paired with its matching FSD suffix
+        (``%Ss``, ``%Mm``, ``%Hh``, ``%Dd``). Anything else, e.g. ``%H``
+        (a bare number Flux would read as minutes) or ``%H:%M:%S``, is
+        rejected.
+
+        Args:
+            walltime (str): Walltime in ``[[HH:]MM:]SS``.
+            walltime_format (str): Format string or None for the default.
+
+        Returns:
+            str: Walltime valid for Flux's ``-t/--time-limit``.
+
+        Raises:
+            CIMEError: If ``walltime_format`` cannot produce a value
+                valid for Flux.
+        """
+        seconds = convert_to_seconds(walltime)
+
+        if not walltime_format:
+            return "{:d}m".format(math.ceil(seconds / 60))
+
+        valid_formats = ("%M", "%Ss", "%Mm", "%Hh", "%Dd")
+        expect(
+            walltime_format in valid_formats,
+            "walltime_format {!r} is not valid for flux; expected one "
+            "of {}".format(walltime_format, ", ".join(valid_formats)),
+        )
+
+        def _total(match):
+            unit = {"H": 3600, "M": 60, "S": 1, "D": 86400}[match.group(1)]
+            value = math.ceil(seconds / unit * 100) / 100
+            return "{:.2f}".format(value).rstrip("0").rstrip(".")
+
+        return re.sub(r"%([HMSD])", _total, walltime_format)
 
     def _match_attribs(self, attribs, case, queue):
         # check for matches with case-vars
