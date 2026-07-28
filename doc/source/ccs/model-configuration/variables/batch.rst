@@ -88,6 +88,59 @@ Contents
 --------
 The following describes the contents of the ``config_batch.xml`` file.
 
+Walltime Format
+---------------
+The ``walltime_format`` element controls how a job's resolved walltime is
+rendered before it is passed to the batch system, e.g. through
+``$JOB_WALLCLOCK_TIME`` in ``submit_args``.
+
+For most batch systems the value is a positional format string using the
+``%H``, ``%M``, and ``%S`` specifiers. The fields of the input walltime are
+rearranged to match the format; they are **not** summed across units. For
+example ``%H:%M`` renders ``01:10:00`` as ``01:10``.
+
+.. code-block:: xml
+
+    <walltime_format>%H:%M:%S</walltime_format>
+
+Flux
+::::
+Flux's ``-t/--time-limit`` option accepts minutes or a Flux Standard
+Duration (FSD, RFC 23) — a number with a single unit suffix (``s``, ``m``,
+``h``, or ``d``) — rather than ``HH:MM:SS``. When ``batch_system`` is of
+type ``flux`` the specifiers therefore expand to the **total** duration
+expressed in that unit, so a format pairing a specifier with its matching
+FSD suffix produces a valid FSD value.
+
+Only the following formats are accepted; any other value raises an error
+during case setup since it would produce a value Flux rejects or silently
+misinterprets (e.g. a bare ``%H`` renders a number Flux would read as
+minutes).
+
+=================== ============================================ ======================
+``walltime_format`` Description                                  Example (``01:10:00``)
+=================== ============================================ ======================
+*(unset)*           Total minutes as FSD, the default.           ``70m``
+``%M``              Total minutes, bare.                         ``70``
+``%Ss``             Total seconds as FSD.                        ``4200s``
+``%Mm``             Total minutes as FSD.                        ``70m``
+``%Hh``             Total hours as FSD.                          ``1.17h``
+``%Dd``             Total days as FSD.                           ``0.05d``
+=================== ============================================ ======================
+
+Partial values are rounded up at two decimal places so a job is never
+allotted less time than requested.
+
+.. code-block:: xml
+
+    <batch_system type="flux" >
+        <batch_submit>flux batch</batch_submit>
+        <walltime_format>%Mm</walltime_format>
+        <submit_args>
+            <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+        </submit_args>
+    </batch_system>
+
 Schema Definition
 -----------------
 
@@ -113,7 +166,7 @@ jobid_pattern           Regex pattern to parse job id.
 depend_string           Dependency string.
 depend_allow_string     Dependency string if fails are allowed.
 depend_separator        Separator for dependencies.
-walltime_format         Format used to parse walltime.
+walltime_format         Format used to render the walltime, see `Walltime Format`_.
 batch_mail_flag         Mail flag to pass user.
 batch_mail_type_flag    Mail type.
 batch_mail_default      Default type if `batch_mail_type_flag` is not set.
