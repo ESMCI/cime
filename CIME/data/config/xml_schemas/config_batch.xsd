@@ -132,11 +132,13 @@
           <xs:complexType>
             <xs:attribute name="flag" use="required"/>
             <xs:attribute name="name"/>
+            <xs:attribute name="omit_in_job" type="xs:boolean"/>
           </xs:complexType>
         </xs:element>
         <xs:element name="argument" maxOccurs="unbounded">
           <xs:complexType mixed="true">
             <xs:attribute name="job_queue"/>
+            <xs:attribute name="omit_in_job" type="xs:boolean"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
