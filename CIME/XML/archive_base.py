@@ -157,7 +157,10 @@ class ArchiveBase(GenericXML):
         for ext in extensions:
             if ext.endswith("$") and has_suffix:
                 ext = ext[:-1]
-            string = model + r"\d?_?(\d{4})?(_d\d{2})?\." + ext
+            # Anchor the component name at a filename boundary. Without this, a
+            # component name that happens to be a substring of another one (e.g.
+            # "eam" inside "scream") matches the other component's history files.
+            string = r"(?:^|[\.\-_])" + model + r"\d?_?(\d{4})?(_d\d{2})?\." + ext
             if has_suffix:
                 if not suffix in string:
                     string += r"\." + suffix + "$"
