@@ -12,6 +12,15 @@ CIME.Servers
 
     
         
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    is_protocol_available
+        
     
 
     
