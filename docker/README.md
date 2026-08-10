@@ -121,7 +121,7 @@ create_test SMS_P4.f19_g16.X.docker_gnu  # forces 4 MPI ranks total
 
 ```bash
 # Limit to 4 cores for smaller tests
-docker run --cpus=4 --shm-size=1g -e CIME_MODEL=e3sm cime:latest bash
+docker run --cpus=4 --hostname docker --shm-size=1g -e CIME_MODEL=e3sm cime:latest bash
 ```
 
 ## Persisting data
@@ -130,7 +130,7 @@ docker run --cpus=4 --shm-size=1g -e CIME_MODEL=e3sm cime:latest bash
 `/root/storage`. Mount volumes to persist them:
 
 ```bash
-docker run -it -v ${PWD}/data-cache:/root/storage/inputdata cime:latest bash
+docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=e3sm -v ${PWD}/data-cache:/root/storage/inputdata cime:latest bash
 ```
 
 Source repositories can also be mounted:
