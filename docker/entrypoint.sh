@@ -1,4 +1,5 @@
 #!/bin/bash
+set -Eeuo pipefail
 
 # Use fixed paths for container resources, regardless of user namespace mapping
 # This ensures tools work with both Docker (root) and Podman (--userns=keep-id)
@@ -16,6 +17,90 @@ if [[ -d "${STORAGE_DIR}" ]]; then
     umask 000
     chmod -R a+rwX "${STORAGE_DIR}" 2>/dev/null || true
 fi
+
+# Root directory holding the per-model pixi environments (see docker/pixi.toml).
+# Each model gets its own conda prefix built from conda-forge: e3sm ships MOAB,
+# cesm ships ESMF. Both share an identical HDF5/netCDF/pnetcdf stack.
+PIXI_ENV_ROOT="${PIXI_ENV_ROOT:-/opt/pixi-env/.pixi/envs}"
+
+
+# Fail fast when CIME_MODEL is unset or invalid; the pixi environment to activate
+# and the config_machines file to link are both selected from it.
+function require_cime_model() {
+    if [[ -z "${CIME_MODEL}" ]]; then
+        echo "ERROR: CIME_MODEL is not set. Set it to 'e3sm' or 'cesm'." >&2
+        exit 1
+    fi
+
+    if [[ "${CIME_MODEL}" != "e3sm" && "${CIME_MODEL}" != "cesm" ]]; then
+        echo "ERROR: CIME_MODEL='${CIME_MODEL}' is invalid. Must be 'e3sm' or 'cesm'." >&2
+        exit 1
+    fi
+
+    local prefix="${PIXI_ENV_ROOT}/${CIME_MODEL}"
+    if [[ ! -d "${prefix}" ]]; then
+        echo "ERROR: Pixi environment not found at ${prefix}" >&2
+        exit 1
+    fi
+}
+
+
+# Compute the usable CPU count for the container, accounting for cgroup limits
+# (docker run --cpus / --cpuset-cpus). Exported as DOCKER_MAX_TASKS so
+# config_machines.xml can reference it via $ENV{DOCKER_MAX_TASKS}. This prevents
+# the default PE layout + test proc pool from exceeding available cores, which
+# causes either pool-overflow test failures or MPICH busy-poll livelocks.
+function compute_container_cores() {
+    local cores=""
+
+    # Try cgroup v2 (unified hierarchy) cpu.max first (format: "$quota $period")
+    if [[ -r /sys/fs/cgroup/cpu.max ]]; then
+        local quota period
+        read -r quota period < /sys/fs/cgroup/cpu.max
+        if [[ "$quota" != "max" ]] && [[ -n "$period" ]] && [[ "$period" -gt 0 ]]; then
+            cores=$(( (quota + period - 1) / period ))  # ceiling division
+        fi
+    fi
+
+    # Fall back to cgroup v1 if v2 didn't yield a quota
+    if [[ -z "$cores" ]] && [[ -r /sys/fs/cgroup/cpu/cpu.cfs_quota_us ]]; then
+        local quota period
+        quota=$(cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us 2>/dev/null || echo "-1")
+        period=$(cat /sys/fs/cgroup/cpu/cpu.cfs_period_us 2>/dev/null || echo "100000")
+        if [[ "$quota" -gt 0 ]] && [[ "$period" -gt 0 ]]; then
+            cores=$(( (quota + period - 1) / period ))
+        fi
+    fi
+
+    # Final fallback: nproc (respects --cpuset-cpus but not --cpus quota)
+    if [[ -z "$cores" ]] || [[ "$cores" -le 0 ]]; then
+        cores=$(nproc)
+    fi
+
+    export DOCKER_MAX_TASKS="$cores"
+}
+
+
+# Put the CIME_MODEL-specific pixi environment on the compiler/linker search
+# paths. ESMFMKFILE is exported unconditionally; it only exists in the cesm
+# environment and is simply ignored by e3sm builds.
+function activate_pixi_env() {
+    require_cime_model
+
+    local prefix="${PIXI_ENV_ROOT}/${CIME_MODEL}"
+
+    export PATH="${prefix}/bin:${PATH}"
+    export PKG_CONFIG_PATH="${prefix}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
+    export LD_LIBRARY_PATH="${prefix}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+    export ESMFMKFILE="${prefix}/lib/esmf.mk"
+
+    # MPICH pulls in UCX, whose transport init divides by a network
+    # interface's link speed. Container virtual interfaces report a speed of
+    # 0, which raises SIGFPE. Restrict UCX to shared-memory + self transports;
+    # that is all that is needed for single-node (single container) runs and
+    # avoids probing the offending interfaces entirely.
+    export UCX_TLS="${UCX_TLS:-sm,self}"
+}
 
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
@@ -61,6 +146,10 @@ function download_input_data() {
 
 # Link correct config_machines file based on CIME_MODEL, also set ESMFMKFILE for cesm
 function link_config_machines() {
+    # Skip when ~/.cime has not been populated yet (e.g. during image build,
+    # before docker/.cime is copied in).
+    [[ -d "${HOME}/.cime" ]] || return 0
+
     if [[ "${CIME_MODEL}" == "e3sm" ]]; then
         ln -sf "${CONTAINER_HOME}/.cime/config_machines.v2.xml" "${CONTAINER_HOME}/.cime/config_machines.xml"
     elif [[ "${CIME_MODEL}" == "cesm" ]]; then
@@ -68,10 +157,17 @@ function link_config_machines() {
     fi
 }
 
-export PATH=/opt/spack-envs/view/bin:$PATH
-export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
-export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
-export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
+activate_pixi_env
+compute_container_cores
+
+# Write DOCKER_MAX_TASKS to profile scripts so it's available in all shells.
+# Only write if we have permission (skip for non-root or read-only containers).
+if [[ -w /etc/profile.d/ ]]; then
+    echo "export DOCKER_MAX_TASKS=${DOCKER_MAX_TASKS}" > /etc/profile.d/docker-max-tasks.sh
+fi
+if [[ -w /etc/bash.bashrc ]]; then
+    echo "export DOCKER_MAX_TASKS=${DOCKER_MAX_TASKS}" >> /etc/bash.bashrc
+fi
 
 if [[ "${CI:-false}" == "true" ]]; then
   cp -rf /root/.cime "${HOME}"

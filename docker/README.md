@@ -1,116 +1,134 @@
 # Docker development/testing container
-This container is built for development and testing purposes.
 
-The default base image is version `4.11.0-0` of `condaforge/mambaforge`.
+This container provides a reproducible environment for building and testing
+CIME with either E3SM or CESM. It mirrors the environment used by the GitHub
+Actions CI matrix.
 
-The supported compiler is `gnu` provided by `conda-forge`.
+## Dependencies via pixi + conda-forge
 
-The `OpenMPI` version of libraries is installed by default.
+All scientific dependencies come from [conda-forge](https://conda-forge.org)
+and are pinned in [`pixi.toml`](./pixi.toml) / [`pixi.lock`](./pixi.lock). Two
+[pixi](https://pixi.sh) environments are baked into the image:
+
+| Environment | Adds  | Purpose |
+| ----------- | ----- | ------- |
+| `e3sm`      | MOAB (tempest-remap) | E3SM builds/tests |
+| `cesm`      | ESMF  | CESM builds/tests |
+
+Both environments share a single solve group, so their compilers and their
+`HDF5` / `netCDF` / `parallel-netCDF` stack resolve to byte-identical builds
+(all `mpi_mpich_*` variants). Keeping one consistent I/O stack is what fixes
+the broken `cprnc` seen with the previous spack-based image, where
+`concretizer.unify: when_possible` allowed multiple `netCDF`/`HDF5` copies into
+the dependency graph.
+
+The environments are installed to `/opt/pixi-env/.pixi/envs/{e3sm,cesm}`. At
+runtime the [`entrypoint.sh`](./entrypoint.sh) selects one based on
+`CIME_MODEL` and puts it on the compiler/linker search paths.
+
+> The legacy spack environment is kept for reference at
+> [`legacy/spack.yaml`](./legacy/spack.yaml).
 
 ## Build the container
-```bash
-docker build -t {image}:{tag} --target {target} docker/
 
-# e.g. building the base image
-docker build -t cime:latest --target base docker/
+BuildKit is **required** (the Dockerfile uses cache mounts). Build from the
+repository root so the build context includes the CIME sources:
+
+```bash
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile -t cime:latest .
 ```
 
-### Customize the container
-When building the container some features can be customized. Multiple `--build-arg` arguments can be passed.
+### Targets
+
+| Target | Description |
+| ------ | ----------- |
+| `base` | Ubuntu 24.04 with pixi and both environments installed. |
+| `cprnc`| Builds the `cprnc` comparison tool against the `e3sm` netCDF. |
+| `main` | Final image: `base` + Python test env (uv), input data, and `cprnc`. Default target. |
 
 ```bash
-docker build -t {image}:{tag} --build-arg {name}={value} docker/
+# e.g. build just the base image
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile --target base -t cime:base .
 ```
 
-| Argument | Description | Default
-| -------- | ----------- | -------
-| MAMBAFORGE_VERSION | Version of the condaforge/mambaforge image used as a base | 4.11.0-0
-| PNETCDF_VERSION | Parallel NetCDF version to build | 1.12.1
-| LIBNETCDF_VERSION | Version of libnetcdf, the default will install the latest | 4.8.1
-| NETCDF_FORTRAN_VERSION | Version of netcdf-fortran, the default will install the latest | 4.5.4
-| ESMF_VERSION | Version of ESMF, the default will install the latest | 8.2.0
+### Customizing the pixi version
 
-## Targets
-There are three possible build targets in the Dockerfile. The `slurm` and `pbs` targets are built on top of the `base`.
-
-When running either `slurm` or `pbs` it's important to use the `--hostname docker` argument since both batch systems are looking for a host named docker.
-
-| Target | Description
-| ------ | -----------
-| base | Base image with no batch system.
-| slurm | Slurm batch system with configuration and single queue.
-| pbs | PBS batch system with configuration and single queue.
+The pinned pixi release can be overridden (checksum must match):
 
 ```bash
-docker build -t {image}:{tag} --target {target} docker/
-
-# e.g building the slurm image
-docker build -t cime:latest --target slurm docker/
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile \
+  --build-arg PIXI_VERSION=0.73.0 \
+  --build-arg PIXI_SHA256=<sha256> \
+  -t cime:latest .
 ```
 
 ## Running the container
-The default environment is similar to the one used by GitHub Actions. It will clone CIME into `/src/cime`, set `CIME_MODEL=cesm` and run CESM's `checkout_externals`. This will create a minimum base environment to run both unit and system tests.
 
-The `CIME_MODEL` environment vairable will change the environment that is created.
-
-Setting it to `E3SM` will clone E3SM into `/src/E3SM`, checkout the submodules and update the CIME repository using `CIME_REPO` and `CIME_BRANCH`.
-
-Setting it to `CESM` will clone CESM into `/src/CESM`, run `checkout_externals` and update the CIME repository using `CIME_REPO` and `CIME_BRANCH`.
-
-The container can further be modified using the environment variables defined below.
+`CIME_MODEL` selects both the pixi environment and the `config_machines.xml`
+that is linked (`config_machines.v2.xml` for E3SM, `config_machines.v3.xml` for
+CESM). It is **required** — the entrypoint exits early if it is unset.
 
 ```bash
-docker run -it --name cime --hostname docker cime:latest bash
+# E3SM
+docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=e3sm cime:latest bash
 
-# Run with E3SM
-docker run -it --name cime --hostname docker -e CIME_MODEL=e3sm cime:latest bash
+# CESM
+docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=cesm cime:latest bash
 ```
 
-> It's recommended when running the container to pass `--hostname docker` as it will match the custom machine defined in `config_machines.xml`. If this is omitted, `--machine docker` must be passed to CIME commands in order to use the correct machine definition.
+> Pass `--hostname docker` so it matches the custom machine defined in
+> `config_machines.xml`. If omitted, add `--machine docker` to CIME commands.
 
-### Environment variables
+> **`--shm-size` is required when running the Fortran model.** MPICH/UCX place
+> their shared-memory transport buffers in `/dev/shm`, whose Docker default of
+> 64 MB is exhausted by multi-rank runs (e.g. the 64-PE `f19_g16` layout),
+> producing an out-of-memory abort. Use `--shm-size=1g` (or larger for bigger
+> layouts), or `--ipc=host`. This is not needed for build-only or
+> `--no-fortran-run` test invocations.
 
-Environment variables to modify the container environment.
+## PE layout and core count
 
-| Name | Description | Default |
-| ---- | ----------- | ------- |
-| INIT | Set to false to skip init | true |
-| GIT_SHALLOW | Performs shallow checkouts, to save time | false |
-| UPDATE_CIME | Setting this will cause the CIME repository to be updated using `CIME_REPO` and `CIME_BRANCH` | "false" |
-| CIME_MODEL | Setting this will change which environment is loaded | |
-| CIME_REPO | CIME repository URL | https://github.com/ESMCI/cime |
-| CIME_BRANCH | CIME branch that will be cloned | master |
-| E3SM_REPO | E3SM repository URL | https://github.com/E3SM-Project/E3SM |
-| E3SM_BRANCH | E3SM branch that will be cloned | master |
-| CESM_REPO | CESM repository URL | https://github.com/ESCOMP/CESM |
-| CESM_BRANCH | CESM branch that will be cloned | master |
+Default grid PE layouts in model repositories often request 32–64 MPI ranks
+tuned for full compute nodes. Containers typically have far fewer cores, which
+causes either `create_test` proc-pool overflow failures or MPICH
+busy-poll livelocks when oversubscribed.
+
+The container automatically sizes `MAX_TASKS_PER_NODE` to available cores
+(respecting `docker run --cpus` / `--cpuset-cpus` limits). A generic
+`config_pes.xml` is shipped at `/root/.cime/config_pes.xml` that caps any
+grid/compset to one node's worth of ranks (negative `NTASKS=-1` scales with
+`MAX_MPITASKS_PER_NODE`).
+
+**For automatic capping**, pass `--pesfile` to test runs:
+
+```bash
+create_test SMS.f19_g16.X.docker_gnu --pesfile /root/.cime/config_pes.xml
+```
+
+**For ad-hoc task counts**, use `--pecount N` or the `_PN` test option:
+
+```bash
+create_test SMS_P4.f19_g16.X.docker_gnu  # forces 4 MPI ranks total
+```
+
+**Match container resources to intended parallelism** when invoking Docker:
+
+```bash
+# Limit to 4 cores for smaller tests
+docker run --cpus=4 --shm-size=1g -e CIME_MODEL=e3sm cime:latest bash
+```
 
 ## Persisting data
 
-The `config_machines.xml` definition as been setup to provided persistance for inputdata, cases, archives and tools. The following paths can be mounted as volumes to provide persistance.
-
-* /root/storage/inputdata
-* /root/storage/cases
-* /root/storage/archive
-* /root/storage/tools
-
-Files created in the storage directory are world-readable, allowing real-time access from the host while the container is running.
+`config_machines.xml` stores inputdata, cases, archives and tools under
+`/root/storage`. Mount volumes to persist them:
 
 ```bash
-docker run -it -v {hostpath}:{container_path} cime:latest bash
-
-e.g.
 docker run -it -v ${PWD}/data-cache:/root/storage/inputdata cime:latest bash
 ```
 
-It's also possible to persist the source git repositories.
-```bash
-docker run -it -v ${PWD}/src:/src cime:latest bash
-```
+Source repositories can also be mounted:
 
-Local git respositories can be mounted as well.
 ```bash
-docker run -v ${PWD}:/src/cime cime:latest bash
-
-docker run -v ${PWD}:/src/E3SM cime:latest bash
+docker run -it -v ${PWD}:/src/cime cime:latest bash
 ```
