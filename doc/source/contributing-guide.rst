@@ -162,7 +162,7 @@ You can also run CIME commands or tests without opening a shell.
 .. note::
    When running system tests in the container, use ``--pesfile /root/.cime/config_pes.xml``
    to prevent PE layout overflow. The container dynamically sizes MPI tasks to match
-   available cores. See :ref:`docker/README.md <https://github.com/ESMCI/cime/blob/master/docker/README.md>`
+   available cores. See `docker/README.md <https://github.com/ESMCI/cime/blob/master/docker/README.md>`_
    for more details on PE layout and core count management.
 
 Troubleshooting
