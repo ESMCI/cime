@@ -4,6 +4,10 @@ This container provides a reproducible environment for building and testing
 CIME with either E3SM or CESM. It mirrors the environment used by the GitHub
 Actions CI matrix.
 
+**Platform support:** Linux amd64 only. The image uses x86-64 binaries (pixi, uv)
+and `linux-64` conda-forge packages. It is designed to run as root with storage
+under `/root/storage`.
+
 ## Dependencies via pixi + conda-forge
 
 All scientific dependencies come from [conda-forge](https://conda-forge.org)
@@ -35,7 +39,7 @@ BuildKit is **required** (the Dockerfile uses cache mounts). Build from the
 repository root so the build context includes the CIME sources:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile -t cime:latest .
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile --platform linux/amd64 -t cime:latest .
 ```
 
 ### Targets
@@ -48,7 +52,7 @@ DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile -t cime:latest .
 
 ```bash
 # e.g. build just the base image
-DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile --target base -t cime:base .
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile --platform linux/amd64 --target base -t cime:base .
 ```
 
 ### Customizing the pixi version
@@ -56,7 +60,7 @@ DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile --target base -t cime:base .
 The pinned pixi release can be overridden (checksum must match):
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile \
+DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile --platform linux/amd64 \
   --build-arg PIXI_VERSION=0.73.0 \
   --build-arg PIXI_SHA256=<sha256> \
   -t cime:latest .
