@@ -181,7 +181,6 @@ if [[ -e "${PWD}/.git" ]]; then
 fi
 
 if [[ "${CI:-false}" == "false" ]] && [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
-  source ${CONTAINER_HOME}/.local/bin/env
   source ${CONTAINER_HOME}/.venv/bin/activate
 fi
 
