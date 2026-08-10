@@ -66,7 +66,8 @@ DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile \
 
 `CIME_MODEL` selects both the pixi environment and the `config_machines.xml`
 that is linked (`config_machines.v2.xml` for E3SM, `config_machines.v3.xml` for
-CESM). It is **required** — the entrypoint exits early if it is unset.
+CESM). It is **required** and must be set to `e3sm` or `cesm` (lowercase) — the
+entrypoint validates this and exits with an error if invalid or unset.
 
 ```bash
 # E3SM
@@ -76,15 +77,20 @@ docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=e3sm cime:latest ba
 docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=cesm cime:latest bash
 ```
 
-> Pass `--hostname docker` so it matches the custom machine defined in
-> `config_machines.xml`. If omitted, add `--machine docker` to CIME commands.
+### Required flags
 
-> **`--shm-size` is required when running the Fortran model.** MPICH/UCX place
-> their shared-memory transport buffers in `/dev/shm`, whose Docker default of
-> 64 MB is exhausted by multi-rank runs (e.g. the 64-PE `f19_g16` layout),
-> producing an out-of-memory abort. Use `--shm-size=1g` (or larger for bigger
-> layouts), or `--ipc=host`. This is not needed for build-only or
-> `--no-fortran-run` test invocations.
+- **`--hostname docker`** — Matches the custom machine name in `config_machines.xml`.
+  If omitted, add `--machine docker` to all CIME commands.
+
+- **`--shm-size=1g`** — Required for running the Fortran model with MPI.
+  MPICH/UCX place their shared-memory transport buffers in `/dev/shm`, whose
+  Docker default of 64 MB is exhausted by multi-rank runs (e.g. the 64-PE
+  `f19_g16` layout), producing an out-of-memory abort. Use `--shm-size=1g` (or
+  larger for bigger layouts), or `--ipc=host`. This is not needed for build-only
+  or `--no-fortran-run` test invocations.
+
+- **`-e CIME_MODEL=<model>`** — Must be `e3sm` or `cesm` (lowercase). Activates
+  the corresponding pixi environment and config files.
 
 ## PE layout and core count
 
@@ -130,5 +136,22 @@ docker run -it -v ${PWD}/data-cache:/root/storage/inputdata cime:latest bash
 Source repositories can also be mounted:
 
 ```bash
-docker run -it -v ${PWD}:/src/cime cime:latest bash
+docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=e3sm \
+  -v ${PWD}:/src/cime cime:latest bash
+```
+
+### Running without a shell
+
+You can run CIME commands directly without entering a shell:
+
+```bash
+# Run pytest
+docker run --rm --hostname docker --shm-size=1g -e CIME_MODEL=e3sm \
+  -v ${PWD}:/src/cime -w /src/cime \
+  cime:latest pytest CIME/tests/test_unit*
+
+# Run create_test
+docker run --rm --hostname docker --shm-size=1g -e CIME_MODEL=e3sm \
+  -v ${PWD}:/src/cime -w /src/cime \
+  cime:latest ./scripts/create_test SMS.f19_g16.X --pesfile /root/.cime/config_pes.xml
 ```
