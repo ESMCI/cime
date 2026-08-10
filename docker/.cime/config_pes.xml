@@ -2,17 +2,19 @@
 
 <!--
   Generic container PE layout - matches any grid/compset/machine/pesize.
-  
+
   All NTASKS are set to -1 (negative), which tells CIME to scale by
   MAX_MPITASKS_PER_NODE (dynamically computed from container core count via
-  entrypoint.sh). This prevents default model layouts (often 32-64 fixed ranks)
-  from exceeding the create_test proc pool or oversubscribing MPICH.
-  
+  entrypoint.sh). All components overlap on the same ranks (ROOTPE=0), which
+  is a valid concurrent execution layout where all components share the
+  available MPI tasks. This prevents default model layouts (often 32-64 fixed
+  ranks) from exceeding the create_test proc pool or oversubscribing MPICH.
+
   Usage:
     create_test with pesfile /root/.cime/config_pes.xml
   or
     create_newcase with pesfile /root/.cime/config_pes.xml
-  
+
   For ad-hoc task counts, use pecount N or _PN test options instead.
 -->
 <config_pes version="2.0">
@@ -20,7 +22,8 @@
     <mach name="any">
       <pes compset="any" pesize="any">
         <comment>
-          Container default: one MPI rank per component, scaled to node size.
+          Container default: all components concurrently execute on the same ranks,
+          with task count scaled to container core count (MAX_MPITASKS_PER_NODE).
         </comment>
         <ntasks>
           <ntasks_atm>-1</ntasks_atm>
