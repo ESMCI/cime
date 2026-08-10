@@ -5,7 +5,7 @@
     <DESC>Docker</DESC>
     <OS>LINUX</OS>
     <PROXY />
-    <COMPILERS>gnu,gnuX</COMPILERS>
+    <COMPILERS>gnu</COMPILERS>
     <MPILIBS>mpich</MPILIBS>
     <PROJECT>CIME</PROJECT>
     <SAVE_TIMING_DIR>/root/storage/timings</SAVE_TIMING_DIR>
@@ -50,8 +50,8 @@
       <env name="NETCDF_FORTRAN_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}</env>
       <env name="PNETCDF_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}</env>
       <env name="PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/bin:$ENV{PATH}</env>
-      <env name="LD_LIBRARY_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/lib</env>
-      <env name="PKG_CONFIG_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/lib/pkgconfig</env>
+      <env name="LD_LIBRARY_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/lib:$ENV{LD_LIBRARY_PATH}</env>
+      <env name="PKG_CONFIG_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}</env>
     </environment_variables>
   </machine>
 </config_machines>
