@@ -10,13 +10,16 @@
 # NOTE: BuildKit is required (the cache mounts below). Build with:
 #   DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile -t cime .
 
+ARG UBUNTU_DIGEST=sha256:561618e2c15bf2397621dd04f96926663a3b5616c189cf7e38db7e82f5c538ea
 ARG PIXI_VERSION=0.73.0
 ARG PIXI_SHA256=682564e7cd35d38307df3cd6c8e9a45a1437d20febac0c8d165809d7c38408d1
+ARG UV_VERSION=0.12.3
+ARG UV_SHA256=600cf9a742aca00d292673b16b5acffaa7b8c269a364ad0c2e79498dcb1fe101
 
 ########################################################################
 # Base image with the pixi environments installed at their final path. #
 ########################################################################
-FROM ubuntu:24.04 AS base
+FROM ubuntu:24.04@${UBUNTU_DIGEST} AS base
 
 ARG PIXI_VERSION
 ARG PIXI_SHA256
@@ -78,6 +81,9 @@ RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
 ################################
 FROM base AS main
 
+ARG UV_VERSION
+ARG UV_SHA256
+
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential \
@@ -87,9 +93,14 @@ RUN apt-get update \
 
 COPY test-requirements.txt /requirements.txt
 
-# uv provides the Python test environment (pytest, etc.).
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
-  && source ~/.local/bin/env \
+# Install a pinned uv release (verified against a known checksum), then use it
+# to provide the Python test environment (pytest, etc.).
+RUN curl -LsSf "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz" \
+      -o /tmp/uv.tar.gz \
+  && echo "${UV_SHA256}  /tmp/uv.tar.gz" | sha256sum -c - \
+  && tar -xzf /tmp/uv.tar.gz -C /usr/local/bin --strip-components=1 \
+  && rm /tmp/uv.tar.gz \
+  && chmod +x /usr/local/bin/uv /usr/local/bin/uvx \
   && uv python install 3.10 \
   && uv venv "${HOME}/.venv" \
   && source "${HOME}/.venv/bin/activate" \
