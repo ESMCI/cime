@@ -27,6 +27,9 @@ scripts/Tools/JENKINS*
 test_coverage/**
 *.bak
 
+# Local test data
+data/
+
 # AI coding tool local state
 .gemini/
 .codex/
