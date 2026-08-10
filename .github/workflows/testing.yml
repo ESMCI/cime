@@ -10,6 +10,13 @@ on:
       - 'tools/**'
       - 'utils/**'
       - 'docker/**'
+      - '.dockerignore'
+      - '.gitignore'
+      - '.github/workflows/testing.yml'
+      - '.pre-commit-config.yaml'
+      - 'pyproject.toml'
+      - 'setup.py'
+      - 'test-requirements.txt'
 
   pull_request:
     branches:
@@ -20,6 +27,13 @@ on:
       - 'tools/**'
       - 'utils/**'
       - 'docker/**'
+      - '.dockerignore'
+      - '.gitignore'
+      - '.github/workflows/testing.yml'
+      - '.pre-commit-config.yaml'
+      - 'pyproject.toml'
+      - 'setup.py'
+      - 'test-requirements.txt'
 
   workflow_dispatch:
 
@@ -29,12 +43,43 @@ concurrency:
 
 permissions:
   contents: read # to fetch code (actions/checkout)
-  packages: read
 
 jobs:
-  build-containers:
+  # Build container image for PRs (local only, saved as artifact)
+  build-pr-image:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          file: docker/Dockerfile
+          context: .
+          load: true
+          tags: cime:pr-${{ github.event.pull_request.number }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Save image as artifact
+        run: |
+          docker save cime:pr-${{ github.event.pull_request.number }} | gzip > /tmp/cime-image.tar.gz
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cime-docker-image
+          path: /tmp/cime-image.tar.gz
+          retention-days: 1
+
+  # Publish container image only on pushes to master
+  publish-image:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     permissions:
       packages: write
     steps:
@@ -42,33 +87,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: "true"
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Login to DockerHub
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/ESMCI/cime
-          tags: |
-            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
-            type=ref,event=pr,enable=${{ github.event_name == 'pull_request' }}
-            type=sha,format=long
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           file: docker/Dockerfile
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/esmci/cime:latest
+          platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -92,22 +126,25 @@ jobs:
   unit-testing:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
-    needs: build-containers
-    container:
-      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    needs: build-pr-image
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.12", "3.13", "3.14"]
     steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cime-docker-image
+          path: /tmp
+      - name: Load Docker image
+        run: |
+          docker load < /tmp/cime-image.tar.gz
       - name: Checkout model code
         uses: actions/checkout@v4
         with:
           repository: ESCOMP/CESM
-          path: cesm # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          path: cesm
           ref: cesm3.0-alphabranch
       - name: Get ccs_config dependency
         working-directory: cesm
@@ -125,26 +162,24 @@ jobs:
         with:
           path: cesm/cime
           submodules: "true"
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
       - name: Run tests
-        shell: bash
-        working-directory: cesm/cime
-        env:
-          CIME_MODEL: "cesm"
-          CIME_DRIVER: "nuopc"
-          CIME_TEST_PLATFORM: "ubuntu-latest"
-          SKIP_ENTRYPOINT: "true"
         run: |
-          # manually run the entrypoint
-          source /entrypoint.sh
-
-          uv python install "${{ matrix.python-version }}"
-          uv venv
-          source .venv/bin/activate
-          uv pip install -r test-requirements.txt
-
-          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+          docker run --rm \
+            -v ${{ github.workspace }}/cesm:/root/cesm \
+            -w /root/cesm/cime \
+            -e CIME_MODEL=cesm \
+            -e CIME_DRIVER=nuopc \
+            -e CIME_TEST_PLATFORM=ubuntu-latest \
+            -e SKIP_ENTRYPOINT=true \
+            cime:pr-${{ github.event.pull_request.number }} \
+            bash -c "
+              source /entrypoint.sh
+              uv python install ${{ matrix.python-version }}
+              uv venv
+              source .venv/bin/activate
+              uv pip install -r test-requirements.txt
+              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+            "
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -154,13 +189,7 @@ jobs:
   system-testing:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
-    needs: build-containers
-    container:
-      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-      options: --hostname docker --shm-size=1g
+    needs: build-pr-image
     strategy:
       # allow all jobs to finish
       fail-fast: false
@@ -181,11 +210,19 @@ jobs:
           - model: { name: "cesm" }
             driver: "mct"
     steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cime-docker-image
+          path: /tmp
+      - name: Load Docker image
+        run: |
+          docker load < /tmp/cime-image.tar.gz
       - name: Checkout model code
         uses: actions/checkout@v4
         with:
           repository: ${{ matrix.model.repo }}
-          path: ${{ matrix.model.name }} # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          path: ${{ matrix.model.name }}
           ref: ${{ matrix.model.branch }}
       - name: Check out model dependencies
         shell: bash
@@ -210,36 +247,36 @@ jobs:
         with:
           path: ${{ matrix.model.name }}/cime
           submodules: 'true'
+      - name: Create storage directory
+        run: mkdir -p ${{ github.workspace }}/storage/inputdata
       - name: Cache inputdata
         uses: actions/cache@v3
         with:
-          path: /root/storage/inputdata
+          path: ${{ github.workspace }}/storage/inputdata
           key: inputdata-2
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          python-version: "3.10"
       - name: Run tests
-        shell: bash
-        working-directory: ${{ matrix.model.name }}/cime
-        env:
-          CIME_MODEL: ${{ matrix.model.name }}
-          CIME_DRIVER: ${{ matrix.driver }}
-          CIME_TEST_PLATFORM: ubuntu-latest
-          SKIP_ENTRYPOINT: "true"
         run: |
-          # manually run the entrypoint
-          source /entrypoint.sh
-
-          uv python install 3.10
-          uv venv
-          source .venv/bin/activate
-          uv pip install -r test-requirements.txt
-
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+          docker run --rm \
+            --hostname docker \
+            --shm-size=1g \
+            -v ${{ github.workspace }}/${{ matrix.model.name }}:/root/model \
+            -v ${{ github.workspace }}/storage:/root/storage \
+            -w /root/model/cime \
+            -e CIME_MODEL=${{ matrix.model.name }} \
+            -e CIME_DRIVER=${{ matrix.driver }} \
+            -e CIME_TEST_PLATFORM=ubuntu-latest \
+            -e SKIP_ENTRYPOINT=true \
+            cime:pr-${{ github.event.pull_request.number }} \
+            bash -c "
+              source /entrypoint.sh
+              uv python install 3.10
+              uv venv
+              source .venv/bin/activate
+              uv pip install -r test-requirements.txt
+              git config --global user.name '${{ github.actor }}'
+              git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+            "
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -251,13 +288,11 @@ jobs:
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
-        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz /root/storage/cases /root/storage/baselines /root/storage/archive
-        # How to download artifacts:
-        # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
+        run: tar -czvf ${{ github.workspace }}/testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz ${{ github.workspace }}/storage/cases ${{ github.workspace }}/storage/baselines ${{ github.workspace }}/storage/archive
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}
-          path: /testing-logs-${{ github.run_number}}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz
+          path: ${{ github.workspace }}/testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz
           retention-days: 4
