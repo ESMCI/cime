@@ -27,7 +27,7 @@ PIXI_ENV_ROOT="${PIXI_ENV_ROOT:-/opt/pixi-env/.pixi/envs}"
 # Fail fast when CIME_MODEL is unset or invalid; the pixi environment to activate
 # and the config_machines file to link are both selected from it.
 function require_cime_model() {
-    if [[ -z "${CIME_MODEL}" ]]; then
+    if [[ -z "${CIME_MODEL:-}" ]]; then
         echo "ERROR: CIME_MODEL is not set. Set it to 'e3sm' or 'cesm'." >&2
         exit 1
     fi

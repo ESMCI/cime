@@ -125,7 +125,7 @@ jobs:
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && needs.build-pr-image.result == 'success' && ! cancelled() }}
     needs: build-pr-image
     strategy:
       fail-fast: false
@@ -181,6 +181,7 @@ jobs:
               uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
             "
       - name: Upload coverage reports to Codecov
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -188,7 +189,7 @@ jobs:
   # Run system tests
   system-testing:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && needs.build-pr-image.result == 'success' && ! cancelled() }}
     needs: build-pr-image
     strategy:
       # allow all jobs to finish
@@ -278,17 +279,24 @@ jobs:
               uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - uses: mxschmitt/action-tmate@v3
-        if: ${{ !always() }}
+        if: ${{ failure() && !cancelled() }}
         with:
           limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
-        run: tar -czvf ${{ github.workspace }}/testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz ${{ github.workspace }}/storage/cases ${{ github.workspace }}/storage/baselines ${{ github.workspace }}/storage/archive
+        run: |
+          tar -czvf ${{ github.workspace }}/testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz \
+            --ignore-failed-read \
+            ${{ github.workspace }}/storage/cases \
+            ${{ github.workspace }}/storage/baselines \
+            ${{ github.workspace }}/storage/archive \
+            2>/dev/null || true
       - name: Upload testing logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
