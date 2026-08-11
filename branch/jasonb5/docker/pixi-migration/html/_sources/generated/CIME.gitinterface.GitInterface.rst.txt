@@ -1,0 +1,26 @@
+..
+  class.rst
+
+CIME.gitinterface.GitInterface
+==============================
+
+.. currentmodule:: CIME.gitinterface
+
+.. autoclass:: GitInterface
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~GitInterface.__init__
+                    ~GitInterface.config_get_value
+                    ~GitInterface.config_set_value
+                    ~GitInterface.git_operation
+        
+    

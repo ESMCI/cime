@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.bless\_test\_results.bless\_history
+========================================
+
+.. currentmodule:: CIME.bless_test_results
+
+.. autofunction:: bless_history
