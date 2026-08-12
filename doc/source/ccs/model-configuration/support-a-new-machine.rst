@@ -68,11 +68,14 @@ As an example, on a MAC with 2 cores that has mpich with gnu fortran you would i
    > mpif90 fhello_world_mpi.F90 -o hello_world
    > mpirun -np 2 ./hello_world
 
-CESM Linux and Mac Support
----------------------------
+CESM Linux and Mac (Darwin) Support
+------------------------------------
 
-The distribution of CESM includes machines called **homebrew** and **centos7-linux** in the file **$CIMEROOT/config/cesm/machines/config_machines.xml**.
-Please see the instructions in the file to create the directory structure and use these generic machine definitions.
+The distribution of CESM automatically supports macOS (**Darwin**) out of the box for both Apple Silicon (M1/M2/M3) and Intel Macs using Homebrew or MacPorts.
+
+- **OS-Level Macro Resolution:** When running on macOS (``OS=Darwin``), CIME automatically detects your package manager prefix (``/opt/homebrew`` or ``/usr/local``), sets up GCC/gfortran compiler flags (``gnu_Darwin.cmake``), and applies necessary bounds-checking workarounds (``Depends.Darwin.gnu``).
+- **Zero-Config Case Setup:** Mac users can run ``create_newcase`` or ``create_test`` without passing ``--machine homebrew`` or maintaining custom XML files in ``~/.cime/config_machines.xml``.
+- **Legacy Homebrew Machine:** The generic ``homebrew`` machine definition remains available in **$CIMEROOT/config/cesm/machines/config_machines.xml** for backward compatibility.
 
 Steps for porting
 ---------------------------
