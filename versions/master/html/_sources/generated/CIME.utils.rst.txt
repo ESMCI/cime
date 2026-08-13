@@ -136,15 +136,6 @@ CIME.utils
 
     
         
-            .. rubric:: Exceptions
-
-            .. autosummary::
-                :toctree:
-                :nosignatures:
-                :template: autosummary/base.rst
-                
-                    CIMEError
-        
     
 
 

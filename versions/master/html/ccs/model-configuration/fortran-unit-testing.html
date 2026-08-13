@@ -172,7 +172,7 @@ Running CTest tests for __command_line_test__/__command_line_test__.
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>100% tests passed, 0 tests failed out of 17
 </pre></div>
 </div>
-<p>These unit tests are run automatically as part of <strong>scripts_regression_tests</strong> on machines that have a serial build of pFUnit available for the default compiler.</p>
+<p>These unit tests are run automatically as part of <strong>pytest</strong> on machines that have a serial build of pFUnit available for the default compiler.</p>
 </section>
 <section id="how-to-add-unit-testing-support-on-your-machine">
 <span id="adding-machine-support"></span><h2>How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Link to this heading"></a></h2>
@@ -185,7 +185,7 @@ file. Those processes are described in the following sections.</p>
 <section id="building-pfunit">
 <h3>Building pFUnit<a class="headerlink" href="#building-pfunit" title="Link to this heading"></a></h3>
 <p>Follow the instructions below to build pFUnit using the default compiler on your machine.
-That is the default for <strong>run_tests.py</strong> and that is required for <strong>scripts_regression_tests.py</strong> to run the unit tests on your machine.
+That is the default for <strong>run_tests.py</strong> and is required for pytest to run the unit tests on your machine.
 For the CMake step, we typically build with <code class="docutils literal notranslate"><span class="pre">-DSKIP_MPI=YES</span></code>, <code class="docutils literal notranslate"><span class="pre">-DSKIP_OPENMP=YES</span></code> and <code class="docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX</span></code> set to the directory where you want pFUnit to be installed.
 (At this time, no unit tests require parallel support, so we build without MPI support to keep things simple.)
 Optionally, you can also provide pFUnit builds with other supported compilers on your machine.</p>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.code_checker &mdash; CIME master documentation</title>
+  <title>CIME.Servers.is_protocol_available &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.code_checker.check_code" href="CIME.code_checker.check_code.html" />
-    <link rel="prev" title="CIME.buildnml.parse_input" href="CIME.buildnml.parse_input.html" /> 
+    <link rel="next" title="CIME.SystemTests" href="CIME.SystemTests.html" />
+    <link rel="prev" title="CIME.Servers" href="CIME.Servers.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,7 +66,13 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.non_py.html">CIME.non_py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.ParamGen.html">CIME.ParamGen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.scripts.html">CIME.scripts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.Servers.html">CIME.Servers</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="CIME.Servers.html">CIME.Servers</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.Servers.is_protocol_available</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.Servers.is_protocol_available"><code class="docutils literal notranslate"><span class="pre">is_protocol_available()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Tools.html">CIME.Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html">CIME.XML</a></li>
@@ -75,11 +81,6 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.build.html">CIME.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">CIME.code_checker</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="CIME.code_checker.check_code.html">CIME.code_checker.check_code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.code_checker.get_all_checkable_files.html">CIME.code_checker.get_all_checkable_files</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.compare_test_results.html">CIME.compare_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.config.html">CIME.config</a></li>
@@ -122,9 +123,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">CIME.code_checker</li>
+          <li class="breadcrumb-item"><a href="CIME.Servers.html">CIME.Servers</a></li>
+      <li class="breadcrumb-item active">CIME.Servers.is_protocol_available</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.code_checker.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.Servers.is_protocol_available.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -132,28 +134,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-CIME.code_checker">
-<span id="cime-code-checker"></span><h1>CIME.code_checker<a class="headerlink" href="#module-CIME.code_checker" title="Link to this heading"></a></h1>
-<p>Libraries for checking python code with pylint</p>
-<p class="rubric">Functions</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="CIME.code_checker.check_code.html#CIME.code_checker.check_code" title="CIME.code_checker.check_code"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_code</span></code></a></p></td>
-<td><p>Check all python files in the given directory</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="CIME.code_checker.get_all_checkable_files.html#CIME.code_checker.get_all_checkable_files" title="CIME.code_checker.get_all_checkable_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_checkable_files</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+  <section id="cime-servers-is-protocol-available">
+<h1>CIME.Servers.is_protocol_available<a class="headerlink" href="#cime-servers-is-protocol-available" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="CIME.Servers.is_protocol_available">
+<span class="sig-prename descclassname"><span class="pre">CIME.Servers.</span></span><span class="sig-name descname"><span class="pre">is_protocol_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/Servers.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.Servers.is_protocol_available" title="Link to this definition"></a></dt>
+<dd><p>Check if a protocol is available.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>protocol: One of ‘ftp’, ‘svn’, ‘wget’, ‘gftp’</p>
+</dd>
+<dt>Returns:</dt><dd><p>True if the protocol is available, False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.buildnml.parse_input.html" class="btn btn-neutral float-left" title="CIME.buildnml.parse_input" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.code_checker.check_code.html" class="btn btn-neutral float-right" title="CIME.code_checker.check_code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.Servers.html" class="btn btn-neutral float-left" title="CIME.Servers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.SystemTests.html" class="btn btn-neutral float-right" title="CIME.SystemTests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

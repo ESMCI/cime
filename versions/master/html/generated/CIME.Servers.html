@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.SystemTests" href="CIME.SystemTests.html" />
+    <link rel="next" title="CIME.Servers.is_protocol_available" href="CIME.Servers.is_protocol_available.html" />
     <link rel="prev" title="CIME.scripts" href="CIME.scripts.html" /> 
 </head>
 
@@ -66,7 +66,10 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.non_py.html">CIME.non_py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.ParamGen.html">CIME.ParamGen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.scripts.html">CIME.scripts</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">CIME.Servers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CIME.Servers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="CIME.Servers.is_protocol_available.html">CIME.Servers.is_protocol_available</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html">CIME.SystemTests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.Tools.html">CIME.Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.XML.html">CIME.XML</a></li>
@@ -75,7 +78,6 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.build.html">CIME.build</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildlib.html">CIME.buildlib</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.buildnml.html">CIME.buildnml</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CIME.code_checker.html">CIME.code_checker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.compare_namelists.html">CIME.compare_namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.compare_test_results.html">CIME.compare_test_results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.config.html">CIME.config</a></li>
@@ -130,6 +132,17 @@
              
   <section id="module-CIME.Servers">
 <span id="cime-servers"></span><h1>CIME.Servers<a class="headerlink" href="#module-CIME.Servers" title="Link to this heading"></a></h1>
+<p>CIME Server implementations for data transfer.</p>
+<p>Server availability is detected lazily on first access to avoid
+running executables at import time.</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="CIME.Servers.is_protocol_available.html#CIME.Servers.is_protocol_available" title="CIME.Servers.is_protocol_available"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_protocol_available</span></code></a></p></td>
+<td><p>Check if a protocol is available.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
@@ -137,7 +150,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="CIME.scripts.html" class="btn btn-neutral float-left" title="CIME.scripts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.SystemTests.html" class="btn btn-neutral float-right" title="CIME.SystemTests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.Servers.is_protocol_available.html" class="btn btn-neutral float-right" title="CIME.Servers.is_protocol_available" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

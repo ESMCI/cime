@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.CIMEError
-====================
-
-.. currentmodule:: CIME.utils
-
-.. autoexception:: CIMEError
