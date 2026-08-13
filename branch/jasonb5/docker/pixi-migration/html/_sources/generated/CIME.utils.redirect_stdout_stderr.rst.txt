@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.redirect\_stdout\_stderr
-===================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: redirect_stdout_stderr

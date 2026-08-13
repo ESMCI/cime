@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_current\_branch
-===============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_current_branch

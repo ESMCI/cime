@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_cime\_root
-==========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_cime_root

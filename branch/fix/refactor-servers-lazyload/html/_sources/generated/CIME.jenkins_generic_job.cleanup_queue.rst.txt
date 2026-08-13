@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.jenkins\_generic\_job.cleanup\_queue
-=========================================
-
-.. currentmodule:: CIME.jenkins_generic_job
-
-.. autofunction:: cleanup_queue

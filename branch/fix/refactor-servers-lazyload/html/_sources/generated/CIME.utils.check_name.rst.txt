@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.check\_name
-======================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: check_name

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.clear\_folder
-========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: clear_folder

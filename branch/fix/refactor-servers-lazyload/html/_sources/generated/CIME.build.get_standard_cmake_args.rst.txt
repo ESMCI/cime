@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.get\_standard\_cmake\_args
-=====================================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: get_standard_cmake_args

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_model\_config\_location\_within\_cime
-=====================================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_model_config_location_within_cime

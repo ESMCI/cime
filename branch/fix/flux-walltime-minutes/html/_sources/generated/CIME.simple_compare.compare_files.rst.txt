@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.simple\_compare.compare\_files
-===================================
-
-.. currentmodule:: CIME.simple_compare
-
-.. autofunction:: compare_files

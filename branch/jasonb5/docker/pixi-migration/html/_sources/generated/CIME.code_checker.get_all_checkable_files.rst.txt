@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.code\_checker.get\_all\_checkable\_files
-=============================================
-
-.. currentmodule:: CIME.code_checker
-
-.. autofunction:: get_all_checkable_files
