@@ -130,17 +130,55 @@ function build_cprnc() {
 # Download input data needed for model setup
 # required for grid generation tests
 function download_input_data() {
+    local skip_on_error="${DOWNLOAD_SKIP_ON_ERROR:-0}"
+    
     mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
-    wget -O "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
-        https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
+    # wget with retries, timeout, and continue on partial downloads
+    local wget_opts=(
+        --tries=5
+        --timeout=30
+        --waitretry=10
+        --continue
+        --no-verbose
+    )
 
-    wget -O "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc" \
-        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
+    local files=(
+        "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc"
+        "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc"
+        "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc"
+    )
 
-    wget -O "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc" \
-        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+    local failed=0
+    for file_spec in "${files[@]}"; do
+        local dest="${file_spec%%|*}"
+        local url="${file_spec##*|}"
+        
+        # Skip if file already exists
+        if [[ -f "$dest" ]]; then
+            echo "Already present: $(basename "$dest")"
+            continue
+        fi
+        
+        echo "Downloading $(basename "$dest")..."
+        if ! wget "${wget_opts[@]}" -O "$dest" "$url"; then
+            echo "WARNING: Failed to download $url after retries" >&2
+            # Clean up partial download
+            rm -f "$dest"
+            failed=1
+        fi
+    done
+
+    if [[ $failed -eq 1 ]]; then
+        if [[ $skip_on_error -eq 1 ]]; then
+            echo "WARNING: Some input data files failed to download (non-fatal during build)" >&2
+            return 0
+        else
+            echo "ERROR: One or more input data files failed to download" >&2
+            return 1
+        fi
+    fi
 }
 
 
@@ -174,6 +212,17 @@ if [[ "${CI:-false}" == "true" ]]; then
 fi
 
 link_config_machines
+
+# Attempt to download missing input data at runtime (if NERSC was unreachable
+# during build, or if user is mounting a fresh storage directory).
+# This runs silently in the background and does not block container startup.
+if [[ "${SKIP_ENTRYPOINT}" == "false" ]] && [[ ! -f "${STORAGE_DIR}/inputdata/.download_complete" ]]; then
+    (
+        if download_input_data 2>/dev/null; then
+            touch "${STORAGE_DIR}/inputdata/.download_complete"
+        fi
+    ) &
+fi
 
 # Allow git to operate in any directory, for container/dev scenarios
 if [[ -e "${PWD}/.git" ]]; then

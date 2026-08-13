@@ -112,11 +112,14 @@ COPY docker/entrypoint.sh /entrypoint.sh
 # data download itself is model-agnostic. Cache mount at /tmp/inputdata-cache
 # persists downloads across builds; files are copied into the final location so
 # they persist in the image even when the cache expires.
+# DOWNLOAD_SKIP_ON_ERROR=1 makes NERSC download failures non-fatal during build
+# (GitHub Actions runners cannot reach portal.nersc.gov); missing files will be
+# attempted again at container startup.
 RUN --mount=type=cache,target=/tmp/inputdata-cache \
     CIME_MODEL=e3sm SKIP_ENTRYPOINT=true source /entrypoint.sh \
   && mkdir -p /root/storage/{tools,inputdata,cases,timings,archive,baselines} \
-  && STORAGE_DIR=/tmp/inputdata-cache download_input_data \
-  && cp -r /tmp/inputdata-cache/inputdata/* /root/storage/inputdata/
+  && STORAGE_DIR=/tmp/inputdata-cache DOWNLOAD_SKIP_ON_ERROR=1 download_input_data \
+  && cp -r /tmp/inputdata-cache/inputdata/* /root/storage/inputdata/ || true
 
 COPY --from=cprnc /root/storage/tools/cprnc /root/storage/tools/cprnc
 COPY docker/.cime /root/.cime
