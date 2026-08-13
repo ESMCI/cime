@@ -185,10 +185,21 @@ Podman can be used as a drop-in replacement for Docker. Use ``podman unshare`` t
 
 .. code-block:: bash
 
-   podman run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest bash
+   podman run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest bash
 
 Run tests directly:
 
 .. code-block:: bash
 
-   podman run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
+   podman run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest \
+     ./scripts/create_test SMS.f19_g16.X --pesfile /root/.cime/config_pes.xml
