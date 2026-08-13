@@ -1,10 +1,11 @@
 """
 Interface to the config_inputdata.xml file.  This class inherits from GenericXML.py
 """
-from CIME.XML.standard_module_setup import *
-from CIME.XML.generic_xml import GenericXML
+
+import logging
+
 from CIME.XML.files import Files
-from CIME.utils import expect
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

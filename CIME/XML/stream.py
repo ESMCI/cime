@@ -3,10 +3,13 @@ Interface to the streams.xml style files.  This class inherits from GenericXML.p
 
 stream files predate cime and so do not conform to entry id format
 """
-from CIME.XML.standard_module_setup import *
-from CIME.XML.generic_xml import GenericXML
-from CIME.XML.files import Files
+
+import logging
+import os
+
 from CIME.utils import expect
+from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

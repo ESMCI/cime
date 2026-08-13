@@ -2,25 +2,30 @@
 Interface to the env_batch.xml file.  This class inherits from EnvBase
 """
 
+import logging
+import math
 import os
-from CIME.XML.standard_module_setup import *
-from CIME.XML.env_base import EnvBase
+import pathlib
+import re
+import stat
+from collections import OrderedDict
+from itertools import zip_longest
+
 from CIME import utils
 from CIME.utils import (
-    transform_vars,
-    get_cime_root,
-    convert_to_seconds,
-    convert_to_babylonian_time,
-    get_cime_config,
-    get_batch_script_for_job,
-    get_logging_options,
-    format_time,
     add_flag_to_cmd,
+    convert_to_babylonian_time,
+    convert_to_seconds,
+    expect,
+    format_time,
+    get_batch_script_for_job,
+    get_cime_config,
+    get_logging_options,
+    run_cmd,
+    run_cmd_no_fail,
+    transform_vars,
 )
-from collections import OrderedDict
-import stat, re, math
-import pathlib
-from itertools import zip_longest
+from CIME.XML.env_base import EnvBase
 
 logger = logging.getLogger(__name__)
 

@@ -15,12 +15,13 @@ Typical usage is simply:
    ./preview_namelists
 """
 
+import argparse
+
 from standard_script_setup import *
 
 from CIME.case import Case
 from CIME.utils import expect
 
-import argparse
 
 ###############################################################################
 def parse_command_line(args, description):

@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 
 import os
-import signal
 import shutil
+import signal
 import sys
-import time
 import threading
+import time
 
-from CIME import utils
-from CIME import test_status
-from CIME.wait_for_tests import ENV_VAR_KEEP_CDASH
+from CIME import test_status, utils
 from CIME.tests import base
 from CIME.tests import utils as test_utils
+from CIME.wait_for_tests import ENV_VAR_KEEP_CDASH
 
 
 class TestWaitForTests(base.BaseTestCase):
@@ -338,9 +337,11 @@ class TestWaitForTests(base.BaseTestCase):
             ) as ts:
                 ts.set_status(
                     core_phase,
-                    last_status
-                    if core_phase == last_phase
-                    else test_status.TEST_PASS_STATUS,
+                    (
+                        last_status
+                        if core_phase == last_phase
+                        else test_status.TEST_PASS_STATUS
+                    ),
                 )
 
             time.sleep(5)

@@ -9,29 +9,26 @@ This class inherits from SystemTestsCommon.
 
 from __future__ import division
 
+import json
+import logging
 import os
 import re
-import json
 import shutil
-import logging
-
 from collections import OrderedDict
 from shutil import copytree
 
-import pandas as pd
+import evv4esm  # pylint: disable=import-error
 import numpy as np
-
+import pandas as pd
+from evv4esm.__main__ import main as evv  # pylint: disable=import-error
+from evv4esm.extensions import pg  # pylint: disable=import-error
 
 import CIME.test_status
 import CIME.utils
+from CIME.case.case_setup import case_setup
 from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
-from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
-
-import evv4esm  # pylint: disable=import-error
-from evv4esm.extensions import pg  # pylint: disable=import-error
-from evv4esm.__main__ import main as evv  # pylint: disable=import-error
 
 evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
 

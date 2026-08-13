@@ -38,12 +38,13 @@ If  you encounter problems with this tool or find it is missing any
 feature that you need, please open an issue on https://github.com/ESMCI/cime
 """
 
+import re
+import sys
+
 from standard_script_setup import *
 
 from CIME.case import Case
-from CIME.utils import expect, convert_to_string
-import sys
-import re
+from CIME.utils import convert_to_string, expect
 
 logger = logging.getLogger(__name__)
 

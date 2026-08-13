@@ -4,10 +4,10 @@
 This module contains unit tests of CaseFake
 """
 
-import unittest
-import tempfile
 import os
 import shutil
+import tempfile
+import unittest
 
 from CIME.tests.case_fake import CaseFake
 

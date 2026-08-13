@@ -1,12 +1,16 @@
 """
 create_clone is a member of the Case class from file case.py
 """
-import os, glob, shutil
-from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, check_name, safe_copy, get_model
-from CIME.simple_compare import compare_files
+
+import glob
+import logging
+import os
+import shutil
+
 from CIME.locked_files import lock_file
+from CIME.simple_compare import compare_files
 from CIME.user_mod_support import apply_user_mods
+from CIME.utils import check_name, expect, get_cime_root, get_model, safe_copy
 
 logger = logging.getLogger(__name__)
 

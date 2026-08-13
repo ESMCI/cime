@@ -6,6 +6,10 @@
 Script to create a new CIME Case Control System (CSS) experimental case.
 """
 
+from argparse import RawTextHelpFormatter
+
+from CIME.case import Case
+from CIME.config import Config
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import (
     expect,
@@ -13,11 +17,9 @@ from CIME.utils import (
     get_cime_default_driver,
     get_src_root,
 )
-from CIME.config import Config
-from CIME.case import Case
-from argparse import RawTextHelpFormatter
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_command_line(args, cimeroot, description):
@@ -384,9 +386,11 @@ def _main_func(description=None):
 
     if user_mods_dirs is not None:
         user_mods_dirs = [
-            os.path.abspath(one_user_mods_dir)
-            if os.path.isdir(one_user_mods_dir)
-            else one_user_mods_dir
+            (
+                os.path.abspath(one_user_mods_dir)
+                if os.path.isdir(one_user_mods_dir)
+                else one_user_mods_dir
+            )
             for one_user_mods_dir in user_mods_dirs
         ]
 

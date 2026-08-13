@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
 import shutil
 import tempfile
-from CIME.XML.expected_fails_file import ExpectedFailsFile
+import unittest
+
 from CIME.core.exceptions import CIMEError
 from CIME.expected_fails import ExpectedFails
+from CIME.XML.expected_fails_file import ExpectedFailsFile
 
 
 class TestExpectedFailsFile(unittest.TestCase):

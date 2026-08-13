@@ -3,8 +3,11 @@ ERIO tests restart with different PIO methods
 
 This class inherits from SystemTestsCommon
 """
-from CIME.XML.standard_module_setup import *
+
+import logging
+
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 

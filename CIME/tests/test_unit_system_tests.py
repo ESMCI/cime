@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 
-import os
-import tempfile
 import gzip
+import os
 import re
-from re import A
+import tempfile
 import unittest
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 from CIME.config import Config
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
-from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.SystemTests.system_tests_compare_n import SystemTestsCompareN
+from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 CPLLOG = """
  tStamp_write: model date =   00010102       0 wall clock = 2023-09-19 19:39:42 avg dt =     0.33 dt =     0.33

@@ -14,12 +14,13 @@ Usage:
    All of the above support the various --xml-* arguments for subsetting which tests are included.
 """
 
-from CIME.Tools.standard_script_setup import *
 from CIME.test_utils import get_tests_from_xml, test_to_string
-from CIME.XML.tests import Tests
+from CIME.Tools.standard_script_setup import *
 from CIME.utils import expect
+from CIME.XML.tests import Tests
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_command_line(args, description):

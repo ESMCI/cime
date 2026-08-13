@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import glob
-import re
 import os
+import re
 import stat
 
 from CIME import utils

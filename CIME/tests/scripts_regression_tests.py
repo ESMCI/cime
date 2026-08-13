@@ -5,46 +5,31 @@ Script containing CIME python regression test suite. This suite should be run
 to confirm overall CIME correctness.
 """
 
-import glob, os, re, shutil, signal, sys, tempfile, threading, time, logging, unittest, getpass, filecmp, time, atexit, functools
+import atexit
+import functools
+import logging
+import os
+import sys
+import unittest
 
 CIMEROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, CIMEROOT)
 
-from xml.etree.ElementTree import ParseError
-
-import subprocess, argparse
+import argparse
+import subprocess
 
 subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=CIMEROOT)
-import stat as osstat
 
-import collections
-
+import CIME.test_scheduler
+import CIME.wait_for_tests
+from CIME import utils
+from CIME.config import Config
+from CIME.tests.base import BaseTestCase
 from CIME.utils import (
-    run_cmd,
-    run_cmd_no_fail,
-    get_lids,
     get_current_commit,
-    safe_copy,
-    CIMEError,
-    get_cime_root,
-    get_src_root,
-    Timeout,
-    import_from_file,
     get_model,
 )
-import CIME.test_scheduler, CIME.wait_for_tests
-from CIME import get_tests
-from CIME.test_scheduler import TestScheduler
-from CIME.XML.env_run import EnvRun
 from CIME.XML.machines import Machines
-from CIME.XML.files import Files
-from CIME.case import Case
-from CIME.code_checker import check_code, get_all_checkable_files
-from CIME.test_status import *
-from CIME.provenance import get_test_success, save_test_success
-from CIME import utils
-from CIME.tests.base import BaseTestCase
-from CIME.config import Config
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 

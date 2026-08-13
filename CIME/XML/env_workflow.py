@@ -2,11 +2,11 @@
 Interface to the env_workflow.xml file.  This class inherits from EnvBase
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.XML.env_base import EnvBase
-from CIME.utils import get_cime_root
+import logging
+import math
 
-import re, math
+from CIME.utils import expect
+from CIME.XML.env_base import EnvBase
 
 logger = logging.getLogger(__name__)
 

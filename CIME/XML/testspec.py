@@ -1,8 +1,11 @@
 """
 Interface to the testspec.xml file.  This class inherits from generic_xml.py
 """
-from CIME.XML.standard_module_setup import *
 
+import logging
+import os
+
+from CIME.utils import expect
 from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)

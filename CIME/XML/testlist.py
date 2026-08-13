@@ -35,10 +35,12 @@ Currently supported options are:
 
 - workflow: adds a workflow to the test
 """
-from CIME.XML.standard_module_setup import *
 
-from CIME.XML.generic_xml import GenericXML
+import logging
+
+from CIME.utils import expect
 from CIME.XML.files import Files
+from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
 

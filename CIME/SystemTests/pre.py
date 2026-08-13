@@ -6,13 +6,14 @@ Test can also be run with other component combinations.
 Test requires DESP component to function correctly.
 """
 
-import os.path
-import logging
 import glob
+import logging
+import os.path
 
+from CIME.hist_utils import cprnc
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 from CIME.utils import expect
-from CIME.hist_utils import cprnc
+
 
 ###############################################################################
 class PRE(SystemTestsCompareTwo):

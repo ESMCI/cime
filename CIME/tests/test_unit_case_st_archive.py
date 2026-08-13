@@ -7,8 +7,8 @@ from unittest import mock
 
 from CIME import date
 from CIME.case import case_st_archive
-from CIME.XML import env_archive as _env_archive
 from CIME.tests import utils
+from CIME.XML import env_archive as _env_archive
 
 UNSET = r"""<components version="2.0">
   <comp_archive_spec compname="drv" compclass="cpl">

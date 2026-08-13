@@ -7,9 +7,9 @@ import shutil
 import sys
 
 from CIME import utils
-from CIME.tests import base
-from CIME.case.case import Case
 from CIME.build import CmakeTmpBuildDir
+from CIME.case.case import Case
+from CIME.tests import base
 
 
 class TestCreateNewcase(base.BaseTestCase):

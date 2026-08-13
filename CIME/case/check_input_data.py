@@ -1,12 +1,16 @@
 """
 API for checking input for testcase
 """
-from CIME.XML.standard_module_setup import *
-from CIME.utils import SharedArea, find_files, safe_copy, expect
-from CIME.XML.inputdata import Inputdata
-import CIME.Servers
 
-import glob, hashlib, shutil
+import glob
+import hashlib
+import logging
+import os
+import shutil
+
+import CIME.Servers
+from CIME.utils import SharedArea, expect, find_files, safe_copy
+from CIME.XML.inputdata import Inputdata
 
 logger = logging.getLogger(__name__)
 # The inputdata_checksum.dat file will be read into this hash if it's available

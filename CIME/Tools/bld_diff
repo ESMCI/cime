@@ -5,10 +5,15 @@ Try to calculate and succinctly present the differences between two bld logs
 for the same component
 """
 
+import argparse
+import gzip
+import os
+import sys
+
 from standard_script_setup import *
+
 from CIME.utils import run_cmd_no_fail
 
-import argparse, sys, os, gzip
 
 ###############################################################################
 def parse_command_line(args, description):

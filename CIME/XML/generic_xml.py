@@ -2,16 +2,19 @@
 Common interface to XML files, this is an abstract class and is expected to
 be used by other XML interface modules and not directly.
 """
-from CIME.XML.standard_module_setup import *
-from CIME.utils import safe_copy, get_src_root
 
+import getpass
+import logging
+import os
+import re
 import xml.etree.ElementTree as ET
+from collections import namedtuple
+from copy import deepcopy
 
 # pylint: disable=import-error
 from shutil import which
-import getpass
-from copy import deepcopy
-from collections import namedtuple
+
+from CIME.utils import expect, get_cime_root, get_src_root, run_cmd_no_fail, safe_copy
 
 logger = logging.getLogger(__name__)
 
@@ -398,10 +401,12 @@ class GenericXML(object):
         )
         expect(
             child,
-            err_msg
-            if err_msg
-            else "Expected one child, found None with name '{}' and attribs '{}' in file {}".format(
-                name, attributes, self.filename
+            (
+                err_msg
+                if err_msg
+                else "Expected one child, found None with name '{}' and attribs '{}' in file {}".format(
+                    name, attributes, self.filename
+                )
             ),
         )
         return child
@@ -418,10 +423,12 @@ class GenericXML(object):
 
         expect(
             len(children) <= 1,
-            err_msg
-            if err_msg
-            else "Multiple matches for name '{}' and attribs '{}' in file {}".format(
-                name, attributes, self.filename
+            (
+                err_msg
+                if err_msg
+                else "Multiple matches for name '{}' and attribs '{}' in file {}".format(
+                    name, attributes, self.filename
+                )
             ),
         )
         return children[0] if children else None

@@ -5,11 +5,13 @@ Library for implementing getTiming tool which gets timing
 information from a run.
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import safe_copy
-from CIME.status import append_case_status
+import datetime
+import logging
+import os
+import re
 
-import datetime, re
+from CIME.status import append_case_status
+from CIME.utils import expect, safe_copy
 
 logger = logging.getLogger(__name__)
 

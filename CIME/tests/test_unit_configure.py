@@ -1,11 +1,10 @@
 import os
-import unittest
-import tempfile
 import shutil
-
-from CIME.utils import expect
+import tempfile
+import unittest
 
 from CIME.BuildTools.configure import generate_env_mach_specific
+from CIME.utils import expect
 from CIME.XML.machines import Machines
 
 

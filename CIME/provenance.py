@@ -4,15 +4,17 @@
 Library for saving build/run provenance.
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+import os
+import sys
+
 from CIME.utils import (
     SharedArea,
     convert_to_babylonian_time,
+    expect,
     get_current_commit,
     run_cmd,
 )
-
-import sys
 
 logger = logging.getLogger(__name__)
 

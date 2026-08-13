@@ -3,8 +3,12 @@ Common interface to XML files which follow the grids format,
 This is not an abstract class - but inherits from the abstact class GenericXML
 """
 
+import logging
+import os
+import re
 from collections import OrderedDict
-from CIME.XML.standard_module_setup import *
+
+from CIME.utils import expect
 from CIME.XML.files import Files
 from CIME.XML.generic_xml import GenericXML
 

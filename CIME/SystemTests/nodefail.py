@@ -1,7 +1,10 @@
 """
 CIME restart upon failed node test.
 """
-from CIME.XML.standard_module_setup import *
+
+import logging
+import os
+
 from CIME.SystemTests.ers import ERS
 from CIME.utils import get_model
 

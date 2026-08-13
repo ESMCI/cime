@@ -8,20 +8,25 @@ The location of these files are needed by the script:
     CIME2: cime/machines-acme/config_pes.xml
     CIME5: config/acme/allactive/config_pesall.xml
 """
-import os, sys
+
+import os
+import sys
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 )
 
+import xml.etree.ElementTree as ET
+from shutil import which
+
+import grid_xml_converter
+
 from CIME import utils
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd
-from shutil import which
-import xml.etree.ElementTree as ET
-import grid_xml_converter
 
 LOGGER = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_command_line(args):
@@ -200,7 +205,9 @@ class Cime2PesNode(PesNode):
 class PesTree(grid_xml_converter.DataTree):
     def __init__(self, xmlfilename):
         # original xml file has bad comments
-        import re, StringIO
+        import re
+
+        import StringIO
 
         if os.access(xmlfilename, os.R_OK):
             with open(xmlfilename, "r") as xmlfile:

@@ -7,22 +7,21 @@ of simulations starting from different initial conditions.
 This class inherits from SystemTestsCommon.
 """
 
-import os
 import json
 import logging
-
+import os
 from shutil import copytree
-
-import CIME.test_status
-import CIME.utils
-from CIME.status import append_testlog
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
-from CIME.case.case_setup import case_setup
-from CIME.hist_utils import rename_all_hist_files
-from CIME.XML.machines import Machines
 
 import evv4esm  # pylint: disable=import-error
 from evv4esm.__main__ import main as evv  # pylint: disable=import-error
+
+import CIME.test_status
+import CIME.utils
+from CIME.case.case_setup import case_setup
+from CIME.hist_utils import rename_all_hist_files
+from CIME.status import append_testlog
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.XML.machines import Machines
 
 evv_lib_dir = os.path.abspath(os.path.dirname(evv4esm.__file__))
 

@@ -3,31 +3,38 @@ Library for case.setup.
 case_setup is a member of class Case from file case.py
 """
 
+import errno
+import logging
 import os
+import shutil
 
-from CIME.XML.standard_module_setup import *
-from CIME.config import Config
-from CIME.XML.machines import Machines
 from CIME.BuildTools.configure import (
-    generate_env_mach_specific,
     copy_depends_files,
+    generate_env_mach_specific,
+)
+from CIME.config import Config
+from CIME.gitinterface import GitInterface
+from CIME.locked_files import check_lockedfiles, lock_file, unlock_file
+from CIME.status import append_case_status, run_and_log_case_status
+from CIME.test_status import (
+    SETUP_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TestStatus,
 )
 from CIME.utils import (
-    get_batch_script_for_job,
-    safe_copy,
-    file_contains_python_function,
-    import_from_file,
-    copy_local_macros_to_dir,
-    batch_jobid,
-    run_cmd_no_fail,
     CIMEError,
+    batch_jobid,
+    copy_local_macros_to_dir,
+    expect,
+    file_contains_python_function,
+    get_batch_script_for_job,
+    import_from_file,
+    run_cmd_no_fail,
+    safe_copy,
 )
-from CIME.status import run_and_log_case_status, append_case_status
-from CIME.test_status import *
-from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
-from CIME.gitinterface import GitInterface
-
-import errno, shutil
+from CIME.XML.machines import Machines
 
 logger = logging.getLogger(__name__)
 
@@ -432,9 +439,11 @@ def _case_setup_impl(
                 if ngpus_per_node >= 0:
                     case.set_value(
                         "NGPUS_PER_NODE",
-                        max(1, ngpus_per_node)
-                        if ngpus_per_node <= max_gpus_per_node
-                        else max_gpus_per_node,
+                        (
+                            max(1, ngpus_per_node)
+                            if ngpus_per_node <= max_gpus_per_node
+                            else max_gpus_per_node
+                        ),
                     )
             elif gpu_offload:
                 raise CIMEError(

@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
 
 import os
-import stat
 import shutil
 import sys
 import tempfile
-
 import unittest
 from unittest import mock
+
 from CIME.status import run_and_log_case_status
 from CIME.utils import (
-    indent_string,
-    import_from_file,
     _line_defines_python_function,
-    file_contains_python_function,
     copy_globs,
+    file_contains_python_function,
     import_and_run_sub_or_cmd,
+    import_from_file,
+    indent_string,
 )
 
 

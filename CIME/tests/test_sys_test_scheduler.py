@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-import re
 import glob
 import logging
 import os
+import re
 import unittest
 from unittest import mock
 
-from CIME import get_tests
-from CIME import utils
-from CIME import test_status
-from CIME import test_scheduler
+from CIME import get_tests, test_scheduler, test_status, utils
 from CIME.tests import base
 
 

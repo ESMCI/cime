@@ -6,10 +6,13 @@ A script to verify that the environment is compliant with E3SM's software requir
 Be sure to source your env_mach_specific file before running this check.
 """
 
-from standard_script_setup import *
-from CIME.utils import run_cmd
+import argparse
+import os
+import sys
 
-import sys, os, argparse
+from standard_script_setup import *
+
+from CIME.utils import run_cmd
 
 # Here's where we keep the various reports and instructions.
 LOG = []

@@ -5,15 +5,13 @@ List e3sm test suites. Can be used to show what's being tested. Can just
 list tested grids, compsets, etc.
 """
 
-from standard_script_setup import *
-from CIME import utils
-from CIME import get_tests
-from CIME.XML.files import Files
-from CIME.XML.compsets import Compsets
-
 import argparse
 import logging
 
+
+from CIME import get_tests, utils
+from CIME.XML.compsets import Compsets
+from CIME.XML.files import Files
 
 logger = logging.getLogger(__name__)
 

@@ -2,26 +2,35 @@
 functions for building CIME models
 """
 
-import glob, shutil, time, threading, subprocess
+import glob
+import logging
+import os
+import re
+import shutil
+import subprocess
+import threading
+import time
 from pathlib import Path
-from CIME.XML.standard_module_setup import *
+
+from CIME.config import Config
+from CIME.locked_files import check_lockedfiles, lock_file, unlock_file
 from CIME.status import run_and_log_case_status
 from CIME.utils import (
-    get_model,
     analyze_build_log,
-    stringify_bool,
-    get_timestamp,
-    run_sub_or_cmd,
-    run_cmd,
+    expect,
     get_batch_script_for_job,
-    gzip_existing_file,
-    safe_copy,
-    is_python_executable,
     get_logging_options,
+    get_model,
+    get_timestamp,
+    gzip_existing_file,
     import_from_file,
+    is_python_executable,
+    run_cmd,
+    run_cmd_no_fail,
+    run_sub_or_cmd,
+    safe_copy,
+    stringify_bool,
 )
-from CIME.config import Config
-from CIME.locked_files import lock_file, unlock_file, check_lockedfiles
 from CIME.XML.files import Files
 
 logger = logging.getLogger(__name__)

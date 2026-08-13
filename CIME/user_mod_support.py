@@ -2,9 +2,11 @@
 user_mod_support.py
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, run_cmd_no_fail, safe_copy
 import glob
+import logging
+import os
+
+from CIME.utils import expect, run_cmd_no_fail, safe_copy
 
 logger = logging.getLogger(__name__)
 

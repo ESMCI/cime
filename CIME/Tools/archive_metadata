@@ -6,25 +6,26 @@ via a web post and SVN check-in
 Author: CSEG <cseg@cgd.ucar.edu>
 """
 import argparse
+import configparser
 import datetime
 import filecmp
 import getpass
 import glob
 import gzip
-import json
 import io
+import json
 import os
-from os.path import expanduser
 import re
 import shutil
 import ssl
 import subprocess
 import sys
-from string import Template
-import configparser
 import urllib
+from os.path import expanduser
+from string import Template
 
 from standard_script_setup import *
+
 from CIME.case import Case
 from CIME.utils import is_last_process_complete
 

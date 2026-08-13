@@ -16,20 +16,23 @@ The location of these files are needed by the script:
 #    CIME5: config/acme/config_grids.xml
 #
 
-import os, sys
+import os
+import sys
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 )
 
+import operator
+import xml.etree.ElementTree as ET
+from shutil import which
+
 from CIME import utils
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd_no_fail
-from shutil import which
-import xml.etree.ElementTree as ET
-import operator
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def parse_command_line(args):

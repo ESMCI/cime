@@ -8,7 +8,8 @@ count are modified on restart.
 (2) Do a restart test with half the number of tasks and threads (suffix rest)
 """
 
-from CIME.XML.standard_module_setup import *
+import logging
+
 from CIME.SystemTests.restart_tests import RestartTest
 
 logger = logging.getLogger(__name__)

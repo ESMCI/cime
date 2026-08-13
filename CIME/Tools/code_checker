@@ -5,14 +5,16 @@ Ensure that all CIME python files are free of errors
 and follow the PEP8 standard.
 """
 
-from standard_script_setup import *
-
-from CIME.code_checker import check_code, expect
-
-import argparse, sys, os
+import argparse
+import os
+import sys
 
 # pylint: disable=import-error
 from shutil import which
+
+from standard_script_setup import *
+
+from CIME.code_checker import check_code, expect
 
 logger = logging.getLogger(__name__)
 

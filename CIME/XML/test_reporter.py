@@ -2,12 +2,15 @@
 Interface to the testreporter xml.  This class inherits from GenericXML.py
 
 """
+
+import os
+import ssl
+
 # pylint: disable=import-error
 import urllib.parse
 import urllib.request
-from CIME.XML.standard_module_setup import *
+
 from CIME.XML.generic_xml import GenericXML
-import ssl
 
 # pylint: disable=protected-access
 ssl._create_default_https_context = ssl._create_unverified_context

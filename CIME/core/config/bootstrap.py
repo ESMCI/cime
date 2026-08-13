@@ -9,11 +9,33 @@ patterns scattered across the codebase into one place.
 **This module is standalone for Slice 1** — existing call-sites are NOT
 modified yet. Migration will happen incrementally in later slices.
 
+Public API summary:
+
+``bootstrap_cime_script()``
+    Full-fidelity drop-in replacement for
+    ``from standard_script_setup import *``.  Performs the dual Python
+    version check, ``sys.path`` / ``CIMEROOT`` setup, and enables
+    unbuffered stdout/stderr.  Use this in entry-point scripts when
+    migrating away from ``standard_script_setup``.
+
+``bootstrap_cime()``
+    Granular primitive: resolves CIMEROOT, prepends it (and CIME/Tools)
+    to ``sys.path``, and optionally sets ``os.environ["CIMEROOT"]``.
+    Intentionally omits the version check and I/O buffering so callers
+    that only need path setup are not forced to accept those side effects.
+
+``check_minimum_python_version()``
+    Standalone version guard; call explicitly when partial behaviour is
+    needed (e.g. inside test harnesses that manage buffering themselves).
+
 Typical usage (future, after wiring)::
 
+    from CIME.core.config.bootstrap import bootstrap_cime_script
+    bootstrap_cime_script()   # full legacy-equivalent entry-point setup
+
+    # or, for scripts that only need path setup:
     from CIME.core.config.bootstrap import bootstrap_cime
-    bootstrap_cime()                     # auto-detect CIMEROOT
-    bootstrap_cime(cimeroot="/explicit") # explicit root
+    bootstrap_cime()
 """
 
 import os
@@ -153,6 +175,56 @@ def get_tools_path(cimeroot: Optional[str] = None) -> str:
     """Return the CIME/Tools directory path."""
     root = cimeroot or find_cimeroot()
     return os.path.join(root, "CIME", "Tools")
+
+
+def bootstrap_cime_script(cimeroot: Optional[str] = None) -> str:
+    """Full-fidelity replacement for ``from standard_script_setup import *``.
+
+    This is the single call that entry-point scripts should make when
+    migrating away from ``standard_script_setup``.  It reproduces all
+    side effects of the legacy star-import in one place:
+
+    1. Enforces Python >= 3.9 (hard error).
+    2. Warns when Python < 3.10 (soft warning to stderr).
+    3. Resolves CIMEROOT, prepends it and ``CIME/Tools`` to ``sys.path``,
+       and sets ``os.environ["CIMEROOT"]`` — identical to
+       ``bootstrap_cime()``.
+    4. Calls ``CIME.utils.stop_buffering_output()`` to enable unbuffered
+       stdout/stderr, matching the behaviour of ``standard_script_setup``
+       which calls this at import time.
+
+    ``stop_buffering_output`` is imported lazily (inside the function body)
+    to avoid a circular-import hazard: this module is intentionally
+    standalone and may be imported before ``CIME.utils`` is reachable.
+    Once ``bootstrap_cime()`` has run, ``CIME.utils`` is importable, so
+    the lazy import is safe.
+
+    Args:
+        cimeroot: Explicit CIMEROOT path. If None, auto-detected.
+
+    Returns:
+        The resolved CIMEROOT path.
+
+    Raises:
+        RuntimeError: If Python < 3.9 or CIMEROOT cannot be determined.
+
+    Example::
+
+        #!/usr/bin/env python3
+        from CIME.core.config.bootstrap import bootstrap_cime_script
+        bootstrap_cime_script()
+
+        import argparse
+        import logging
+        # ... rest of script
+    """
+    check_minimum_python_version(3, 9)
+    check_minimum_python_version(3, 10, warn_only=True)
+    root = bootstrap_cime(cimeroot=cimeroot)
+    from CIME.utils import stop_buffering_output  # noqa: PLC0415 (lazy import)
+
+    stop_buffering_output()
+    return root
 
 
 def check_minimum_python_version(

@@ -4,18 +4,19 @@ It does a run without restarting, then runs the archiver with various last-date 
 The test verifies the archive directory contains the expected files
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
-from CIME.utils import expect
-from CIME.date import get_file_date
-
 import datetime
 import glob
+import logging
 import os
 import random
 import shutil
 
+from CIME.date import get_file_date
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.utils import expect
+
 logger = logging.getLogger(__name__)
+
 
 # datetime objects can't be used anywhere else
 def _date_to_datetime(date_obj):

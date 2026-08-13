@@ -5,6 +5,7 @@ This module contains unit tests of CustomAssertionsTestStatus
 """
 
 import unittest
+
 from CIME import test_status
 from CIME.tests.custom_assertions_test_status import CustomAssertionsTestStatus
 
