@@ -89,16 +89,18 @@ Environment variables to modify the container environment.
 
 The `config_machines.xml` definition as been setup to provided persistance for inputdata, cases, archives and tools. The following paths can be mounted as volumes to provide persistance.
 
-* /storage/inputdata
-* /storage/cases
-* /storage/archives
-* /storage/tools
+* /root/storage/inputdata
+* /root/storage/cases
+* /root/storage/archive
+* /root/storage/tools
+
+Files created in the storage directory are world-readable, allowing real-time access from the host while the container is running.
 
 ```bash
 docker run -it -v {hostpath}:{container_path} cime:latest bash
 
 e.g.
-docker run -it -v ${PWD}/data-cache:/storage/inputdata cime:latest bash
+docker run -it -v ${PWD}/data-cache:/root/storage/inputdata cime:latest bash
 ```
 
 It's also possible to persist the source git repositories.
