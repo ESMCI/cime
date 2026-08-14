@@ -131,7 +131,7 @@ function build_cprnc() {
 # required for grid generation tests
 function download_input_data() {
     local skip_on_error="${DOWNLOAD_SKIP_ON_ERROR:-0}"
-    
+
     mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
@@ -154,13 +154,13 @@ function download_input_data() {
     for file_spec in "${files[@]}"; do
         local dest="${file_spec%%|*}"
         local url="${file_spec##*|}"
-        
+
         # Skip if file already exists
         if [[ -f "$dest" ]]; then
             echo "Already present: $(basename "$dest")"
             continue
         fi
-        
+
         echo "Downloading $(basename "$dest")..."
         if ! wget "${wget_opts[@]}" -O "$dest" "$url"; then
             echo "WARNING: Failed to download $url after retries" >&2
