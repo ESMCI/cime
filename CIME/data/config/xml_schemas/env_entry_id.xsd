@@ -21,6 +21,7 @@
       </xs:choice>
       <xs:attribute ref="id" use="required"/>
       <xs:attribute ref="value" />
+      <xs:attribute ref="lock_on_restart" />
     </xs:complexType>
   </xs:element>
 

@@ -239,6 +239,22 @@ class EntryID(GenericXML):
     def get_nodes_by_id(self, vid):
         return self.scan_children("entry", {"id": vid})
 
+    def is_lock_on_restart(self, vid_or_node):
+        """Check if an entry definition specifies lock_on_restart='true' via attribute or child element."""
+        if isinstance(vid_or_node, str):
+            node = self.scan_optional_child("entry", {"id": vid_or_node})
+        else:
+            node = vid_or_node
+        if node is None:
+            return False
+
+        val = (
+            self.get(node, "lock_on_restart")
+            or self.get_element_text("lock_on_restart", root=node)
+            or ""
+        )
+        return val.lower() == "true"
+
     def _set_valid_values(self, node, new_valid_values):
         old_vv = self._get_valid_values(node)
         if old_vv is None:

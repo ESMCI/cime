@@ -19,6 +19,7 @@
 	<xs:element ref="schema" minOccurs="0"/>
       </xs:choice>
       <xs:attribute ref="id" use="required"/>
+      <xs:attribute ref="lock_on_restart" use="optional"/>
     </xs:complexType>
   </xs:element>
 

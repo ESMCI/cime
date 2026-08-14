@@ -10,7 +10,7 @@ from CIME.utils import run_sub_or_cmd, safe_copy, model_log
 from CIME.utils import batch_jobid, is_comp_standalone
 from CIME.status import append_status, run_and_log_case_status
 from CIME.get_timing import get_timing
-from CIME.locked_files import check_lockedfiles
+from CIME.locked_files import check_lockedfiles, lock_file, is_locked
 
 import shutil, time, sys, os, glob
 
@@ -42,6 +42,10 @@ def _pre_run_check(case, lid, skip_pnl=False, da_cycle=0):
 
     if case.get_value("EXTERNAL_WORKFLOW"):
         skip = "env_batch"
+
+    # Lock env_run.xml initial state prior to first run segment or setup
+    if not is_locked("env_run.xml", caseroot) or not case.get_value("CONTINUE_RUN"):
+        lock_file("env_run.xml", caseroot)
 
     check_lockedfiles(case, skip=skip)
 

@@ -6,6 +6,7 @@ from CIME.XML.env_build import EnvBuild
 from CIME.XML.env_mach_pes import EnvMachPes
 from CIME.XML.env_case import EnvCase
 from CIME.XML.env_batch import EnvBatch
+from CIME.XML.env_run import EnvRun
 from CIME.XML.generic_xml import GenericXML
 
 logger = logging.getLogger(__name__)
@@ -134,6 +135,10 @@ def _get_case_env(case, caseroot, locked_file, env_name):
     elif env_name == "env_batch":
         l_env = case.get_env("batch")
         r_env = EnvBatch(caseroot, str(locked_file), read_only=True)
+    # Handle env_run XML object initialization for locked file comparisons
+    elif env_name == "env_run":
+        l_env = case.get_env("run")
+        r_env = EnvRun(caseroot, str(locked_file), read_only=True)
     else:
         raise NameError(
             "Locked XML file {!r} is not currently being handled".format(
@@ -145,6 +150,17 @@ def _get_case_env(case, caseroot, locked_file, env_name):
 
 
 def check_diff(case, filename, env_name, diff, quiet=False):
+    """Compare current XML case environment settings against locked snapshots in LockedFiles/.
+
+    Handles rebuild triggers, reset requirements, and enforces lock_on_restart constraints.
+
+    Args:
+        case (Case): The active CIME case object.
+        filename (str): Basename of the XML file being checked (e.g. 'env_run.xml').
+        env_name (str): XML environment identifier prefix (e.g. 'env_run').
+        diff (dict[str, tuple[str, str]]): Mapping of modified variable keys to (current_val, locked_val).
+        quiet (bool, optional): If True, logs warning messages instead of raising CIMEError. Defaults to False.
+    """
     logger.warning("Detected diff in locked file {!r}".format(filename))
 
     # Remove BUILD_COMPLETE, invalid entry in diff
@@ -188,6 +204,21 @@ def check_diff(case, filename, env_name, diff, quiet=False):
         clean_targets = "--clean-all"
     elif env_name in ("env_batch", "env_mach_pes"):
         reset = True
+    # Abort if any variable marked lock_on_restart is modified when CONTINUE_RUN is true
+    elif env_name == "env_run" and diff:
+        locked_restart_vars = []
+        l_env = case.get_env("run")
+        for key in diff:
+            if l_env.is_lock_on_restart(key):
+                locked_restart_vars.append(key)
+        if locked_restart_vars and case.get_value("CONTINUE_RUN"):
+            vars_str = ", ".join(f"'{v}'" for v in locked_restart_vars)
+            expect(
+                False,
+                f"Cannot change variable(s) {vars_str} on a continued run (CONTINUE_RUN=TRUE)",
+            )
+        else:
+            return
 
     for component in case.get_values("COMP_CLASSES"):
         triggers = case.get_values(f"REBUILD_TRIGGER_{component}")

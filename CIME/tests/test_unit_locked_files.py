@@ -342,3 +342,61 @@ class TestLockedFiles(unittest.TestCase):
             dst_path = Path(tempdir, locked_files.LOCKED_DIR, "env_case.xml")
 
             assert dst_path.exists()
+
+    def test_check_diff_env_run_lock_on_restart(self):
+        """Verify that modifying a lock_on_restart variable when CONTINUE_RUN=TRUE raises a CIMEError."""
+        case = mock.MagicMock()
+        l_env = mock.MagicMock()
+        l_env.is_lock_on_restart.side_effect = lambda k: k == "CALENDAR"
+        case.get_env.return_value = l_env
+        case.get_value.side_effect = lambda k: True if k == "CONTINUE_RUN" else ()
+
+        diff = {"CALENDAR": ("GREGORIAN", "NO_LEAP")}
+
+        expected_msg = "Cannot change variable\\(s\\) 'CALENDAR' on a continued run \\(CONTINUE_RUN=TRUE\\)"
+        with self.assertRaisesRegex(CIMEError, expected_msg):
+            locked_files.check_diff(case, "env_run.xml", "env_run", diff)
+
+    def test_check_diff_env_run_not_continue_run(self):
+        """Verify that modifying a lock_on_restart variable when CONTINUE_RUN=FALSE does not raise an error."""
+        case = mock.MagicMock()
+        l_env = mock.MagicMock()
+        l_env.is_lock_on_restart.side_effect = lambda k: k == "CALENDAR"
+        case.get_env.return_value = l_env
+        case.get_value.side_effect = lambda k: False if k == "CONTINUE_RUN" else ()
+
+        diff = {"CALENDAR": ("GREGORIAN", "NO_LEAP")}
+        # Should not raise CIMEError
+        locked_files.check_diff(case, "env_run.xml", "env_run", diff)
+
+    def test_check_diff_env_run_unlocked_var_continue_run(self):
+        """Verify that modifying a non-lock_on_restart variable when CONTINUE_RUN=TRUE does not raise an error."""
+        case = mock.MagicMock()
+        l_env = mock.MagicMock()
+        l_env.is_lock_on_restart.side_effect = lambda k: False
+        case.get_env.return_value = l_env
+        case.get_value.side_effect = lambda k: True if k == "CONTINUE_RUN" else ()
+
+        diff = {"STOP_N": ("10", "5")}
+        # Should not raise CIMEError
+        locked_files.check_diff(case, "env_run.xml", "env_run", diff)
+
+    def test_is_lock_on_restart(self):
+        """Verify that EntryID.is_lock_on_restart detects lock_on_restart attributes or tags."""
+        with tempfile.NamedTemporaryFile("w+", suffix=".xml") as tf:
+            tf.write("""<entry_id>
+<entry id="VAR_LOCKED" lock_on_restart="true">
+  <type>char</type>
+</entry>
+<entry id="VAR_UNLOCKED">
+  <type>char</type>
+</entry>
+</entry_id>""")
+            tf.flush()
+            entry_id = EntryID(tf.name)
+            self.assertTrue(entry_id.is_lock_on_restart("VAR_LOCKED"))
+            self.assertFalse(entry_id.is_lock_on_restart("VAR_UNLOCKED"))
+            self.assertFalse(entry_id.is_lock_on_restart("NON_EXISTENT_VAR"))
+
+
+
