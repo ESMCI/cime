@@ -381,6 +381,32 @@ class TestLockedFiles(unittest.TestCase):
         # Should not raise CIMEError
         locked_files.check_diff(case, "env_run.xml", "env_run", diff)
 
+    def test_continue_run_true_with_locked_var_changed(self):
+        """Verify that enabling CONTINUE_RUN=TRUE when a lock_on_restart variable has changed raises CIMEError."""
+        case = mock.MagicMock()
+        l_env = mock.MagicMock()
+        l_env.is_lock_on_restart.side_effect = lambda k: k == "CALENDAR"
+        case.get_env.return_value = l_env
+        case.get_value.side_effect = lambda k: True if k == "CONTINUE_RUN" else ()
+
+        diff = {"CONTINUE_RUN": ("TRUE", "FALSE"), "CALENDAR": ("GREGORIAN", "NO_LEAP")}
+
+        expected_msg = "Cannot change variable\\(s\\) 'CALENDAR' on a continued run \\(CONTINUE_RUN=TRUE\\)"
+        with self.assertRaisesRegex(CIMEError, expected_msg):
+            locked_files.check_diff(case, "env_run.xml", "env_run", diff)
+
+    def test_continue_run_true_with_no_locked_var_changed(self):
+        """Verify that enabling CONTINUE_RUN=TRUE when no lock_on_restart variable has changed passes cleanly."""
+        case = mock.MagicMock()
+        l_env = mock.MagicMock()
+        l_env.is_lock_on_restart.side_effect = lambda k: False
+        case.get_env.return_value = l_env
+        case.get_value.side_effect = lambda k: True if k == "CONTINUE_RUN" else ()
+
+        diff = {"CONTINUE_RUN": ("TRUE", "FALSE"), "STOP_N": ("10", "5")}
+        # Should not raise CIMEError
+        locked_files.check_diff(case, "env_run.xml", "env_run", diff)
+
     def test_is_lock_on_restart(self):
         """Verify that EntryID.is_lock_on_restart detects lock_on_restart attributes or tags."""
         with tempfile.NamedTemporaryFile("w+", suffix=".xml") as tf:
