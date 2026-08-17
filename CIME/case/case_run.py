@@ -343,6 +343,15 @@ def _post_run_check(case, lid):
             )
         elif os.stat(model_logfile).st_size == 0:
             expect(False, "Run FAILED")
+        else:
+            # The existence/size checks above pass even when the model aborts
+            # mid-run, so also require a termination message in the component
+            # log. CAM writes "END OF MODEL RUN" on successful completion.
+            with open(model_logfile, "r") as fd:
+                expect(
+                    any([x in fd.read() for x in TERMINATION_TEXT]),
+                    "Model did not complete - see {} \n ".format(model_logfile),
+                )
     else:
         count_ok = 0
         for cpl_logfile in cpl_logs:
