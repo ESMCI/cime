@@ -24,7 +24,9 @@ def _download_checksum_file(rundir):
     # download and merge all available chksum files.
     while protocol is not None:
         protocol, address, user, passwd, chksum_file, _, _ = inputdata.get_next_server()
-        if protocol not in vars(CIME.Servers):
+        if protocol is None:
+            continue
+        if not CIME.Servers.is_protocol_available(protocol):
             logger.info("Client protocol {} not enabled".format(protocol))
             continue
         logger.info(
@@ -32,6 +34,7 @@ def _download_checksum_file(rundir):
                 protocol, user, passwd
             )
         )
+        server = None
         if protocol == "svn":
             server = CIME.Servers.SVN(address, user, passwd)
         elif protocol == "gftp":
@@ -42,6 +45,7 @@ def _download_checksum_file(rundir):
             server = CIME.Servers.WGET.wget_login(address, user, passwd)
         else:
             expect(False, "Unsupported inputdata protocol: {}".format(protocol))
+
         if not server:
             continue
 
@@ -149,7 +153,7 @@ def _download_if_in_repo(
             os.makedirs(full_path + ".tmp")
         isdirectory = True
     elif not os.path.exists(os.path.dirname(full_path)):
-        os.makedirs(os.path.dirname(full_path))
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     # Use umask to make sure files are group read/writable. As long as parent directories
     # have +s, then everything should work.
@@ -190,7 +194,8 @@ def _check_all_input_data_impl(
     else:
         if chksum:
             chksum_found = _download_checksum_file(self.get_value("RUNDIR"))
-
+        else:
+            chksum_found = False
         clm_usrdat_name = self.get_value("CLM_USRDAT_NAME")
         if clm_usrdat_name and clm_usrdat_name == "UNSET":
             clm_usrdat_name = None
@@ -283,7 +288,7 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
     get_refcase = self.get_value("GET_REFCASE")
     run_type = self.get_value("RUN_TYPE")
     continue_run = self.get_value("CONTINUE_RUN")
-
+    drv_restart_pointer = self.get_value("DRV_RESTART_POINTER")
     # We do not fully populate the inputdata directory on every
     # machine and do not expect every user to download the 3TB+ of
     # data in our inputdata repository. This code checks for the
@@ -335,22 +340,33 @@ def stage_refcase(self, input_data_root=None, data_list_dir=None):
             logger.debug("Creating run directory: {}".format(rundir))
             os.makedirs(rundir)
         rpointerfile = None
+
         # copy the refcases' rpointer files to the run directory
         for rpointerfile in glob.iglob(os.path.join("{}", "*rpointer*").format(refdir)):
             logger.info("Copy rpointer {}".format(rpointerfile))
             safe_copy(rpointerfile, rundir)
-            os.chmod(os.path.join(rundir, os.path.basename(rpointerfile)), 0o644)
+            pfile = os.path.basename(rpointerfile)
+            os.chmod(os.path.join(rundir, pfile), 0o644)
+            if "cpl" in pfile and drv_restart_pointer != pfile:
+                self.set_value("DRV_RESTART_POINTER", pfile)
+
         expect(
             rpointerfile,
             "Reference case directory {} does not contain any rpointer files".format(
                 refdir
             ),
         )
+
         # link everything else
 
         for rcfile in glob.iglob(os.path.join(refdir, "*")):
             rcbaseline = os.path.basename(rcfile)
-            if not os.path.exists("{}/{}".format(rundir, rcbaseline)):
+            skipfiles = (
+                "timing" in rcbaseline
+                or "spio_stats" in rcbaseline
+                or "memory." in rcbaseline
+            )
+            if not os.path.exists("{}/{}".format(rundir, rcbaseline)) and not skipfiles:
                 logger.info("Staging file {}".format(rcfile))
                 os.symlink(rcfile, "{}/{}".format(rundir, rcbaseline))
         # Backward compatibility, some old refcases have cam2 in the name
@@ -398,8 +414,11 @@ def _check_input_data_impl(
         )
 
     no_files_missing = True
+    server = None
     if download:
-        if protocol not in vars(CIME.Servers):
+        if protocol is None:
+            return False
+        if not CIME.Servers.is_protocol_available(protocol):
             logger.info("Client protocol {} not enabled".format(protocol))
             return False
         logger.info(
@@ -477,16 +496,15 @@ def _check_input_data_impl(
                         # rel_path, and so cannot download the file. If it already exists, we can
                         # proceed
                         if not os.path.exists(full_path):
-                            print(
-                                "Model {} missing file {} = '{}'".format(
-                                    model, description, full_path
-                                )
+                            msg = "Model {} missing file {} = '{}'".format(
+                                model, description, full_path
                             )
                             # Data download path must be DIN_LOC_ROOT, DIN_LOC_IC or RUNDIR
 
                             rundir = case.get_value("RUNDIR")
                             if download:
                                 if full_path.startswith(rundir):
+                                    print(msg)
                                     filepath = os.path.dirname(full_path)
                                     if not os.path.exists(filepath):
                                         logger.info(
@@ -503,12 +521,15 @@ def _check_input_data_impl(
                                     )
                                     no_files_missing = success
                                 else:
+                                    # Ensure that msg and warning text are together in TestStatus.log
                                     logger.warning(
-                                        "    Cannot download file since it lives outside of the input_data_root '{}'".format(
+                                        msg
+                                        + "\n    Cannot download file since it lives outside of the input_data_root '{}'".format(
                                             input_data_root
                                         )
                                     )
                             else:
+                                print(msg)
                                 no_files_missing = False
                         else:
                             logger.debug("  Found input file: '{}'".format(full_path))

@@ -9,10 +9,18 @@ def _normalize_string_value(value, case):
     Some of the strings are inherently prone to diffs, like file
     paths, etc. This function attempts to normalize that data so that
     it will not cause diffs.
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.G.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.ACTION.TESTID'
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.GC.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.ACTION.TESTID'
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.C.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.ACTION.TESTID'
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.GG.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.GG.20260410_135953_nhg5ae'
     """
     # Any occurance of case must be normalized because test-ids might not match
     if case is not None:
-        case_re = re.compile(r"{}[.]([GC])[.]([^./\s]+)".format(case))
+        case_re = re.compile(r"{}[.](GC?|C)[.]([^./\s]+)".format(case))
         value = case_re.sub("{}.ACTION.TESTID".format(case), value)
 
     if "/" in value:
@@ -118,7 +126,6 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
 
         norm_gold_value = _normalize_string_value(gold_value, case)
         norm_comp_value = _normalize_string_value(comp_value, case)
-
         if norm_gold_value != norm_comp_value:
             comments += "Inequivalent lines {} != {}\n".format(gold_value, comp_value)
             comments += "  NORMALIZED: {} != {}\n".format(
@@ -177,7 +184,6 @@ def compare_runconfigfiles(gold_file, compare_file, case=None):
     # create dictionary's of the runconfig files and compare them
     gold_dict = _parse_runconfig(gold_file)
     compare_dict = _parse_runconfig(compare_file)
-
     comments = findDiff(gold_dict, compare_dict, case=case)
     comments = comments.replace(" d1", " " + gold_file)
     comments = comments.replace(" d2", " " + compare_file)
@@ -240,6 +246,8 @@ def findDiff(d1, d2, path="", case=None):
                 elif "username" in k:
                     pass
                 elif "logfile" in k:
+                    pass
+                elif "model_version" in k:
                     pass
                 elif d1[k] != d2[k]:
                     comment += path + ":\n"

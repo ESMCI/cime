@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<config_machines version="3.0">
+	<NODENAME_REGEX>
+		<value MACH="docker">docker</value>
+	</NODENAME_REGEX>
+</config_machines>

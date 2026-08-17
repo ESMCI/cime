@@ -8,19 +8,20 @@ import shutil, glob, re, os
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import (
-    run_and_log_case_status,
     ls_sorted_by_mtime,
     symlink_force,
     safe_copy,
     find_files,
+    batch_jobid,
 )
-from CIME.utils import batch_jobid
+from CIME.status import run_and_log_case_status
 from CIME.date import get_file_date
 from CIME.XML.archive import Archive
 from CIME.XML.files import Files
 from os.path import isdir, join
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _get_archive_fn_desc(archive_fn):
@@ -154,7 +155,6 @@ def _get_component_archive_entries(components, archive):
         yield (archive_entry, compname, compclass)
 
 
-###############################################################################
 def _archive_rpointer_files(
     casename,
     ninst_strings,
@@ -166,62 +166,110 @@ def _archive_rpointer_files(
     datename,
     datename_is_last,
 ):
-    ###############################################################################
+    """Archive rpointer files.
 
-    if datename_is_last:
-        # Copy of all rpointer files for latest restart date
-        rpointers = glob.glob(os.path.join(rundir, "rpointer.*"))
-        for rpointer in rpointers:
-            safe_copy(
-                rpointer, os.path.join(archive_restdir, os.path.basename(rpointer))
-            )
-    else:
-        # Generate rpointer file(s) for interim restarts for the one datename and each
-        # possible value of ninst_strings
-        if save_interim_restart_files:
+    For a given restart point, an rpointer file is archived. If the rpointer file
+    for this point exists it will be copied/moved to the archive directory otherwise
+    it will be created using the `rpointer_file` and `rpointer_content` elements.
 
-            # parse env_archive.xml to determine the rpointer files
-            # and contents for the given archive_entry tag
-            rpointer_items = archive.get_rpointer_contents(archive_entry)
+    The following variables can be used in `rpointer_file` and `rpointer_content`
+    and will be substitued with the appropriate values.
 
-            # loop through the possible rpointer files and contents
-            for rpointer_file, rpointer_content in rpointer_items:
-                temp_rpointer_file = rpointer_file
-                temp_rpointer_content = rpointer_content
+    - $CASE: The name of the case.
+    - $DATENAME: The date of the restart file.
+    - $MPAS_DATENAME: The date of the restart file in an MPAS specific format.
+    - $NINST_STRING: The identifier if running multiple instances.
 
-                # put in a temporary setting for ninst_strings if they are empty
-                # in order to have just one loop over ninst_strings below
-                if rpointer_content != "unset":
-                    if not ninst_strings:
-                        ninst_strings = ["empty"]
+    Args:
+        casename (str): Name of the case.
+        ninst_strings (list):  List of ninst identifiers.
+        rundir (str): Path to the run directory.
+        save_interim_restart_files (bool): Whether to save the intermediate restart files.
+        archive (CIME.XML.env_archive.EnvArchive): Environment archive object.
+        archive_entry (CIME.XML.generic_xml.Element): Rpointer XML node.
+        archive_restdir (str): Path to the directory to write rpointer files.
+        datename (CIME.date.date): Date object with the rpointer date.
+        datename_is_last (bool): Whether this rpointer is the latest.
 
-                    for ninst_string in ninst_strings:
-                        rpointer_file = temp_rpointer_file
-                        rpointer_content = temp_rpointer_content
-                        if ninst_string == "empty":
-                            ninst_string = ""
-                        for key, value in [
-                            ("$CASE", casename),
-                            ("$DATENAME", _datetime_str(datename)),
-                            ("$MPAS_DATENAME", _datetime_str_mpas(datename)),
-                            ("$NINST_STRING", ninst_string),
-                        ]:
-                            rpointer_file = rpointer_file.replace(key, value)
-                            rpointer_content = rpointer_content.replace(key, value)
+    Raises:
+        CIMEError: If `rpointer_file` template cannot be resolved.
+    """
+    # parse env_archive.xml to determine the rpointer files
+    # and contents for the given archive_entry tag
+    # loop through the possible rpointer files and contents
+    for rpointer_file, rpointer_content in archive.get_rpointers(archive_entry):
+        if rpointer_file == "unset":
+            continue
 
-                        # write out the respective files with the correct contents
-                        rpointer_file = os.path.join(archive_restdir, rpointer_file)
-                        logger.info("writing rpointer_file {}".format(rpointer_file))
-                        f = open(rpointer_file, "w")
-                        for output in rpointer_content.split(","):
-                            f.write("{} \n".format(output))
-                        f.close()
-                else:
+        replacements = {
+            "$CASE": casename,
+            "$DATENAME": _datetime_str(datename),
+            "$MPAS_DATENAME": _datetime_str_mpas(datename),
+        }
+
+        for key, value in replacements.items():
+            rpointer_file = rpointer_file.replace(key, value)
+            rpointer_content = rpointer_content.replace(key, value)
+
+        rpointer_file_glob = rpointer_file.replace("$NINST_STRING", "*")
+
+        expect(
+            not "$" in rpointer_file_glob,
+            "Unrecognized expression in name {}".format(rpointer_file_glob),
+        )
+        rpointers = glob.glob(rundir + "/" + rpointer_file_glob)
+        if datename_is_last:
+            for rpfile in rpointers:
+                safe_copy(
+                    rpfile, os.path.join(archive_restdir, os.path.basename(rpfile))
+                )
+        elif save_interim_restart_files:
+            # Generate rpointer file(s) for interim restarts for the one datename and each
+            # possible value of ninst_strings
+
+            # If timestamped rpointers exist use them
+            # If only one rpointer file, leave in run directorya and create in archive
+            if rpointers and len(rpointers) > 1:
+                for rpfile in rpointers:
+                    logger.info("moving interim rpointer_file {}".format(rpfile))
+                    shutil.move(
+                        rpfile,
+                        os.path.join(archive_restdir, os.path.basename(rpfile)),
+                    )
+            else:
+                if rpointer_content == "unset":
                     logger.info(
                         "rpointer_content unset, not creating rpointer file {}".format(
                             rpointer_file
                         )
                     )
+
+                    return
+
+                # need to loop atleast once
+                if not ninst_strings:
+                    ninst_strings = [
+                        "",
+                    ]
+
+                for ninst_string in ninst_strings:
+                    ninst_rpointer_file = rpointer_file.replace(
+                        "$NINST_STRING", ninst_string
+                    )
+                    ninst_rpointer_content = rpointer_content.replace(
+                        "$NINST_STRING", ninst_string
+                    )
+
+                    # write out the respective files with the correct contents
+                    ninst_rpointer_path = os.path.join(
+                        archive_restdir, ninst_rpointer_file
+                    )
+
+                    logger.info("writing rpointer_file {}".format(ninst_rpointer_path))
+
+                    with open(ninst_rpointer_path, "w") as f:
+                        for output in ninst_rpointer_content.split(","):
+                            f.write("{} \n".format(output))
 
 
 ###############################################################################
@@ -252,6 +300,11 @@ def _archive_log_files(dout_s_root, rundir, archive_incomplete, archive_file_fn)
             )
         )
         archive_file_fn(srcfile, destfile)
+    # Finally copy the CASEROOT file into the archive directory
+    caseroot = os.path.join(rundir, "CASEROOT")
+    logdir_caseroot = os.path.join(archive_logdir, "CASEROOT")
+    if os.path.exists(caseroot) and not os.path.exists(logdir_caseroot):
+        safe_copy(os.path.join(rundir, "CASEROOT"), archive_logdir)
 
 
 ###############################################################################
@@ -333,7 +386,7 @@ def _archive_history_files(
             if last_date is None or file_date is None or file_date <= last_date:
                 srcfile = join(rundir, histfile)
                 expect(
-                    os.path.isfile(srcfile),
+                    (os.path.isfile(srcfile) or os.path.isdir(srcfile)),
                     "history file {} does not exist ".format(srcfile),
                 )
                 destfile = join(archive_histdir, histfile)
@@ -397,7 +450,8 @@ def get_histfiles_for_restarts(
                         logger.warning(
                             "WARNING, tried to add a duplicate file to histfiles"
                         )
-                    if os.path.isfile(os.path.join(rundir, histfile)):
+                    hfile = os.path.join(rundir, histfile)
+                    if os.path.isfile(hfile) or os.path.isdir(hfile):
                         histfiles.add(histfile)
                     else:
                         logger.debug(
@@ -445,7 +499,7 @@ def _archive_restarts_date(
 
     histfiles_savein_rundir_by_compname = {}
 
-    for (archive_entry, compname, compclass) in _get_component_archive_entries(
+    for archive_entry, compname, compclass in _get_component_archive_entries(
         components, archive
     ):
         if compclass:
@@ -501,9 +555,10 @@ def _archive_restarts_date_comp(
     """
     datename_str = _datetime_str(datename)
 
-    if datename_is_last or case.get_value("DOUT_S_SAVE_INTERIM_RESTART_FILES"):
-        if not os.path.exists(archive_restdir):
-            os.makedirs(archive_restdir)
+    if (
+        datename_is_last or case.get_value("DOUT_S_SAVE_INTERIM_RESTART_FILES")
+    ) and not os.path.isdir(archive_restdir):
+        os.makedirs(archive_restdir)
 
     # archive the rpointer file(s) for this datename and all possible ninst_strings
     _archive_rpointer_files(
@@ -533,10 +588,6 @@ def _archive_restarts_date_comp(
     # the compname is drv but the files are named cpl
     if compname == "drv":
         compname = "cpl"
-    if compname == "cice5":
-        compname = "cice"
-    if compname == "ww3dev":
-        compname = "ww3"
 
     # get file_extension suffixes
     for suffix in archive.get_rest_file_extensions(archive_entry):
@@ -612,7 +663,7 @@ def _archive_restarts_date_comp(
                     srcfile = os.path.join(rundir, histfile)
                     destfile = os.path.join(archive_restdir, histfile)
                     expect(
-                        os.path.isfile(srcfile),
+                        os.path.exists(srcfile) or os.path.islink(srcfile),
                         "history restart file {} for last date does not exist ".format(
                             srcfile
                         ),
@@ -630,7 +681,7 @@ def _archive_restarts_date_comp(
                     srcfile = os.path.join(rundir, rfile)
                     destfile = os.path.join(archive_restdir, rfile)
                     expect(
-                        os.path.isfile(srcfile),
+                        os.path.exists(srcfile) or os.path.islink(srcfile),
                         "restart file {} does not exist ".format(srcfile),
                     )
                     logger.info(
@@ -646,7 +697,7 @@ def _archive_restarts_date_comp(
                         srcfile = os.path.join(rundir, histfile)
                         destfile = os.path.join(archive_restdir, histfile)
                         expect(
-                            os.path.isfile(srcfile),
+                            os.path.exists(srcfile) or os.path.islink(srcfile),
                             "hist file {} does not exist ".format(srcfile),
                         )
                         logger.info("copying {} to {}".format(srcfile, destfile))
@@ -707,9 +758,20 @@ def _archive_restarts_date_comp(
                                                 srcfile
                                             )
                                         )
-                                        if os.path.isfile(srcfile):
+                                        if os.path.isfile(srcfile) or os.path.islink(
+                                            srcfile
+                                        ):
                                             try:
                                                 os.remove(srcfile)
+                                            except OSError:
+                                                logger.warning(
+                                                    "unable to remove interim restart file {}".format(
+                                                        srcfile
+                                                    )
+                                                )
+                                        elif os.path.isdir(srcfile):
+                                            try:
+                                                shutil.rmtree(srcfile)
                                             except OSError:
                                                 logger.warning(
                                                     "unable to remove interim restart file {}".format(
@@ -774,9 +836,20 @@ def _archive_restarts_date_comp(
                                                 srcfile
                                             )
                                         )
-                                        if os.path.isfile(srcfile):
+                                        if os.path.isfile(srcfile) or os.path.islink(
+                                            srcfile
+                                        ):
                                             try:
                                                 os.remove(srcfile)
+                                            except OSError:
+                                                logger.warning(
+                                                    "unable to remove interim restart file {}".format(
+                                                        srcfile
+                                                    )
+                                                )
+                                        elif os.path.isdir(srcfile):
+                                            try:
+                                                shutil.rmtree(srcfile)
                                             except OSError:
                                                 logger.warning(
                                                     "unable to remove interim restart file {}".format(
@@ -797,9 +870,18 @@ def _archive_restarts_date_comp(
                     else:
                         srcfile = os.path.join(rundir, rfile)
                         logger.info("removing interim restart file {}".format(srcfile))
-                        if os.path.isfile(srcfile):
+                        if os.path.isfile(srcfile) or os.path.islink(srcfile):
                             try:
                                 os.remove(srcfile)
+                            except OSError:
+                                logger.warning(
+                                    "unable to remove interim restart file {}".format(
+                                        srcfile
+                                    )
+                                )
+                        elif os.path.isdir(srcfile):
+                            try:
+                                shutil.rmtree(srcfile)
                             except OSError:
                                 logger.warning(
                                     "unable to remove interim restart file {}".format(
@@ -883,7 +965,7 @@ def _archive_process(
 
     # archive history files
 
-    for (_, compname, compclass) in _get_component_archive_entries(components, archive):
+    for _, compname, compclass in _get_component_archive_entries(components, archive):
         if compclass:
             logger.info(
                 "Archiving history files for {} ({})".format(compname, compclass)
@@ -1054,6 +1136,7 @@ def case_st_archive(
         custom_success_msg_functor=msg_func,
         caseroot=caseroot,
         is_batch=is_batch,
+        gitinterface=self._gitinterface,
     )
 
     logger.info("st_archive completed")
@@ -1119,7 +1202,9 @@ def test_st_archive(self, testdir="st_archive_test"):
                 )
                 with open(fname, "w") as fd:
                     fd.write(disposition + "\n")
-
+    caseroot = self.get_value("CASEROOT")
+    with open(os.path.join(testdir, "CASEROOT"), "w") as f:
+        f.write(caseroot)
     logger.info("testing components: {} ".format(list(set(components))))
     _archive_process(
         self,
@@ -1269,6 +1354,8 @@ def _check_disposition(testdir):
     copyfilelist = []
     for root, _, files in os.walk(testdir):
         for _file in files:
+            if "CASEROOT" in _file:
+                continue
             with open(os.path.join(root, _file), "r") as fd:
                 disposition = fd.readline()
             logger.info(

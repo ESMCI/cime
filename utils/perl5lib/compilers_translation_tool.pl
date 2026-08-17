@@ -1,4 +1,10 @@
 #!/usr/bin/env perl
+# NOTE: This is a one-time migration tool to convert old-style config_compilers.xml
+# files to the new config_build.xml format. It is NOT called during normal E3SM
+# builds or case creation. It requires XML::LibXML (a non-standard CPAN module)
+# due to its use of DOM mutation methods (insertAfter, removeChild, setAttribute)
+# that are not available in the vendored XML::Lite. This script need not be run
+# on Perlmutter or any production system.
 
 use strict;
 use warnings;

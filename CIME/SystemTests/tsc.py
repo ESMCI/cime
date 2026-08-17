@@ -11,10 +11,11 @@ import os
 import json
 import logging
 
-from distutils import dir_util
+from shutil import copytree
 
 import CIME.test_status
 import CIME.utils
+from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.hist_utils import rename_all_hist_files
@@ -32,7 +33,9 @@ NINST = 12
 SIM_LENGTH = 600  # seconds
 OUT_FREQ = 10  # seconds
 INSPECT_AT = [300, 450, 600]  # seconds
-INIT_COND_FILE_TEMPLATE = "20210915.v2.ne4_oQU240.F2010.{}.{}.0002-{:02d}-01-00000.nc"
+INIT_COND_FILE_TEMPLATE = (
+    "20240305.v3p0p0.F2010.ne4pg2_oQU480.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+)
 VAR_LIST = [
     "T",
     "Q",
@@ -100,8 +103,8 @@ class TSC(SystemTestsCommon):
         self._case.set_value("STOP_OPTION", "nsteps")
 
         csmdata_root = self._case.get_value("DIN_LOC_ROOT")
-        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4_v2_init")
-        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4_oQU240_v2_init")
+        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4pg2_v3_init")
+        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4pg2_v3_init")
 
         nstep_output = OUT_FREQ // dtime
         for iinst in range(1, NINST + 1):
@@ -211,10 +214,9 @@ class TSC(SystemTestsCommon):
             urlroot = CIME.utils.get_urlroot(mach_obj)
             if htmlroot is not None:
                 with CIME.utils.SharedArea():
-                    dir_util.copy_tree(
+                    copytree(
                         evv_out_dir,
                         os.path.join(htmlroot, "evv", case_name),
-                        preserve_mode=False,
                     )
                 if urlroot is None:
                     urlroot = "[{}_URL]".format(mach_name.capitalize())
@@ -223,7 +225,7 @@ class TSC(SystemTestsCommon):
                 viewing = (
                     "{}\n"
                     "    EVV viewing instructions can be found at: "
-                    "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/"
+                    "        https://github.com/ESMCI/CIME/blob/master/scripts/"
                     "climate_reproducibility/README.md#test-passfail-and-extended-output"
                     "".format(evv_out_dir)
                 )
@@ -241,7 +243,7 @@ class TSC(SystemTestsCommon):
                 )
             )
 
-            CIME.utils.append_testlog(comments, self._orig_caseroot)
+            append_testlog(comments, self._orig_caseroot)
 
     def _generate_baseline(self):
         super(TSC, self)._generate_baseline()

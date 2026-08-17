@@ -47,6 +47,7 @@ import re
 
 logger = logging.getLogger(__name__)
 
+
 ###############################################################################
 def parse_command_line(args, description):
     ###############################################################################
@@ -70,7 +71,7 @@ def parse_command_line(args, description):
 
     parser.add_argument(
         "--format",
-        default="%4C: %6T/%6H; %6R %6P",
+        default="%4C: %6T/%6H; %6R %6P %6X",
         help="Format the PE layout items for each component (see below)",
     )
 
@@ -116,26 +117,39 @@ def get_value_as_string(case, var, attribute=None, resolved=False, subgroup=None
 
 
 ###############################################################################
-def format_pelayout(comp, ntasks, nthreads, rootpe, pstride, arg_format):
+def format_pelayout(comp, ntasks, nthreads, rootpe, pstride, xstride, arg_format):
     ###############################################################################
     """
     Format the PE layout information for each component, using a default format,
     or using the arg_format input, if it exists.
     """
-    subs = {"C": comp, "T": ntasks, "H": nthreads, "R": rootpe, "P": pstride}
+    subs = {
+        "C": comp,
+        "T": ntasks,
+        "H": nthreads,
+        "R": rootpe,
+        "P": pstride,
+        "X": xstride,
+    }
     layout_str = re.sub(r"%([0-9]*)C", r"{C:\1}", arg_format)
     layout_str = re.sub(r"%([-+0-9]*)T", r"{T:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)H", r"{H:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)R", r"{R:\1}", layout_str)
     layout_str = re.sub(r"%([-+0-9]*)P", r"{P:\1}", layout_str)
+    if xstride:
+        layout_str = re.sub(r"%([-+0-9]*)X", r"{X:\1}", layout_str)
+    else:
+        layout_str = re.sub(r"%([-+0-9]*)X", r"", layout_str)
+
     layout_str = layout_str.format(**subs)
     return layout_str
 
 
 # End def format_pelayout
 
+
 ###############################################################################
-def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, arg_format, header):
+def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, xstrid, arg_format, header):
     ###############################################################################
     """
     Print the PE layout information for each component, using the format,
@@ -144,6 +158,8 @@ def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, arg_format, header):
     comp_classes = case.get_values("COMP_CLASSES")
 
     if header is not None:
+        if any(v is not None for v in xstrid.values()):
+            header += " XSTRIDE"
         print(header)
     # End if
     maxthrds = -1
@@ -155,6 +171,7 @@ def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, arg_format, header):
                 nthreads[comp],
                 rootpes[comp],
                 pstrid[comp],
+                xstrid[comp],
                 arg_format,
             )
         )
@@ -175,6 +192,7 @@ def print_pelayout(case, ntasks, nthreads, rootpes, pstrid, arg_format, header):
 
 # End def print_pelayout
 
+
 ###############################################################################
 def gather_pelayout(case):
     ###############################################################################
@@ -185,6 +203,7 @@ def gather_pelayout(case):
     nthreads = {}
     rootpes = {}
     pstride = {}
+    xstride = {}
     comp_classes = case.get_values("COMP_CLASSES")
 
     for comp in comp_classes:
@@ -192,11 +211,18 @@ def gather_pelayout(case):
         nthreads[comp] = int(case.get_value("NTHRDS_" + comp))
         rootpes[comp] = int(case.get_value("ROOTPE_" + comp))
         pstride[comp] = int(case.get_value("PSTRID_" + comp))
+        excl_stride = case.get_value("EXCL_STRIDE_" + comp)
+        if excl_stride:
+            xstride[comp] = int(case.get_value("EXCL_STRIDE_" + comp))
+        else:
+            xstride[comp] = None
+
     # End for
-    return ntasks, nthreads, rootpes, pstride
+    return ntasks, nthreads, rootpes, pstride, xstride
 
 
 # End def gather_pelayout
+
 
 ###############################################################################
 def set_nthreads(case, nthreads):
@@ -209,6 +235,7 @@ def set_nthreads(case, nthreads):
 
 
 # End def set_nthreads
+
 
 ###############################################################################
 def modify_ntasks(case, new_tot_tasks):
@@ -258,6 +285,7 @@ def modify_ntasks(case, new_tot_tasks):
 
 # End def modify_ntasks
 
+
 ###############################################################################
 def _main_func(description):
     ###############################################################################
@@ -274,8 +302,10 @@ def _main_func(description):
         if set_ntasks is not None:
             modify_ntasks(case, int(set_ntasks))
         # End if
-        ntasks, nthreads, rootpes, pstrid = gather_pelayout(case)
-        print_pelayout(case, ntasks, nthreads, rootpes, pstrid, arg_format, header)
+        ntasks, nthreads, rootpes, pstrid, xstrid = gather_pelayout(case)
+        print_pelayout(
+            case, ntasks, nthreads, rootpes, pstrid, xstrid, arg_format, header
+        )
     # End with
 
 

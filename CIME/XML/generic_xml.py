@@ -36,6 +36,24 @@ class _Element(
     def __deepcopy__(self, _):
         return _Element(deepcopy(self.xml_element))
 
+    def __str__(self):
+        return str(self.xml_element)
+
+    def __repr__(self):
+        return repr(self.xml_element)
+
+    @property
+    def name(self):
+        return self.xml_element.tag
+
+    @property
+    def text(self):
+        return self.xml_element.text
+
+    @property
+    def attrib(self):
+        return dict(self.xml_element.attrib)
+
 
 class GenericXML(object):
 
@@ -98,8 +116,7 @@ class GenericXML(object):
                     root=root,
                     attributes={"id": os.path.basename(infile), "version": "2.0"},
                 )
-
-            self.tree = ET.ElementTree(root)
+            self.tree = ET.ElementTree(root.xml_element)
 
             self._FILEMAP[infile] = self.CacheEntry(self.tree, self.root, 0.0)
 
@@ -612,7 +629,9 @@ class GenericXML(object):
 
         return value if valnodes else None
 
-    def get_resolved_value(self, raw_value, allow_unresolved_envvars=False):
+    def get_resolved_value(
+        self, raw_value, allow_unresolved_envvars=False, subgroup=None
+    ):
         """
         A value in the xml file may contain references to other xml
         variables or to environment variables. These are refered to in
@@ -631,7 +650,7 @@ class GenericXML(object):
         True
         """
         logger.debug("raw_value {}".format(raw_value))
-        reference_re = re.compile(r"\${?(\w+)}?")
+        reference_re = re.compile(r"\${?(?:(.*)::)?(\w+)}?")
         env_ref_re = re.compile(r"\$ENV\{(\w+)\}")
         shell_ref_re = re.compile(r"\$SHELL\{([^}]+)\}")
         math_re = re.compile(r"\s[+-/*]\s")
@@ -658,11 +677,17 @@ class GenericXML(object):
             item_data = item_data.replace(s.group(), run_cmd_no_fail(shell_cmd))
 
         for m in reference_re.finditer(item_data):
-            var = m.groups()[0]
-            logger.debug("find: {}".format(var))
+            _subgroup, var = m.groups()
+
+            logger.debug("find: {} in group {}".format(var, _subgroup))
+
+            if _subgroup is None:
+                _subgroup = subgroup
+
             # The overridden versions of this method do not simply return None
             # so the pylint should not be flagging this
-            ref = self.get_value(var)  # pylint: disable=assignment-from-none
+            # pylint: disable=assignment-from-none
+            ref = self.get_value(var, subgroup=_subgroup)
 
             if ref is not None:
                 logger.debug("resolve: " + str(ref))

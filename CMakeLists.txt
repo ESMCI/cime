@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.14)
 include(ExternalProject)
 set(CIME_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -35,15 +35,6 @@ else()
   add_subdirectory(${SRC_ROOT}/share/util csm_share)
   add_subdirectory(${SRC_ROOT}/share/unit_test_stubs/util csm_share_stubs)
   include_directories(${SRC_ROOT}/share/include)
-endif()
-
-# esmf_wrf_timemgr not built here because it depends on csm_share.
-if (EXISTS ${SRC_ROOT}/share/src/esmf_wrf_timemgr)
-  add_subdirectory(${SRC_ROOT}/share/src/esmf_wrf_timemgr esmf_wrf_timemgr)
-  include_directories(${SRC_ROOT}/share/src/esmf_wrf_timemgr)
-else()
-  add_subdirectory(${SRC_ROOT}/share/esmf_wrf_timemgr esmf_wrf_timemgr)
-  include_directories(${SRC_ROOT}/share/esmf_wrf_timemgr)
 endif()
 
 # Now the actual test directories.

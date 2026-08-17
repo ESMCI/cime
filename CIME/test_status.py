@@ -7,6 +7,8 @@ TestStatus objects are only modifiable via the set_status method and this
 is only allowed if the object is being accessed within the context of a
 context manager. Example:
 
+.. code-block:: python
+
     with TestStatus(test_dir=caseroot) as ts:
         ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
@@ -16,17 +18,15 @@ required (core phases).
 
 Additional important design decisions:
 1) In order to ensure that incomplete tests are always left in a PEND
-   state, updating a core phase to a PASS state will automatically set the next
-   core state to PEND.
+state, updating a core phase to a PASS state will automatically set the next
+core state to PEND.
 2) If the user repeats a core state, that invalidates all subsequent state. For
-   example, if a user rebuilds their case, then any of the post-run states like the
-   RUN state are no longer valid.
+example, if a user rebuilds their case, then any of the post-run states like the
+RUN state are no longer valid.
+
 """
 
 from CIME.XML.standard_module_setup import *
-
-from collections import OrderedDict
-
 import os, itertools
 from CIME import expected_fails
 
@@ -113,6 +113,7 @@ def _test_helper2(
     check_throughput=False,
     check_memory=False,
     ignore_namelists=False,
+    ignore_diffs=False,
     no_run=False,
     no_perm=False,
 ):
@@ -127,6 +128,7 @@ def _test_helper2(
             check_throughput=check_throughput,
             check_memory=check_memory,
             ignore_namelists=ignore_namelists,
+            ignore_diffs=ignore_diffs,
             no_run=no_run,
         )
         if rv is not None and the_status != rv:
@@ -149,7 +151,7 @@ class TestStatus(object):
         """
         test_dir = os.getcwd() if test_dir is None else test_dir
         self._filename = os.path.join(test_dir, TEST_STATUS_FILENAME)
-        self._phase_statuses = OrderedDict()  # {name -> (status, comments)}
+        self._phase_statuses = {}  # {name -> (status, comments)}
         self._test_name = test_name
         self._ok_to_modify = False
         self._no_io = no_io
@@ -200,8 +202,7 @@ class TestStatus(object):
         ...     ts.set_status("{}_base_rest".format(COMPARE_PHASE), "FAIL")
         ...     ts.set_status(SHAREDLIB_BUILD_PHASE, "PASS", comments='Time=42')
         >>> ts._phase_statuses
-        OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('PASS', '')), ('SHAREDLIB_BUILD', ('PASS', 'Time=42')), ('COMPARE_base_rest', ('FAIL', '')), ('MODEL_BUILD', ('PEND', ''))])
-
+        {'CREATE_NEWCASE': ('PASS', ''), 'XML': ('PASS', ''), 'SETUP': ('PASS', ''), 'SHAREDLIB_BUILD': ('PASS', 'Time=42'), 'COMPARE_base_rest': ('FAIL', ''), 'MODEL_BUILD': ('PEND', '')}
         >>> with TestStatus(test_dir="/", test_name="ERS.foo.A", no_io=True) as ts:
         ...     ts.set_status(CREATE_NEWCASE_PHASE, "PASS")
         ...     ts.set_status(XML_PHASE, "PASS")
@@ -212,12 +213,11 @@ class TestStatus(object):
         ...     ts.set_status(SHAREDLIB_BUILD_PHASE, "PASS", comments='Time=42')
         ...     ts.set_status(SETUP_PHASE, "PASS")
         >>> ts._phase_statuses
-        OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('PASS', '')), ('SHAREDLIB_BUILD', ('PEND', ''))])
-
+        {'CREATE_NEWCASE': ('PASS', ''), 'XML': ('PASS', ''), 'SETUP': ('PASS', ''), 'SHAREDLIB_BUILD': ('PEND', '')}
         >>> with TestStatus(test_dir="/", test_name="ERS.foo.A", no_io=True) as ts:
         ...     ts.set_status(CREATE_NEWCASE_PHASE, "FAIL")
         >>> ts._phase_statuses
-        OrderedDict([('CREATE_NEWCASE', ('FAIL', ''))])
+        {'CREATE_NEWCASE': ('FAIL', '')}
         """
         expect(
             self._ok_to_modify,
@@ -272,7 +272,7 @@ class TestStatus(object):
         return self._phase_statuses[phase][0] if phase in self._phase_statuses else None
 
     def get_comment(self, phase):
-        return self._phase_statuses[phase][1] if phase in self._phase_statuses else None
+        return self._phase_statuses[phase][1] if phase in self._phase_statuses else ""
 
     def current_is(self, phase, status):
         try:
@@ -292,9 +292,9 @@ class TestStatus(object):
         Args:
             prefix: string printed at the start of each line
             skip_passes: if True, do not output lines that have a PASS status
-            skip_phase_list: list of phases (from the phases given by
-                ALL_PHASES) for which we skip output
+            skip_phase_list: list of phases (from the phases given by ALL_PHASES) for which we skip output
             xfails: object of type ExpectedFails, giving expected failures for this test
+
         """
         if skip_phase_list is None:
             skip_phase_list = []
@@ -353,7 +353,7 @@ class TestStatus(object):
         ... PASS ERS.foo.A SHAREDLIB_BUILD Time=42
         ... '''
         >>> _test_helper1(contents)
-        OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('FAIL', '')), ('COMPARE_base_rest', ('PASS', '')), ('SHAREDLIB_BUILD', ('PASS', 'Time=42'))])
+        {'CREATE_NEWCASE': ('PASS', ''), 'XML': ('PASS', ''), 'SETUP': ('FAIL', ''), 'COMPARE_base_rest': ('PASS', ''), 'SHAREDLIB_BUILD': ('PASS', 'Time=42')}
         """
         for line in file_contents.splitlines():
             line = line.strip()
@@ -410,6 +410,7 @@ class TestStatus(object):
         check_throughput=False,
         check_memory=False,
         ignore_namelists=False,
+        ignore_diffs=False,
         ignore_memleak=False,
         no_run=False,
     ):
@@ -452,6 +453,7 @@ class TestStatus(object):
                     (not check_throughput and phase == THROUGHPUT_PHASE)
                     or (not check_memory and phase == MEMCOMP_PHASE)
                     or (ignore_namelists and phase == NAMELIST_PHASE)
+                    or (ignore_diffs and phase == BASELINE_PHASE)
                     or (ignore_memleak and phase == MEMLEAK_PHASE)
                 ):
                     continue
@@ -463,7 +465,14 @@ class TestStatus(object):
                 elif phase in [BASELINE_PHASE, THROUGHPUT_PHASE, MEMCOMP_PHASE]:
                     if rv in [NAMELIST_FAIL_STATUS, TEST_PASS_STATUS]:
                         phase_responsible_for_status = phase
-                        rv = TEST_DIFF_STATUS
+                        # need to further inspect message to determine
+                        # phase status. BFAILs need to be a DIFF
+                        if "DIFF" in data[1] or TEST_NO_BASELINES_COMMENT in data[1]:
+                            rv = TEST_DIFF_STATUS
+                        elif "ERROR" in data[1]:
+                            rv = TEST_FAIL_STATUS
+                        else:
+                            rv = TEST_DIFF_STATUS
                     else:
                         pass  # a DIFF does not trump a FAIL
 
@@ -493,6 +502,7 @@ class TestStatus(object):
         check_throughput=False,
         check_memory=False,
         ignore_namelists=False,
+        ignore_diffs=False,
         ignore_memleak=False,
         no_run=False,
     ):
@@ -527,6 +537,10 @@ class TestStatus(object):
         ('FAIL', 'COMPARE_2')
         >>> _test_helper2('FAIL ERS.foo.A BASELINE\nFAIL ERS.foo.A NLCOMP\nPASS ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN')
         ('DIFF', 'BASELINE')
+        >>> _test_helper2('FAIL ERS.foo.A BASELINE\nPASS ERS.foo.A NLCOMP\nPASS ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN', ignore_diffs=True)
+        ('PASS', 'RUN')
+        >>> _test_helper2('FAIL ERS.foo.A BASELINE\nFAIL ERS.foo.A NLCOMP\nPASS ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN', ignore_diffs=True)
+        ('NLFAIL', 'RUN')
         >>> _test_helper2('FAIL ERS.foo.A BASELINE\nFAIL ERS.foo.A NLCOMP\nFAIL ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN')
         ('FAIL', 'COMPARE_2')
         >>> _test_helper2('PEND ERS.foo.A COMPARE_2\nFAIL ERS.foo.A RUN')
@@ -585,6 +599,7 @@ class TestStatus(object):
             check_throughput=check_throughput,
             check_memory=check_memory,
             ignore_namelists=ignore_namelists,
+            ignore_diffs=ignore_diffs,
             ignore_memleak=ignore_memleak,
             no_run=no_run,
         )
@@ -602,6 +617,7 @@ class TestStatus(object):
                 check_throughput=check_throughput,
                 check_memory=check_memory,
                 ignore_namelists=ignore_namelists,
+                ignore_diffs=ignore_diffs,
                 ignore_memleak=ignore_memleak,
                 no_run=no_run,
             )

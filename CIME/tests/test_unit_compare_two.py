@@ -124,6 +124,8 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
             multisubmit=multisubmit,
         )
 
+        self._setup_cases_if_not_yet_done()
+
         # Need to tell test status that all phases prior to the run phase have
         # passed, since this is checked in the run call (at least for the build
         # phase status)

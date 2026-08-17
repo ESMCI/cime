@@ -1,145 +1,67 @@
-ARG MAMBAFORGE_VERSION=4.14.0-0
-FROM condaforge/mambaforge:${MAMBAFORGE_VERSION} AS base
+FROM ghcr.io/spack/ubuntu-noble:1.0.4 AS spack
 
-ARG PNETCDF_VERSION=1.12.3
-ENV PNETCDF_VERSION=${PNETCDF_VERSION}
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    libopenblas-openmp-dev \
+    libopenblas0-openmp \
+    libxml-libxml-perl \
+    libxml2-utils \
+    openmpi-bin \
+    libopenmpi-dev \
+    perl \
+    pkg-config \
+    python3-dev \
+    subversion \
+    wget \
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p /opt/spack-envs
 
-ARG LIBNETCDF_VERSION=4.9.1
-ENV LIBNETCDF_VERSION=${LIBNETCDF_VERSION}
+COPY docker/spack.yaml /opt/spack-envs/spack.yaml
 
-ARG NETCDF_FORTRAN_VERSION=*
-ENV NETCDF_FORTRAN_VERSION=${NETCDF_FORTRAN_VERSION}
+RUN spack compiler find \
+  && spack external find --not-buildable \
+  && spack external find --not-buildable openmpi \
+  && spack -e /opt/spack-envs install --fail-fast
 
-ARG ESMF_VERSION=*
-ENV ESMF_VERSION=${ESMF_VERSION}
+ENV PATH=/opt/spack-envs/view/bin:$PATH
+ENV PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
+ENV LD_LIBRARY_PATH=/opt/spack-envs/view/lib
+ENV ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
 
-ARG GCC_VERSION=10.*
-ENV GCC_VERSION=${GCC_VERSION}
+FROM spack AS cprnc
 
-ENV USER=root
-ENV LOGNAME=root
+COPY CIME/non_py/cprnc /src/cprnc
+COPY docker/entrypoint.sh /entrypoint.sh
 
-SHELL ["/bin/bash", "-c"]
+RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
+  && CPRNC_DIR=/src/cprnc build_cprnc
 
-# First layer as they never change, required for E3SM testing, TODO: fix in unittesting as well
-RUN mkdir -p /cache/cpl/gridmaps/oQU240 /cache/share/domains && \
-    wget -O /cache/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc && \
-    wget -O /cache/share/domains/domain.ocn.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc && \
-    wget -O /cache/share/domains/domain.lnd.ne4np4_oQU240.160614.nc https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
+FROM spack AS main
 
-# Install common packages
-RUN mamba install --yes -c conda-forge \
-            cmake \
-            make \
-            wget \
-            curl \
-            subversion \
-            m4 \
-            pytest \
-            pytest-cov\
-            pyyaml \
-            vim \
-            rsync \
-            openssh && \
-            rm -rf /opt/conda/pkgs/*
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    vim \
+    neovim \
+  && rm -rf /var/lib/apt/lists/*
 
-# Install version locked packages
-# gcc, gxx, gfortran provide symlinks for x86_64-conda-linux-gnu-*
-# ar and ranlib are not symlinked
-RUN mamba install --yes -c conda-forge \
-            lapack \
-            blas \
-            libnetcdf=${LIBNETCDF_VERSION}=*openmpi* \
-            netcdf-fortran=${NETCDF_FORTRAN_VERSION}=*openmpi* \
-            esmf=${ESMF_VERSION}=*openmpi* \
-            gcc_linux-64=${GCC_VERSION} \
-            gxx_linux-64=${GCC_VERSION} \
-            openmpi-mpifort \
-            gfortran_linux-64=${GCC_VERSION} \
-            gcc \
-            gxx \
-            gfortran && \
-            rm -rf /opt/conda/pkgs/* && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ar /opt/conda/bin/ar && \
-            ln -sf /opt/conda/bin/x86_64-conda-linux-gnu-ranlib /opt/conda/bin/ranlib
+COPY test-requirements.txt /requirements.txt
 
-# Install cpan packages
-RUN cpan install XML::LibXML Switch
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
+  && source ~/.local/bin/env \
+  && uv python install 3.10 \
+  && uv venv \
+  && source .venv/bin/activate \
+  && uv pip install -r /requirements.txt
 
-# Build pnetcdf
-RUN curl -L -k -o "${PWD}/pnetcdf.tar.gz" \
-            https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz && \
-            mkdir "${PWD}/pnetcdf" && \
-            tar -xvf "${PWD}/pnetcdf.tar.gz" -C "${PWD}/pnetcdf" --strip-components=1 && \
-            rm -rf "${PWD}/pnetcdf.tar.gz" && \
-            cd "${PWD}/pnetcdf" && \
-            source /opt/conda/etc/profile.d/conda.sh && \
-            conda activate base && \
-            ./configure --prefix /opt/conda --disable-cxx --enable-shared \
-            MPICC=/opt/conda/bin/mpicc \
-            MPICXX=/opt/conda/bin/mpicxx \
-            MPIF77=/opt/conda/bin/mpif77 \
-            MPIF90=/opt/conda/bin/mpif90 && \
-            make -j4 && \
-            make install && \
-            rm -rf "${PWD}/pnetcdf"
+COPY docker/entrypoint.sh /entrypoint.sh
 
-RUN mkdir /root/.cime
+RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
+  && mkdir -p /root/storage/{tools,inputdata,cases,timings,archive,baselines} \
+  && download_input_data
 
-COPY config_machines.xml /root/.cime/
-COPY docker.cmake /root/.cime/
-COPY entrypoint.sh /entrypoint.sh
+COPY --from=cprnc /root/storage/tools/cprnc /root/storage/tools/cprnc
+COPY docker/.cime /root/.cime
 
-ENTRYPOINT [ "/entrypoint.sh" ]
-
-FROM base as slurm
-
-RUN apt-get update && \
-            DEBIAN_FRONTEND=noninteractive \
-            apt-get install -y --no-install-recommends \
-            munge slurmd slurm-client slurmctld && \
-            rm -rf /var/lib/apt/lists/* && \
-            sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1slurm\2/g" ~/.cime/config_machines.xml
-
-COPY slurm/slurm.conf /etc/slurm-llnl/
-COPY slurm/config_batch.xml /root/.cime/
-COPY slurm/entrypoint_batch.sh /entrypoint_batch.sh
-
-FROM base as pbs
-
-RUN apt-get update && \
-            DEBIAN_FRONTEND=noninteractive \
-            apt-get install -y --no-install-recommends \
-            curl ca-certificates software-properties-common \
-            gcc make libtool libhwloc-dev libx11-dev libxt-dev libedit-dev \
-            libical-dev ncurses-dev perl python-dev tcl-dev tk-dev swig libexpat-dev libssl-dev \
-            libxext-dev libxft-dev autoconf automake \
-            postgresql-12 postgresql-server-dev-all postgresql-contrib \
-            expat libedit2 python3 sendmail-bin sudo tcl tk && \
-            add-apt-repository ppa:deadsnakes/ppa && \
-            apt-get update && \
-            DEBIAN_FRONTEND=noninteractive \
-            apt-get install -y python3.7 python3.7-dev && \
-            rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /src && pushd /src && \
-            curl -LO https://github.com/openpbs/openpbs/archive/refs/tags/v20.0.1.tar.gz && \
-            tar -xvf v20.0.1.tar.gz  && \
-            cd openpbs-20.0.1 && \
-            sed -i"" 's/\(#include "list_link.h"\)/\1\n#include <stddef.h>/' /src/openpbs-20.0.1/src/lib/Libifl/list_link.c && \
-            export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin && \
-            ./autogen.sh && \
-            PYTHON=/usr/bin/python3.7 \
-            CFLAGS="`/usr/bin/python3.7m-config --cflags`" \
-            LDFLAGS="`/usr/bin/python3.7m-config --ldflags`" \
-            LIBS="-lpthread -lm -lpython3.7m" \
-            ./configure --prefix=/opt/pbs && \
-            make -j8 && \
-            make install && \
-            popd && \
-            rm -rf /src && \
-            sed -i"" "s/\(.*<BATCH_SYSTEM>\)[^<]*\(<\/BATCH_SYSTEM>\)/\1pbs\2/g" ~/.cime/config_machines.xml
-
-COPY pbs/pbs.conf /etc/
-COPY pbs/config_batch.xml /root/.cime/
-COPY pbs/entrypoint_batch.sh /entrypoint_batch.sh
+ENTRYPOINT ["/entrypoint.sh"]

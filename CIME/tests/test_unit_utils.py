@@ -8,9 +8,9 @@ import tempfile
 
 import unittest
 from unittest import mock
+from CIME.status import run_and_log_case_status
 from CIME.utils import (
     indent_string,
-    run_and_log_case_status,
     import_from_file,
     _line_defines_python_function,
     file_contains_python_function,

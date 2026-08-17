@@ -1,6 +1,5 @@
 """
 Abstract class for restart tests
-
 """
 
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
@@ -34,6 +33,7 @@ class RestartTest(SystemTestsCompareTwo):
     def _case_one_setup(self):
         stop_n = self._case1.get_value("STOP_N")
         expect(stop_n >= 3, "STOP_N must be at least 3, STOP_N = {}".format(stop_n))
+        self._set_restart_interval()
 
     def _case_two_setup(self):
         rest_n = self._case1.get_value("REST_N")
@@ -50,3 +50,9 @@ class RestartTest(SystemTestsCompareTwo):
         self._case.set_value("STOP_N", stop_new)
         self._case.set_value("CONTINUE_RUN", True)
         self._case.set_value("REST_OPTION", "never")
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst is not None and ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
+        self._set_drv_restart_pointer(drvrest)

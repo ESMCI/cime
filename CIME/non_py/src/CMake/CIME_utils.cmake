@@ -1,12 +1,17 @@
-# Module used for CIME testing.
+# Module used for CIME testing and related CMake-based builds.
 #
-# This module contains statements that would otherwise be boilerplate in
-# most CIME tests. It enables CTest testing, handles the USE_COLOR and
+# This module contains statements that would otherwise be boilerplate in most CIME tests
+# and related CMake-based builds. It enables CTest testing, handles the USE_COLOR and
 # ENABLE_GENF90 arguments, and includes several other modules.
 #
 # Some of the things done here must be done AFTER the 'project' line in the main
-# CMakeLists.txt file. This assumes that CIME_initial_setup has already been
-# included.
+# CMakeLists.txt file. This assumes that CIME_initial_setup has already been included.
+#
+# Two variables can be set before including this file to skip certain pieces:
+# - To skip pieces related to the CIME-generated Macros file (which can be included via
+#   CIME_initial_setup), set CIME_SKIP_MACROS to ON
+# - To skip pieces related to unit testing (just doing the pieces of this that are useful
+#   in a non-testing context), set CIME_SKIP_UNITTESTS to ON
 
 #==========================================================================
 # Copyright (c) 2013-2014, University Corporation for Atmospheric Research
@@ -20,7 +25,9 @@
 # Enable CTest tests.
 #=================================================
 
-enable_testing()
+if (NOT DEFINED CIME_SKIP_UNITTESTS OR NOT CIME_SKIP_UNITTESTS)
+   enable_testing()
+endif()
 
 #=================================================
 # Color output
@@ -40,9 +47,14 @@ else()
   list(APPEND CMAKE_MODULE_PATH "../pio2/cmake")
 endif()
 
-set(CMAKE_C_FLAGS "${CPPDEFS} ${CFLAGS}")
-set(CMAKE_Fortran_FLAGS "${CPPDEFS} ${FFLAGS}")
-set(CMAKE_EXE_LINKER_FLAGS "${LDFLAGS} ${SLIBS}")
+if (NOT DEFINED CIME_SKIP_MACROS OR NOT CIME_SKIP_MACROS)
+   # The following settings translate flags set in the Macros file to their equivalent
+   # CMake variables, so these are only needed if we're using a CIME-generated Macros
+   # file.
+   set(CMAKE_C_FLAGS "${CPPDEFS} ${CFLAGS}")
+   set(CMAKE_Fortran_FLAGS "${CPPDEFS} ${FFLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "${LDFLAGS} ${SLIBS}")
+endif()
 
 include(Compilers)
 
@@ -71,12 +83,14 @@ include(genf90_utils)
 # pFUnit
 #=================================================
 
-# pFUnit and its preprocessor
-find_package(PFUNIT)
+if (NOT DEFINED CIME_SKIP_UNITTESTS OR NOT CIME_SKIP_UNITTESTS)
+   # pFUnit and its preprocessor
+   find_package(PFUNIT)
 
-# Need to add PFUNIT_INCLUDE_DIRS to the general list of include_directories
-# because we use pfunit's 'throw'.
-include_directories("${PFUNIT_INCLUDE_DIRS}")
+   # Need to add PFUNIT_INCLUDE_DIRS to the general list of include_directories
+   # because we use pfunit's 'throw'.
+   include_directories("${PFUNIT_INCLUDE_DIRS}")
+endif()
 
 #=================================================
 # Source list and path utilities.

@@ -8,29 +8,38 @@ import sys, os
 import __main__ as main
 
 
-def check_minimum_python_version(major, minor):
+def check_minimum_python_version(major, minor, warn_only=False):
     """
     Check your python version.
 
-    >>> check_minimum_python_version(sys.version_info[0], sys.version_info[1])
+    >>> check_minimum_python_version(3, 5)
     >>>
     """
+    check = sys.version_info[0] > major or (
+        sys.version_info[0] == major and sys.version_info[1] >= minor
+    )
+    if check:
+        return
     msg = (
         "Python "
         + str(major)
-        + ", minor version "
+        + "."
         + str(minor)
-        + " is required, you have "
+        + " is required to run CIME. You have "
         + str(sys.version_info[0])
         + "."
         + str(sys.version_info[1])
     )
-    assert sys.version_info[0] > major or (
-        sys.version_info[0] == major and sys.version_info[1] >= minor
-    ), msg
+    if warn_only:
+        print(msg.replace("required", "recommended") + ".", file=sys.stderr)
+        return
+    raise RuntimeError(msg + " - please use a newer version of Python.")
 
 
-check_minimum_python_version(3, 6)
+# Require users to be using >=3.9
+check_minimum_python_version(3, 9)
+# Warn users if they are using <3.10
+check_minimum_python_version(3, 10, warn_only=True)
 
 real_file_dir = os.path.dirname(os.path.realpath(__file__))
 cimeroot = os.path.abspath(os.path.join(real_file_dir, "..", ".."))
@@ -42,4 +51,4 @@ os.environ["CIMEROOT"] = cimeroot
 import CIME.utils
 
 CIME.utils.stop_buffering_output()
-import logging, argparse
+import argparse, logging

@@ -1,256 +1,94 @@
 #!/bin/bash
 
-if [[ -n "${DEBUG}" ]]
-then
-    set -x
+# Use fixed paths for container resources, regardless of user namespace mapping
+# This ensures tools work with both Docker (root) and Podman (--userns=keep-id)
+CONTAINER_HOME="/root"
+export HOME="${CONTAINER_HOME}"
+export USER="$(id -nu)"
+export LOGNAME="${USER}"
+
+SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
+STORAGE_DIR="${CONTAINER_HOME}/storage"
+
+# Make files in storage directory accessible from host in real-time
+# Set permissive umask so all new files are world-readable/writable
+if [[ -d "${STORAGE_DIR}" ]]; then
+    umask 000
+    chmod -R a+rwX "${STORAGE_DIR}" 2>/dev/null || true
 fi
 
-readonly INIT=${INIT:-"true"}
-readonly UPDATE_CIME=${UPDATE_CIME:-"false"}
-readonly GIT_SHALLOW=${GIT_SHALLOW:-"false"}
+# Build the cprnc tool from CIME sources
+function build_cprnc() {
+    cprnc_dir="${CPRNC_DIR:-${PWD}/CIME/non_py/cprnc}"
+    tools_dir="${STORAGE_DIR}/tools"
 
-declare -xr CIME_REPO=${CIME_REPO:-https://github.com/ESMCI/cime}
-declare -xr E3SM_REPO=${E3SM_REPO:-https://github.com/E3SM-Project/E3SM}
-declare -xr CESM_REPO=${CESM_REPO:-https://github.com/ESCOMP/CESM}
-
-#######################################
-# Clones git repository
-#######################################
-function clone_repo() {
-    local repo="${1}"
-    local path="${2}"
-    local branch="${3}"
-    local extras=""
-
-    if [[ "${GIT_SHALLOW}" == "true" ]]
-    then
-        extras="${extras} --depth 1"
+    if [[ ! -e "${cprnc_dir}" ]]; then
+        echo "CPRNC path does not exist. Change to CIME's root directory."
+        exit 1
     fi
 
-    echo "Cloning branch ${branch} of ${repo} into ${path} with flags: ${flags}"
+    pushd "$(mktemp -d)" || exit 1
 
-    git clone -b "${branch}" ${extras} "${repo}" "${path}" || true
+    cmake -S "${cprnc_dir}" -B .
+
+    make
+
+    [[ ! -e "${tools_dir}" ]] && mkdir -p "${tools_dir}"
+
+    # Needs to be copied into the machines configured tool path
+    cp cprnc "${tools_dir}/cprnc"
+
+    popd || exit 1
 }
 
-#######################################
-# Fixes mct/mpeu to use ARFLAGS environment variable
-#
-# TODO need to make an offical PR this is temporary.
-#######################################
-function fixup_mct {
-    local mct_path="${1}"
 
-    # TODO make PR to fix
-    if [[ ! -e "${mct_path}/mct/Makefile.bak" ]]
-    then
-        echo "Fixing AR variable in ${mct_path}/mct/Makefile"
+# Download input data needed for model setup
+# required for grid generation tests
+function download_input_data() {
+    mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
+    mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
-        sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${mct_path}/mct/Makefile"
-    fi
+    wget -O "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc" \
+        https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc
 
-    if [[ ! -e "${mct_path}/mpeu/Makefile.bak" ]]
-    then
-        echo "Fixing AR variable in ${mct_path}/mpeu/Makefile"
+    wget -O "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc" \
+        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc
 
-        sed -i".bak" "s/\$(AR)/\$(AR) \$(ARFLAGS)/g" "${mct_path}/mpeu/Makefile"
-    fi
+    wget -O "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc" \
+        https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc
 }
 
-#######################################
-#######################################
-function update_cime() {
-    local path="${1}"
 
-    if [[ "${UPDATE_CIME}" == "true" ]]
-    then
-        echo "Updating CIME using repository ${CIME_REPO} and branch ${CIME_BRANCH}"
-
-        pushd "${path}"
-
-        git remote set-url origin "${CIME_REPO}"
-
-        if [[ "${GIT_SHALLOW}" == "true" ]]
-        then
-            git remote set-branches origin "*"
-        fi
-
-        git fetch origin
-
-        git checkout "${CIME_BRANCH:-master}"
-
-        popd
+# Link correct config_machines file based on CIME_MODEL, also set ESMFMKFILE for cesm
+function link_config_machines() {
+    if [[ "${CIME_MODEL}" == "e3sm" ]]; then
+        ln -sf "${CONTAINER_HOME}/.cime/config_machines.v2.xml" "${CONTAINER_HOME}/.cime/config_machines.xml"
+    elif [[ "${CIME_MODEL}" == "cesm" ]]; then
+        ln -sf "${CONTAINER_HOME}/.cime/config_machines.v3.xml" "${CONTAINER_HOME}/.cime/config_machines.xml"
     fi
 }
 
-#######################################
-# Creates an environment with E3SM source.
-#######################################
-function init_e3sm() {
-    echo "Setting up E3SM"
+export PATH=/opt/spack-envs/view/bin:$PATH
+export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
+export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
+export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
 
-    export CIME_MODEL="e3sm"
-
-    local extras=""
-    local install_path="${INSTALL_PATH:-/src/E3SM}"
-    local cache_path="${cache_path:-/storage/inputdata}"
-
-    if [[ ! -e "${install_path}" ]]
-    then
-        clone_repo "${E3SM_REPO}" "${install_path}" "${E3SM_BRANCH:-master}"
-
-        cd "${install_path}"
-
-        if [[ ! -e "${PWD}/.gitmodules.bak" ]]
-        then
-            echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
-
-            sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
-        fi
-
-        if [[ "${GIT_SHALLOW}" == "true" ]]
-        then
-            extras=" --depth 1"
-        fi
-
-        echo "Initializing submodules in ${PWD}"
-
-        git submodule update --init ${extras}
-    fi
-
-    fixup_mct "${install_path}/externals/mct"
-
-    update_cime "${install_path}/cime"
-
-    mkdir -p /storage/inputdata
-
-    echo "Copying cached inputdata from /cache to /storage/inputdata"
-
-    rsync -vr /cache/ /storage/inputdata/
-
-    cd "${install_path}/cime"
-
-    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
-    then
-        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
-
-        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
-    fi
-
-    echo "Initializing submodules in ${PWD}"
-
-    git submodule update --init ${extras}
-}
-
-#######################################
-# Creates an environment with CESM source.
-#######################################
-function init_cesm() {
-    echo "Setting up CESM"
-
-    export CIME_MODEL="cesm"
-
-    local install_path="${INSTALL_PATH:-/src/CESM}"
-
-    if [[ ! -e "${install_path}" ]]
-    then
-        clone_repo "${CESM_REPO}" "${install_path}" "${CESM_BRANCH:-master}"
-    fi
-
-    pushd "${install_path}"
-
-    pushd "${install_path}/cime"
-
-    echo "Checking out externals from `pwd`"
-
-    "${install_path}/manage_externals/checkout_externals" -v
-
-    popd
-
-    fixup_mct "${install_path}/libraries/mct"
-
-    update_cime "${install_path}/cime/"
-
-    pushd "${install_path}/cime"
-
-    # Need to run manage_externals again incase branch changes externals instructions
-    # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"
-
-    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
-    then
-        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
-
-        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
-    fi
-
-    git submodule update --init
-}
-
-#######################################
-# Creates an environment with minimal model requirements.
-# Similar to old github actions environment.
-#######################################
-function init_cime() {
-    echo "Settig up CIME"
-
-    export CIME_MODEL="cesm"
-    export ESMFMKFILE="/opt/conda/lib/esmf.mk"
-
-    local install_path="${INSTALL_PATH:-/src/cime}"
-
-    if [[ ! -e "${install_path}" ]]
-    then
-        clone_repo "${CIME_REPO}" "${install_path}" "${CIME_BRANCH:-master}"
-    fi
-
-    # required to using checkout_externals script
-    clone_repo "${CESM_REPO}" "/src/CESM" "${CESM_BRANCH:-master}"
-
-    cd "${install_path}"
-
-    "/src/CESM/manage_externals/checkout_externals" -v
-
-    fixup_mct "${install_path}/libraries/mct"
-
-    update_cime "${install_path}"
-
-    cd "${install_path}"
-
-    # Need to run manage_externals again incase branch changes externals instructions
-    # "${install_path}/manage_externals/checkout_externals -e cime/Externals_cime.cfg"
-
-    if [[ ! -e "${PWD}/.gitmodules.bak" ]]
-    then
-        echo "Convering git@github.com to https://github.com urls in ${PWD}/.gitmodules"
-
-        sed -i".bak" "s/git@github.com:/https:\/\/github.com\//g" "${PWD}/.gitmodules"
-    fi
-
-    git submodule update --init
-}
-
-if [[ ! -e "${HOME}/.cime" ]]
-then
-    ln -sf "/root/.cime" "${HOME}/.cime"
+if [[ "${CI:-false}" == "true" ]]; then
+  cp -rf /root/.cime "${HOME}"
 fi
 
-if [[ -e "/entrypoint_batch.sh" ]]
-then
-    echo "Sourcing batch entrypoint"
+link_config_machines
 
-    . "/entrypoint_batch.sh"
+# Allow git to operate in any directory, for container/dev scenarios
+if [[ -e "${PWD}/.git" ]]; then
+    git config --global --add safe.directory "*"
 fi
 
-if [[ "${INIT}" == "true" ]]
-then
-    if [[ "${CIME_MODEL}" == "e3sm" ]]
-    then
-        init_e3sm
-    elif [[ "${CIME_MODEL}" == "cesm" ]]
-    then
-        init_cesm
-    else
-        init_cime
-    fi
+if [[ "${CI:-false}" == "false" ]] && [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
+  source ${CONTAINER_HOME}/.local/bin/env
+  source ${CONTAINER_HOME}/.venv/bin/activate
+fi
 
+if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     exec "${@}"
 fi

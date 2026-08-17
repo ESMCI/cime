@@ -36,11 +36,11 @@ class TestBlessTestResults(base.BaseTestCase):
         # Test resubmit scenario if Machine has a batch system
         if self.MACHINE.has_batch_system():
             test_names = [
-                "TESTRUNDIFFRESUBMIT_Mmpi-serial.f19_g16_rx1.A",
-                "TESTRUNDIFF_Mmpi-serial.f19_g16_rx1.A",
+                "TESTRUNDIFFRESUBMIT_Mmpi-serial.f19_g16.A",
+                "TESTRUNDIFF_Mmpi-serial.f19_g16.A",
             ]
         else:
-            test_names = ["TESTRUNDIFF_P1.f19_g16_rx1.A"]
+            test_names = ["TESTRUNDIFF_P1.f19_g16.A"]
 
         # Generate some baselines
         for test_name in test_names:
@@ -107,7 +107,7 @@ class TestBlessTestResults(base.BaseTestCase):
         # Generate some namelist baselines
         if self.NO_FORTRAN_RUN:
             self.skipTest("Skipping fortran test")
-        test_to_change = "TESTRUNPASS_P1.f19_g16_rx1.A"
+        test_to_change = "TESTRUNPASS_P1.f19_g16.A"
         if self._config.create_test_flag_mode == "e3sm":
             genargs = ["-g", "-o", "-b", self._baseline_name, "cime_test_only_pass"]
             compargs = ["-c", "-b", self._baseline_name, "cime_test_only_pass"]

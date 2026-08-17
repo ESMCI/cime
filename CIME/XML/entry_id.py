@@ -313,7 +313,7 @@ class EntryID(GenericXML):
         )
         node = self.get_optional_child("entry", {"id": vid}, root=root)
         if node is not None:
-            val = self._set_value(node, value, vid, subgroup, ignore_type)
+            val = self._set_value(node, value, vid, None, ignore_type)
         return val
 
     def get_values(self, vid, attribute=None, resolved=True, subgroup=None):
@@ -394,7 +394,7 @@ class EntryID(GenericXML):
             val = self.get_default_value(node)
 
         if resolved:
-            val = self.get_resolved_value(val)
+            val = self.get_resolved_value(val, subgroup=subgroup)
 
         return val
 
@@ -500,7 +500,7 @@ class EntryID(GenericXML):
                                 "{}_{}".format(vid, comp), resolved=False
                             )
                             if f1val != f2val:
-                                xmldiffs[vid] = [f1val, f2val]
+                                xmldiffs[f"{vid}_{comp}"] = [f1val, f2val]
                         else:
                             if node != f2match:
                                 f1value_nodes = self.get_children("value", root=node)

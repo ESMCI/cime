@@ -43,7 +43,7 @@
 */
 #define MAX_AUX 9
 
-#ifndef __cplusplus
+#if !defined(__cplusplus) && __STDC_VERSION__ < 202311L
 typedef enum {false = 0, true = 1} bool;  /* mimic C++ */
 #endif
 

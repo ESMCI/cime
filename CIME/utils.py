@@ -2,6 +2,7 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
+
 import shlex
 import configparser
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
@@ -11,8 +12,6 @@ import stat as statlib
 from argparse import Action
 from contextlib import contextmanager
 
-from distutils import file_util
-
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
 logger = logging.getLogger(__name__)
@@ -20,6 +19,8 @@ logger = logging.getLogger(__name__)
 # Fix to pass user defined `srcroot` to `CIME.XML.generic_xml.GenericXML`
 # where it's used to resolve $SRCROOT in XML config files.
 GLOBAL = {}
+CASE_SUCCESS = "success"
+CASE_FAILURE = "error"
 
 
 def deprecate_action(message):
@@ -112,17 +113,20 @@ def set_logger_indent(indent):
 
 
 class EnvironmentContext(object):
-    """
-    Context manager for environment variables
-    Usage:
-        os.environ['MYVAR'] = 'oldvalue'
-        with EnvironmentContex(MYVAR='myvalue', MYVAR2='myvalue2'):
-            print os.getenv('MYVAR')    # Should print myvalue.
-            print os.getenv('MYVAR2')    # Should print myvalue2.
-        print os.getenv('MYVAR')        # Should print oldvalue.
-        print os.getenv('MYVAR2')        # Should print None.
+    """Context manager for environment variables.
+
+    .. code-block:: python
+
+        Usage:
+            os.environ['MYVAR'] = 'oldvalue'
+            with EnvironmentContex(MYVAR='myvalue', MYVAR2='myvalue2'):
+                print os.getenv('MYVAR')    # Should print myvalue.
+                print os.getenv('MYVAR2')    # Should print myvalue2.
+            print os.getenv('MYVAR')        # Should print oldvalue.
+            print os.getenv('MYVAR2')        # Should print None.
 
     CREDIT: https://github.com/sakurai-youhei/envcontext
+
     """
 
     def __init__(self, **kwargs):
@@ -148,8 +152,10 @@ class EnvironmentContext(object):
 # hate seeing. It's a subclass of Exception because we want it to be
 # "catchable". If you are debugging CIME and want to see the stacktrace,
 # run your CIME command with the --debug flag.
-class CIMEError(SystemExit, Exception):
-    pass
+#
+# Canonical definition lives in CIME.core.exceptions; re-exported here
+# for backward compatibility.
+from CIME.core.exceptions import CIMEError  # noqa: F401
 
 
 def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
@@ -171,7 +177,7 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
 
             pdb.set_trace()  # pylint: disable=forgotten-debug-statement
 
-        msg = error_prefix + " " + error_msg
+        msg = f"{error_prefix} {error_msg}"
         raise exc_type(msg)
 
 
@@ -201,7 +207,7 @@ def check_name(fullname, additional_chars=None, fullpath=False):
     False
     """
 
-    chars = "+*?<>/{}[\]~`@:"  # pylint: disable=anomalous-backslash-in-string
+    chars = r"+*?<>/{}[\]~`@:"
     if additional_chars is not None:
         chars += additional_chars
     if fullname.endswith("/"):
@@ -259,6 +265,7 @@ def _read_cime_config_file():
         "walltime",
         "job_queue",
         "allow_baseline_overwrite",
+        "skip_tests_with_existing_baselines",
         "wait",
         "force_procs",
         "force_threads",
@@ -450,7 +457,7 @@ def get_cime_default_driver():
 
     from CIME.config import Config
 
-    config = Config.instance()
+    config = Config.load_defaults()
 
     if not driver:
         driver = config.driver_default
@@ -533,7 +540,9 @@ def get_model():
     if model is None:
         srcroot = get_src_root()
 
-        if os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+        if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
+            model = "cesm"
+        elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"
             with open(os.path.join(srcroot, "Externals.cfg")) as fd:
                 for line in fd:
@@ -814,12 +823,10 @@ def run_cmd(
     # or build a relative path and append `sys.path` to import
     # `standard_script_setup`. Providing `PYTHONPATH` fixes protential
     # broken paths in external python.
-    env.update(
-        {
-            "CIMEROOT": f"{get_cime_root()}",
-            "PYTHONPATH": f"{get_cime_root()}:{get_tools_path()}",
-        }
-    )
+    env_pythonpath = os.environ.get("PYTHONPATH", "").split(":")
+    cime_pythonpath = [f"{get_cime_root()}", f"{get_tools_path()}"] + env_pythonpath
+    env["PYTHONPATH"] = ":".join(filter(None, cime_pythonpath))
+    env["CIMEROOT"] = f"{get_cime_root()}"
 
     if timeout:
         with Timeout(timeout):
@@ -986,10 +993,8 @@ def parse_test_name(test_name):
     parse and return the partial results.
 
     TESTMODS use hyphens in a special way:
-    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to
-      the path 'test/mods')
-    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path'
-      indicates two test mods: 'test/mods' and 'other/dir/path')
+    - A single hyphen stands for a path separator (for example, 'test-mods' resolves to the path 'test/mods')
+    - A double hyphen separates multiple test mods (for example, 'test-mods--other-dir-path' indicates two test mods: 'test/mods' and 'other/dir/path')
 
     If there are one or more TESTMODS, then the testmods component of the result will be a
     list, where each element of the list is one testmod, and hyphens have been replaced by
@@ -1030,6 +1035,7 @@ def parse_test_name(test_name):
     Traceback (most recent call last):
         ...
     CIMEError: ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV
+
     """
     rv = [None] * 7
     num_dots = test_name.count(".")
@@ -1090,10 +1096,8 @@ def get_full_test_name(
     Use the additional args to fill out the name if needed
 
     Testmods can be provided through one of two arguments, but *not* both:
-    - testmods_list: a list of one or more testmods (as would be returned by
-      parse_test_name, for example)
-    - testmods_string: a single string containing one or more testmods; if there is more
-      than one, then they should be separated by a string of two hyphens ('--')
+    - testmods_list: a list of one or more testmods (as would be returned by parse_test_name, for example)
+    - testmods_string: a single string containing one or more testmods; if there is more than one, then they should be separated by a string of two hyphens ('--')
 
     For both testmods_list and testmods_string, any slashes as path separators ('/') are
     replaced by hyphens ('-').
@@ -1130,6 +1134,7 @@ def get_full_test_name(
     The following tests the consistency check between the test name and various optional arguments:
     >>> get_full_test_name("ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3", machine="melvin", compiler="gnu", testmods_list=["mods/test", "mods2/test2/subdir2", "mods3/test3/subdir3"])
     'ERS.ne16_fe16.JGF.melvin_gnu.mods-test--mods2-test2-subdir2--mods3-test3-subdir3'
+
     """
     (
         partial_testcase,
@@ -1365,6 +1370,65 @@ def copy_globs(globs_to_copy, output_directory, lid=None):
             )
 
 
+def copy_over_file(src_path, tgt_path, preserve_meta=True):
+    """
+    Copy a file over a file that already exists.
+
+    preserve_meta controls whether file metadata (permissions, timestamps) are
+    copied from src_path. When True and the caller owns the target, shutil.copy2
+    is used (contents + metadata). When False and the caller owns the target, the
+    contents are written to a fresh temp file (so the caller's umask takes effect)
+    which is then renamed atomically over the target. In either case, a read-only
+    owned target is made writable before the copy.
+    """
+    st = os.stat(tgt_path)
+    owner_uid = st.st_uid
+
+    # Handle read-only files if possible
+    if not os.access(tgt_path, os.W_OK):
+        if owner_uid == os.getuid():
+            # I am the owner, make writeable
+            os.chmod(tgt_path, st.st_mode | statlib.S_IWRITE)
+        else:
+            # I won't be able to copy this file
+            raise OSError(
+                "Cannot copy over file {}, it is readonly and you are not the owner".format(
+                    tgt_path
+                )
+            )
+
+    if owner_uid == os.getuid() and preserve_meta:
+        # I am the owner and metadata should be preserved: copy contents, permissions,
+        # and timestamps.
+        try:
+            shutil.copy2(src_path, tgt_path)
+        # ignore same file error
+        except shutil.SameFileError:
+            pass
+
+    elif owner_uid == os.getuid():
+        # I am the owner but preserve_meta=False: copy src to a fresh temp file in the
+        # same directory so the OS applies the caller's umask (e.g. from SharedArea)
+        # naturally when creating the new file, then atomically replace the target.
+        tmp_path = tgt_path + f".safe_copy_tmp.{os.getpid()}"
+        try:
+            shutil.copyfile(src_path, tmp_path)
+            os.rename(tmp_path, tgt_path)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
+
+    else:
+        # I am not the owner: copy file contents only (cannot change permissions).
+        try:
+            shutil.copyfile(src_path, tgt_path)
+        except shutil.SameFileError:
+            pass
+
+
 def safe_copy(src_path, tgt_path, preserve_meta=True):
     """
     A flexbile and safe copy routine. Will try to copy file and metadata, but this
@@ -1389,44 +1453,38 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
     )
 
     # Handle pre-existing file
-    if os.path.isfile(tgt_path):
-        st = os.stat(tgt_path)
-        owner_uid = st.st_uid
+    try:
+        if os.path.isfile(src_path):
+            if os.path.isfile(tgt_path):
+                copy_over_file(src_path, tgt_path, preserve_meta=preserve_meta)
 
-        # Handle read-only files if possible
-        if not os.access(tgt_path, os.W_OK):
-            if owner_uid == os.getuid():
-                # I am the owner, make writeable
-                os.chmod(tgt_path, st.st_mode | statlib.S_IWRITE)
+            elif preserve_meta:
+                # We are making a new file, copy file contents, permissions, and metadata.
+                # This can fail if the underlying directory is not writable by current user.
+                shutil.copy2(src_path, tgt_path)
+
             else:
-                # I won't be able to copy this file
-                raise OSError(
-                    "Cannot copy over file {}, it is readonly and you are not the owner".format(
-                        tgt_path
-                    )
+                shutil.copyfile(src_path, tgt_path)
+        else:
+            # Some of the archived "files" are directories, like ADIOS BP output "files"
+            if preserve_meta:
+                shutil.copytree(src_path, tgt_path, dirs_exist_ok=True)
+            else:
+                shutil.copytree(
+                    src_path,
+                    tgt_path,
+                    dirs_exist_ok=True,
+                    copy_function=shutil.copyfile,
                 )
 
-        if owner_uid == os.getuid():
-            # I am the owner, copy file contents, permissions, and metadata
-            file_util.copy_file(
-                src_path,
-                tgt_path,
-                preserve_mode=preserve_meta,
-                preserve_times=preserve_meta,
-            )
-        else:
-            # I am not the owner, just copy file contents
-            shutil.copyfile(src_path, tgt_path)
-
-    else:
-        # We are making a new file, copy file contents, permissions, and metadata.
-        # This can fail if the underlying directory is not writable by current user.
-        file_util.copy_file(
-            src_path,
-            tgt_path,
-            preserve_mode=preserve_meta,
-            preserve_times=preserve_meta,
-        )
+    except OSError:
+        # Some systems get weird OSErrors when using shutil copy, try an
+        # old-fashioned cp as a last resort
+        cp_path = shutil.which("cp")
+        # cp is not in PATH, we must give up and raise the original err
+        if cp_path is None:
+            raise
+        run_cmd_no_fail(f"{cp_path} -f -r {src_path} {tgt_path}")
 
     # If src file was executable, then the tgt file should be too
     st = os.stat(tgt_path)
@@ -1577,7 +1635,7 @@ def get_charge_account(machobj=None, project=None):
 
     >>> import CIME
     >>> import CIME.XML.machines
-    >>> machobj = CIME.XML.machines.Machines(machine="theta")
+    >>> machobj = CIME.XML.machines.Machines(machine="ubuntu-latest")
     >>> project = get_project(machobj)
     >>> charge_account = get_charge_account(machobj, project)
     >>> project == charge_account
@@ -1661,7 +1719,7 @@ class _LessThanFilter(logging.Filter):
         return 1 if record.levelno < self.max_level else 0
 
 
-def configure_logging(verbose, debug, silent):
+def configure_logging(verbose, debug, silent, **_):
     root_logger = logging.getLogger()
 
     verbose_formatter = logging.Formatter(
@@ -1742,7 +1800,6 @@ def convert_to_type(value, type_str, vid=""):
     vid is only for generating better error messages.
     """
     if value is not None:
-
         if type_str == "char":
             pass
 
@@ -1788,7 +1845,6 @@ def convert_to_unknown_type(value):
     Convert value to it's real type by probing conversions.
     """
     if value is not None:
-
         # Attempt to convert to logical
         if value.upper() in ["TRUE", "FALSE"]:
             return value.upper() == "TRUE"
@@ -2050,39 +2106,6 @@ def format_time(time_format, input_format, input_time):
     return output_time
 
 
-def append_status(msg, sfile, caseroot="."):
-    """
-    Append msg to sfile in caseroot
-    """
-    ctime = time.strftime("%Y-%m-%d %H:%M:%S: ")
-
-    # Reduce empty lines in CaseStatus. It's a very concise file
-    # and does not need extra newlines for readability
-    line_ending = "\n"
-
-    with open(os.path.join(caseroot, sfile), "a") as fd:
-        fd.write(ctime + msg + line_ending)
-        fd.write(" ---------------------------------------------------" + line_ending)
-
-
-def append_testlog(msg, caseroot="."):
-    """
-    Add to TestStatus.log file
-    """
-    append_status(msg, "TestStatus.log", caseroot)
-
-
-def append_case_status(phase, status, msg=None, caseroot="."):
-    """
-    Update CaseStatus file
-    """
-    append_status(
-        "{} {}{}".format(phase, status, " {}".format(msg if msg else "")),
-        "CaseStatus",
-        caseroot,
-    )
-
-
 def does_file_have_string(filepath, text):
     """
     Does the text string appear in the filepath file
@@ -2272,7 +2295,7 @@ def find_system_test(testname, case):
     if testname.startswith("TEST"):
         system_test_path = "CIME.SystemTests.system_tests_common.{}".format(testname)
     else:
-        components = ["any"]
+        components = ["any", "allactive"]
         components.extend(case.get_compset_components())
         fdir = []
         for component in components:
@@ -2281,6 +2304,11 @@ def find_system_test(testname, case):
             )
             if tdir is not None:
                 tdir = os.path.abspath(tdir)
+                if tdir in fdir:
+                    # This can happen if multiple SYSTEM_TESTS_DIRs resolve to the same
+                    # path; in this case, we just want to handle the first occurrence and
+                    # skip the rest.
+                    continue
                 system_test_file = os.path.join(tdir, "{}.py".format(testname.lower()))
                 if os.path.isfile(system_test_file):
                     fdir.append(tdir)
@@ -2335,6 +2363,11 @@ def ls_sorted_by_mtime(path):
     """return list of path sorted by timestamp oldest first"""
     mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
     return list(sorted(os.listdir(path), key=mtime))
+
+
+def ls_sorted_by_fname(path):
+    """return list of path sorted by name oldest first"""
+    return list(sorted(os.listdir(path)))
 
 
 def get_lids(case):
@@ -2451,60 +2484,6 @@ def verbatim_success_msg(return_val):
     return return_val
 
 
-CASE_SUCCESS = "success"
-CASE_FAILURE = "error"
-
-
-def run_and_log_case_status(
-    func,
-    phase,
-    caseroot=".",
-    custom_starting_msg_functor=None,
-    custom_success_msg_functor=None,
-    is_batch=False,
-):
-    starting_msg = None
-
-    if custom_starting_msg_functor is not None:
-        starting_msg = custom_starting_msg_functor()
-
-    # Delay appending "starting" on "case.subsmit" phase when batch system is
-    # present since we don't have the jobid yet
-    if phase != "case.submit" or not is_batch:
-        append_case_status(phase, "starting", msg=starting_msg, caseroot=caseroot)
-    rv = None
-    try:
-        rv = func()
-    except BaseException:
-        custom_success_msg = (
-            custom_success_msg_functor(rv)
-            if custom_success_msg_functor and rv is not None
-            else None
-        )
-        if phase == "case.submit" and is_batch:
-            append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot
-            )
-        e = sys.exc_info()[1]
-        append_case_status(
-            phase, CASE_FAILURE, msg=("\n{}".format(e)), caseroot=caseroot
-        )
-        raise
-    else:
-        custom_success_msg = (
-            custom_success_msg_functor(rv) if custom_success_msg_functor else None
-        )
-        if phase == "case.submit" and is_batch:
-            append_case_status(
-                phase, "starting", msg=custom_success_msg, caseroot=caseroot
-            )
-        append_case_status(
-            phase, CASE_SUCCESS, msg=custom_success_msg, caseroot=caseroot
-        )
-
-    return rv
-
-
 def _check_for_invalid_args(args):
     # Prevent circular import
     from CIME.config import Config
@@ -2611,8 +2590,11 @@ def run_bld_cmd_ensure_logging(cmd, arg_logger, from_dir=None, timeout=None):
     expect(stat == 0, filter_unicode(errput))
 
 
-def get_batch_script_for_job(job):
-    return job if "st_archive" in job else "." + job
+def get_batch_script_for_job(job, hidden=None):
+    # this if statement is for backward compatibility
+    if hidden is None:
+        hidden = job != "case.st_archive"
+    return "." + job if hidden else job
 
 
 def string_in_list(_string, _list):
@@ -2734,3 +2716,22 @@ def add_flag_to_cmd(flag, val):
 
     separator = "" if no_space else " "
     return "{}{}{}".format(flag, separator, str(val).strip())
+
+
+def is_comp_standalone(case):
+    """
+    Test if the case is a single component standalone
+    such as FKESSLER
+    """
+    stubcnt = 0
+    classes = case.get_values("COMP_CLASSES")
+    model = "cpl"
+    for comp in classes:
+        if case.get_value("COMP_{}".format(comp)) == "s{}".format(comp.lower()):
+            stubcnt = stubcnt + 1
+        else:
+            model = comp.lower()
+    numclasses = len(classes)
+    if stubcnt >= numclasses - 2:
+        return True, model
+    return False, None

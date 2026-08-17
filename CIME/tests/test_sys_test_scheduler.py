@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import re
 import glob
 import logging
 import os
@@ -14,13 +15,29 @@ from CIME.tests import base
 
 
 class TestTestScheduler(base.BaseTestCase):
+    def get_default_tests(self):
+        # exclude the MEMLEAK tests here.
+        return get_tests.get_full_test_names(
+            [
+                "cime_test_only",
+                "^TESTMEMLEAKFAIL_P1.f09_g16.X",
+                "^TESTMEMLEAKPASS_P1.f09_g16.X",
+                "^TESTRUNSTARCFAIL_P1.f19_g16.A",
+                "^TESTTESTDIFF_P1.f19_g16.A",
+                "^TESTBUILDFAILEXC_P1.f19_g16.A",
+                "^TESTRUNFAILEXC_P1.f19_g16.A",
+            ],
+            self._machine,
+            self._compiler,
+        )
+
     @mock.patch("time.strftime", return_value="00:00:00")
     def test_chksum(self, strftime):  # pylint: disable=unused-argument
         if self._config.test_mode == "e3sm":
             self.skipTest("Skipping chksum test. Depends on CESM settings")
 
         ts = test_scheduler.TestScheduler(
-            ["SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"],
+            ["SEQ_Ln9.f19_g16.A.perlmutter_gnu"],
             machine_name="perlmutter",
             chksum=True,
             test_root="/tests",
@@ -28,31 +45,85 @@ class TestTestScheduler(base.BaseTestCase):
 
         with mock.patch.object(ts, "_shell_cmd_for_phase") as _shell_cmd_for_phase:
             ts._run_phase(
-                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu"
+                "SEQ_Ln9.f19_g16.A.perlmutter_gnu"
             )  # pylint: disable=protected-access
 
             _shell_cmd_for_phase.assert_called_with(
-                "SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu",
+                "SEQ_Ln9.f19_g16.A.perlmutter_gnu",
                 "./case.submit --skip-preview-namelist --chksum",
                 "RUN",
-                from_dir="/tests/SEQ_Ln9.f19_g16_rx1.A.perlmutter_gnu.00:00:00",
+                from_dir="/tests/SEQ_Ln9.f19_g16.A.perlmutter_gnu.00:00:00",
             )
 
-    def test_a_phases(self):
-        # exclude the MEMLEAK tests here.
-        tests = get_tests.get_full_test_names(
-            [
-                "cime_test_only",
-                "^TESTMEMLEAKFAIL_P1.f09_g16.X",
-                "^TESTMEMLEAKPASS_P1.f09_g16.X",
-                "^TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
-                "^TESTTESTDIFF_P1.f19_g16_rx1.A",
-                "^TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
-                "^TESTRUNFAILEXC_P1.f19_g16_rx1.A",
-            ],
-            self._machine,
-            self._compiler,
+    def test_testmods(self):
+        if self._config.test_mode == "cesm":
+            self.skipTest("Skipping testmods test. Depends on E3SM settings")
+
+        tests = self.get_default_tests()
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
         )
+
+        with mock.patch.object(ct, "_shell_cmd_for_phase"):
+            ct._create_newcase_phase("TESTRUNPASS_P1.f19_g16.A.docker_gnu.eam-rrtmgp")
+
+            create_newcase_cmd = ct._shell_cmd_for_phase.call_args.args[1]
+
+            assert (
+                re.search(r"--user-mods-dir .*eam/rrtmgp", create_newcase_cmd)
+                is not None
+            ), create_newcase_cmd
+
+    def test_testmods_malformed(self):
+        tests = self.get_default_tests()
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
+        )
+
+        with mock.patch.object(ct, "_shell_cmd_for_phase"):
+            success, message = ct._create_newcase_phase(
+                "TESTRUNPASS_P1.f19_g16.A.docker_gnu.notacomponent?fun"
+            )
+
+            assert not success
+            assert (
+                message
+                == "Invalid testmod, format should be `${component}-${testmod}`, got 'notacomponent?fun'"
+            ), message
+
+    def test_testmods_missing(self):
+        tests = self.get_default_tests()
+        ct = test_scheduler.TestScheduler(
+            tests,
+            test_root=self._testroot,
+            output_root=self._testroot,
+            compiler=self._compiler,
+            mpilib=self.TEST_MPILIB,
+            machine_name=self.MACHINE.get_machine_name(),
+        )
+
+        with mock.patch.object(ct, "_shell_cmd_for_phase"):
+            success, message = ct._create_newcase_phase(
+                "TESTRUNPASS_P1.f19_g16.A.docker_gnu.notacomponent-fun"
+            )
+
+            assert not success
+            assert (
+                re.search("Could not locate testmod 'fun'", message) is not None
+            ), message
+
+    def test_a_phases(self):
+        tests = self.get_default_tests()
         self.assertEqual(len(tests), 3)
         ct = test_scheduler.TestScheduler(
             tests,
@@ -223,7 +294,7 @@ class TestTestScheduler(base.BaseTestCase):
                     test_status.TEST_FAIL_STATUS,
                 )
                 self.assertTrue(
-                    "Exception from init" in data,
+                    "Exception from build" in data,
                     "Broken test did not report build error:\n%s" % data,
                 )
             elif test_name == run_fail_test:
@@ -282,9 +353,9 @@ class TestTestScheduler(base.BaseTestCase):
     def test_force_rebuild(self):
         tests = get_tests.get_full_test_names(
             [
-                "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNPASS_P1.f19_g16_rx1.A",
+                "TESTBUILDFAIL_P1.f19_g16.A",
+                "TESTRUNFAIL_P1.f19_g16.A",
+                "TESTRUNPASS_P1.f19_g16.A",
             ],
             self._machine,
             self._compiler,
@@ -336,9 +407,9 @@ class TestTestScheduler(base.BaseTestCase):
     def test_c_use_existing(self):
         tests = get_tests.get_full_test_names(
             [
-                "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNFAIL_P1.f19_g16_rx1.A",
-                "TESTRUNPASS_P1.f19_g16_rx1.A",
+                "TESTBUILDFAIL_P1.f19_g16.A",
+                "TESTRUNFAIL_P1.f19_g16.A",
+                "TESTRUNPASS_P1.f19_g16.A",
             ],
             self._machine,
             self._compiler,
@@ -495,9 +566,9 @@ class TestTestScheduler(base.BaseTestCase):
 
     def test_d_retry(self):
         args = [
-            "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-            "TESTRUNFAILRESET_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
+            "TESTBUILDFAIL_P1.f19_g16.A",
+            "TESTRUNFAILRESET_P1.f19_g16.A",
+            "TESTRUNPASS_P1.f19_g16.A",
             "--retry=1",
         ]
 
@@ -507,13 +578,93 @@ class TestTestScheduler(base.BaseTestCase):
         if self._config.test_mode != "e3sm" or self._machine != "docker":
             self.skipTest("Skipping create_test test. Depends on E3SM settings")
 
-        args = ["SMS.f19_g16_rx1.A.docker_gnuX", "--no-setup"]
+        args = ["SMS.f19_g16.A.docker_gnuX", "--no-setup"]
 
         case = self._create_test(args, default_baseline_area=True)
         result = self.run_cmd_assert_result(
             "./xmlquery --value BASELINE_ROOT", from_dir=case
         )
         self.assertEqual(os.path.split(result)[1], "gnuX")
+
+    def test_f_baseline_not_cleared_on_failure(self):
+        """
+        Verify that existing baselines are preserved when a regeneration attempt
+        fails.  Before the fix, clear_folder ran in the TestScheduler constructor
+        (before the test executed), so a failing run left the case with no
+        baselines.  After the fix, clearing is deferred to _generate_baseline_impl
+        which is only reached when the run phase succeeds.
+
+        Steps:
+          1. Generate baselines with TESTRUNFAIL_PASS set (test passes).
+          2. Attempt regeneration WITHOUT TESTRUNFAIL_PASS (run fails).
+             Baselines must remain intact.
+          3. Compare with TESTRUNFAIL_PASS set – should succeed because the
+             original baselines from step 1 are still present.
+        """
+        test_name = "TESTRUNFAIL_P1.f19_g16.A"
+        if self._config.create_test_flag_mode == "e3sm":
+            genargs = ["-g", "-o", "-b", self._baseline_name, test_name]
+            compargs = ["-c", "-b", self._baseline_name, test_name]
+        else:
+            genargs = ["-g", self._baseline_name, "-o", test_name]
+            compargs = ["-c", self._baseline_name, test_name]
+
+        # Step 1: Generate initial baselines with a passing run.
+        os.environ["TESTRUNFAIL_PASS"] = "True"
+        try:
+            self._create_test(genargs)
+        finally:
+            del os.environ["TESTRUNFAIL_PASS"]
+
+        baseline_dir = os.path.join(self._baseline_area, self._baseline_name)
+        self.assertTrue(
+            os.path.isdir(baseline_dir), "Baseline dir should exist after generation"
+        )
+        baseline_cases = glob.glob(os.path.join(baseline_dir, "*TESTRUNFAIL*"))
+        self.assertEqual(
+            len(baseline_cases), 1, "Expected exactly one TESTRUNFAIL baseline dir"
+        )
+
+        # Collect the set of regular files created by the baseline generation.
+        # CaseDocs is a directory managed separately by the namelist phase and
+        # may be legitimately refreshed during a subsequent SETUP, so we only
+        # track files here.
+        baseline_case_dir = baseline_cases[0]
+        baseline_files_before = {
+            f
+            for f in os.listdir(baseline_case_dir)
+            if os.path.isfile(os.path.join(baseline_case_dir, f))
+        }
+        self.assertGreater(
+            len(baseline_files_before),
+            0,
+            "Baseline must contain at least one file after generation",
+        )
+
+        # Step 2: Attempt regeneration WITHOUT TESTRUNFAIL_PASS – run will fail.
+        # Our fix ensures that baseline files are NOT cleared before the run
+        # completes successfully.
+        self._create_test(genargs, run_errors=True)
+
+        baseline_cases_after = glob.glob(os.path.join(baseline_dir, "*TESTRUNFAIL*"))
+        self.assertEqual(len(baseline_cases_after), 1)
+        baseline_files_after = {
+            f
+            for f in os.listdir(baseline_cases_after[0])
+            if os.path.isfile(os.path.join(baseline_cases_after[0], f))
+        }
+        self.assertEqual(
+            baseline_files_before,
+            baseline_files_after,
+            msg="Baseline files were modified by a failed generation attempt",
+        )
+
+        # Step 3: Comparison against the preserved baselines should succeed.
+        os.environ["TESTRUNFAIL_PASS"] = "True"
+        try:
+            self._create_test(compargs)
+        finally:
+            del os.environ["TESTRUNFAIL_PASS"]
 
 
 if __name__ == "__main__":

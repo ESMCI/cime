@@ -329,7 +329,7 @@ def get_latest_cpl_logs(case):
     """
     coupler_log_path = case.get_value("RUNDIR")
 
-    cpllog_name = "drv" if case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
+    cpllog_name = "med" if case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
 
     cpllogs = glob.glob(os.path.join(coupler_log_path, "{}*.log.*".format(cpllog_name)))
 
@@ -431,6 +431,8 @@ def read_baseline_file(baseline_file):
     str
         Value stored in baseline file without comments.
     """
+    if not os.path.exists(baseline_file):
+        return "\nNO file {} found".format(baseline_file)
     with open(baseline_file) as fd:
         lines = [x.strip() for x in fd.readlines() if not x.startswith("#") and x != ""]
 

@@ -20,6 +20,10 @@ Examples:
    compatibility; only works for a single variable at a time):
       ./xmlchange --id REST_N --val 4
 
+   To set a variable in which the value has commas, you'll need to use
+   the alternative syntax:
+      ./xmlchange --id VARNAME --val "one,two"
+
    Several xml variables that have settings for each component have somewhat special treatment.
    The variables that this currently applies to are:
     NTASKS, NTHRDS, ROOTPE, PIO_TYPENAME, PIO_STRIDE, PIO_NUMTASKS, PIO_ASYNC_INTERFACE
@@ -51,15 +55,17 @@ from standard_script_setup import *
 from CIME.utils import (
     expect,
     convert_to_type,
-    append_case_status,
-    get_batch_script_for_job,
+    Timeout,
 )
+from CIME.status import append_case_status
 from CIME.case import Case
+from CIME.locked_files import check_lockedfiles
 
 import re
 
 # Set logger
 logger = logging.getLogger("xmlchange")
+
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -191,7 +197,7 @@ def parse_command_line(args, description):
 
 
 def xmlchange_single_value(
-    case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
+    case, xmlid, xmlval, subgroup, append, force, dryrun, env_test, caseroot, xmlfile
 ):
     if xmlid in [
         "THREAD_COUNT",
@@ -223,32 +229,11 @@ def xmlchange_single_value(
         result = case.set_value(
             xmlid, xmlval, subgroup, ignore_type=force, return_file=True
         )
+
         expect(result is not None, 'No variable "%s" found' % xmlid)
-        filename = result[1]
 
-        setup_already_run = os.path.exists(
-            get_batch_script_for_job(case.get_primary_job())
-        )
-        build_already_run = case.get_value("BUILD_COMPLETE")
-
-        if filename.endswith("env_build.xml") and build_already_run:
-            logger.info(
-                """For your changes to take effect, run:
-./case.build --clean-all
-./case.build"""
-            )
-
-        elif filename.endswith("env_mach_pes.xml"):
-            if setup_already_run:
-                logger.info(
-                    "For your changes to take effect, run:\n./case.setup --reset"
-                )
-            if build_already_run:
-                if not setup_already_run:
-                    logger.info("For your changes to take effect, run:")
-
-                logger.info("./case.build --clean-all\n./case.build")
-
+        if xmlfile is not None:
+            xmlfile = [xmlfile]
     else:
         logger.warning("'%s' = '%s'", xmlid, xmlval)
 
@@ -260,6 +245,40 @@ def xmlchange_single_value(
 
     if xmlid == "JOB_QUEUE":
         case.set_value("USER_REQUESTED_QUEUE", xmlval, subgroup)
+
+    # if CASE_GIT_REPOSITORY is updated set the remote to the new repo
+    # note that if origin exists and is different than CASE_GIT_REPOSITORY it
+    # will be deleted and replaced
+    if xmlid == "CASE_GIT_REPOSITORY":
+        if not case._gitinterface:
+            logger.warning(
+                "You must run case.setup before you can set CASE_GIT_REPOSITORY"
+            )
+            return
+        remote = case._gitinterface.git_operation("remote")
+        if remote:
+            if remote == xmlval:
+                return
+            else:
+                case._gitinterface.git_operation("remote", "rm", remote)
+        branch = case._gitinterface.git_operation("branch").split()[1]
+        remote_branches = ""
+        with Timeout(30):
+            remote_branches = case._gitinterface.git_operation(
+                "ls-remote", "--heads", xmlval
+            )
+        chk = remote_branches.find("refs/heads/" + branch)
+
+        if chk >= 0:
+            expect(
+                False,
+                " Could not set {} to {}, remote branch {} already exists, Rename case and try again.".format(
+                    xmlid, xmlval, branch
+                ),
+            )
+        with Timeout(30):
+            case._gitinterface.git_operation("remote", "add", "origin", xmlval)
+            case._gitinterface.git_operation("push", "--set-upstream", "origin", branch)
 
 
 def xmlchange(
@@ -275,7 +294,6 @@ def xmlchange(
     dryrun,
     non_local,
 ):
-
     with Case(caseroot, read_only=False, record=True, non_local=non_local) as case:
         comp_classes = case.get_values("COMP_CLASSES")
         env_test = None
@@ -295,7 +313,6 @@ def xmlchange(
 
             # Change values
             for setting in listofsettings:
-
                 pair = setting.split("=", 1)
                 expect(
                     len(pair) == 2,
@@ -304,19 +321,47 @@ def xmlchange(
                 )
                 (xmlid, xmlval) = pair
                 xmlchange_single_value(
-                    case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
+                    case,
+                    xmlid,
+                    xmlval,
+                    subgroup,
+                    append,
+                    force,
+                    dryrun,
+                    env_test,
+                    caseroot,
+                    xmlfile,
                 )
         else:
             xmlchange_single_value(
-                case, xmlid, xmlval, subgroup, append, force, dryrun, env_test
+                case,
+                xmlid,
+                xmlval,
+                subgroup,
+                append,
+                force,
+                dryrun,
+                env_test,
+                caseroot,
+                xmlfile,
             )
+
+        check_lockedfiles(
+            case, skip=["env_case"], caseroot=caseroot, whitelist=xmlfile, quiet=True
+        )
 
     if not noecho:
         argstr = ""
         for arg in sys.argv:
             argstr += "%s " % arg
         msg = "<command> %s </command>" % (argstr)
-        append_case_status("xmlchange", "success", msg=msg, caseroot=caseroot)
+        append_case_status(
+            "xmlchange",
+            "success",
+            msg=msg,
+            caseroot=caseroot,
+            gitinterface=case._gitinterface,
+        )
 
 
 def _main_func(description):

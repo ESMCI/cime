@@ -1,14 +1,44 @@
 """
 Interface to the config_machines.xml file.  This class inherits from GenericXML.py
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.files import Files
-from CIME.utils import convert_to_unknown_type, get_cime_config
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect, convert_to_unknown_type, get_cime_config
 
+import re
+import logging
 import socket
+from functools import partial
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+
+def match_value_by_attribute_regex(element, attribute_name, value):
+    """Checks element contains attribute whose pattern matches a value.
+
+    If the element does not have the attribute it's considered a match.
+
+    Args:
+        element (CIME.XML.generic_xml._Element): XML element to check attributes.
+        attribute_name (str): Name of attribute with regex value.
+        value (str): Value that is matched against attributes regex value.
+
+    Returns:
+        bool: True if attribute regex matches the target value otherwise False.
+    """
+    attribute_value = element.attrib.get(attribute_name, None)
+
+    return (
+        True
+        if value is None
+        or attribute_value is None
+        or re.match(attribute_value, value) is not None
+        else False
+    )
 
 
 class Machines(GenericXML):
@@ -258,9 +288,12 @@ class Machines(GenericXML):
 
     def _probe_machine_name_one_guess_v3(self, nametomatch):
 
-        node = self.get_child("NODENAME_REGEX", root=self.root)
+        nodes = self.get_children("NODENAME_REGEX", root=self.root)
 
-        for child in self.get_children(root=node):
+        children = [y for x in nodes for y in self.get_children(root=x)]
+
+        machine = None
+        for child in children:
             machtocheck = self.get(child, "MACH")
             regex_str = self.text(child)
             logger.debug(
@@ -317,15 +350,25 @@ class Machines(GenericXML):
         if machine == "Query":
             return machine
         elif self.get_version() == 3:
-            machines_file = os.path.join(
-                self.machines_dir, machine, "config_machines.xml"
-            )
-            if os.path.isfile(machines_file):
+            machines_file = Path.home() / ".cime" / machine / "config_machines.xml"
+
+            if machines_file.exists():
                 GenericXML.read(
                     self,
                     machines_file,
                     schema=schema,
                 )
+            else:
+                machines_file = (
+                    Path(self.machines_dir) / machine / "config_machines.xml"
+                )
+
+                if machines_file.exists():
+                    GenericXML.read(
+                        self,
+                        machines_file,
+                        schema=schema,
+                    )
         self.machine_node = super(Machines, self).get_child(
             "machine",
             {"MACH": machine},
@@ -336,13 +379,19 @@ class Machines(GenericXML):
         return machine
 
     # pylint: disable=arguments-differ
-    def get_value(self, name, attributes=None, resolved=True, subgroup=None):
+    def get_value(self, name, resolved=True, subgroup=None):
         """
-        Get Value of fields in the config_machines.xml file
+        Get Value of fields in the config_machines.xml file. Note that most
+        config machines fields support compiler="..." and mpilib="..."
+        selectors. These are handled automatically but be sure to set_value
+        COMPILER or MPILIB correctly.
         """
         if self.machine_node is None:
             logger.debug("Machine object has no machine defined")
             return None
+
+        # Make sure no client is trying to pass attributes
+        expect(type(resolved) is bool, "Wrong type for resolved")
 
         expect(subgroup is None, "This class does not support subgroups")
         value = None
@@ -350,18 +399,40 @@ class Machines(GenericXML):
         if name in self.custom_settings:
             return self.custom_settings[name]
 
-        # COMPILER and MPILIB are special, if called without arguments they get the default value from the
+        # COMPILER and MPILIB are special; they return the default value from the
         # COMPILERS and MPILIBS lists in the file.
         if name == "COMPILER":
             value = self.get_default_compiler()
         elif name == "MPILIB":
-            value = self.get_default_MPIlib(attributes)
+            value = self.get_default_MPIlib()
         else:
-            node = self.get_optional_child(
-                name, root=self.machine_node, attributes=attributes
-            )
-            if node is not None:
-                value = self.text(node)
+            attribute_list = []
+            if name == "COMPILERS":
+                pass  # COMPILERS does not support selectors
+            elif name == "MPILIBS":
+                # MPILIBS only supports compiler selector
+                compiler = self.get_value("COMPILER")
+                attribute_list.append({"compiler": compiler})
+            else:
+                # All other fields support both
+                compiler = self.get_value("COMPILER")
+                mpilib = self.get_value("MPILIB")
+                attribute_list.append({"compiler": compiler, "mpilib": mpilib})
+                attribute_list.append({"compiler": compiler})
+                attribute_list.append({"mpilib": mpilib})
+
+            # All fields support no selector
+            attribute_list.append(dict())
+
+            # get_optional_child will only return if all attributes match,
+            # so gradually search for less-specific matches
+            for attributes in attribute_list:
+                node = self.get_optional_child(
+                    name, root=self.machine_node, attributes=attributes
+                )
+                if node is not None:
+                    value = self.text(node)
+                    break
 
         if resolved:
             if value is not None:
@@ -371,24 +442,25 @@ class Machines(GenericXML):
 
             value = convert_to_unknown_type(value)
 
+        # Cache compiler/mpilib
+        if name in ["COMPILER", "MPILIB"]:
+            self.custom_settings[name] = value
+
         return value
 
-    def get_field_from_list(self, listname, reqval=None, attributes=None):
+    def get_field_from_list(self, listname, reqval=None):
         """
         Some of the fields have lists of valid values in the xml, parse these
         lists and return the first value if reqval is not provided and reqval
         if it is a valid setting for the machine
         """
         expect(self.machine_node is not None, "Machine object has no machine defined")
-        supported_values = self.get_value(listname, attributes=attributes)
+        supported_values = self.get_value(listname)
         logger.debug(
             "supported values for {} on {} is {}".format(
                 listname, self.machine, supported_values
             )
         )
-        # if no match with attributes, try without
-        if supported_values is None:
-            supported_values = self.get_value(listname, attributes=None)
 
         expect(
             supported_values is not None,
@@ -421,11 +493,11 @@ class Machines(GenericXML):
             value = self.get_field_from_list("COMPILERS")
         return value
 
-    def get_default_MPIlib(self, attributes=None):
+    def get_default_MPIlib(self):
         """
         Get the MPILIB to use from the list of MPILIBS
         """
-        return self.get_field_from_list("MPILIBS", attributes=attributes)
+        return self.get_field_from_list("MPILIBS")
 
     def is_valid_compiler(self, compiler):
         """
@@ -433,14 +505,13 @@ class Machines(GenericXML):
         """
         return self.get_field_from_list("COMPILERS", reqval=compiler) is not None
 
-    def is_valid_MPIlib(self, mpilib, attributes=None):
+    def is_valid_MPIlib(self, mpilib):
         """
         Check the MPILIB is valid for the current machine
         """
         return (
             mpilib == "mpi-serial"
-            or self.get_field_from_list("MPILIBS", reqval=mpilib, attributes=attributes)
-            is not None
+            or self.get_field_from_list("MPILIBS", reqval=mpilib) is not None
         )
 
     def has_batch_system(self):
@@ -470,30 +541,179 @@ class Machines(GenericXML):
         # A temporary cache only
         self.custom_settings[vid] = value
 
-    def print_values(self):
-        # write out machines
-        machines = self.get_children("machine")
-        logger.info("Machines")
-        for machine in machines:
-            name = self.get(machine, "MACH")
-            desc = self.get_child("DESC", root=machine)
-            os_ = self.get_child("OS", root=machine)
-            compilers = self.get_child("COMPILERS", root=machine)
-            max_tasks_per_node = self.get_child("MAX_TASKS_PER_NODE", root=machine)
-            max_mpitasks_per_node = self.get_child(
-                "MAX_MPITASKS_PER_NODE", root=machine
-            )
-            max_gpus_per_node = self.get_child("MAX_GPUS_PER_NODE", root=machine)
+    def print_values(self, compiler=None):
+        """Prints machine values.
 
-            print("  {} : {} ".format(name, self.text(desc)))
-            print("      os             ", self.text(os_))
-            print("      compilers      ", self.text(compilers))
-            if max_mpitasks_per_node is not None:
-                print("      pes/node       ", self.text(max_mpitasks_per_node))
-            if max_tasks_per_node is not None:
-                print("      max_tasks/node ", self.text(max_tasks_per_node))
-            if max_gpus_per_node is not None:
-                print("      max_gpus/node ", self.text(max_gpus_per_node))
+        Args:
+            compiler (str, optional): Name of the compiler to print extra details for. Defaults to None.
+        """
+        current = self.probe_machine_name(False)
+
+        if self.machine_node is None:
+            for machine in self.get_children("machine"):
+                self._print_machine_values(machine, current)
+        else:
+            self._print_machine_values(self.machine_node, current, compiler)
+
+    def _print_machine_values(self, machine, current=None, compiler=None):
+        """Prints a machines details.
+
+        Args:
+            machine (CIME.XML.machines.Machine): Machine object.
+            current (str, optional): Name of the current machine. Defaults to None.
+            compiler (str, optional): If not None, then modules and environment variables matching compiler are printed. Defaults to None.
+
+        Raises:
+            CIMEError: If `compiler` is not valid.
+        """
+        name = self.get(machine, "MACH")
+        if current is not None and current == name:
+            name = f"{name} (current)"
+        desc = self.text(self.get_child("DESC", root=machine))
+        os_ = self.text(self.get_child("OS", root=machine))
+
+        compilers = self.text(self.get_child("COMPILERS", root=machine))
+        if compiler is not None and compiler not in compilers.split(","):
+            raise CIMEError(
+                f"Compiler {compiler!r} is not a valid choice from ({compilers})"
+            )
+
+        mpilibs_nodes = self._get_children_filter_attribute_regex(
+            "MPILIBS", "compiler", compiler, root=machine
+        )
+        mpilibs = set([y for x in mpilibs_nodes for y in self.text(x).split(",")])
+
+        max_tasks_per_node = self.text(
+            self.get_child("MAX_TASKS_PER_NODE", root=machine)
+        )
+        max_mpitasks_per_node = self.text(
+            self.get_child("MAX_MPITASKS_PER_NODE", root=machine)
+        )
+        max_gpus_per_node = self.get_optional_child("MAX_GPUS_PER_NODE", root=machine)
+        max_gpus_per_node_text = (
+            self.text(max_gpus_per_node) if max_gpus_per_node else 0
+        )
+
+        if compiler is not None:
+            name = f"{name} ({compiler})"
+
+        print("  {} : {} ".format(name, desc))
+        print("      os             ", os_)
+        print("      compilers      ", compilers)
+        print("      mpilibs        ", ",".join(mpilibs))
+        print("      pes/node       ", max_mpitasks_per_node)
+        print("      max_tasks/node ", max_tasks_per_node)
+        print("      max_gpus/node  ", max_gpus_per_node_text)
+        print("")
+
+        if compiler is not None:
+            module_system_node = self.get_child("module_system", root=machine)
+
+            def command_formatter(node):
+                if node.text is None:
+                    return f"{node.attrib['name']}"
+                else:
+                    return f"{node.attrib['name']} {node.text}"
+
+            print("    Module commands:")
+            for requirements, commands in self._filter_children_by_compiler(
+                "modules", "command", compiler, command_formatter, module_system_node
+            ):
+                indent = "" if requirements == "" else "  "
+                if requirements != "":
+                    print(f"      (with {requirements})")
+                for x in commands:
+                    print(f"      {indent}{x}")
+            print("")
+
+            def env_formatter(node, machines=None):
+                return f"{node.attrib['name']}: {machines._get_resolved_environment_variable(node.text)}"
+
+            print("    Environment variables:")
+            for requirements, variables in self._filter_children_by_compiler(
+                "environment_variables",
+                "env",
+                compiler,
+                partial(env_formatter, machines=self),
+                machine,
+            ):
+                indent = "" if requirements == "" else "  "
+                if requirements != "":
+                    print(f"      (with {requirements})")
+                for x in variables:
+                    print(f"      {indent}{x}")
+
+    def _filter_children_by_compiler(self, parent, child, compiler, formatter, root):
+        """Filters parent nodes and returns requirements and children of filtered nodes.
+
+        Example of a yielded values:
+
+        "mpilib=openmpi DEBUG=true", ["HOME: /home/dev", "NETCDF_C_PATH: ../netcdf"]
+
+        Args:
+            parent (str): Name of the nodes to filter.
+            child (str): Name of the children nodes from filtered parent nodes.
+            compiler (str): Name of the compiler that will be matched against the regex.
+            formatter (function): Function to format the child nodes from the parents that match.
+            root (CIME.XML.generic_xml._Element): Root node to filter parent nodes from.
+
+        Yields:
+            str, list: Requirements for parent node and list of formated child nodes.
+        """
+        nodes = self._get_children_filter_attribute_regex(
+            parent, "compiler", compiler, root=root
+        )
+
+        for x in nodes:
+            attrib = {**x.attrib}
+            attrib.pop("compiler", None)
+
+            requirements = " ".join([f"{y}={z!r}" for y, z in attrib.items()])
+            values = [formatter(y) for y in self.get_children(child, root=x)]
+
+            yield requirements, values
+
+    def _get_children_filter_attribute_regex(self, name, attribute_name, value, root):
+        """Filter children nodes using regex.
+
+        Uses regex from attribute of children nodes to match a value.
+
+        Args:
+            name (str): Name of the children nodes.
+            attribute_name (str): Name of the attribute on the child nodes to build regex from.
+            value (str): Value that is matched using regex from attribute.
+            root (CIME.XML.generic_xml._Element): Root node to query children nodes from.
+
+        Returns:
+            list: List of children whose regex attribute matches the value.
+        """
+        return [
+            x
+            for x in self.get_children(name, root=root)
+            if match_value_by_attribute_regex(x, attribute_name, value)
+        ]
+
+    def _get_resolved_environment_variable(self, text):
+        """Attempts to resolve machines environment variable.
+
+        Args:
+            text (str): Environment variable value.
+
+        Returns:
+            str: Resolved value or error message.
+        """
+        if text is None:
+            return ""
+
+        try:
+            value = self.get_resolved_value(text, allow_unresolved_envvars=True)
+        except Exception as e:
+            return f"Failed to resolve {text!r} with: {e!s}"
+
+        if value == text and "$" in text:
+            value = f"Failed to resolve {text!r}"
+
+        return value
 
     def return_values(self):
         """return a dictionary of machine info

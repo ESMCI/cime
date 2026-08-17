@@ -185,8 +185,8 @@ foreach $f (@src) {
     my $file_path = find_file($f);
     open(FH, $file_path)  or die "Can't open $file_path: $!\n";
     while ( <FH> ) {
-	# Search for module definitions.
-	if ( /^\s*MODULE\s+(\w+)\s*(\!.*)?$/i ) {
+        # Search for module and submodule definitions.
+        if ( /^\s*MODULE\s+(\w+)\s*(\!.*)?$/i || /^\s*SUBMODULE\s*\(\s*\w+\s*(?:\:\s*\w+\s*)?\)\s*(\w+)/i ) {
 	    ($mod = $1) =~ tr/A-Z/a-z/;
             if ( defined $module_files{$mod} ) {
                 die "Duplicate definitions of module $mod in $module_files{$mod} and $name: $!\n";
@@ -371,20 +371,19 @@ foreach $f (sort keys %file_modules) {
         $f =~ /(.+)\./;
 	$file = $1;
     }
-    $target = $obj_dir."$file.o";
-    print "$target : $f @{$file_modules{$f}} @{$file_includes{$f}} $additional_file \n";
+    my $target = $obj_dir."$file.o";
+    print join(" ", grep { defined } ("$target :", $f, @{$file_modules{$f}}, @{$file_includes{$f}}, $additional_file))."\n";
 }
 
 print "# The following section relates each module to the corresponding file.\n";
 $target = mangle_modfile("%");
-print "$target : \n";
+print "$target :\n";
 print "\t\@\:\n";
 
 foreach $mod (sort keys %modules_used) {
     my $mod_fname = $obj_dir.mangle_modfile($mod);
     my $obj_fname = $obj_dir.$module_files{$mod}.".o";
     print "$mod_fname : $obj_fname\n";
-
 }
 
 #--------------------------------------------------------------------------------------
@@ -427,22 +426,28 @@ sub find_dependencies {
 	    push @incs, $include;
 	    undef $include;
 	}
-	# Search for module dependencies.
-	elsif ( /^\s*USE(?:\s+|\s*\:\:\s*|\s*,\s*non_intrinsic\s*\:\:\s*)(\w+)/i ) {
-	    # Return dependency in the form of a .mod file
-	    ($module = $1) =~ tr/A-Z/a-z/;
-	    if ( defined $module_files{$module} ) {
-		# Check for circular dependency
-		unless ("$module_files{$module}.o" eq $target) {
-                    $modules_used{$module} = ();
-                    push @mods, "$obj_dir".mangle_modfile($module);
-		}
-	    }
-            # If we already have a .mod file around.
-            elsif ( defined $trumod_files{$module} ) {
-                push @mods, "$obj_dir".mangle_modfile($trumod_files{$module});
+        # Search for module dependencies.
+        # Module dependencies are extracted from the following patterns:
+        # 1. The "module-name" in a Fortran "USE [[, module-nature] ::] module-name" statement
+        # 2. The "ancestor-module-name" and "parent-submodule-name" in a Fortran "SUBMODULE (ancestor-module-name [: parent-submodule-name]) submodule-name" statement
+        elsif ( /^\s*USE(?:\s+|\s*\:\:\s*|\s*,\s*non_intrinsic\s*\:\:\s*)(\w+)/i || /^\s*SUBMODULE\s*\(\s*(\w+)\s*(?:\:\s*(\w+)\s*)?\)\s*\w+/i ) {
+            # There might be one or two matches from the regexes above.
+            for my $match (grep { defined } ($1, $2)) {
+                # Return dependency in the form of a .mod file.
+                (my $module = $match) =~ tr/A-Z/a-z/;
+                if ( defined $module_files{$module} ) {
+                    # Check for circular dependency.
+                    unless ("$module_files{$module}.o" eq $target) {
+                        $modules_used{$module} = ();
+                        push @mods, "$obj_dir".mangle_modfile($module);
+                    }
+                }
+                # If we already have a .mod file around.
+                elsif ( defined $trumod_files{$module} ) {
+                    push @mods, "$obj_dir".mangle_modfile($trumod_files{$module});
+                }
             }
-	}
+        }
     }
     close( FH );
     return (\@mods, \@incs);
@@ -470,16 +475,18 @@ sub find_file {
 
 sub rm_duplicates {
 
-# Return a list with duplicates removed.
+# Return a list with duplicates removed, preserving the original order.
 
-    my ($in) = @_;       # input arrary reference
-    my @out = ();
-    my $i;
-    my %h = ();
-    foreach $i (@$in) {
-	$h{$i} = '';
+    my ($in) = @_;
+    my @out  = ();
+    my %seen = ();
+
+    for my $item (@$in) {
+        unless ($seen{$item}++) {
+            push @out, $item;
+        }
     }
-    @out = keys %h;
+
     return \@out;
 }
 

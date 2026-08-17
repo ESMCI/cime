@@ -9,6 +9,7 @@ on:
       - 'scripts/**'
       - 'tools/**'
       - 'utils/**'
+      - 'docker/**'
 
   pull_request:
     branches:
@@ -18,6 +19,7 @@ on:
       - 'scripts/**'
       - 'tools/**'
       - 'utils/**'
+      - 'docker/**'
 
   workflow_dispatch:
 
@@ -30,139 +32,232 @@ permissions:
   packages: read
 
 jobs:
+  build-containers:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/ESMCI/cime
+          tags: |
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+            type=ref,event=pr,enable=${{ github.event_name == 'pull_request' }}
+            type=sha,format=long
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          file: docker/Dockerfile
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   pre-commit:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && ! cancelled() }}
     timeout-minutes: 2
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
-      # Offical action is deprecated in favor of pre-commit.ci
-      # Should evaulate switching or just running manually.
-      # - name: Runs pre-commit action
-      #   # Do not run if using act tooling (https://github.com/nektos/act)
-      #   if: ${{ !env.ACT }}
-      #   uses: pre-commit/action@v2.0.3
+          python-version: '3.10'
       - name: Runs pre-commit
         run: |
           pip install pre-commit
-
           pre-commit run -a
 
   # Runs unit testing under different python versions.
   unit-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
+    needs: build-containers
     container:
-      image: ghcr.io/esmci/cime:latest
+      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ["3.9", "3.10", "3.12", "3.13", "3.14"]
     steps:
+      - name: Checkout model code
+        uses: actions/checkout@v4
+        with:
+          repository: ESCOMP/CESM
+          path: cesm # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          ref: cesm3.0-alphabranch
+      - name: Get ccs_config dependency
+        working-directory: cesm
+        run: |
+          # Need these for machine files
+          ./bin/git-fleximod update ccs_config
+
+          # Remove CIME to checkout
+          rm -rf cime/
+
+          git status
+          git submodule status
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          path: cesm/cime
+          submodules: "true"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
       - name: Run tests
         shell: bash
+        working-directory: cesm/cime
         env:
-          INIT: "false"
           CIME_MODEL: "cesm"
           CIME_DRIVER: "nuopc"
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
-          CIME_TEST_PLATFORM: ubuntu-latest
+          CIME_TEST_PLATFORM: "ubuntu-latest"
+          SKIP_ENTRYPOINT: "true"
         run: |
-          export INSTALL_PATH="${PWD}"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
-
-          mamba install -y python=${{ matrix.python-version }}
-
+          # manually run the entrypoint
           source /entrypoint.sh
 
-          git config --global --add safe.directory /__w/cime/cime
+          uv python install "${{ matrix.python-version }}"
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r test-requirements.txt
 
-          init_cime
-
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run CIME/tests/test_unit*
+          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # Run system tests
   system-testing:
     runs-on: ubuntu-latest
-    if: ${{ always() && ! cancelled() }}
+    if: ${{ github.event_name == 'pull_request' && always() && ! cancelled() }}
+    needs: build-containers
     container:
-      image: ghcr.io/esmci/cime:latest
+      image: ghcr.io/esmci/cime:${{ github.event.pull_request.head.repo.full_name == github.repository && format('sha-{0}', github.sha) || 'latest' }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+      options: --hostname docker
     strategy:
       # allow all jobs to finish
       fail-fast: false
       matrix:
-        model: ["e3sm", "cesm"]
+        model:
+          - name: "e3sm"
+            repo: E3SM-Project/e3sm
+            branch: master
+          - name: "cesm"
+            repo: ESCOMP/CESM
+            branch: cesm3.0-alphabranch
         driver: ["mct", "nuopc"]
         exclude:
           # exclude nuopc driver when running e3sm tests
-          - model: "e3sm"
+          - model: { name: "e3sm" }
             driver: "nuopc"
           # exclude mct driver when running cesm tests
-          - model: "cesm"
+          - model: { name: "cesm" }
             driver: "mct"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Cache inputdata
-        uses: actions/cache@v2
+      - name: Checkout model code
+        uses: actions/checkout@v4
         with:
-          path: /storage/inputdata
-          key: inputdata-2
-      - name: Run tests
+          repository: ${{ matrix.model.repo }}
+          path: ${{ matrix.model.name }} # $GITHUB_WORKSPACE/${{ matrix.model.name }}
+          ref: ${{ matrix.model.branch }}
+      - name: Check out model dependencies
         shell: bash
-        env:
-          INIT: "false"
-          CIME_MODEL: ${{ matrix.model }}
-          CIME_DRIVER: ${{ matrix.driver }}
-          UPDATE_CIME: "true"
-          GIT_SHALLOW: "true"
-          CIME_TEST_PLATFORM: ubuntu-latest
+        working-directory: ${{ matrix.model.name }}
         run: |
-          export INSTALL_PATH="${PWD}/cime"
-          export CIME_REPO=https://github.com/${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          export CIME_BRANCH=${GITHUB_HEAD_REF:-${GITHUB_REF##*/}}
+          # need https for submodules
+          sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" .gitmodules
 
-          source /entrypoint.sh
-
-          git config --global --add safe.directory /__w/cime/cime
-
-          if [[ "${CIME_MODEL}" == "e3sm" ]]
-          then
-            init_e3sm
+          if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
+            git submodule update --init
           else
-            init_cime
+            ./bin/git-fleximod update
           fi
 
-          # Get cprnc
-          # git clone https://github.com/ESMCI/cprnc $INSTALL_PATH/CIME/non_py/cprnc
-          source /opt/conda/etc/profile.d/conda.sh
+          # remove cime so it can be checkedout
+          rm -rf cime/
 
-          conda activate base
+          git status
+          git submodule status
+      - name: Checkout CIME
+        uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.model.name }}/cime
+          submodules: 'true'
+      - name: Cache inputdata
+        uses: actions/cache@v3
+        with:
+          path: /root/storage/inputdata
+          key: inputdata-2
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.10"
+      - name: Run tests
+        shell: bash
+        working-directory: ${{ matrix.model.name }}/cime
+        env:
+          CIME_MODEL: ${{ matrix.model.name }}
+          CIME_DRIVER: ${{ matrix.driver }}
+          CIME_TEST_PLATFORM: ubuntu-latest
+          SKIP_ENTRYPOINT: "true"
+        run: |
+          # manually run the entrypoint
+          source /entrypoint.sh
 
-          pytest -vvv --cov=CIME --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+          uv python install 3.10
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r test-requirements.txt
+
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+          uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - uses: mxschmitt/action-tmate@v3
+        if: ${{ !always() }}
+        with:
+          limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
-        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}.tar.gz /storage/cases/
+        run: tar -czvf /testing-logs-${GITHUB_RUN_NUMBER}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz /root/storage/cases /root/storage/baselines /root/storage/archive
         # How to download artifacts:
         # https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
       - name: Upload testing logs
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: testing-logs-${{ github.run_number }}
-          path: /testing-logs-${{ github.run_number}}.tar.gz
+          name: testing-logs-${{ github.run_number }}-${{ matrix.model.name }}-${{ matrix.driver }}
+          path: /testing-logs-${{ github.run_number}}-${{ matrix.model.name }}-${{ matrix.driver }}.tar.gz
           retention-days: 4

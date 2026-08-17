@@ -7,6 +7,7 @@ information from a run.
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import safe_copy
+from CIME.status import append_case_status
 
 import datetime, re
 
@@ -410,6 +411,8 @@ class _TimingParser:
                 "timing",
                 "{}.ESMF_Profile.summary.{}".format(cime_model, self.lid),
             )
+        else:
+            raise RuntimeError("Unknown driver set")
 
         foutfilename = os.path.join(
             self.caseroot,
@@ -449,11 +452,15 @@ class _TimingParser:
             logger.warning("Unknown NCPL_BASE_PERIOD={}".format(ncpl_base_period))
 
         # at this point the routine becomes driver specific
+
         if self._driver == "mct" or self._driver == "moab":
             nprocs, ncount = self.gettime2("CPL:CLOCK_ADVANCE ")
             nsteps = ncount / nprocs
         elif self._driver == "nuopc":
             nprocs, nsteps = self.gettime2("")
+        else:
+            raise RuntimeError("Unknown driver setting")
+
         adays = nsteps * tlen / ncpl
         odays = nsteps * tlen / ncpl
         if ocn_ncpl and inittype == "TRUE":
@@ -546,7 +553,7 @@ class _TimingParser:
             fmax = self.gettime("[ensemble] FinalizePhase1")[1]
             xmax = self.getCOMMtime(inst_label[1:])
 
-        if self._driver == "mct" or self._driver == "moab":
+        elif self._driver == "mct" or self._driver == "moab":
             for k in components:
                 if k != "CPL":
                     m = self.models[k]
@@ -575,6 +582,8 @@ class _TimingParser:
 
             tmax = tmax + wtmin + correction
             ocn.tmax += ocnrunitime
+        else:
+            raise RuntimeError("driver not recognized or not defined")
 
         for m in self.models.values():
             m.tmaxr = 0
@@ -928,3 +937,11 @@ class _TimingParser:
 def get_timing(case, lid):
     parser = _TimingParser(case, lid)
     parser.getTiming()
+    if case._gitinterface:
+        case._gitinterface._git_command("add", "*." + lid)
+    append_case_status(
+        "",
+        "",
+        msg="Timing files created for run {}".format(lid),
+        gitinterface=case._gitinterface,
+    )

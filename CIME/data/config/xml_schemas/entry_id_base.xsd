@@ -13,12 +13,21 @@
   <!-- simple elements -->
   <xs:element name="help" type="xs:string"/>
   <xs:element name="default_value" type="xs:string"/>
-  <xs:element name="valid_values" type="xs:string"/>
   <xs:element name="category" type="xs:string"/>
   <xs:element name="header" type="xs:string"/>
 
   <!-- complex elements -->
   <xs:element name="value">
+    <xs:complexType>
+      <xs:simpleContent>
+	<xs:extension base="xs:string">
+	  <xs:anyAttribute processContents="lax"/>
+	</xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="valid_values">
     <xs:complexType>
       <xs:simpleContent>
 	<xs:extension base="xs:string">

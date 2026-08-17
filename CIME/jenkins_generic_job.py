@@ -280,10 +280,12 @@ def jenkins_generic_job(
     check_memory,
     ignore_memleak,
     ignore_namelists,
+    ignore_diffs,
     save_timing,
     pes_file,
     jenkins_id,
     queue,
+    driver,
 ):
     ###############################################################################
     """
@@ -377,6 +379,9 @@ def jenkins_generic_job(
     if save_timing:
         create_test_args.append("--save-timing")
 
+    if driver is not None:
+        create_test_args.append("--driver " + driver)
+
     create_test_cmd = "./create_test " + " ".join(create_test_args)
 
     if not CIME.wait_for_tests.SIGNAL_RECEIVED:
@@ -423,6 +428,7 @@ def jenkins_generic_job(
         check_throughput=check_throughput,
         check_memory=check_memory,
         ignore_namelists=ignore_namelists,
+        ignore_diffs=ignore_diffs,
         ignore_memleak=ignore_memleak,
         cdash_build_name=cdash_build_name,
         cdash_project=cdash_project,
@@ -430,12 +436,13 @@ def jenkins_generic_job(
         update_success=update_success,
     )
 
-    logging.info("TEST ARCHIVER: Waiting for archiver thread")
-    archiver_thread.join()
-    logging.info("TEST ARCHIVER: Waiting for archiver finished")
-
     if use_batch and CIME.wait_for_tests.SIGNAL_RECEIVED:
         # Cleanup
         cleanup_queue(test_root, test_id)
+
+    if not CIME.wait_for_tests.SIGNAL_RECEIVED:
+        logging.info("TEST ARCHIVER: Waiting for archiver thread")
+        archiver_thread.join()
+        logging.info("TEST ARCHIVER: Waiting for archiver finished")
 
     return tests_passed

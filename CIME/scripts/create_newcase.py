@@ -264,25 +264,6 @@ def parse_command_line(args, cimeroot, description):
 
     parser.add_argument("--case-group", help="Add this case to a case group")
 
-    parser.add_argument(
-        "--ngpus-per-node",
-        default=0,
-        type=int,
-        help="Specify number of GPUs used for simulation. ",
-    )
-
-    parser.add_argument(
-        "--gpu-type",
-        default=None,
-        help="Specify type of GPU hardware - currently supported are v100, a100, mi250",
-    )
-
-    parser.add_argument(
-        "--gpu-offload",
-        default=None,
-        help="Specify gpu offload method - currently supported are openacc, openmp, combined",
-    )
-
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     if args.srcroot is not None:
@@ -358,9 +339,6 @@ WARNING: if you need support migrating to the ESMF/NUOPC infrastructure.
         args.non_local,
         args.extra_machines_dir,
         args.case_group,
-        args.ngpus_per_node,
-        args.gpu_type,
-        args.gpu_offload,
     )
 
 
@@ -397,9 +375,6 @@ def _main_func(description=None):
         non_local,
         extra_machines_dir,
         case_group,
-        ngpus_per_node,
-        gpu_type,
-        gpu_offload,
     ) = parse_command_line(sys.argv, cimeroot, description)
 
     if script_root is None:
@@ -464,9 +439,6 @@ def _main_func(description=None):
             non_local=non_local,
             extra_machines_dir=extra_machines_dir,
             case_group=case_group,
-            ngpus_per_node=ngpus_per_node,
-            gpu_type=gpu_type,
-            gpu_offload=gpu_offload,
         )
 
         # Called after create since casedir does not exist yet

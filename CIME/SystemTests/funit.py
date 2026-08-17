@@ -5,7 +5,8 @@ the fortran unit tests; grid and compset are ignored.
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-from CIME.utils import append_testlog, get_cime_root
+from CIME.status import append_testlog
+from CIME.utils import get_cime_root
 from CIME.test_status import *
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,13 @@ class FUNIT(SystemTestsCommon):
         """
         return get_cime_root()
 
+    def get_extra_run_tests_args(self):
+        """
+        Override this to return a string containing extra command-line arguments to
+        run_tests.py
+        """
+        return ""
+
     def run_phase(self):
 
         rundir = self._case.get_value("RUNDIR")
@@ -50,8 +58,9 @@ class FUNIT(SystemTestsCommon):
                 get_cime_root(), "scripts", "fortran_unit_testing", "run_tests.py"
             )
         )
-        args = "--build-dir {} --test-spec-dir {} --machine {}".format(
-            exeroot, test_spec_dir, mach
+        extra_args = self.get_extra_run_tests_args()
+        args = "--build-dir {} --test-spec-dir {} --machine {} {}".format(
+            exeroot, test_spec_dir, mach, extra_args
         )
 
         stat = run_cmd(

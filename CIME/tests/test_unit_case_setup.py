@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest import mock
 
 from CIME.case import case_setup
+from CIME.tests.utils import chdir
 
 
 @contextlib.contextmanager
@@ -21,17 +22,6 @@ def create_machines_dir():
         Path(os.path.join(cmake_path, "test.cmake")).touch()
 
         yield temp_path
-
-
-@contextlib.contextmanager
-def chdir(path):
-    old_path = os.getcwd()
-    os.chdir(path)
-
-    try:
-        yield
-    finally:
-        os.chdir(old_path)
 
 
 # pylint: disable=protected-access

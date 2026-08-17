@@ -5,7 +5,7 @@ import os
 import shutil
 import tempfile
 from CIME.XML.expected_fails_file import ExpectedFailsFile
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 from CIME.expected_fails import ExpectedFails
 
 

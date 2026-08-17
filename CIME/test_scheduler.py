@@ -14,9 +14,8 @@ from collections import OrderedDict
 
 from CIME.XML.standard_module_setup import *
 from CIME.get_tests import get_recommended_test_time, get_build_groups, is_perf_test
+from CIME.status import append_status, append_testlog
 from CIME.utils import (
-    append_status,
-    append_testlog,
     TESTS_FAILED_ERR_CODE,
     parse_test_name,
     get_full_test_name,
@@ -29,7 +28,7 @@ from CIME.utils import (
     get_project,
     get_timestamp,
     get_cime_default_driver,
-    clear_folder,
+    CIMEError,
 )
 from CIME.config import Config
 from CIME.test_status import *
@@ -47,6 +46,7 @@ from CIME.locked_files import lock_file
 from CIME.cs_status_creator import create_cs_status
 from CIME.hist_utils import generate_teststatus
 from CIME.build import post_build
+from CIME.SystemTests.test_mods import find_test_mods
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +61,7 @@ PHASES = [
     MODEL_BUILD_PHASE,
     RUN_PHASE,
 ]  # Order matters
+
 
 ###############################################################################
 def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads):
@@ -129,6 +130,8 @@ def _translate_test_names_for_new_pecount(test_names, force_procs, force_threads
 
 
 _TIME_CACHE = {}
+
+
 ###############################################################################
 def _get_time_est(test, baseline_root, as_int=False, use_cache=False, raw=False):
     ###############################################################################
@@ -195,6 +198,7 @@ class TestScheduler(object):
         save_timing=False,
         queue=None,
         allow_baseline_overwrite=False,
+        skip_tests_with_existing_baselines=False,
         output_root=None,
         force_procs=None,
         force_threads=None,
@@ -210,11 +214,15 @@ class TestScheduler(object):
         workflow=None,
         chksum=False,
         force_rebuild=False,
+        no_batch_build=False,
+        ninja=False,
+        gmake=False,
+        driver=None,
     ):
         ###########################################################################
         self._cime_root = get_cime_root()
         self._cime_model = get_model()
-        self._cime_driver = get_cime_default_driver()
+        self._cime_driver = driver if driver is not None else get_cime_default_driver()
         self._save_timing = save_timing
         self._queue = queue
         self._test_data = (
@@ -225,6 +233,7 @@ class TestScheduler(object):
         self._input_dir = input_dir
         self._pesfile = pesfile
         self._allow_baseline_overwrite = allow_baseline_overwrite
+        self._skip_tests_with_existing_baselines = skip_tests_with_existing_baselines
         self._single_exe = single_exe
         if self._single_exe:
             self._allow_pnl = True
@@ -241,7 +250,23 @@ class TestScheduler(object):
 
         self._config = Config.instance()
 
-        if self._config.calculate_mode_build_cost:
+        self._compiler = (
+            self._machobj.get_default_compiler() if compiler is None else compiler
+        )
+        # Some machine settings may depend on compiler or mpilib
+        self._machobj.set_value("COMPILER", self._compiler)
+        if self._mpilib is not None:
+            self._machobj.set_value("MPILIB", self._mpilib)
+
+        self._batched_build = self._machobj.get_value("BATCHED_BUILD")
+        if no_batch_build:
+            self._batched_build = False
+
+        # Compute cost on current node of doing the model build
+        if self._batched_build:
+            # Low cost on current node because build won't be done here
+            self._model_build_cost = 1
+        elif self._config.calculate_mode_build_cost:
             # Current build system is unlikely to be able to productively use more than 16 cores
             self._model_build_cost = min(
                 16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
@@ -287,13 +312,12 @@ class TestScheduler(object):
         self._test_root = os.path.abspath(self._test_root)
         self._test_id = test_id if test_id is not None else get_timestamp()
 
-        self._compiler = (
-            self._machobj.get_default_compiler() if compiler is None else compiler
-        )
-
         self._clean = clean
 
         self._namelists_only = namelists_only
+
+        self._ninja = ninja
+        self._gmake = gmake
 
         self._walltime = walltime
 
@@ -320,7 +344,6 @@ class TestScheduler(object):
 
         # Compute baseline_root. Need to set some properties on machobj in order for
         # the baseline_root to resolve correctly.
-        self._machobj.set_value("COMPILER", self._compiler)
         self._machobj.set_value("PROJECT", self._project)
         self._baseline_root = (
             os.path.abspath(baseline_root)
@@ -346,20 +369,29 @@ class TestScheduler(object):
                     self._baseline_root, self._baseline_gen_name
                 )
                 existing_baselines = []
+                if skip_tests_with_existing_baselines:
+                    tests_to_skip = []
                 for test_name in test_names:
                     test_baseline = os.path.join(full_baseline_dir, test_name)
                     if os.path.isdir(test_baseline):
                         existing_baselines.append(test_baseline)
                         if allow_baseline_overwrite and run_count == 0:
-                            if self._namelists_only:
-                                clear_folder(os.path.join(test_baseline, "CaseDocs"))
-                            else:
-                                clear_folder(test_baseline)
+                            pass
+                        elif skip_tests_with_existing_baselines:
+                            tests_to_skip.append(test_name)
                 expect(
-                    allow_baseline_overwrite or len(existing_baselines) == 0,
+                    allow_baseline_overwrite
+                    or len(existing_baselines) == 0
+                    or skip_tests_with_existing_baselines,
                     "Baseline directories already exists {}\n"
-                    "Use -o to avoid this error".format(existing_baselines),
+                    "Use -o or --skip-tests-with-existing-baselines to avoid this error".format(
+                        existing_baselines
+                    ),
                 )
+                if skip_tests_with_existing_baselines:
+                    test_names = [
+                        test for test in test_names if test not in tests_to_skip
+                    ]
 
         if self._config.sort_tests:
             _order_tests_by_runtime(test_names, self._baseline_root)
@@ -650,6 +682,7 @@ class TestScheduler(object):
         mpilib = None
         ninst = 1
         ncpl = 1
+        driver = self._cime_driver
         if case_opts is not None:
             for case_opt in case_opts:  # pylint: disable=not-an-iterable
                 if case_opt.startswith("M"):
@@ -669,62 +702,35 @@ class TestScheduler(object):
                 elif case_opt.startswith("P"):
                     pesize = case_opt[1:]
                     create_newcase_cmd += " --pecount {}".format(pesize)
-                elif case_opt.startswith("G"):
-                    if "-" in case_opt:
-                        ngpus_per_node, gpu_type, gpu_offload = case_opt[1:].split("-")
-                    else:
-                        error = "GPU test argument format is ngpus_per_node-gpu_type-gpu_offload"
-                        self._log_output(test, error)
-                        return False, error
-                    create_newcase_cmd += (
-                        " --ngpus-per-node {} --gpu-type {} --gpu-offload {}".format(
-                            ngpus_per_node, gpu_type, gpu_offload
-                        )
-                    )
                 elif case_opt.startswith("V"):
-                    self._cime_driver = case_opt[1:]
-                    create_newcase_cmd += " --driver {}".format(self._cime_driver)
+                    driver = case_opt[1:]
+
+        create_newcase_cmd += " --driver {}".format(driver)
 
         if (
             "--ninst" in create_newcase_cmd
             and not "--multi-driver" in create_newcase_cmd
         ):
             if "--driver nuopc" in create_newcase_cmd or (
-                "--driver" not in create_newcase_cmd and self._cime_driver == "nuopc"
+                "--driver" not in create_newcase_cmd and driver == "nuopc"
             ):
                 expect(False, "_N option not supported by nuopc driver, use _C instead")
 
         if test_mods is not None:
             create_newcase_cmd += " --user-mods-dir "
 
-            for one_test_mod in test_mods:  # pylint: disable=not-an-iterable
-                if one_test_mod.find("/") != -1:
-                    (component, modspath) = one_test_mod.split("/", 1)
-                else:
-                    error = "Missing testmod component. Testmods are specified as '${component}-${testmod}'"
-                    self._log_output(test, error)
-                    return False, error
+            try:
+                test_mods_paths = find_test_mods(self._cime_driver, test_mods)
+            except CIMEError as e:
+                error = f"{e}"
 
-                files = Files(comp_interface=self._cime_driver)
-                testmods_dir = files.get_value(
-                    "TESTS_MODS_DIR", {"component": component}
-                )
-                test_mod_file = os.path.join(testmods_dir, component, modspath)
-                # if no testmod is found check if a usermod of the same name exists and
-                # use it if it does.
-                if not os.path.exists(test_mod_file):
-                    usermods_dir = files.get_value(
-                        "USER_MODS_DIR", {"component": component}
-                    )
-                    test_mod_file = os.path.join(usermods_dir, modspath)
-                    if not os.path.exists(test_mod_file):
-                        error = "Missing testmod file '{}', checked {} and {}".format(
-                            modspath, testmods_dir, usermods_dir
-                        )
-                        self._log_output(test, error)
-                        return False, error
+                self._log_output(test, error)
 
-                create_newcase_cmd += "{} ".format(test_mod_file)
+                return False, error
+            else:
+                test_mods_paths = " ".join(test_mods_paths)
+
+                create_newcase_cmd += f"{test_mods_paths}"
 
         # create_test mpilib option overrides default but not explicitly set case_opt mpilib
         if mpilib is None and self._mpilib is not None:
@@ -784,9 +790,16 @@ class TestScheduler(object):
         test_dir = self._get_test_dir(test)
         envtest = EnvTest(test_dir)
 
+        # Find driver. It may be different for the current test if V testopt is used
+        driver = self._cime_driver
+        if case_opts is not None:
+            for case_opt in case_opts:  # pylint: disable=not-an-iterable
+                if case_opt.startswith("V"):
+                    driver = case_opt[1:]
+
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
-        files = Files(comp_interface=self._cime_driver)
+        files = Files(comp_interface=driver)
         ufs_driver = os.environ.get("UFS_DRIVER")
         attribute = None
         if ufs_driver:
@@ -794,13 +807,11 @@ class TestScheduler(object):
 
         drv_config_file = files.get_value("CONFIG_CPL_FILE", attribute=attribute)
 
-        if self._cime_driver == "nuopc" and not os.path.exists(drv_config_file):
+        if driver == "nuopc" and not os.path.exists(drv_config_file):
             drv_config_file = files.get_value("CONFIG_CPL_FILE", {"component": "cpl"})
         expect(
             os.path.exists(drv_config_file),
-            "File {} not found, cime driver {}".format(
-                drv_config_file, self._cime_driver
-            ),
+            "File {} not found, cime driver {}".format(drv_config_file, driver),
         )
 
         drv_comp = Component(drv_config_file, "CPL")
@@ -886,7 +897,7 @@ class TestScheduler(object):
                     envtest.set_test_parameter("USE_ESMF_LIB", "TRUE")
                     logger.debug(" USE_ESMF_LIB set to TRUE")
 
-                elif opt == "CG":
+                elif opt == "cG":
                     envtest.set_test_parameter("CALENDAR", "GREGORIAN")
                     logger.debug(" CALENDAR set to {}".format(opt))
 
@@ -925,7 +936,9 @@ class TestScheduler(object):
                 elif opt.startswith("A"):
                     # A option is for testing in ASYNC IO mode, only available with nuopc driver and pio2
                     envtest.set_test_parameter("PIO_ASYNC_INTERFACE", "TRUE")
-                    envtest.set_test_parameter("CIME_DRIVER", "nuopc")
+                    expect(
+                        driver == "nuopc", "ASYNC IO mode only works with nuopc driver"
+                    )
                     envtest.set_test_parameter("PIO_VERSION", "2")
                     match = re.match("A([0-9]+)x?([0-9])*", opt)
                     envtest.set_test_parameter("PIO_NUMTASKS_CPL", match.group(1))
@@ -990,6 +1003,10 @@ class TestScheduler(object):
             if self._model_build_cost > self._proc_pool:
                 case.set_value("GMAKE_J", self._proc_pool)
                 self._model_build_cost = self._proc_pool
+            elif self._batched_build:
+                # May as well use whole node for batched builds
+                max_tasks = self._machobj.get_value("MAX_TASKS_PER_NODE")
+                case.set_value("GMAKE_J", max_tasks)
 
         return True, ""
 
@@ -1011,10 +1028,14 @@ class TestScheduler(object):
                 from_dir=test_dir,
                 env=env,
             )
-            expect(
-                cmdstat in [0, TESTS_FAILED_ERR_CODE],
-                "Fatal error in case.cmpgen_namelists: {}".format(output),
-            )
+            try:
+                expect(
+                    cmdstat in [0, TESTS_FAILED_ERR_CODE],
+                    "Fatal error in case.cmpgen_namelists: {}".format(output),
+                )
+            except Exception:
+                self._update_test_status_file(test, SETUP_PHASE, TEST_FAIL_STATUS)
+                raise
 
         if self._single_exe:
             with Case(self._get_test_dir(test), read_only=False) as case:
@@ -1045,9 +1066,23 @@ class TestScheduler(object):
                 )
 
         test_dir = self._get_test_dir(test)
+
+        # When BATCHED_BUILD is enabled and sharedlib builds are not serialized,
+        # skip the sharedlib-only step here and fuse it with the model build so
+        # the entire build runs in a single batch job submission.
+        if self._batched_build and not self._config.serialize_sharedlib_builds:
+            return True, ""
+
+        cmd = "./case.build --sharedlib-only"
+        if not self._batched_build:
+            cmd += " --no-batch-build"
+        if self._ninja:
+            cmd += " --ninja"
+        elif self._gmake:
+            cmd += " --gmake"
         return self._shell_cmd_for_phase(
             test,
-            "./case.build --sharedlib-only",
+            cmd,
             SHAREDLIB_BUILD_PHASE,
             from_dir=test_dir,
         )
@@ -1084,8 +1119,25 @@ class TestScheduler(object):
                     first_test
                 )
 
+        cmd = "./case.build"
+        if self._ninja:
+            cmd += " --ninja"
+        elif self._gmake:
+            cmd += " --gmake"
+
+        # When BATCHED_BUILD is enabled and sharedlib builds are not serialized,
+        # the sharedlib phase was skipped; run a full build (sharedlib + model)
+        # here in a single batch job submission.
+        if self._batched_build and not self._config.serialize_sharedlib_builds:
+            return self._shell_cmd_for_phase(
+                test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
+            )
+
+        cmd += " --model-only"
+        if not self._batched_build:
+            cmd += " --no-batch-build"
         return self._shell_cmd_for_phase(
-            test, "./case.build --model-only", MODEL_BUILD_PHASE, from_dir=test_dir
+            test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
         )
 
     ###########################################################################
@@ -1135,6 +1187,11 @@ class TestScheduler(object):
     ###########################################################################
     def _get_procs_needed(self, test, phase, threads_in_flight=None, no_batch=False):
         ###########################################################################
+        """
+        Return the number of processors/cores needed to run phase of test.
+
+        Returns None if the phase of this test is currently ineligible to run.
+        """
         # For build pools, we must wait for the first case to complete XML, SHAREDLIB,
         # and MODEL_BUILD phases before the other cases can do those phases
         is_first_test, first_test, _ = self._get_build_group(test)
@@ -1147,7 +1204,7 @@ class TestScheduler(object):
             ]
             if phase in build_group_dep_phases:
                 if self._get_test_status(first_test, phase=phase) == TEST_PEND_STATUS:
-                    return self._proc_pool + 1
+                    return None  # None indicates job is ineligible to run
                 else:
                     return 1
 
@@ -1163,7 +1220,7 @@ class TestScheduler(object):
                 # them all in parallel
                 for _, _, running_phase in threads_in_flight.values():
                     if running_phase == SHAREDLIB_BUILD_PHASE:
-                        return self._proc_pool + 1
+                        return None
 
             return 1
         elif phase == MODEL_BUILD_PHASE:
@@ -1274,6 +1331,73 @@ class TestScheduler(object):
             self._consumer(test, RUN_PHASE, self._run_phase)
 
     ###########################################################################
+    def _producer_indv_test_launch(self, test, threads_in_flight):
+        ###########################################################################
+        """
+        Launch the next phase of test if possible. Return True if launched
+        """
+        test_phase, test_status = self._get_test_data(test)
+        expect(test_status != TEST_PEND_STATUS, test)
+        next_phase = self._phases[self._phases.index(test_phase) + 1]
+        procs_needed = self._get_procs_needed(test, next_phase, threads_in_flight)
+
+        if procs_needed is None:
+            # This test cannot run now so skip
+            return False
+
+        elif procs_needed > self._proc_pool:
+            # This test is asking for more than we can ever provide
+            # This should only ever happen for RUN_PHASE
+            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool ({self._proc_pool})"
+            expect(next_phase == RUN_PHASE, msg)
+
+            # CIME phase won't be run, so we need to update TEST_STATUS ourselves
+            self._update_test_status_file(test, SUBMIT_PHASE, TEST_PASS_STATUS)
+            self._update_test_status_file(test, RUN_PHASE, TEST_FAIL_STATUS)
+
+            # Update our internal state that this test failed
+            self._update_test_status(test, next_phase, TEST_PEND_STATUS)
+            self._update_test_status(test, next_phase, TEST_FAIL_STATUS)
+
+            logger.warning(msg)
+            self._log_output(test, msg)
+
+            # We did run the phase in some sense in that we instantly failed it
+            return True
+
+        elif procs_needed <= self._procs_avail:
+            # We can run this test!
+            self._procs_avail -= procs_needed
+
+            # Necessary to print this way when multiple threads printing
+            logger.info(
+                f"Starting {next_phase} for test {test} with {procs_needed} procs"
+            )
+
+            self._update_test_status(test, next_phase, TEST_PEND_STATUS)
+            phase_method = getattr(self, f"_{next_phase.lower()}_phase")
+            new_thread = threading.Thread(
+                target=self._consumer,
+                args=(test, next_phase, phase_method),
+            )
+            threads_in_flight[test] = (new_thread, procs_needed, next_phase)
+            new_thread.start()
+
+            logger.debug("  Current workload:")
+            total_procs = 0
+            for the_test, the_data in threads_in_flight.items():
+                logger.debug(f"    {the_test}: {the_data[2]} -> {the_data[1]}")
+                total_procs += the_data[1]
+
+            logger.debug(f"    Total procs in use: {total_procs}")
+
+            return True
+
+        else:
+            # There aren't enough free procs to run this phase, so skip
+            return False
+
+    ###########################################################################
     def _producer(self):
         ###########################################################################
         threads_in_flight = {}  # test-name -> (thread, procs, phase)
@@ -1290,81 +1414,14 @@ class TestScheduler(object):
                     if len(threads_in_flight) == self._parallel_jobs:
                         break
 
+                    # Check if this test is already running a phase. If so, we can't
+                    # launch a new phase now.
                     if test not in threads_in_flight:
-                        test_phase, test_status = self._get_test_data(test)
-                        expect(test_status != TEST_PEND_STATUS, test)
-                        next_phase = self._phases[self._phases.index(test_phase) + 1]
-                        procs_needed = self._get_procs_needed(
-                            test, next_phase, threads_in_flight
+                        launched = self._producer_indv_test_launch(
+                            test, threads_in_flight
                         )
-
-                        if procs_needed <= self._procs_avail:
-                            self._procs_avail -= procs_needed
-
-                            # Necessary to print this way when multiple threads printing
-                            logger.info(
-                                "Starting {} for test {} with {:d} procs".format(
-                                    next_phase, test, procs_needed
-                                )
-                            )
-
-                            self._update_test_status(test, next_phase, TEST_PEND_STATUS)
-                            new_thread = threading.Thread(
-                                target=self._consumer,
-                                args=(
-                                    test,
-                                    next_phase,
-                                    getattr(
-                                        self, "_{}_phase".format(next_phase.lower())
-                                    ),
-                                ),
-                            )
-                            threads_in_flight[test] = (
-                                new_thread,
-                                procs_needed,
-                                next_phase,
-                            )
-                            new_thread.start()
+                        if launched:
                             num_threads_launched_this_iteration += 1
-
-                            logger.debug("  Current workload:")
-                            total_procs = 0
-                            for the_test, the_data in threads_in_flight.items():
-                                logger.debug(
-                                    "    {}: {} -> {}".format(
-                                        the_test, the_data[2], the_data[1]
-                                    )
-                                )
-                                total_procs += the_data[1]
-
-                            logger.debug(
-                                "    Total procs in use: {}".format(total_procs)
-                            )
-                        else:
-                            if not threads_in_flight:
-                                msg = "Phase '{}' for test '{}' required more processors, {:d}, than this machine can provide, {:d}".format(
-                                    next_phase, test, procs_needed, self._procs_avail
-                                )
-                                logger.warning(msg)
-                                self._update_test_status(
-                                    test, next_phase, TEST_PEND_STATUS
-                                )
-                                self._update_test_status(
-                                    test, next_phase, TEST_FAIL_STATUS
-                                )
-                                self._log_output(test, msg)
-                                if next_phase == RUN_PHASE:
-                                    self._update_test_status_file(
-                                        test, SUBMIT_PHASE, TEST_PASS_STATUS
-                                    )
-                                    self._update_test_status_file(
-                                        test, next_phase, TEST_FAIL_STATUS
-                                    )
-                                else:
-                                    self._update_test_status_file(
-                                        test, next_phase, TEST_FAIL_STATUS
-                                    )
-                                num_threads_launched_this_iteration += 1
 
             if not work_to_do:
                 break
@@ -1429,6 +1486,7 @@ class TestScheduler(object):
         check_throughput=False,
         check_memory=False,
         ignore_namelists=False,
+        ignore_diffs=False,
         ignore_memleak=False,
     ):
         ###########################################################################
@@ -1484,6 +1542,7 @@ class TestScheduler(object):
             check_throughput=check_throughput,
             check_memory=check_memory,
             ignore_namelists=ignore_namelists,
+            ignore_diffs=ignore_diffs,
             ignore_memleak=ignore_memleak,
             no_run=self._no_run,
             expect_test_complete=expect_test_complete,

@@ -26,10 +26,6 @@ def get_tests_from_xml(
     """
     listoftests = []
     testlistfiles = []
-    if machine is not None:
-        thismach = machine
-    if compiler is not None:
-        thiscompiler = compiler
 
     if xml_testlist is not None:
         expect(
@@ -62,8 +58,13 @@ def get_tests_from_xml(
         for test in newtests:
             if machine is None:
                 thismach = test["machine"]
+            else:
+                thismach = machine
             if compiler is None:
                 thiscompiler = test["compiler"]
+            else:
+                thiscompiler = compiler
+
             test["name"] = CIME.utils.get_full_test_name(
                 test["testname"],
                 grid=test["grid"],

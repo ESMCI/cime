@@ -4,8 +4,9 @@ case_test is a member of class Case from case.py
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, find_system_test, append_testlog, find_proc_id
+from CIME.utils import expect, find_system_test, find_proc_id
 from CIME.SystemTests.system_tests_common import *
+from CIME.status import append_testlog
 
 import sys, signal
 

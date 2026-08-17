@@ -64,6 +64,7 @@ class BaseTestCase(unittest.TestCase):
         self._cprnc = self.MACHINE.get_value("CCSM_CPRNC")
         customize_path = os.path.join(utils.get_src_root(), "cime_config", "customize")
         self._config = Config.load(customize_path)
+        self._driver = utils.get_cime_default_driver()
 
     def tearDown(self):
         self.kill_subprocesses()
@@ -202,16 +203,16 @@ class BaseTestCase(unittest.TestCase):
         run_errors=False,
         env_changes="",
         default_baseline_area=False,
+        expect_cases_made=True,
     ):
         """
         Convenience wrapper around create_test. Returns list of full paths to created cases. If multiple cases,
         the order of the returned list is not guaranteed to match the order of the arguments.
         """
         # All stub model not supported in nuopc driver
-        driver = utils.get_cime_default_driver()
-        if driver == "nuopc" and "cime_developer" in extra_args:
+        if self._driver == "nuopc" and "cime_developer" in extra_args:
             extra_args.append(
-                " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV"
+                " ^SMS_Ln3.T42_T42.S ^PRE.f19_f19.ADESP_TEST ^PRE.f19_f19.ADESP ^DAE.ww3a.ADWAV ^IRT_N2_Vmct_Ln9.f19_g16.A"
             )
 
         test_id = (
@@ -260,7 +261,13 @@ class BaseTestCase(unittest.TestCase):
                 )
                 cases.append(casedir)
 
-        self.assertTrue(len(cases) > 0, "create_test made no cases")
+        if expect_cases_made:
+            self.assertTrue(len(cases) > 0, "create_test made no cases")
+        else:
+            self.assertTrue(
+                len(cases) == 0,
+                "create_test unexpectedly made {} case(s)".format(len(cases)),
+            )
 
         return cases[0] if len(cases) == 1 else cases
 

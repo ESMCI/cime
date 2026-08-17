@@ -22,7 +22,7 @@ except ImportError:
 # suite_name : {
 #     "inherit" : (suite1, suite2, ...), # Optional. Suites to inherit tests from. Default is None. Tuple, list, or str.
 #     "time"    : "HH:MM:SS",            # Optional. Recommended upper-limit on test time.
-#     "share"   : True|False,            # Optional. If True, all tests in this suite share a build. Default is False.
+#     "share"   : True|False|"testname", # Optional. If True, all tests share a build (first in suite order leads). If a test name string, that test's build is shared. Default is False.
 #     "perf"    : True|False,            # Optional. If True, all tests in this suite will do performance tracking. Default is False.
 #     "tests"   : (test1, test2, ...)    # Optional. The list of tests for this suite. See above for format. Tuple, list, or str. This is the ONLY inheritable attribute.
 # }
@@ -31,36 +31,36 @@ _CIME_TESTS = {
     "cime_tiny": {
         "time": "0:10:00",
         "tests": (
-            "ERS.f19_g16_rx1.A",
-            "NCK.f19_g16_rx1.A",
+            "ERS.f19_g16.A",
+            "NCK.f19_g16.A",
         ),
     },
     "cime_test_only_pass": {
         "time": "0:10:00",
         "tests": (
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P1.ne30_g16_rx1.A",
-            "TESTRUNPASS_P1.f45_g37_rx1.A",
+            "TESTRUNPASS_P1.f19_g16.A",
+            "TESTRUNPASS_P1.ne30_g16.A",
+            "TESTRUNPASS_P1.f45_g37.A",
         ),
     },
     "cime_test_only_slow_pass": {
         "time": "0:10:00",
         "tests": (
-            "TESTRUNSLOWPASS_P1.f19_g16_rx1.A",
-            "TESTRUNSLOWPASS_P1.ne30_g16_rx1.A",
-            "TESTRUNSLOWPASS_P1.f45_g37_rx1.A",
+            "TESTRUNSLOWPASS_P1.f19_g16.A",
+            "TESTRUNSLOWPASS_P1.ne30_g16.A",
+            "TESTRUNSLOWPASS_P1.f45_g37.A",
         ),
     },
     "cime_test_only": {
         "time": "0:10:00",
         "tests": (
-            "TESTBUILDFAIL_P1.f19_g16_rx1.A",
-            "TESTBUILDFAILEXC_P1.f19_g16_rx1.A",
-            "TESTRUNFAIL_P1.f19_g16_rx1.A",
-            "TESTRUNSTARCFAIL_P1.f19_g16_rx1.A",
-            "TESTRUNFAILEXC_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
-            "TESTTESTDIFF_P1.f19_g16_rx1.A",
+            "TESTBUILDFAIL_P1.f19_g16.A",
+            "TESTBUILDFAILEXC_P1.f19_g16.A",
+            "TESTRUNFAIL_P1.f19_g16.A",
+            "TESTRUNSTARCFAIL_P1.f19_g16.A",
+            "TESTRUNFAILEXC_P1.f19_g16.A",
+            "TESTRUNPASS_P1.f19_g16.A",
+            "TESTTESTDIFF_P1.f19_g16.A",
             "TESTMEMLEAKFAIL_P1.f09_g16.X",
             "TESTMEMLEAKPASS_P1.f09_g16.X",
         ),
@@ -68,26 +68,36 @@ _CIME_TESTS = {
     "cime_test_all": {
         "inherit": "cime_test_only",
         "time": "0:10:00",
-        "tests": "TESTRUNDIFF_P1.f19_g16_rx1.A",
+        "tests": "TESTRUNDIFF_P1.f19_g16.A",
     },
     "cime_test_share": {
         "time": "0:10:00",
         "share": True,
         "tests": (
-            "SMS_P2.f19_g16_rx1.A",
-            "SMS_P4.f19_g16_rx1.A",
-            "SMS_P8.f19_g16_rx1.A",
-            "SMS_P16.f19_g16_rx1.A",
+            "SMS_P2.f19_g16.A",
+            "SMS_P4.f19_g16.A",
+            "SMS_P8.f19_g16.A",
+            "SMS_P16.f19_g16.A",
         ),
     },
     "cime_test_share2": {
         "time": "0:10:00",
         "share": True,
         "tests": (
-            "SMS_P2.f19_g16_rx1.X",
-            "SMS_P4.f19_g16_rx1.X",
-            "SMS_P8.f19_g16_rx1.X",
-            "SMS_P16.f19_g16_rx1.X",
+            "SMS_P2.f19_g16.X",
+            "SMS_P4.f19_g16.X",
+            "SMS_P8.f19_g16.X",
+            "SMS_P16.f19_g16.X",
+        ),
+    },
+    "cime_test_share3": {
+        "time": "0:10:00",
+        "share": "SMS_P8.f45_g37.A",
+        "tests": (
+            "SMS_P2.f45_g37.A",
+            "SMS_P4.f45_g37.A",
+            "SMS_P8.f45_g37.A",
+            "SMS_P16.f45_g37.A",
         ),
     },
     "cime_test_perf": {
@@ -106,14 +116,14 @@ _CIME_TESTS = {
     },
     "cime_test_repeat": {
         "tests": (
-            "TESTRUNPASS_P1.f19_g16_rx1.A",
-            "TESTRUNPASS_P2.ne30_g16_rx1.A",
-            "TESTRUNPASS_P4.f45_g37_rx1.A",
+            "TESTRUNPASS_P1.f19_g16.A",
+            "TESTRUNPASS_P2.ne30_g16.A",
+            "TESTRUNPASS_P4.f45_g37.A",
         )
     },
     "cime_test_time": {
         "time": "0:13:00",
-        "tests": ("TESTRUNPASS_P69.f19_g16_rx1.A.testmod",),
+        "tests": ("TESTRUNPASS_P69.f19_g16.A.testmod",),
     },
     "cime_test_multi_inherit": {
         "inherit": ("cime_test_repeat", "cime_test_only_pass", "cime_test_all")
@@ -121,27 +131,45 @@ _CIME_TESTS = {
     "cime_developer": {
         "time": "0:15:00",
         "tests": (
-            "NCK_Ld3.f45_g37_rx1.A",
+            "NCK_Ld3.f45_g37.A",
             "ERI_Ln9.f09_g16.X",
             "ERIO_Ln11.f09_g16.X",
-            "SEQ_Ln9.f19_g16_rx1.A",
-            "ERS.ne30_g16_rx1.A.drv-y100k",
-            "IRT_N2_Vmct_Ln9.f19_g16_rx1.A",
-            "ERR_Ln9.f45_g37_rx1.A",
-            "ERP_Ln9.f45_g37_rx1.A",
-            "SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A",
+            "SEQ_Ln9.f19_g16.A",
+            "ERS.ne30_g16.A",
+            "IRT_N2_Vmct_Ln9.f19_g16.A",
+            "ERR_Ln9.f45_g37.A",
+            "ERP_Ln9.f45_g37.A",
+            "SMS_D_Ln9_Mmpi-serial.f19_g16.A",
             "PET_Ln9_P4.f19_f19.A",
             "PEM_Ln9_P4.f19_f19.A",
             "SMS_Ln3.T42_T42.S",
             "PRE.f19_f19.ADESP",
             "PRE.f19_f19.ADESP_TEST",
-            "MCC_P1.f19_g16_rx1.A",
-            "LDSTA.f45_g37_rx1.A",
+            "MCC_P1.f19_g16.A",
+            "LDSTA.f45_g37.A",
         ),
     },
 }
 
 _ALL_TESTS.update(_CIME_TESTS)
+
+###############################################################################
+def _short_test_name(full_test_name):
+    ###############################################################################
+    """
+    Return the test name without the machine_compiler component.
+
+    Full test name format: TEST.GRID.COMPSET.MACHINE_COMPILER[.TESTMODS]
+    Short test name format: TEST.GRID.COMPSET[.TESTMODS]
+
+    >>> _short_test_name("SMS_P2.f19_g16.A.melvin_gnu")
+    'SMS_P2.f19_g16.A'
+    >>> _short_test_name("SMS_P2.f19_g16.A.melvin_gnu.testmod")
+    'SMS_P2.f19_g16.A.testmod'
+    """
+    parts = full_test_name.split(".")
+    return ".".join(parts[:3] + parts[4:])
+
 
 ###############################################################################
 def _get_key_data(raw_dict, key, the_type):
@@ -174,7 +202,10 @@ def _get_key_data(raw_dict, key, the_type):
 def get_test_data(suite):
     ###############################################################################
     """
-    For a given suite, returns (inherit, time, share, perf, tests)
+    For a given suite, returns (inherit, time, share, perf, tests).
+
+    share is False, True, or a test name string. When share is a string, it
+    names the test in the suite whose build is used as the shared build.
     """
     raw_dict = _ALL_TESTS[suite]
     for key in raw_dict.keys():
@@ -183,10 +214,18 @@ def get_test_data(suite):
             "Unexpected test key '{}'".format(key),
         )
 
+    share_val = raw_dict.get("share", False)
+    expect(
+        isinstance(share_val, (bool, str)),
+        "Wrong type for share, {} is a {} but expected bool or str".format(
+            share_val, type(share_val)
+        ),
+    )
+
     return (
         _get_key_data(raw_dict, "inherit", tuple),
         _get_key_data(raw_dict, "time", str),
-        _get_key_data(raw_dict, "share", bool),
+        share_val,
         _get_key_data(raw_dict, "perf", bool),
         _get_key_data(raw_dict, "tests", tuple),
     )
@@ -274,30 +313,49 @@ def get_build_groups(tests):
     Given a list of tests, return a list of lists, with each list representing
     a group of tests that can share executables.
 
-    >>> tests = ["SMS_P2.f19_g16_rx1.A.melvin_gnu", "SMS_P4.f19_g16_rx1.A.melvin_gnu", "SMS_P2.f19_g16_rx1.X.melvin_gnu", "SMS_P4.f19_g16_rx1.X.melvin_gnu", "TESTRUNSLOWPASS_P1.f19_g16_rx1.A.melvin_gnu", "TESTRUNSLOWPASS_P1.ne30_g16_rx1.A.melvin_gnu"]
-    >>> get_build_groups(tests)
-    [('SMS_P2.f19_g16_rx1.A.melvin_gnu', 'SMS_P4.f19_g16_rx1.A.melvin_gnu'), ('SMS_P2.f19_g16_rx1.X.melvin_gnu', 'SMS_P4.f19_g16_rx1.X.melvin_gnu'), ('TESTRUNSLOWPASS_P1.f19_g16_rx1.A.melvin_gnu',), ('TESTRUNSLOWPASS_P1.ne30_g16_rx1.A.melvin_gnu',)]
-    """
-    build_groups = []  # list of tuples ([tests], set(suites))
+    When a suite's share field is a test name string, that test is placed first
+    in its build group and acts as the build leader.
 
-    # Get a list of suites that share exes
+    >>> tests = ["SMS_P2.f19_g16.A.melvin_gnu", "SMS_P4.f19_g16.A.melvin_gnu", "SMS_P2.f19_g16.X.melvin_gnu", "SMS_P4.f19_g16.X.melvin_gnu", "TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu", "TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu"]
+    >>> get_build_groups(tests)
+    [('SMS_P2.f19_g16.A.melvin_gnu', 'SMS_P4.f19_g16.A.melvin_gnu'), ('SMS_P2.f19_g16.X.melvin_gnu', 'SMS_P4.f19_g16.X.melvin_gnu'), ('TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu',), ('TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu',)]
+    >>> tests2 = ["SMS_P2.f45_g37.A.melvin_gnu", "SMS_P4.f45_g37.A.melvin_gnu", "SMS_P8.f45_g37.A.melvin_gnu", "SMS_P16.f45_g37.A.melvin_gnu"]
+    >>> get_build_groups(tests2)
+    [('SMS_P8.f45_g37.A.melvin_gnu', 'SMS_P2.f45_g37.A.melvin_gnu', 'SMS_P4.f45_g37.A.melvin_gnu', 'SMS_P16.f45_g37.A.melvin_gnu')]
+    """
+    #
+    # Get share suites and their designated build leaders (if any)
+    #
     suites = get_test_suites()
-    share_suites = []
+    share_suites = []  # list of suites with exe sharing on
+    # suite -> short test name for specified leader if provided
+    share_suite_leaders = {}
     for suite in suites:
         share = get_test_data(suite)[2]
         if share:
             share_suites.append(suite)
+            if isinstance(share, str):
+                share_suite_leaders[suite] = share
 
-    # Divide tests up into build groups. Assumes that build-compatibility is transitive
+    #
+    # Divide tests up into build groups. Assumes that build-compatibility is transitive.
+    #
+
+    # list of tuples, groups tests with sharable builds ([tests], set(suites))
+    build_groups = []
     for test in tests:
         matched = False
 
+        # Find which suites have this test
         my_share_suites = set()
         for suite in share_suites:
             if suite_has_test(suite, test, skip_inherit=True):
                 my_share_suites.add(suite)
 
-        # Try to match this test with an existing build group
+        # Try to match this test with an existing build group. If there is
+        # any overlap in suites with an existing build group, then this test
+        # can be added to that build group. Again, this is all assumes build
+        # compatibility is transitive.
         if my_share_suites:
             for build_group_tests, build_group_suites in build_groups:
                 overlap = build_group_suites & my_share_suites
@@ -311,7 +369,34 @@ def get_build_groups(tests):
         if not matched:
             build_groups.append(([test], my_share_suites))
 
-    return [tuple(item[0]) for item in build_groups]
+    #
+    # Reorder each group to put the designated build leader first (string share)
+    #
+    final_groups = []
+    for group_tests, group_suites in build_groups:
+        # Due to transitivity, if there are multiple build leaders, we can
+        # just pick the first one.
+        leader_short = None
+        for suite in sorted(group_suites):
+            if suite in share_suite_leaders:
+                leader_short = share_suite_leaders[suite]
+                break
+
+        # If a designate build leader was found, ensure it comes first in the group
+        if leader_short is not None:
+            for i, t in enumerate(group_tests):
+                if _short_test_name(t) == leader_short:
+                    group_tests.insert(0, group_tests.pop(i))
+                    break
+            else:
+                expect(
+                    False,
+                    f"Designated share build leader '{leader_short}' not found in build group {group_tests}",
+                )
+
+        final_groups.append(tuple(group_tests))
+
+    return final_groups
 
 
 ###############################################################################
@@ -322,9 +407,9 @@ def is_perf_test(test):
 
     >>> is_perf_test("SMS_P2.T42_T42.S.melvin_gnu")
     True
-    >>> is_perf_test("SMS_P2.f19_g16_rx1.X.melvin_gnu")
+    >>> is_perf_test("SMS_P2.f19_g16.X.melvin_gnu")
     False
-    >>> is_perf_test("PFS_P2.f19_g16_rx1.X.melvin_gnu")
+    >>> is_perf_test("PFS_P2.f19_g16.X.melvin_gnu")
     True
     """
     # Get a list of performance suites
@@ -346,17 +431,17 @@ def infer_arch_from_tests(testargs):
     """
     Return a tuple (machine, [compilers]) that can be inferred from the test args
 
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A"])
     (None, [])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu9", "NCK.f19_g16_rx1.A.melvin_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu9", "NCK.f19_g16.A.melvin_gnu"])
     ('melvin', ['gnu9', 'gnu'])
-    >>> infer_arch_from_tests(["NCK.f19_g16_rx1.A.melvin_gnu", "NCK.f19_g16_rx1.A.mappy_gnu"])
+    >>> infer_arch_from_tests(["NCK.f19_g16.A.melvin_gnu", "NCK.f19_g16.A.mappy_gnu"])  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     CIME.utils.CIMEError: ERROR: Must have consistent machine 'melvin' != 'mappy'
@@ -404,19 +489,19 @@ def get_full_test_names(testargs, machine, compiler):
     Testargs can be categories or test names and support the NOT symbol '^'
 
     >>> get_full_test_names(["cime_tiny"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu']
+    ['ERS.f19_g16.A.melvin_gnu', 'NCK.f19_g16.A.melvin_gnu']
 
-    >>> get_full_test_names(["cime_tiny", "PEA_P1_M.f45_g37_rx1.A"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
+    >>> get_full_test_names(["cime_tiny", "PEA_P1_M.f45_g37.A"], "melvin", "gnu")
+    ['ERS.f19_g16.A.melvin_gnu', 'NCK.f19_g16.A.melvin_gnu', 'PEA_P1_M.f45_g37.A.melvin_gnu']
 
-    >>> get_full_test_names(['ERS.f19_g16_rx1.A', 'NCK.f19_g16_rx1.A', 'PEA_P1_M.f45_g37_rx1.A'], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu', 'NCK.f19_g16_rx1.A.melvin_gnu', 'PEA_P1_M.f45_g37_rx1.A.melvin_gnu']
+    >>> get_full_test_names(['ERS.f19_g16.A', 'NCK.f19_g16.A', 'PEA_P1_M.f45_g37.A'], "melvin", "gnu")
+    ['ERS.f19_g16.A.melvin_gnu', 'NCK.f19_g16.A.melvin_gnu', 'PEA_P1_M.f45_g37.A.melvin_gnu']
 
-    >>> get_full_test_names(["cime_tiny", "^NCK.f19_g16_rx1.A"], "melvin", "gnu")
-    ['ERS.f19_g16_rx1.A.melvin_gnu']
+    >>> get_full_test_names(["cime_tiny", "^NCK.f19_g16.A"], "melvin", "gnu")
+    ['ERS.f19_g16.A.melvin_gnu']
 
     >>> get_full_test_names(["cime_test_multi_inherit"], "melvin", "gnu")
-    ['TESTBUILDFAILEXC_P1.f19_g16_rx1.A.melvin_gnu', 'TESTBUILDFAIL_P1.f19_g16_rx1.A.melvin_gnu', 'TESTMEMLEAKFAIL_P1.f09_g16.X.melvin_gnu', 'TESTMEMLEAKPASS_P1.f09_g16.X.melvin_gnu', 'TESTRUNDIFF_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNFAILEXC_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNFAIL_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P1.f19_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P1.f45_g37_rx1.A.melvin_gnu', 'TESTRUNPASS_P1.ne30_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P2.ne30_g16_rx1.A.melvin_gnu', 'TESTRUNPASS_P4.f45_g37_rx1.A.melvin_gnu', 'TESTRUNSTARCFAIL_P1.f19_g16_rx1.A.melvin_gnu', 'TESTTESTDIFF_P1.f19_g16_rx1.A.melvin_gnu']
+    ['TESTBUILDFAILEXC_P1.f19_g16.A.melvin_gnu', 'TESTBUILDFAIL_P1.f19_g16.A.melvin_gnu', 'TESTMEMLEAKFAIL_P1.f09_g16.X.melvin_gnu', 'TESTMEMLEAKPASS_P1.f09_g16.X.melvin_gnu', 'TESTRUNDIFF_P1.f19_g16.A.melvin_gnu', 'TESTRUNFAILEXC_P1.f19_g16.A.melvin_gnu', 'TESTRUNFAIL_P1.f19_g16.A.melvin_gnu', 'TESTRUNPASS_P1.f19_g16.A.melvin_gnu', 'TESTRUNPASS_P1.f45_g37.A.melvin_gnu', 'TESTRUNPASS_P1.ne30_g16.A.melvin_gnu', 'TESTRUNPASS_P2.ne30_g16.A.melvin_gnu', 'TESTRUNPASS_P4.f45_g37.A.melvin_gnu', 'TESTRUNSTARCFAIL_P1.f19_g16.A.melvin_gnu', 'TESTTESTDIFF_P1.f19_g16.A.melvin_gnu']
     """
     expect(machine is not None, "Must define a machine")
     expect(compiler is not None, "Must define a compiler")
@@ -462,10 +547,10 @@ def get_full_test_names(testargs, machine, compiler):
 def get_recommended_test_time(test_full_name):
     ###############################################################################
     """
-    >>> get_recommended_test_time("ERS.f19_g16_rx1.A.melvin_gnu")
+    >>> get_recommended_test_time("ERS.f19_g16.A.melvin_gnu")
     '0:10:00'
 
-    >>> get_recommended_test_time("TESTRUNPASS_P69.f19_g16_rx1.A.melvin_gnu.testmod")
+    >>> get_recommended_test_time("TESTRUNPASS_P69.f19_g16.A.melvin_gnu.testmod")
     '0:13:00'
 
     >>> get_recommended_test_time("PET_Ln20.ne30_ne30.FC5.sandiatoss3_intel.cam-outfrq9s")

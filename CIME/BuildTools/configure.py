@@ -28,7 +28,7 @@ from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
 from CIME.build import CmakeTmpBuildDir
 
-import shutil
+import shutil, glob
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +72,12 @@ def configure(
         output_cmake_macros_dir = os.path.join(output_dir, "cmake_macros")
         if not os.path.exists(output_cmake_macros_dir):
             shutil.copytree(new_cmake_macros_dir, output_cmake_macros_dir)
+            ccs_mach_dir = os.path.join(
+                new_cmake_macros_dir, "..", machobj.get_machine_name()
+            )
+            for f in glob.iglob(os.path.join(ccs_mach_dir, "*.cmake")):
+                print(f"copying {f} to {output_cmake_macros_dir}")
+                safe_copy(f, output_cmake_macros_dir)
 
         copy_local_macros_to_dir(
             output_cmake_macros_dir, extra_machdir=extra_machines_dir
@@ -136,7 +142,9 @@ def copy_depends_files(machine_name, machines_dir, output_dir, compiler):
 
 
 class FakeCase(object):
-    def __init__(self, compiler, mpilib, debug, comp_interface, threading=False):
+    def __init__(
+        self, compiler, mpilib, debug, comp_interface, threading=False, gpu_type="none"
+    ):
         # PIO_VERSION is needed to parse config_machines.xml but isn't otherwise used
         # by FakeCase
         self._vals = {
@@ -145,6 +153,7 @@ class FakeCase(object):
             "DEBUG": debug,
             "COMP_INTERFACE": comp_interface,
             "PIO_VERSION": 2,
+            "GPU_TYPE": gpu_type,
             "BUILD_THREADED": threading,
             "MODEL": get_model(),
             "SRCROOT": get_src_root(),

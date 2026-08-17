@@ -13,10 +13,12 @@ from CIME.XML.standard_module_setup import *
 # pylint: disable=import-error,redefined-builtin
 from CIME import utils
 from CIME.config import Config
-from CIME.utils import expect, get_cime_root, append_status
+from CIME.status import append_status
+from CIME.utils import expect, get_cime_root
 from CIME.utils import convert_to_type, get_model, set_model
 from CIME.utils import get_project, get_charge_account, check_name
 from CIME.utils import get_current_commit, safe_copy, get_cime_default_driver
+from CIME.gitinterface import GitInterface
 from CIME.locked_files import LOCKED_DIR, lock_file
 from CIME.XML.machines import Machines
 from CIME.XML.pes import Pes
@@ -27,6 +29,7 @@ from CIME.XML.compsets import Compsets
 from CIME.XML.grids import Grids
 from CIME.XML.batch import Batch
 from CIME.XML.workflow import Workflow
+from CIME.XML.postprocessing import Postprocessing
 from CIME.XML.pio import PIO
 from CIME.XML.archive import Archive
 from CIME.XML.env_test import EnvTest
@@ -38,6 +41,7 @@ from CIME.XML.env_run import EnvRun
 from CIME.XML.env_archive import EnvArchive
 from CIME.XML.env_batch import EnvBatch
 from CIME.XML.env_workflow import EnvWorkflow
+from CIME.XML.env_postprocessing import EnvPostprocessing
 from CIME.XML.generic_xml import GenericXML
 from CIME.user_mod_support import apply_user_mods
 from CIME.aprun import get_aprun_cmd_for_case
@@ -77,7 +81,7 @@ class Case(object):
 
     """
 
-    from CIME.case.case_setup import case_setup
+    from CIME.case.case_setup import case_setup, _create_case_repo
     from CIME.case.case_clone import create_clone, _copy_user_modified_to_clone
     from CIME.case.case_test import case_test
     from CIME.case.case_submit import check_DA_settings, check_case, submit
@@ -90,11 +94,6 @@ class Case(object):
     )
     from CIME.case.case_run import case_run
     from CIME.case.case_cmpgen_namelists import case_cmpgen_namelists
-    from CIME.case.check_lockedfiles import (
-        check_lockedfile,
-        check_lockedfiles,
-        check_pelayouts_require_rebuild,
-    )
     from CIME.case.preview_namelists import create_dirs, create_namelists
     from CIME.case.check_input_data import (
         check_all_input_data,
@@ -103,7 +102,6 @@ class Case(object):
     )
 
     def __init__(self, case_root=None, read_only=True, record=False, non_local=False):
-
         if case_root is None:
             case_root = os.getcwd()
         expect(
@@ -113,6 +111,7 @@ class Case(object):
                 case_root
             ),
         )
+        self._existing_case = os.path.isdir(case_root)
 
         self._caseroot = case_root
         logger.debug("Initializing Case.")
@@ -169,7 +168,7 @@ class Case(object):
         self._component_description = {}
         self._is_env_loaded = False
         self._loaded_envs = None
-
+        self._gitinterface = None
         # these are user_mods as defined in the compset
         # Command Line user_mods are handled seperately
 
@@ -204,6 +203,10 @@ class Case(object):
                             mach == probed_machine,
                             f"Current machine {probed_machine} does not match case machine {mach}.",
                         )
+                if os.path.exists(os.path.join(self.get_value("CASEROOT"), ".git")):
+                    self._gitinterface = GitInterface(
+                        self.get_value("CASEROOT"), logger
+                    )
 
             self.initialize_derived_attributes()
 
@@ -270,10 +273,10 @@ class Case(object):
             self.tasks_per_node = env_mach_pes.get_tasks_per_node(
                 self.total_tasks, self.thread_count
             )
-
             self.num_nodes, self.spare_nodes = env_mach_pes.get_total_nodes(
                 self.total_tasks, self.thread_count
             )
+
             self.num_nodes += self.spare_nodes
 
         logger.debug(
@@ -356,6 +359,10 @@ class Case(object):
         self._env_entryid_files.append(
             EnvWorkflow(self._caseroot, read_only=self._force_read_only)
         )
+        if not self._existing_case or os.path.isfile("env_postprocessing.xml"):
+            self._env_entryid_files.append(
+                EnvPostprocessing(self._caseroot, read_only=self._force_read_only)
+            )
 
         if os.path.isfile(os.path.join(self._caseroot, "env_test.xml")):
             self._env_entryid_files.append(
@@ -430,6 +437,19 @@ class Case(object):
             # do not flush if caseroot wasnt created
             return
 
+        _postprocessing_spec_file = self.get_value("POSTPROCESSING_SPEC_FILE")
+        if _postprocessing_spec_file is not None:
+            have_postprocessing = os.path.isfile(_postprocessing_spec_file)
+        else:
+            have_postprocessing = False
+        if not have_postprocessing:
+            # Remove env_postprocessing.xml from self._files
+            self._files = [
+                file
+                for file in self._files
+                if file.get_id() != "env_postprocessing.xml"
+            ]
+
         for env_file in self._files:
             env_file.write(force_write=flushall)
 
@@ -441,19 +461,24 @@ class Case(object):
             )
             if len(results) > 0:
                 new_results = []
+
                 if resolved:
                     for result in results:
                         if isinstance(result, str):
-                            result = self.get_resolved_value(result)
+                            result = self.get_resolved_value(result, subgroup=subgroup)
+
+                            # If still not resolved, we have a problem
+                            expect(
+                                "$" not in result,
+                                "Could not resolve variable {}".format(item),
+                            )
+
                             vtype = env_file.get_type_info(item)
-                            if vtype is not None or vtype != "char":
+
+                            if vtype is not None and vtype != "char":
                                 result = convert_to_type(result, vtype, item)
 
-                            new_results.append(result)
-
-                        else:
-                            new_results.append(result)
-
+                        new_results.append(result)
                 else:
                     new_results = results
 
@@ -463,6 +488,7 @@ class Case(object):
         return []
 
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
+        # TODO this needs to be moved into either create_test or create_newcase
         if item == "GPU_ENABLED":
             if not self.gpu_enabled:
                 if (
@@ -472,7 +498,6 @@ class Case(object):
                     self.gpu_enabled = True
             return "true" if self.gpu_enabled else "false"
 
-        result = None
         for env_file in self._files:
             # Wait and resolve in self rather than in env_file
             result = env_file.get_value(
@@ -481,15 +506,25 @@ class Case(object):
 
             if result is not None:
                 if resolved and isinstance(result, str):
-                    result = self.get_resolved_value(result)
+                    result = self.get_resolved_value(result, subgroup=subgroup)
+
+                    if "$" in result:
+                        # last ditch effort to get variable from any group
+                        result = self.get_resolved_value(result)
+
+                    # If still not resolved, we have a problem
+                    expect(
+                        "$" not in result, "Could not resolve variable {}".format(item)
+                    )
+
                     vtype = env_file.get_type_info(item)
+
                     if vtype is not None and vtype != "char":
                         result = convert_to_type(result, vtype, item)
 
                 return result
 
-        # Return empty result
-        return result
+        return None
 
     def get_record_fields(self, variable, field):
         """get_record_fields gets individual requested field from an entry_id file
@@ -548,13 +583,17 @@ class Case(object):
 
         return result
 
-    def get_resolved_value(self, item, recurse=0, allow_unresolved_envvars=False):
+    def get_resolved_value(
+        self, item, recurse=0, allow_unresolved_envvars=False, subgroup=None
+    ):
         num_unresolved = item.count("$") if item else 0
         recurse_limit = 10
         if num_unresolved > 0 and recurse < recurse_limit:
             for env_file in self._env_entryid_files:
                 item = env_file.get_resolved_value(
-                    item, allow_unresolved_envvars=allow_unresolved_envvars
+                    item,
+                    allow_unresolved_envvars=allow_unresolved_envvars,
+                    subgroup=subgroup,
                 )
             if "$" not in item:
                 return item
@@ -563,6 +602,7 @@ class Case(object):
                     item,
                     recurse=recurse + 1,
                     allow_unresolved_envvars=allow_unresolved_envvars,
+                    subgroup=subgroup,
                 )
 
         return item
@@ -587,6 +627,13 @@ class Case(object):
             "Cannot modify case, read_only. "
             "Case must be opened with read_only=False and can only be modified within a context manager",
         )
+
+        # Only validate references e.g. $<variable> or $<subgroup>::<variable>
+        if isinstance(value, str) and value.startswith("$"):
+            expect(
+                len(value.split("::")) <= 2,
+                f"Value {value!r} is not valid, a namespaced reference must be in the form $SUBGROUP::VARIABLE",
+            )
 
         if item == "CASEROOT":
             self._caseroot = value
@@ -682,7 +729,6 @@ class Case(object):
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
         # that has a match for either the alias or the longname in that order
         for component in components:
-
             # Determine the compsets file for this component
             compsets_filename = files.get_value(
                 "COMPSETS_SPEC_FILE", {"component": component}
@@ -990,7 +1036,7 @@ class Case(object):
             if ":" in element:
                 element = element[4:]
             # ignore the possible BGC or TEST modifier
-            if element.startswith("BGC%") or element.startswith("TEST"):
+            if element.upper().startswith("BGC%") or element.upper().startswith("TEST"):
                 continue
             else:
                 element_component = element.split("%")[0].lower()
@@ -1158,7 +1204,9 @@ class Case(object):
         pes_nthrds = {}
         pes_rootpe = {}
         pes_pstrid = {}
+        pes_excl_stride = {}
         other = {}
+        append = {}
         comment = None
         force_tasks = None
         force_thrds = None
@@ -1186,7 +1234,9 @@ class Case(object):
                 pes_nthrds,
                 pes_rootpe,
                 pes_pstrid,
+                pes_excl_stride,
                 other,
+                append,
                 comment,
             ) = pesobj.find_pes_layout(
                 self._gridname,
@@ -1214,9 +1264,24 @@ class Case(object):
         mach_pes_obj.add_comment(comment)
 
         if other is not None:
-            logger.info("setting additional fields from config_pes: {}".format(other))
+            logger.info(
+                "setting additional fields from config_pes: {}, append {}".format(
+                    other, append
+                )
+            )
             for key, value in list(other.items()):
-                self.set_value(key, value)
+                ovalue = ""
+                if (
+                    value.startswith('"')
+                    and value.endswith('"')
+                    or value.startswith("'")
+                    and value.endswith("'")
+                ):
+                    value = value[1:-1]
+                if key in append and append[key]:
+                    ovalue = self.get_value(key)
+
+                self.set_value(key, value + " " + ovalue)
 
         totaltasks = []
         for comp_class in self._component_classes:
@@ -1224,17 +1289,24 @@ class Case(object):
             nthrds_str = "NTHRDS_{}".format(comp_class)
             rootpe_str = "ROOTPE_{}".format(comp_class)
             pstrid_str = "PSTRID_{}".format(comp_class)
+            excl_stride_str = "EXCL_STRIDE_{}".format(comp_class)
 
             ntasks = pes_ntasks[ntasks_str] if ntasks_str in pes_ntasks else 1
             nthrds = pes_nthrds[nthrds_str] if nthrds_str in pes_nthrds else 1
             rootpe = pes_rootpe[rootpe_str] if rootpe_str in pes_rootpe else 0
             pstrid = pes_pstrid[pstrid_str] if pstrid_str in pes_pstrid else 1
+            excl_stride = (
+                pes_excl_stride[excl_stride_str]
+                if excl_stride_str in pes_excl_stride
+                else 0
+            )
 
             totaltasks.append((ntasks + rootpe) * nthrds)
             mach_pes_obj.set_value(ntasks_str, ntasks)
             mach_pes_obj.set_value(nthrds_str, nthrds)
             mach_pes_obj.set_value(rootpe_str, rootpe)
             mach_pes_obj.set_value(pstrid_str, pstrid)
+            mach_pes_obj.set_value(excl_stride_str, excl_stride)
 
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
@@ -1280,11 +1352,7 @@ class Case(object):
         non_local=False,
         extra_machines_dir=None,
         case_group=None,
-        ngpus_per_node=0,
-        gpu_type=None,
-        gpu_offload=None,
     ):
-
         expect(
             check_name(compset_name, additional_chars="."),
             "Invalid compset name {}".format(compset_name),
@@ -1388,24 +1456,24 @@ class Case(object):
             )
 
         self.set_value("COMPILER", compiler)
+        machobj.set_value("COMPILER", compiler)
 
         if mpilib is None:
-            mpilib = machobj.get_default_MPIlib({"compiler": compiler})
+            mpilib = machobj.get_default_MPIlib()
         else:
             expect(
-                machobj.is_valid_MPIlib(mpilib, {"compiler": compiler}),
+                machobj.is_valid_MPIlib(mpilib),
                 "MPIlib {} is not supported on machine {}".format(mpilib, machine_name),
             )
         self.set_value("MPILIB", mpilib)
+        machobj.set_value("MPILIB", mpilib)
         for name in (
             "MAX_TASKS_PER_NODE",
             "MAX_MPITASKS_PER_NODE",
             "MAX_CPUTASKS_PER_GPU_NODE",
             "MAX_GPUS_PER_NODE",
         ):
-            dmax = machobj.get_value(name, {"compiler": compiler})
-            if not dmax:
-                dmax = machobj.get_value(name)
+            dmax = machobj.get_value(name)
             if dmax:
                 self.set_value(name, dmax)
             elif name == "MAX_CPUTASKS_PER_GPU_NODE":
@@ -1541,64 +1609,6 @@ class Case(object):
         if test:
             self.set_value("TEST", True)
 
-        # ----------------------------------------------------------------------------------------------------------
-        # Sanity check for a GPU run:
-        #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUS
-        #        2. if ngpus_per_node argument is larger than the value of MAX_GPUS_PER_NODE, the NGPUS_PER_NODE
-        #             XML variable in the env_mach_pes.xml file would be set to MAX_GPUS_PER_NODE automatically.
-        #        3. if ngpus-per-node argument is equal to 0, it will be updated to 1 automatically.
-        # ----------------------------------------------------------------------------------------------------------
-        max_gpus_per_node = self.get_value("MAX_GPUS_PER_NODE")
-        if gpu_type and str(gpu_type).lower() != "none":
-            expect(
-                max_gpus_per_node,
-                f"GPUS are not defined for machine={machine_name} and compiler={compiler}",
-            )
-            expect(
-                gpu_offload,
-                "Both gpu-type and gpu-offload must be defined if either is defined",
-            )
-            expect(
-                compiler in ["nvhpc", "cray"],
-                f"Only nvhpc and cray compilers are expected for a GPU run; the user given compiler is {compiler}, ",
-            )
-            valid_gpu_type = self.get_value("GPU_TYPE").split(",")
-            valid_gpu_type.remove("none")
-            expect(
-                gpu_type in valid_gpu_type,
-                f"Unsupported GPU type is given: {gpu_type} ; valid values are {valid_gpu_type}",
-            )
-            valid_gpu_offload = self.get_value("GPU_OFFLOAD").split(",")
-            valid_gpu_offload.remove("none")
-            expect(
-                gpu_offload in valid_gpu_offload,
-                f"Unsupported GPU programming model is given: {gpu_offload} ; valid values are {valid_gpu_offload}",
-            )
-            self.gpu_enabled = True
-            if ngpus_per_node >= 0:
-                self.set_value(
-                    "NGPUS_PER_NODE",
-                    max(1, ngpus_per_node)
-                    if ngpus_per_node <= max_gpus_per_node
-                    else max_gpus_per_node,
-                )
-        elif gpu_offload and str(gpu_offload).lower() != "none":
-            expect(
-                False,
-                "Both gpu-type and gpu-offload must be defined if either is defined",
-            )
-        elif ngpus_per_node != 0:
-            expect(
-                False,
-                f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;",
-            )
-
-        # Set these two GPU XML variables here to overwrite the default values
-        # Only set them for "cesm" model
-        if self._cime_model == "cesm":
-            self.set_value("GPU_TYPE", str(gpu_type).lower())
-            self.set_value("GPU_OFFLOAD", str(gpu_offload).lower())
-
         self.initialize_derived_attributes()
 
         # --------------------------------------------
@@ -1618,6 +1628,16 @@ class Case(object):
 
         workflow = Workflow(files=files)
 
+        postprocessing = Postprocessing(files=files)
+        if postprocessing.file_exists:
+            env_postprocessing = self.get_env("postprocessing")
+            env_postprocessing.add_elements_by_group(srcobj=postprocessing)
+            # Add cupid related fields to env_mach_pes.xml
+            env_mach_pes = self.get_env("mach_pes")
+            if env_mach_pes.get_value("CUPID_NTASKS") is None:
+                env_mach_pes.unlock()
+                env_mach_pes.add_elements_by_group(srcobj=postprocessing)
+                env_mach_pes.lock()
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
 
         bjobs = workflow.get_workflow_jobs(machine=machine_name, workflowid=workflowid)
@@ -1728,6 +1748,7 @@ class Case(object):
             os.path.join(toolsdir, "Makefile"),
             os.path.join(toolsdir, "mkSrcfiles"),
             os.path.join(toolsdir, "mkDepends"),
+            os.path.join(toolsdir, "wait_for_tests"),
         ]
 
         # used on Titan
@@ -1887,13 +1908,15 @@ directory, NOT in this subdirectory."""
                 component_class in self._component_description
                 and len(self._component_description[component_class]) > 0
             ):
-                append_status(
-                    "Component {} is {}".format(
-                        component_class, self._component_description[component_class]
-                    ),
-                    "README.case",
-                    caseroot=self._caseroot,
-                )
+                if "Stub" not in self._component_description[component_class]:
+                    append_status(
+                        "Component {} is {}".format(
+                            component_class,
+                            self._component_description[component_class],
+                        ),
+                        "README.case",
+                        caseroot=self._caseroot,
+                    )
             if component_class == "CPL":
                 append_status(
                     "Using %s coupler instances" % (self.get_value("NINST_CPL")),
@@ -1902,12 +1925,13 @@ directory, NOT in this subdirectory."""
                 )
                 continue
             comp_grid = "{}_GRID".format(component_class)
-
-            append_status(
-                "{} is {}".format(comp_grid, self.get_value(comp_grid)),
-                "README.case",
-                caseroot=self._caseroot,
-            )
+            grid_val = self.get_value(comp_grid)
+            if grid_val != "null":
+                append_status(
+                    "{} is {}".format(comp_grid, self.get_value(comp_grid)),
+                    "README.case",
+                    caseroot=self._caseroot,
+                )
             comp = str(self.get_value("COMP_{}".format(component_class)))
             user_mods = self._get_comp_user_mods(comp)
             if user_mods is not None:
@@ -2254,6 +2278,8 @@ directory, NOT in this subdirectory."""
                     new_env_file = EnvBatch(infile=xmlfile)
                 elif ftype == "env_workflow.xml":
                     new_env_file = EnvWorkflow(infile=xmlfile)
+                elif ftype == "env_postprocessing.xml":
+                    new_env_file = EnvPostprocessing(infile=xmlfile)
                 elif ftype == "env_test.xml":
                     new_env_file = EnvTest(infile=xmlfile)
                 elif ftype == "env_archive.xml":
@@ -2420,9 +2446,6 @@ directory, NOT in this subdirectory."""
         non_local=False,
         extra_machines_dir=None,
         case_group=None,
-        ngpus_per_node=0,
-        gpu_type=None,
-        gpu_offload=None,
     ):
         try:
             # Set values for env_case.xml
@@ -2495,9 +2518,6 @@ directory, NOT in this subdirectory."""
                 non_local=non_local,
                 extra_machines_dir=extra_machines_dir,
                 case_group=case_group,
-                ngpus_per_node=ngpus_per_node,
-                gpu_type=gpu_type,
-                gpu_offload=gpu_offload,
             )
 
             self.create_caseroot()

@@ -16,6 +16,6 @@ class TestSingleSubmit(base.BaseTestCase):
 
         # Keep small enough for now that we don't have to worry about load balancing
         self._create_test(
-            ["--single-submit", "SMS_Ln9_P8.f45_g37_rx1.A", "SMS_Ln9_P8.f19_g16_rx1.A"],
+            ["--single-submit", "SMS_Ln9_P8.f45_g37.A", "SMS_Ln9_P8.f19_g16.A"],
             env_changes="unset CIME_GLOBAL_WALLTIME &&",
         )

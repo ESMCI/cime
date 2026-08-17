@@ -1,6 +1,7 @@
 import re
 import unittest
 import tempfile
+from contextlib import ExitStack
 from unittest import mock
 from pathlib import Path
 
@@ -10,8 +11,11 @@ from CIME.bless_test_results import (
     _bless_memory,
     bless_history,
     bless_namelists,
-    is_bless_needed,
+    is_hist_bless_needed,
 )
+from CIME.test_status import ALL_PHASES, GENERATE_PHASE
+from CIME.tests import utils as test_utils
+from CIME.core.exceptions import CIMEError
 
 
 class TestUnitBlessTestResults(unittest.TestCase):
@@ -469,7 +473,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
-        ts.get_overall_test_status.return_value = ("PASS", "RUN")
+        ts.get_overall_test_status.return_value = ("DIFF", "MEMCOMP")
         ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
@@ -508,7 +512,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         ts = TestStatus.return_value
         ts.get_name.return_value = "SMS.f19_g16.S.docker_gnu"
-        ts.get_overall_test_status.return_value = ("PASS", "RUN")
+        ts.get_overall_test_status.return_value = ("DIFF", "TPUTCOMP")
         ts.get_status.side_effect = ["PASS", "PASS", "FAIL", "FAIL"]
 
         case = Case.return_value.__enter__.return_value
@@ -798,13 +802,21 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert not success
 
+    @mock.patch("CIME.utils.get_current_branch")
     @mock.patch("CIME.bless_test_results.bless_namelists")
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
     def test_baseline_name_none(
-        self, get_test_status_files, TestStatus, Case, bless_namelists
+        self,
+        get_test_status_files,
+        TestStatus,
+        Case,
+        bless_namelists,
+        get_current_branch,
     ):
+        get_current_branch.return_value = "master"
+
         bless_namelists.return_value = (True, "")
 
         get_test_status_files.return_value = [
@@ -909,6 +921,44 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         assert success
 
+    # TODO should update all tests to use mock_case
+    def test_bless_results_invalid_case(self):
+        with ExitStack() as stack:
+            tempdir = stack.enter_context(tempfile.TemporaryDirectory())
+            tests = [
+                (
+                    "SMS.T62_oQU120_ais20.A",
+                    "PASS {0} CREATE_NEWCASE\nPASS {0} XML\nPASS {0} SETUP",
+                ),
+                (
+                    "SMS.f19_g16.X",
+                    "PASS {0} CREATE_NEWCASE\nPASS {0} XML\nPASS {0} SETUP",
+                ),
+            ]
+
+            # call outer function with None to return mocked objects
+            cases = [
+                test_utils.mock_case(
+                    casename=f"{x[0]}.dane_oneapi-ifx.20251219_120951_epolnk",
+                    tempdir=tempdir,
+                )(None)
+                for x in tests
+            ]
+
+            caseroots = [Path(x[2]) for x in cases]
+
+            # write a simple test status file
+            for i, x in enumerate(caseroots):
+                x.mkdir(parents=True, exist_ok=True)
+                with (x / "TestStatus").open("w") as f:
+                    f.write(tests[i][1].format(tests[i][0]))
+
+            success = bless_test_results(
+                "master", "/tmp/baseline", str(caseroots[0].parent), "oneapi-ifx"
+            )
+
+            self.assertFalse(success)
+
     @mock.patch("CIME.bless_test_results.Case")
     @mock.patch("CIME.bless_test_results.TestStatus")
     @mock.patch("CIME.bless_test_results.get_test_status_files")
@@ -942,7 +992,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", True, "RUN"
         )
 
@@ -951,18 +1001,42 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
     def test_is_bless_needed_overall_fail(self):
         ts = mock.MagicMock()
+
+        # get_status() calls in is_hist_bless_needed()
         ts.get_status.side_effect = [
-            "PASS",
+            "PASS",  # Check of RUN_PHASE at top of function
+            "PASS",  # Check of GENERATE_PHASE
         ]
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "FAIL", False, "RUN"
         )
 
         assert not needed
         assert broken_blesses == [("SMS.f19_g16.A", "test did not pass")]
+
+    def test_is_bless_needed_generate_fail(self):
+        ts = mock.MagicMock()
+
+        # First two get_status() calls in is_hist_bless_needed()
+        side_effect = [
+            "PASS",  # Check of RUN_PHASE at top of function
+            "FAIL",  # Check of GENERATE_PHASE
+        ]
+        # Checks in `for p in ALL_PHASES` loop
+        side_effect += ["PASS" for p in ALL_PHASES if p != GENERATE_PHASE]
+        # Save
+        ts.get_status.side_effect = side_effect
+
+        broken_blesses = []
+
+        needed = is_hist_bless_needed(
+            "SMS.f19_g16.A", ts, broken_blesses, "FAIL", False, "RUN"
+        )
+
+        assert needed
 
     def test_is_bless_needed_baseline_fail(self):
         ts = mock.MagicMock()
@@ -970,7 +1044,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 
@@ -985,7 +1059,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 
@@ -998,7 +1072,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 
@@ -1011,7 +1085,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
 
         broken_blesses = []
 
-        needed = is_bless_needed(
+        needed = is_hist_bless_needed(
             "SMS.f19_g16.A", ts, broken_blesses, "PASS", False, "RUN"
         )
 

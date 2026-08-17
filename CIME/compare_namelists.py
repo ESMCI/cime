@@ -1,11 +1,11 @@
 import os, re, logging
-
-from collections import OrderedDict
-from CIME.utils import expect, CIMEError
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
 # pragma pylint: disable=unsubscriptable-object
+
 
 ###############################################################################
 def _normalize_lists(value_str):
@@ -73,11 +73,11 @@ def _interpret_value(value_str, filename):
     >>> _interpret_value("3*1.0", "foo")
     ['1.0', '1.0', '1.0']
     >>> _interpret_value("'DMS -> value.nc'", "foo")
-    OrderedDict([('DMS', 'value.nc')])
+    {'DMS': 'value.nc'}
     >>> _interpret_value("'DMS -> 1.0 * value.nc'", "foo")
-    OrderedDict([('DMS', '1.0*value.nc')])
+    {'DMS': '1.0*value.nc'}
     >>> _interpret_value("'DMS -> 1.0* value.nc'", "foo")
-    OrderedDict([('DMS', '1.0*value.nc')])
+    {'DMS': '1.0*value.nc'}
     """
     comma_re = re.compile(r"\s*,\s*")
     dict_re = re.compile(r"^'(\S+)\s*->\s*(\S+|(?:\S+\s*\*\s*\S+))\s*'")
@@ -87,7 +87,7 @@ def _interpret_value(value_str, filename):
     tokens = [item.strip() for item in comma_re.split(value_str) if item.strip() != ""]
     if "->" in value_str:
         # dict
-        rv = OrderedDict()
+        rv = {}
         for token in tokens:
             m = dict_re.match(token)
             expect(
@@ -151,7 +151,7 @@ def _parse_namelists(namelist_lines, filename):
     ... /
     ... '''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', "'foo'"), ('aval', ["'one'", "'two'", "'three'"]), ('maval', ["'one'", "'two'", "'three'", "'four'"]), ('dval', OrderedDict([('one', 'two'), ('three', 'four')])), ('mdval', OrderedDict([('one', 'two'), ('three', 'four'), ('five', 'six')])), ('nval', '1850')])), ('nml2', OrderedDict([('val2', '.false.')]))])
+    {'nml': {'val': "'foo'", 'aval': ["'one'", "'two'", "'three'"], 'maval': ["'one'", "'two'", "'three'", "'four'"], 'dval': {'one': 'two', 'three': 'four'}, 'mdval': {'one': 'two', 'three': 'four', 'five': 'six'}, 'nval': '1850'}, 'nml2': {'val2': '.false.'}}
 
     >>> teststr = '''&fire_emis_nl
     ... fire_emis_factors_file = 'fire_emis_factors_c140116.nc'
@@ -159,7 +159,7 @@ def _parse_namelists(namelist_lines, filename):
     ... /
     ... '''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('fire_emis_nl', OrderedDict([('fire_emis_factors_file', "'fire_emis_factors_c140116.nc'"), ('fire_emis_specifier', ["'bc_a1 = BC'", "'pom_a1 = 1.4*OC'", "'pom_a2 = A*B*C'", "'SO2 = SO2'"])]))])
+    {'fire_emis_nl': {'fire_emis_factors_file': "'fire_emis_factors_c140116.nc'", 'fire_emis_specifier': ["'bc_a1 = BC'", "'pom_a1 = 1.4*OC'", "'pom_a2 = A*B*C'", "'SO2 = SO2'"]}}
 
     >>> _parse_namelists('blah', 'foo') # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
@@ -196,19 +196,19 @@ def _parse_namelists(namelist_lines, filename):
     ... val = 2, 2*13
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', ['2', '13', '13'])]))])
+    {'nml': {'val': ['2', '13', '13']}}
 
     >>> teststr = '''&nml
     ... val = 2 2 3
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', ['2', '2', '3'])]))])
+    {'nml': {'val': ['2', '2', '3']}}
 
     >>> teststr = '''&nml
     ... val =  'a brown cow' 'a red hen'
     ... /'''
     >>> _parse_namelists(teststr.splitlines(), 'foo')
-    OrderedDict([('nml', OrderedDict([('val', ["'a brown cow'", "'a red hen'"])]))])
+    {'nml': {'val': ["'a brown cow'", "'a red hen'"]}}
     """
 
     comment_re = re.compile(r"^[#!]")
@@ -216,7 +216,7 @@ def _parse_namelists(namelist_lines, filename):
     name_re = re.compile(r"^([^\s=']+)\s*=\s*(.+)$")
     rcline_re = re.compile(r"^([^&\s':]+)\s*:\s*(.+)$")
 
-    rv = OrderedDict()
+    rv = {}
     current_namelist = None
     multiline_variable = None  # (name, value)
     for line in namelist_lines:
@@ -238,7 +238,7 @@ def _parse_namelists(namelist_lines, filename):
             logger.debug("  Parsing variable '{}' with data '{}'".format(name, value))
 
             if "seq_maps.rc" not in rv:
-                rv["seq_maps.rc"] = OrderedDict()
+                rv["seq_maps.rc"] = {}
 
             expect(
                 name not in rv["seq_maps.rc"],
@@ -261,7 +261,7 @@ def _parse_namelists(namelist_lines, filename):
             # to signify this event
             if namelist_re.match(line) is None:
                 expect(
-                    rv != OrderedDict(),
+                    rv != {},
                     "File '{}' does not appear to be a namelist file, skipping".format(
                         filename
                     ),
@@ -281,7 +281,7 @@ def _parse_namelists(namelist_lines, filename):
                 ),
             )
 
-            rv[current_namelist] = OrderedDict()
+            rv[current_namelist] = {}
 
             logger.debug("  Starting namelist '{}'".format(current_namelist))
 
@@ -342,7 +342,7 @@ def _parse_namelists(namelist_lines, filename):
             real_value = _interpret_value(line, filename)
             if type(current_value) is list:
                 expect(
-                    type(real_value) is not OrderedDict,
+                    type(real_value) is not dict,
                     "In file '{}', multiline list variable '{}' had dict entries".format(
                         filename, multiline_variable[0]
                     ),
@@ -350,9 +350,9 @@ def _parse_namelists(namelist_lines, filename):
                 real_value = real_value if type(real_value) is list else [real_value]
                 current_value.extend(real_value)
 
-            elif type(current_value) is OrderedDict:
+            elif type(current_value) is dict:
                 expect(
-                    type(real_value) is OrderedDict,
+                    type(real_value) is dict,
                     "In file '{}', multiline dict variable '{}' had non-dict entries".format(
                         filename, multiline_variable[0]
                     ),
@@ -459,7 +459,7 @@ def _compare_values(name, gold_value, comp_value, case):
                     name, comp_value_list_item
                 )
 
-    elif type(gold_value) is OrderedDict:
+    elif type(gold_value) is dict:
         for key, gold_value_dict_item in gold_value.items():
             if key in comp_value:
                 comments += _compare_values(
@@ -639,7 +639,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
       COMP: csw_specifier dict item DMS = 1.0*other.nc
     <BLANKLINE>
     """
-    different_namelists = OrderedDict()
+    different_namelists = {}
     for namelist, gold_names in gold_namelists.items():
         if namelist not in comp_namelists:
             different_namelists[namelist] = ["Missing namelist: {}\n".format(namelist)]
@@ -680,6 +680,140 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
 
 
 ###############################################################################
+def normalized_dict_compare(keyname, data1, data2, case):
+    ###############################################################################
+    r"""
+    Recursively compare contents of dicts, normalize values (but not keys)
+
+    >>> data1 = {'averaging_type': 'average', 'fields': {'physics_gll': {'field_names': ['T_mid', 'tracers', 'horiz_winds', 'p_int', 'pseudo_density', 'p_mid']}}, 'filename_prefix': 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.G.20250922_110259_eeywbj.scream.phys.h', 'output_control': {'frequency': 9, 'frequency_units': 'nsteps', 'skip_t0_output': False}, 'skip_t0_output': False}
+    >>> data2 = {'averaging_type': 'average', 'fields': {'physics_gll': {'field_names': ['T_mid', 'p_int', 'tracers', 'horiz_winds', 'pseudo_density', 'p_mid']}}, 'filename_prefix': 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.C.20250922_110260_easdfa.scream.phys.h', 'output_control': {'frequency': 9, 'frequency_units': 'nsteps', 'skip_t0_output': False}, 'skip_t0_output': False}
+    >>> normalized_dict_compare("top-level", data1, data2, 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2')
+    ''
+    >>> data2 = {'averaging_type': 'average', 'fields': {'physics_gll': {'field_names': ['T_mid', 'p_int', 'tracers', 'horiz_winds', 'pseudo_density', 'p_mid']}}, 'filename_prefix': 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2.C.20250922_110260_easdfa.scream.phys.h', 'output_control': {'frequency': 8, 'frequency_units': 'nsteps', 'skip_t0_output': False}, 'skip_t0_output': False}
+    >>> normalized_dict_compare("top-level", data1, data2, 'ERS_Ln9.ne4_ne4.F2000-SCREAMv1-AQP1.mappy_gnu.eamxx-output-preset-2')
+    'frequency had mismatched values, baseline=9, case=8\n'
+    >>>
+    """
+    # if data1 and data2 aren't even the same type, we must stop
+    if type(data1) != type(data2):
+        return f"For {keyname}, data does not have the same type. Baseline={type(data1)}, case={type(data2)}\n"
+
+    comments = ""
+    if isinstance(data1, dict):
+        keys1 = set(data1.keys())
+        keys2 = set(data1.keys())
+        one_not_two = keys1.difference(keys2)
+        two_not_one = keys2.difference(keys1)
+        if one_not_two:
+            comments += f"{keyname} baseline has keys not in case: {one_not_two}\n"
+        if two_not_one:
+            comments += f"{keyname} case has keys not in baseline: {two_not_one}\n"
+
+        for key in data1:
+            comments += normalized_dict_compare(key, data1[key], data2[key], case)
+
+    elif isinstance(data1, list):
+        list1 = set(
+            [_normalize_string_value(keyname, str(item), case) for item in data1]
+        )
+        list2 = set(
+            [_normalize_string_value(keyname, str(item), case) for item in data2]
+        )
+
+        one_not_two = list1.difference(list2)
+        two_not_one = list2.difference(list1)
+        if one_not_two:
+            comments += (
+                f"{keyname} baseline has list items not in case: {one_not_two}\n"
+            )
+        if two_not_one:
+            comments += (
+                f"{keyname} case has list items not in baseline: {two_not_one}\n"
+            )
+
+    elif isinstance(data1, str):
+        norm1 = _normalize_string_value(keyname, data1, case)
+        norm2 = _normalize_string_value(keyname, data2, case)
+        if norm1 != norm2:
+            comments += (
+                f"{keyname} had mismatched values, baseline='{norm1}', case='{norm2}'\n"
+            )
+
+    else:
+        if data1 != data2:
+            comments += (
+                f"{keyname} had mismatched values, baseline={data1}, case={data2}\n"
+            )
+
+    return comments
+
+
+class Array(list):
+    def __init__(self, vals, t):
+        super().__init__(t(v) for v in vals)
+
+
+class Bools(Array):
+    def __init__(self, vals):
+        Array.__init__(self, vals, bool)
+
+
+class Ints(Array):
+    def __init__(self, vals):
+        Array.__init__(self, vals, int)
+
+
+class Floats(Array):
+    def __init__(self, vals):
+        Array.__init__(self, vals, float)
+
+
+class Strings(Array):
+    def __init__(self, vals):
+        Array.__init__(self, vals, str)
+
+
+###############################################################################
+def array_constructor(loader, node):
+    ###############################################################################
+    entries = loader.construct_sequence(node)
+    if node.tag == "!bools":
+        return Bools(entries)
+    elif node.tag == "!ints":
+        return Ints(entries)
+    elif node.tag == "!floats":
+        return Floats(entries)
+    elif node.tag == "!strings":
+        return Strings(entries)
+    else:
+        raise ValueError(f"Invalid node tag={node.tag} for array constructor.")
+
+
+###############################################################################
+def _compare_yamls(gold_file, compare_file, case):
+    ###############################################################################
+    """
+    Compare contents of two YAML files
+    """
+    # If we have cases producing YAML files, we can probably safely assume we have
+    # pyyaml available to us.
+    import yaml
+
+    # Add array parsing knowledge to yaml loader
+    loader = yaml.SafeLoader
+    loader.add_constructor("!bools", array_constructor)
+    loader.add_constructor("!ints", array_constructor)
+    loader.add_constructor("!floats", array_constructor)
+    loader.add_constructor("!strings", array_constructor)
+
+    with open(gold_file, "r") as f1, open(compare_file, "r") as f2:
+        data1 = yaml.load(f1, Loader=loader)
+        data2 = yaml.load(f2, Loader=loader)
+
+    return normalized_dict_compare("top-level", data1, data2, case)
+
+
+###############################################################################
 def compare_namelist_files(gold_file, compare_file, case=None):
     ###############################################################################
     """
@@ -688,9 +822,15 @@ def compare_namelist_files(gold_file, compare_file, case=None):
     expect(os.path.exists(gold_file), "File not found: {}".format(gold_file))
     expect(os.path.exists(compare_file), "File not found: {}".format(compare_file))
 
-    gold_namelists = _parse_namelists(open(gold_file, "r").readlines(), gold_file)
-    comp_namelists = _parse_namelists(open(compare_file, "r").readlines(), compare_file)
-    comments = _compare_namelists(gold_namelists, comp_namelists, case)
+    if gold_file.endswith(".yaml") or gold_file.endswith(".yml"):
+        comments = _compare_yamls(gold_file, compare_file, case)
+    else:
+        gold_namelists = _parse_namelists(open(gold_file, "r").readlines(), gold_file)
+        comp_namelists = _parse_namelists(
+            open(compare_file, "r").readlines(), compare_file
+        )
+        comments = _compare_namelists(gold_namelists, comp_namelists, case)
+
     return comments == "", comments
 
 

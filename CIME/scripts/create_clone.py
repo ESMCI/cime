@@ -127,7 +127,7 @@ def _main_func():
     ###############################################################################
 
     (
-        case,
+        casepath,
         clone,
         keepexe,
         mach_dir,
@@ -138,6 +138,7 @@ def _main_func():
         startval,
     ) = parse_command_line(sys.argv)
 
+    casepath = os.path.abspath(casepath)
     cloneroot = os.path.abspath(clone)
     expect(os.path.isdir(cloneroot), "Missing cloneroot directory %s " % cloneroot)
 
@@ -152,10 +153,10 @@ def _main_func():
 
     for i in range(int(startval), int(startval) + ensemble):
         if ensemble > 1:
-            case = case[:-nint] + "{{0:0{0:d}d}}".format(nint).format(i)
+            casepath = casepath[:-nint] + "{{0:0{0:d}d}}".format(nint).format(i)
         with Case(cloneroot, read_only=False) as clone:
             clone.create_clone(
-                case,
+                casepath,
                 keepexe=keepexe,
                 mach_dir=mach_dir,
                 project=project,

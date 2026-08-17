@@ -1,5 +1,8 @@
-sphinx
+sphinx<8.0
 sphinxcontrib-programoutput
 sphinx-rtd-theme
-# git+https://github.com/esmci/sphinx_rtd_theme.git@version-dropdown-with-fixes
+sphinx-copybutton
 evv4esm
+xmlschema
+sphinx-toolbox
+sphinx-autobuild

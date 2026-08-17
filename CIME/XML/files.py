@@ -1,6 +1,7 @@
 """
 Interface to the config_files.xml file.  This class inherits from EntryID.py
 """
+
 import re
 import os
 from CIME.XML.standard_module_setup import *
@@ -12,6 +13,7 @@ from CIME.utils import (
     get_config_path,
     get_schema_path,
     get_model,
+    get_cime_default_driver,
 )
 
 logger = logging.getLogger(__name__)
@@ -27,7 +29,7 @@ class Files(EntryID):
         '$CIMEROOT/CIME/data/config/config_headers.xml'
         """
         if comp_interface is None:
-            comp_interface = "mct"
+            comp_interface = get_cime_default_driver()
         cimeroot = get_cime_root()
         cimeroot_parent = os.path.dirname(cimeroot)
         config_path = get_config_path()
@@ -55,7 +57,15 @@ class Files(EntryID):
             self.read(model_config_files)
             self.overwrite_existing_entries()
 
-    def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
+    # pylint: disable=arguments-differ
+    def get_value(
+        self,
+        vid,
+        attribute=None,
+        resolved=True,
+        subgroup=None,
+        attribute_required=False,
+    ):
         if vid == "COMP_ROOT_DIR_CPL":
             if self._cpl_comp:
                 attribute = self._cpl_comp
@@ -81,6 +91,9 @@ class Files(EntryID):
             value = super(Files, self).get_value(
                 vid, attribute=attribute, resolved=False, subgroup=subgroup
             )
+            if not value:
+                if attribute_required:
+                    return value
         if value is None:
             value = super(Files, self).get_value(
                 vid, attribute=None, resolved=False, subgroup=subgroup

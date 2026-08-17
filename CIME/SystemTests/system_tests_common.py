@@ -1,11 +1,12 @@
 """
 Base class for CIME system tests
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
+from CIME.status import append_testlog
 from CIME.utils import (
-    append_testlog,
     get_model,
     safe_copy,
     get_timestamp,
@@ -13,6 +14,7 @@ from CIME.utils import (
     expect,
     get_current_commit,
     SharedArea,
+    is_comp_standalone,
 )
 from CIME.test_status import *
 from CIME.hist_utils import (
@@ -35,8 +37,9 @@ from CIME.baselines.performance import (
     load_coupler_customization,
 )
 import CIME.build as build
+from datetime import datetime, timedelta
+import glob, gzip, time, traceback, os, math, calendar
 
-import glob, gzip, time, traceback, os
 from contextlib import ExitStack
 
 logger = logging.getLogger(__name__)
@@ -109,13 +112,219 @@ class SystemTestsCommon(object):
         self._init_environment(caseroot)
         self._init_locked_files(caseroot, expected)
         self._skip_pnl = False
+        self._rest_time = None
         self._cpllog = (
-            "drv" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
+            "med" if self._case.get_value("COMP_INTERFACE") == "nuopc" else "cpl"
         )
         self._ninja = False
         self._dry_run = False
         self._user_separate_builds = False
+        self._batched_build_active = False
         self._expected_num_cmp = None
+        self._rest_n = None
+        sc_file = os.path.join(caseroot, "shell_commands")
+        if os.path.isfile(sc_file):
+            with open(sc_file, "r") as fp:
+                for line in fp:
+                    match = re.search(r"REST_N\s*=\s*(\d+)", line)
+                    if match:
+                        self._rest_n = int(match.group(1))
+
+        # Does the model support this variable?
+        self._drv_restart_pointer = self._case.get_value("DRV_RESTART_POINTER")
+
+    def _set_drv_restart_pointer(self, value):
+        if self._drv_restart_pointer:
+            logger.info("setting DRV_RESTART_POINTER={}".format(value))
+            self._case.set_value("DRV_RESTART_POINTER", value)
+
+    def _set_restart_interval(
+        self, stop_n=None, stop_option=None, startdate=None, starttime=None
+    ):
+        if not stop_n:
+            stop_n = self._case.get_value("STOP_N")
+        if not stop_option:
+            stop_option = self._case.get_value("STOP_OPTION")
+
+        self._case.set_value("REST_OPTION", stop_option)
+
+        # We need to make sure the run is long enough and to set REST_N to a
+        # value that makes sense for all components
+        maxncpl = 10000
+        minncpl = 0
+        for comp in self._case.get_values("COMP_CLASSES"):
+            if comp == "CPL":
+                continue
+            compname = self._case.get_value("COMP_{}".format(comp))
+
+            # ignore stub components in this test.
+            if compname == "s{}".format(comp.lower()):
+                ncpl = None
+            else:
+                ncpl = self._case.get_value("{}_NCPL".format(comp))
+
+            if ncpl and maxncpl > ncpl:
+                maxncpl = ncpl
+            if ncpl and minncpl < ncpl:
+                minncpl = ncpl
+
+        comp_interface = self._case.get_value("COMP_INTERFACE")
+        # mct doesn't care about maxncpl so set it to minncpl
+        if comp_interface == "mct":
+            maxncpl = minncpl
+
+        ncpl_base_period = self._case.get_value("NCPL_BASE_PERIOD")
+        if ncpl_base_period == "hour":
+            coupling_secs = 3600 / maxncpl
+            timestep = 3600 / minncpl
+        elif ncpl_base_period == "day":
+            coupling_secs = 86400 / maxncpl
+            timestep = 86400 / minncpl
+        elif ncpl_base_period == "year":
+            coupling_secs = 31536000 / maxncpl
+            timestep = 31536000 / minncpl
+        elif ncpl_base_period == "decade":
+            coupling_secs = 315360000 / maxncpl
+            timestep = 315360000 / minncpl
+        else:
+            raise CIMEError("unhandled ncpl_base_period value")
+
+        # Convert stop_n to units of coupling intervals
+        factor = 1
+        if stop_option == "nsteps":
+            factor = timestep
+        elif stop_option == "nminutes":
+            factor = 60
+        elif stop_option == "nhours":
+            factor = 3600
+        elif stop_option == "ndays":
+            factor = 86400
+        elif stop_option == "nyears":
+            factor = 315360000
+        else:
+            expect(False, f"stop_option {stop_option} not available for this test")
+
+        stop_n_coupling_intervals = int(stop_n * factor // coupling_secs)
+        expect(
+            stop_n_coupling_intervals > 0,
+            "Bad STOP_N: {:d} ({:d} coupling intervals)".format(
+                stop_n, stop_n_coupling_intervals
+            ),
+        )
+
+        if self._rest_n:
+            rest_n = self._rest_n
+        else:
+            if self._case.get_value("TESTCASE") == "IRT":
+                rest_n = math.ceil(
+                    (stop_n_coupling_intervals // 3) * coupling_secs / factor
+                )
+            else:
+                rest_n = math.ceil(
+                    (stop_n_coupling_intervals // 2 + 1) * coupling_secs / factor
+                )
+
+        # Note that the error message here refers to STOP_N being too short, because
+        # that's the typical root cause of this problem
+        expect(
+            rest_n > 0 and rest_n < stop_n,
+            "ERROR: STOP_N value {:d} too short: results in REST_N = {:d}".format(
+                stop_n, rest_n
+            ),
+        )
+
+        cal = self._case.get_value("CALENDAR")
+        if not starttime:
+            starttime = self._case.get_value("START_TOD")
+        if not startdate:
+            startdate = self._case.get_value("RUN_STARTDATE")
+
+        if "-" in startdate:
+            syr, smon, sday = startdate.split("-")
+            syr = int(syr)
+            smon = int(smon)
+            sday = int(sday)
+        else:
+            startdate = int(startdate)
+            syr = int(startdate / 10000)
+            smon = int((startdate - syr * 10000) / 100)
+            sday = startdate - syr * 10000 - smon * 100
+
+        addyr = syr // 10000
+        syr = syr % 10000
+
+        startdatetime = datetime.strptime(
+            f"{syr:04d}{smon:02d}{sday:02d}", "%Y%m%d"
+        ) + timedelta(seconds=int(starttime))
+
+        if stop_option == "nsteps":
+            rtd = timedelta(seconds=rest_n * factor)
+        elif stop_option == "nminutes":
+            rtd = timedelta(minutes=rest_n)
+        elif stop_option == "nhours":
+            rtd = timedelta(hours=rest_n)
+        elif stop_option == "ndays":
+            rtd = timedelta(days=rest_n)
+        elif stop_option == "nyears":
+            rtd = timedelta(days=rest_n * 365)
+        else:
+            rtd = None
+            expect(False, f"stop_option {stop_option} not available for this test")
+
+        restdatetime = startdatetime + rtd
+        # We are working with python datatime and the model uses a NO_LEAP 365 day calendar
+        # so we need to correct for leap years
+        if cal == "NO_LEAP":
+            restdatetime = restdatetime + self._leap_year_correction(
+                startdatetime, restdatetime
+            )
+        ryr = int(restdatetime.year)
+        ryr += 10000 * addyr
+        self._rest_time = f".{ryr:04d}-{restdatetime.month:02d}-{restdatetime.day:02d}-"
+        h = restdatetime.hour
+        m = restdatetime.minute
+        s = restdatetime.second
+        self._rest_time += f"{(h*3600+m*60+s):05d}"
+
+        logger.info(
+            "doing an {0} {1} initial test with restart file at {2} {1}".format(
+                str(stop_n), stop_option, str(rest_n)
+            )
+        )
+        self._case.set_value("REST_N", rest_n)
+
+        return rest_n
+
+    @staticmethod
+    def _leap_year_correction(startdatetime, restdatetime):
+        """
+        Compute correction needed for restdate time if model is using NO_LEAP calendar
+
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("00031231","%Y%m%d"), datetime.strptime("00040101","%Y%m%d"))
+        datetime.timedelta(0)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20000225","%Y%m%d"), datetime.strptime("20000301","%Y%m%d"))
+        datetime.timedelta(days=1)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20010301","%Y%m%d"))
+        datetime.timedelta(0)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("20010225","%Y%m%d"), datetime.strptime("20050301","%Y%m%d"))
+        datetime.timedelta(days=1)
+        >>> SystemTestsCommon._leap_year_correction(datetime.strptime("18500101","%Y%m%d"), datetime.strptime("20201231","%Y%m%d"))
+        datetime.timedelta(days=42)
+        """
+        dayscorrected = 0
+        syr = startdatetime.year
+        smon = startdatetime.month
+        ryr = syr
+        rmon = restdatetime.month
+        while ryr < restdatetime.year:
+            if calendar.isleap(ryr):
+                dayscorrected += 1
+            ryr = ryr + 1
+        if rmon > 2 and (smon <= 2 or restdatetime.year > syr):
+            if calendar.isleap(ryr):
+                dayscorrected += 1
+        logger.info("correcting calendar for no leap {}".format(dayscorrected))
+        return timedelta(days=dayscorrected)
 
     def _init_environment(self, caseroot):
         """
@@ -130,10 +339,10 @@ class SystemTestsCommon(object):
         env_run.xml file. If it does exist, restore values changed in a previous
         run of the test.
         """
-        if is_locked("env_run.orig.xml"):
+        if is_locked("env_run.orig.xml", caseroot):
             self.compare_env_run(expected=expected)
         elif os.path.isfile(os.path.join(caseroot, "env_run.xml")):
-            lock_file("env_run.xml", caseroot=caseroot, newname="env_run.orig.xml")
+            lock_file("env_run.xml", caseroot, newname="env_run.orig.xml")
 
     def _resetup_case(self, phase, reset=False):
         """
@@ -155,6 +364,54 @@ class SystemTestsCommon(object):
             self._case.case_setup(reset=True, test_mode=True)
             fix_single_exe_case(self._case)
 
+    def setup(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the setup phase. setup_phase is the extension point
+        that subclasses should use.
+        """
+        self.setup_phase(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_phase(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        This is the default setup phase implementation, it just does an individual setup.
+        This is the subclass' extension point if they need to define a custom setup
+        phase.
+
+        PLEASE THROW EXCEPTION ON FAIL
+        """
+        self.setup_indv(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
+    def setup_indv(
+        self, clean=False, test_mode=False, reset=False, keep=False, disable_git=False
+    ):
+        """
+        Perform an individual setup
+        """
+        self._case.case_setup(
+            clean=clean,
+            test_mode=test_mode,
+            reset=reset,
+            keep=keep,
+            disable_git=disable_git,
+        )
+
     def build(
         self,
         sharedlib_only=False,
@@ -163,6 +420,7 @@ class SystemTestsCommon(object):
         dry_run=False,
         separate_builds=False,
         skip_submit=False,
+        batched_build_active=False,
     ):
         """
         Do NOT override this method, this method is the framework that
@@ -173,6 +431,7 @@ class SystemTestsCommon(object):
         self._ninja = ninja
         self._dry_run = dry_run
         self._user_separate_builds = separate_builds
+        self._batched_build_active = batched_build_active
 
         was_run_pend = self._test_status.current_is(RUN_PHASE, TEST_PEND_STATUS)
 
@@ -187,11 +446,21 @@ class SystemTestsCommon(object):
 
                 start_time = time.time()
                 try:
-                    self.build_phase(
-                        sharedlib_only=(phase_name == SHAREDLIB_BUILD_PHASE),
-                        model_only=(phase_name == MODEL_BUILD_PHASE),
-                    )
-                except BaseException as e:  # We want KeyboardInterrupts to generate FAIL status
+                    if (
+                        not model_only
+                        and not sharedlib_only
+                        and phase_name == SHAREDLIB_BUILD_PHASE
+                    ):
+                        # Fuse!
+                        pass
+                    else:
+                        self.build_phase(
+                            sharedlib_only=sharedlib_only,
+                            model_only=model_only,
+                        )
+                except (
+                    BaseException
+                ) as e:  # We want KeyboardInterrupts to generate FAIL status
                     success = False
                     if isinstance(e, CIMEError):
                         # Don't want to print stacktrace for a build failure since that
@@ -249,6 +518,7 @@ class SystemTestsCommon(object):
             ninja=self._ninja,
             dry_run=self._dry_run,
             separate_builds=self._user_separate_builds,
+            batched_build_active=self._batched_build_active,
         )
         logger.info("build_indv complete")
 
@@ -264,7 +534,13 @@ class SystemTestsCommon(object):
         """
         success = True
         start_time = time.time()
-        self._skip_pnl = skip_pnl
+        wav_comp = self._case.get_value("COMP_WAV")
+        # WW3 requires pnl to be run again after the build phase.
+        if wav_comp and wav_comp == "ww3":
+            self._skip_pnl = False
+        else:
+            self._skip_pnl = skip_pnl
+
         try:
             self._resetup_case(RUN_PHASE)
             do_baseline_ops = True
@@ -289,10 +565,12 @@ class SystemTestsCommon(object):
             if self._case.get_value("COMPARE_BASELINE"):
                 if do_baseline_ops:
                     self._phase_modifying_call(BASELINE_PHASE, self._compare_baseline)
-                    self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
-                    self._phase_modifying_call(
-                        THROUGHPUT_PHASE, self._compare_throughput
-                    )
+                    comp_standalone, _ = is_comp_standalone(self._case)
+                    if not comp_standalone:
+                        self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
+                        self._phase_modifying_call(
+                            THROUGHPUT_PHASE, self._compare_throughput
+                        )
                 else:
                     with self._test_status:
                         self._test_status.set_status(BASELINE_PHASE, TEST_PEND_STATUS)
@@ -456,7 +734,7 @@ class SystemTestsCommon(object):
             raise CIMEError(
                 "Could not find all inputdata on any server, try "
                 "manually running `./check_input_data --download "
-                f"--versbose` from {caseroot!r}."
+                f"--verbose` from {caseroot!r}."
             ) from None
         if submit_resubmits is None:
             do_resub = self._case.get_value("BATCH_SYSTEM") != "none"
@@ -759,11 +1037,16 @@ for some of your components.
             ts_comments = (
                 os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
             )
+            log_comments = "\n\n============ BASELINE COMPARE SYNOPSIS =============\n"
+            log_comments += ts_comments + "\n"
+            log_comments += "====================================================\n"
+            append_testlog(log_comments, self._orig_caseroot)
             self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
 
     def _generate_baseline(self):
         """
-        generate a new baseline case based on the current test
+        If you find yourself wanting to override this method, check whether you can accomplish what
+        you want using additional_baseline_generation() instead.
         """
         with self._test_status:
             # generate baseline
@@ -771,9 +1054,6 @@ for some of your components.
             append_testlog(comments, self._orig_caseroot)
             status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
             baseline_name = self._case.get_value("BASEGEN_CASE")
-            self._test_status.set_status(
-                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
-            )
             basegen_dir = os.path.join(
                 self._case.get_value("BASELINE_ROOT"),
                 self._case.get_value("BASEGEN_CASE"),
@@ -796,6 +1076,21 @@ for some of your components.
                         )
 
                         perf_write_baseline(self._case, basegen_dir, cpllog)
+
+                self.additional_baseline_generation(basegen_dir)
+
+            self._test_status.set_status(
+                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
+            )
+
+    def additional_baseline_generation(
+        self, basegen_dir
+    ):  # pylint: disable=unused-argument
+        """
+        Extension point for subclasses to perform additional operations during baseline generation
+        phase.
+        """
+        return
 
 
 def perf_check_for_memory_leak(case, tolerance):
@@ -1036,12 +1331,12 @@ class TESTRUNFAILRESET(TESTRUNFAIL):
 
 class TESTRUNFAILEXC(TESTRUNPASS):
     def run_phase(self):
-        raise RuntimeError("Exception from run_phase")
+        raise CIMEError("Exception from run_phase")
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
     def _st_archive_case_test(self):
-        raise RuntimeError("Exception from st archive")
+        raise CIMEError("Exception from st archive")
 
 
 class TESTBUILDFAIL(TESTRUNPASS):
@@ -1062,9 +1357,8 @@ class TESTBUILDFAIL(TESTRUNPASS):
 
 
 class TESTBUILDFAILEXC(FakeTest):
-    def __init__(self, case, **kwargs):
-        FakeTest.__init__(self, case, **kwargs)
-        raise RuntimeError("Exception from init")
+    def build_phase(self, sharedlib_only=False, model_only=False):
+        raise CIMEError("Exception from build")
 
 
 class TESTRUNUSERXMLCHANGE(FakeTest):

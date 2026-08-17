@@ -17,7 +17,7 @@ sys.path.insert(
 from CIME import utils
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd
-from distutils.spawn import find_executable
+from shutil import which
 import xml.etree.ElementTree as ET
 import grid_xml_converter
 
@@ -242,7 +242,7 @@ class PesTree(grid_xml_converter.DataTree):
                 root.append(ET.Element("WITH"))
             if a is not None:
                 root.append(a.to_cime5())
-        xmllint = find_executable("xmllint")
+        xmllint = which("xmllint")
         if xmllint is not None:
             run_cmd(
                 "{} --format --output {} -".format(xmllint, newfilename),

@@ -9,6 +9,24 @@ logger = logging.getLogger(__name__)
 
 
 class ArchiveBase(GenericXML):
+    def get_archive_specs(self):
+        components_element = self.get_child("components")
+
+        return self.get_children("comp_archive_spec", root=components_element)
+
+    def get_rpointer_nodes(self, root):
+        assert root.name == "comp_archive_spec"
+
+        return self.get_children("rpointer", root=root)
+
+    def get_rpointers(self, root):
+        for node in self.get_rpointer_nodes(root):
+            file = self.get_child("rpointer_file", root=node).text
+
+            content = self.get_child("rpointer_content", root=node).text
+
+            yield file, content
+
     def exclude_testing(self, compname):
         """
         Checks if component should be excluded from testing.
@@ -127,10 +145,6 @@ class ArchiveBase(GenericXML):
         # remove when component name is changed
         if model == "fv3gfs":
             model = "fv3"
-        if model == "cice5":
-            model = "cice"
-        if model == "ww3dev":
-            model = "ww3"
 
         hist_files = []
         extensions = self.get_hist_file_extensions(self.get_entry(dmodel))
@@ -143,7 +157,7 @@ class ArchiveBase(GenericXML):
         for ext in extensions:
             if ext.endswith("$") and has_suffix:
                 ext = ext[:-1]
-            string = model + r"\d?_?(\d{4})?\." + ext
+            string = model + r"\d?_?(\d{4})?(_d\d{2})?\." + ext
             if has_suffix:
                 if not suffix in string:
                     string += r"\." + suffix + "$"
@@ -237,10 +251,7 @@ def _get_extension(model, filepath, ext_regexes):
     # Remove with component namechange
     if model == "fv3gfs":
         model = "fv3"
-    if model == "cice5":
-        model = "cice"
-    if model == "ww3dev":
-        model = "ww3"
+
     basename = os.path.basename(filepath)
     m = None
     if ext_regexes is None:

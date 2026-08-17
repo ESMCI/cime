@@ -16,7 +16,7 @@ import shutil
 import logging
 
 from collections import OrderedDict
-from distutils import dir_util
+from shutil import copytree
 
 import pandas as pd
 import numpy as np
@@ -24,6 +24,7 @@ import numpy as np
 
 import CIME.test_status
 import CIME.utils
+from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -45,7 +46,9 @@ PERTURBATIONS = OrderedDict(
     ]
 )
 FCLD_NC = "cam.h0.cloud.nc"
-INIT_COND_FILE_TEMPLATE = "20210915.v2.ne4_oQU240.F2010.{}.{}.0002-{:02d}-01-00000.nc"
+INIT_COND_FILE_TEMPLATE = (
+    "20240305.v3p0p0.F2010.ne4pg2_oQU480.chrysalis.{}.{}.0002-{:02d}-01-00000.nc"
+)
 INSTANCE_FILE_TEMPLATE = "{}{}_{:04d}.h0.0001-01-01-00000{}.nc"
 
 
@@ -78,7 +81,7 @@ class PGN(SystemTestsCommon):
             if not model_only:
                 # Lay all of the components out concurrently
                 logger.debug(
-                    "PGN_INFO: Updating NINST for multi-instance in " "env_mach_pes.xml"
+                    "PGN_INFO: Updating NINST for multi-instance in env_mach_pes.xml"
                 )
                 for comp in ["ATM", "OCN", "WAV", "GLC", "ICE", "ROF", "LND"]:
                     ntasks = self._case.get_value("NTASKS_{}".format(comp))
@@ -95,8 +98,8 @@ class PGN(SystemTestsCommon):
         logger.debug("PGN_INFO: Updating user_nl_* files")
 
         csmdata_root = self._case.get_value("DIN_LOC_ROOT")
-        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4_v2_init")
-        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4_oQU240_v2_init")
+        csmdata_atm = os.path.join(csmdata_root, "atm/cam/inic/homme/ne4pg2_v3_init")
+        csmdata_lnd = os.path.join(csmdata_root, "lnd/clm2/initdata/ne4pg2_v3_init")
 
         iinst = 1
         for icond in range(1, NUMBER_INITIAL_CONDITIONS + 1):
@@ -222,10 +225,9 @@ class PGN(SystemTestsCommon):
             urlroot = CIME.utils.get_urlroot(mach_obj)
             if htmlroot is not None:
                 with CIME.utils.SharedArea():
-                    dir_util.copy_tree(
+                    copytree(
                         evv_out_dir,
                         os.path.join(htmlroot, "evv", case_name),
-                        preserve_mode=False,
                     )
                 if urlroot is None:
                     urlroot = "[{}_URL]".format(mach_name.capitalize())
@@ -234,11 +236,10 @@ class PGN(SystemTestsCommon):
                 viewing = (
                     "{}\n"
                     "    EVV viewing instructions can be found at: "
-                    "        https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/"
+                    "        https://github.com/ESMCI/CIME/blob/master/scripts/"
                     "climate_reproducibility/README.md#test-passfail-and-extended-output"
                     "".format(evv_out_dir)
                 )
-
             comments = (
                 "{} {} for test '{}'.\n"
                 "    {}\n"
@@ -252,7 +253,7 @@ class PGN(SystemTestsCommon):
                 )
             )
 
-            CIME.utils.append_testlog(comments, self._orig_caseroot)
+            append_testlog(comments, self._orig_caseroot)
 
     def run_phase(self):
         logger.debug("PGN_INFO: RUN PHASE")

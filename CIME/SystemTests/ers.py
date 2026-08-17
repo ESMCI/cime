@@ -16,29 +16,21 @@ class ERS(SystemTestsCommon):
         SystemTestsCommon.__init__(self, case, **kwargs)
 
     def _ers_first_phase(self):
-        stop_n = self._case.get_value("STOP_N")
-        stop_option = self._case.get_value("STOP_OPTION")
-        rest_n = self._case.get_value("REST_N")
-        expect(stop_n > 0, "Bad STOP_N: {:d}".format(stop_n))
-
-        expect(stop_n > 2, "ERROR: stop_n value {:d} too short".format(stop_n))
-        logger.info(
-            "doing an {0} {1} initial test with restart file at {2} {1}".format(
-                str(stop_n), stop_option, str(rest_n)
-            )
-        )
+        self._rest_n = self._set_restart_interval()
+        # set_restart_interval can change case settings that buildnmls may depend on
+        # so ensure buildnmls will not be skipped during case_run
+        self._skip_pnl = False
         self.run_indv()
 
     def _ers_second_phase(self):
         stop_n = self._case.get_value("STOP_N")
         stop_option = self._case.get_value("STOP_OPTION")
 
-        rest_n = int(stop_n / 2 + 1)
-        stop_new = stop_n - rest_n
+        stop_new = stop_n - self._rest_n
         expect(
             stop_new > 0,
             "ERROR: stop_n value {:d} too short {:d} {:d}".format(
-                stop_new, stop_n, rest_n
+                stop_new, stop_n, self._rest_n
             ),
         )
         rundir = self._case.get_value("RUNDIR")
@@ -47,7 +39,13 @@ class ERS(SystemTestsCommon):
                 pfile,
                 os.path.join(os.path.dirname(pfile), "run1." + os.path.basename(pfile)),
             )
+        ninst = self._case.get_value("NINST")
+        drvrest = "rpointer.cpl"
+        if ninst is not None and ninst > 1:
+            drvrest += "_0001"
+        drvrest += self._rest_time
 
+        self._set_drv_restart_pointer(drvrest)
         self._case.set_value("HIST_N", stop_n)
         self._case.set_value("STOP_N", stop_new)
         self._case.set_value("CONTINUE_RUN", True)

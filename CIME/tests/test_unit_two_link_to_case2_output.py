@@ -30,6 +30,8 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
             self, case1, separate_builds=False, run_two_suffix=run_two_suffix
         )
 
+        self._setup_cases_if_not_yet_done()
+
     # ------------------------------------------------------------------------
     # Stubs of methods called by SystemTestsCommon.__init__ that interact with
     # the system or case object in ways we want to avoid here

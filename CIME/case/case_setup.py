@@ -13,16 +13,19 @@ from CIME.BuildTools.configure import (
     copy_depends_files,
 )
 from CIME.utils import (
-    run_and_log_case_status,
     get_batch_script_for_job,
     safe_copy,
     file_contains_python_function,
     import_from_file,
     copy_local_macros_to_dir,
+    batch_jobid,
+    run_cmd_no_fail,
+    CIMEError,
 )
-from CIME.utils import batch_jobid
+from CIME.status import run_and_log_case_status, append_case_status
 from CIME.test_status import *
-from CIME.locked_files import unlock_file, lock_file
+from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
+from CIME.gitinterface import GitInterface
 
 import errno, shutil
 
@@ -149,20 +152,35 @@ def _create_macros_cmake(
     # This impl is coupled to contents of Macros.cmake
     os_ = mach_obj.get_value("OS")
     mach = mach_obj.get_machine_name()
+    deprecated = "{}_{}.cmake".format(compiler, mach)
     macros = [
         "universal.cmake",
         os_ + ".cmake",
         compiler + ".cmake",
         "{}_{}.cmake".format(compiler, os),
         mach + ".cmake",
-        "{}_{}.cmake".format(compiler, mach),
+        "{}_{}.cmake".format(mach, compiler),
+        deprecated,
         "CMakeLists.txt",
     ]
     for macro in macros:
         repo_macro = os.path.join(cmake_macros_dir, macro)
+        mach_repo_macro = os.path.join(cmake_macros_dir, "..", mach, macro)
         case_macro = os.path.join(case_cmake_path, macro)
-        if not os.path.exists(case_macro) and os.path.exists(repo_macro):
-            safe_copy(repo_macro, case_cmake_path)
+        if not os.path.exists(case_macro):
+            copied = False
+            if os.path.exists(mach_repo_macro):
+                safe_copy(mach_repo_macro, case_cmake_path)
+                copied = True
+            elif os.path.exists(repo_macro):
+                safe_copy(repo_macro, case_cmake_path)
+                copied = True
+
+            if copied and macro == deprecated:
+                logger.warning(
+                    "\nWARNING: Macros of the form COMPILER_MACHINE.cmake are deprecated "
+                    "and should be replaced with the form MACHINE_COMPILER.cmake\n"
+                )
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
@@ -303,15 +321,17 @@ def _case_setup_impl(
         comp_interface = case.get_value("COMP_INTERFACE")
         if comp_interface == "nuopc":
             ninst = case.get_value("NINST")
+        else:
+            ninst = 1
 
         multi_driver = case.get_value("MULTI_DRIVER")
-
         for comp in models:
             ntasks = case.get_value("NTASKS_{}".format(comp))
             if comp == "CPL":
                 continue
             if comp_interface != "nuopc":
                 ninst = case.get_value("NINST_{}".format(comp))
+
             if multi_driver:
                 if comp_interface != "nuopc":
                     expect(
@@ -348,13 +368,15 @@ def _case_setup_impl(
             case.set_value("BUILD_THREADED", case.get_build_threaded())
 
         else:
-            case.check_pelayouts_require_rebuild(models)
+            caseroot = case.get_value("CASEROOT")
 
-            unlock_file("env_build.xml")
-            unlock_file("env_batch.xml")
+            unlock_file("env_build.xml", caseroot)
+
+            unlock_file("env_batch.xml", caseroot)
 
             case.flush()
-            case.check_lockedfiles()
+
+            check_lockedfiles(case, skip=["env_build", "env_mach_pes"])
 
             case.initialize_derived_attributes()
 
@@ -381,6 +403,48 @@ def _case_setup_impl(
                     + case.iotasks,
                 )
 
+            # ----------------------------------------------------------------------------------------------------------
+            # Sanity check for a GPU run:
+            #        1. GPU_TYPE and GPU_OFFLOAD must both be defined to use GPUs
+            #        2. If the NGPUS_PER_NODE XML variable in the env_mach_pes.xml file is larger than
+            #           the value of MAX_GPUS_PER_NODE, set it to MAX_GPUS_PER_NODE automatically.
+            #        3. If the NGPUS_PER_NODE XML variable is equal to 0, it will be updated to 1 automatically.
+            # ----------------------------------------------------------------------------------------------------------
+            max_gpus_per_node = case.get_value("MAX_GPUS_PER_NODE")
+            gpu_type = case.get_value("GPU_TYPE")
+            openacc_gpu_offload = case.get_value("OPENACC_GPU_OFFLOAD")
+            openmp_gpu_offload = case.get_value("OPENMP_GPU_OFFLOAD")
+            kokkos_gpu_offload = case.get_value("KOKKOS_GPU_OFFLOAD")
+            gpu_offload = (
+                openacc_gpu_offload or openmp_gpu_offload or kokkos_gpu_offload
+            )
+            ngpus_per_node = case.get_value("NGPUS_PER_NODE")
+            if gpu_type and str(gpu_type).lower() != "none":
+                if max_gpus_per_node <= 0:
+                    raise CIMEError(
+                        f"MAX_GPUS_PER_NODE must be larger than 0 for machine={mach} and compiler={compiler} in order to configure a GPU run"
+                    )
+                if not gpu_offload:
+                    raise CIMEError(
+                        "GPU_TYPE is defined but none of the GPU OFFLOAD options are enabled"
+                    )
+                case.gpu_enabled = True
+                if ngpus_per_node >= 0:
+                    case.set_value(
+                        "NGPUS_PER_NODE",
+                        max(1, ngpus_per_node)
+                        if ngpus_per_node <= max_gpus_per_node
+                        else max_gpus_per_node,
+                    )
+            elif gpu_offload:
+                raise CIMEError(
+                    "GPU_TYPE is not defined but at least one GPU OFFLOAD option is enabled"
+                )
+            elif ngpus_per_node and ngpus_per_node != 0:
+                raise CIMEError(
+                    f"ngpus_per_node is expected to be 0 for a pure CPU run ; {ngpus_per_node} is provided instead ;"
+                )
+
             # May need to select new batch settings if pelayout changed (e.g. problem is now too big for prev-selected queue)
             env_batch = case.get_env("batch")
             env_batch.set_job_defaults([(case.get_primary_job(), {})], case)
@@ -404,9 +468,14 @@ def _case_setup_impl(
             # Make a copy of env_mach_pes.xml in order to be able
             # to check that it does not change once case.setup is invoked
             case.flush()
+
             logger.debug("at copy TOTALPES = {}".format(case.get_value("TOTALPES")))
-            lock_file("env_mach_pes.xml")
-            lock_file("env_batch.xml")
+
+            caseroot = case.get_value("CASEROOT")
+
+            lock_file("env_mach_pes.xml", caseroot)
+
+            lock_file("env_batch.xml", caseroot)
 
         # Create user_nl files for the required number of instances
         if not os.path.exists("user_nl_cpl"):
@@ -422,6 +491,17 @@ def _case_setup_impl(
                 run_cmd_no_fail(
                     "{}/cime_config/cism.template {}".format(glcroot, caseroot)
                 )
+            if comp == "cam":
+                camroot = case.get_value("COMP_ROOT_DIR_ATM")
+                if os.path.exists(
+                    os.path.join(camroot, "cime_config/cam.case_setup.py")
+                ):
+                    logger.info("Running cam.case_setup.py")
+                    run_cmd_no_fail(
+                        "python {cam}/cime_config/cam.case_setup.py {cam} {case} {non_local}".format(
+                            cam=camroot, case=caseroot, non_local=str(non_local)
+                        )
+                    )
 
         _build_usernl_files(case, "drv", "cpl")
 
@@ -455,7 +535,9 @@ def _case_setup_impl(
 
 
 ###############################################################################
-def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
+def case_setup(
+    self, clean=False, test_mode=False, reset=False, keep=None, disable_git=False
+):
     ###############################################################################
     caseroot, casebaseid = self.get_value("CASEROOT"), self.get_value("CASEBASEID")
     phase = "setup.clean" if clean else "case.setup"
@@ -498,4 +580,32 @@ def case_setup(self, clean=False, test_mode=False, reset=False, keep=None):
             custom_success_msg_functor=msg_func,
             caseroot=caseroot,
             is_batch=is_batch,
+        )
+        if not disable_git and not reset:
+            self._create_case_repo(caseroot)
+
+
+def _create_case_repo(self, caseroot):
+    self._gitinterface = GitInterface(caseroot, logger, branch=self.get_value("CASE"))
+    if self._gitinterface and not os.path.exists(os.path.join(caseroot, ".gitignore")):
+        safe_copy(
+            os.path.join(
+                self.get_value("CIMEROOT"),
+                "CIME",
+                "data",
+                "templates",
+                "gitignore.template",
+            ),
+            os.path.join(caseroot, ".gitignore"),
+        )
+        append_case_status(
+            "", "", "local git repository created", gitinterface=self._gitinterface
+        )
+        # add all files in caseroot to local repository
+        self._gitinterface._git_command("add", "*")
+    elif not self._gitinterface:
+        append_case_status(
+            "",
+            "",
+            "Local git version too old for cime git interface, version 2.28 or newer required.",
         )

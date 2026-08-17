@@ -5,6 +5,7 @@ Interface to the env_workflow.xml file.  This class inherits from EnvBase
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_base import EnvBase
 from CIME.utils import get_cime_root
+
 import re, math
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ class EnvWorkflow(EnvBase):
         #        schema = os.path.join(get_cime_root(), "CIME", "config", "xml_schemas", "env_workflow.xsd")
         # TODO: define schema for this file
         schema = None
+        self._hidden = {}
         super(EnvWorkflow, self).__init__(
             case_root, infile, schema=schema, read_only=read_only
         )
@@ -75,7 +77,6 @@ class EnvWorkflow(EnvBase):
         type_info = None
         for gnode in gnodes:
             nodes = self.get_children("entry", {"id": vid}, root=gnode)
-            type_info = None
             for node in nodes:
                 new_type_info = self._get_type_info(node)
                 if type_info is None:
@@ -89,7 +90,17 @@ class EnvWorkflow(EnvBase):
                     )
         return type_info
 
+    def hidden_job(self, case, job):
+        if job not in self._hidden:
+            self.get_job_specs(case, job)
+        return self._hidden[job]
+
     def get_job_specs(self, case, job):
+        hidden = self.get_value("hidden", subgroup=job)
+        self._hidden[job] = (hidden is None and job != "case.st_archive") or (
+            hidden is not None and hidden.lower() == "true"
+        )
+
         task_count = case.get_resolved_value(self.get_value("task_count", subgroup=job))
         tasks_per_node = case.get_resolved_value(
             self.get_value("tasks_per_node", subgroup=job)
@@ -97,6 +108,18 @@ class EnvWorkflow(EnvBase):
         thread_count = case.get_resolved_value(
             self.get_value("thread_count", subgroup=job)
         )
+        mem_per_task = case.get_resolved_value(
+            self.get_value("mem_per_task", subgroup=job)
+        )
+        if mem_per_task:
+            if "$" in mem_per_task:
+                logger.warning(
+                    "Could not resolve {} using a value of 10".format(mem_per_task)
+                )
+                mem_per_task = 10
+            else:
+                mem_per_task = int(mem_per_task)
+
         max_gpus_per_node = case.get_value("MAX_GPUS_PER_NODE")
         ngpus_per_node = case.get_value("NGPUS_PER_NODE")
         num_nodes = None
@@ -104,15 +127,26 @@ class EnvWorkflow(EnvBase):
             max_gpus_per_node = 0
             ngpus_per_node = 0
         if task_count is not None and tasks_per_node is not None:
-            task_count = int(task_count)
-            num_nodes = int(math.ceil(float(task_count) / float(tasks_per_node)))
+            if "$" in task_count:
+                task_count = 1
+                num_nodes = 1
+            else:
+                task_count = int(task_count)
+                num_nodes = int(math.ceil(float(task_count) / float(tasks_per_node)))
             tasks_per_node = task_count // num_nodes
         if not thread_count:
             thread_count = 1
         if ngpus_per_node > max_gpus_per_node:
             ngpus_per_node = max_gpus_per_node
 
-        return task_count, num_nodes, tasks_per_node, thread_count, ngpus_per_node
+        return (
+            task_count,
+            num_nodes,
+            tasks_per_node,
+            thread_count,
+            ngpus_per_node,
+            mem_per_task,
+        )
 
     # pylint: disable=arguments-differ
     def get_value(self, item, attribute=None, resolved=True, subgroup="PRIMARY"):

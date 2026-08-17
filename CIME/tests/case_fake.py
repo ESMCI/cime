@@ -29,6 +29,7 @@ class CaseFake(object):
         self.set_value("CASE", casename)
         self.set_value("CASEBASEID", casename)
         self.set_value("RUN_TYPE", "startup")
+        self.set_value("NINST_MAX", 1)
         self.set_exeroot()
         self.set_rundir()
 

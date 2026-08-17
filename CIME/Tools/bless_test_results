@@ -69,6 +69,13 @@ OR
         "This option forces the bless to happen regardless.",
     )
 
+    parser.add_argument(
+        "-l",
+        "--lock-baselines",
+        action="store_true",
+        help="Turn off group write access for baselines",
+    )
+
     mutual_execution = parser.add_mutually_exclusive_group()
 
     mutual_execution.add_argument(

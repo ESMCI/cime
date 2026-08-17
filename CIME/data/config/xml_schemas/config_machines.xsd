@@ -7,7 +7,6 @@
   <xs:attribute name="mpilib" type="xs:string"/>
   <xs:attribute name="comp_interface" type="xs:string"/>
   <xs:attribute name="gpu_type" type="xs:string"/>
-  <xs:attribute name="gpu_offload" type="xs:string"/>
   <xs:attribute name="queue" type="xs:string"/>
   <xs:attribute name="DEBUG" type="upperBoolean"/>
   <xs:attribute name="PIO_VERSION" type="xs:integer"/>
@@ -50,17 +49,19 @@
   <xs:element name="PERL5LIB" type="xs:string"/>
   <xs:element name="GMAKE" type="xs:string"/>
   <xs:element name="GMAKE_J" type="xs:integer"/>
+  <xs:element name="BATCHED_BUILD" type="upperBoolean"/>
+  <xs:element name="CMAKE_BACKEND" type="xs:string"/>
   <xs:element name="TESTS" type="xs:string"/>
   <xs:element name="NTEST_PARALLEL_JOBS" type="xs:integer"/>
   <xs:element name="BATCH_SYSTEM" type="xs:NCName"/>
   <xs:element name="ALLOCATE_SPARE_NODES" type="upperBoolean"/>
   <xs:element name="SUPPORTED_BY" type="xs:string"/>
   <xs:element name="MAX_TASKS_PER_NODE" type="AttrElement"/>
+  <xs:element name="MEM_PER_TASK" type="AttrElement"/>
+  <xs:element name="MAX_MEM_PER_NODE" type="AttrElement"/>
   <xs:element name="MAX_GPUS_PER_NODE" type="AttrElement"/>
   <xs:element name="MAX_MPITASKS_PER_NODE" type="AttrElement"/>
   <xs:element name="MAX_CPUTASKS_PER_GPU_NODE" type="AttrElement"/>
-  <xs:element name="GPU_TYPE" type="AttrElement"/>
-  <xs:element name="GPU_OFFLOAD" type="AttrElement"/>
   <xs:element name="MPI_GPU_WRAPPER_SCRIPT" type="AttrElement"/>
   <xs:element name="COSTPES_PER_NODE" type="xs:integer"/>
   <xs:element name="PROJECT_REQUIRED" type="xs:NCName"/>
@@ -154,6 +155,11 @@
         <xs:element ref="GMAKE" minOccurs="0" maxOccurs="1"/>
         <!-- GMAKE_J: optional number of threads to pass to the gmake flag -->
         <xs:element ref="GMAKE_J" minOccurs="0" maxOccurs="1"/>
+        <!-- BATCHED_BUILD: if TRUE, case.build will submit the build to the batch system
+             instead of building on the current node. Requires a batch system to be configured. -->
+        <xs:element ref="BATCHED_BUILD" minOccurs="0" maxOccurs="1"/>
+        <!-- CMAKE_BACKEND: Tells CMake what backend to use -->
+        <xs:element ref="CMAKE_BACKEND" minOccurs="0" maxOccurs="1"/>
         <!-- TESTS: (acme only) list of tests to run on this machine -->
         <xs:element ref="TESTS" minOccurs="0" maxOccurs="1"/>
         <!-- NTEST_PARALLEL_JOBS: number of parallel jobs create_test will launch -->
@@ -167,6 +173,13 @@
         <!-- MAX_TASKS_PER_NODE: maximum number of threads*tasks per
              shared memory node on this machine-->
         <xs:element ref="MAX_TASKS_PER_NODE" minOccurs="1" maxOccurs="unbounded"/>
+
+        <!-- MEM_PER_TASK: the minimum memory to assign per mpi task (units assigned in config_batch.xml) -->
+        <xs:element ref="MEM_PER_TASK" minOccurs="0" maxOccurs="1"/>
+        <!-- MAX_MEM_PER_NODE: the maximum memory to assign per machine node -->
+        <xs:element ref="MAX_MEM_PER_NODE" minOccurs="0" maxOccurs="1"/>
+
+
         <!-- MAX_GPUS_PER_NODE: maximum number of GPUs per node on this machine-->
         <xs:element ref="MAX_GPUS_PER_NODE" minOccurs="0" maxOccurs="1"/>
         <!-- MAX_MPITASKS_PER_NODE: number of physical PES per shared node on
@@ -175,10 +188,6 @@
         <!-- MAX_CPUTASKS_PER_GPU_NODE: number of physical PES per GPU node on
              this machine, in practice the MPI tasks per node will not exceed this value -->
         <xs:element ref="MAX_CPUTASKS_PER_GPU_NODE" minOccurs="0" maxOccurs="unbounded"/>
-	<!-- GPU_TYPE: the type of GPU hardware available on this machine -->
-        <xs:element ref="GPU_TYPE" minOccurs="0" maxOccurs="unbounded"/>
-	<!-- GPU_OFFLOAD: the GPU programming model used for GPU porting -->
-        <xs:element ref="GPU_OFFLOAD" minOccurs="0" maxOccurs="unbounded"/>
 	<!-- MPI_GPU_WRAPPER_SCRIPT: a wrapper script that will be attached to the MPI run
 	     command and map different MPI ranks to different GPUs within the same node -->
         <xs:element ref="MPI_GPU_WRAPPER_SCRIPT" minOccurs="0" maxOccurs="1"/>
@@ -265,7 +274,6 @@
       <xs:attribute ref="PIO_VERSION"/>
       <xs:attribute ref="mpilib"/>
       <xs:attribute ref="comp_interface"/>
-      <xs:attribute ref="gpu_offload"/>
       <xs:attribute ref="gpu_type"/>
     </xs:complexType>
   </xs:element>

@@ -38,7 +38,7 @@ OR
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    default_baseline = CIME.utils.get_current_branch(repo=CIME.utils.get_cime_root())
+    default_baseline = CIME.utils.get_current_branch(repo=CIME.utils.get_src_root())
     if default_baseline is not None:
         default_baseline = default_baseline.replace(".", "_").replace(
             "/", "_"
@@ -187,6 +187,12 @@ OR
     )
 
     parser.add_argument(
+        "--ignore-diffs",
+        action="store_true",
+        help="Do not fail if there are history diffs",
+    )
+
+    parser.add_argument(
         "--save-timing",
         action="store_true",
         help="Tell create_test to save timings of tests",
@@ -201,6 +207,11 @@ OR
     parser.add_argument(
         "--jenkins-id",
         help="Specify an 'id' for the Jenkins jobs.",
+    )
+
+    parser.add_argument(
+        "--driver",
+        help="Override the coupler driver used by create_test (e.g. mct, nuopc).",
     )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
@@ -272,10 +283,12 @@ OR
         args.check_memory,
         args.ignore_memleak,
         args.ignore_namelists,
+        args.ignore_diffs,
         args.save_timing,
         args.pes_file,
         args.jenkins_id,
         args.queue,
+        args.driver,
     )
 
 
@@ -304,10 +317,12 @@ def _main_func(description):
         check_memory,
         ignore_memleak,
         ignore_namelists,
+        ignore_diffs,
         save_timing,
         pes_file,
         jenkins_id,
         queue,
+        driver,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -334,10 +349,12 @@ def _main_func(description):
             check_memory,
             ignore_memleak,
             ignore_namelists,
+            ignore_diffs,
             save_timing,
             pes_file,
             jenkins_id,
             queue,
+            driver,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )
