@@ -73,8 +73,13 @@ export PKG_CONFIG_PATH=/opt/spack-envs/view/lib/pkgconfig
 export LD_LIBRARY_PATH=/opt/spack-envs/view/lib
 export ESMFMKFILE=/opt/spack-envs/view/lib/esmf.mk
 
+# Resolve absolute paths to handle symlinks and relative paths correctly
 if [[ "${CI:-false}" == "true" ]]; then
-  cp -rf /root/.cime "${HOME}"
+  DOT_CIME_SRC=$(readlink -f /root/.cime)
+  DOT_CIME_DST=$(readlink -f "${HOME}/.cime")
+  if [[ "$SRC" != "$DST" ]]; then
+    cp -rf /root/.cime "${HOME}"
+  fi
 fi
 
 link_config_machines

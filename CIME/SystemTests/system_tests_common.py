@@ -1167,7 +1167,29 @@ class FakeTest(SystemTestsCommon):
 
             with open(modelexe, "w") as f:
                 f.write("#!/bin/bash\n")
+
+                # We most likely only want one of the cpus to move files around etc
+                f.write(
+                    """
+if [ -n "$OMPI_COMM_WORLD_RANK" ]; then
+    MY_RANK=$OMPI_COMM_WORLD_RANK
+elif [ -n "$PMI_RANK" ]; then
+    MY_RANK=$PMI_RANK
+elif [ -n "$SLURM_PROCID" ]; then
+    MY_RANK=$SLURM_PROCID
+elif [ -n "$MV2_COMM_WORLD_RANK" ]; then
+    MY_RANK=$MV2_COMM_WORLD_RANK
+else
+    # Default to 0 if running locally or outside an MPI launcher
+    MY_RANK=0
+fi
+
+# This block only runs on the MASTER processor (Rank 0)
+if [ "$MY_RANK" -eq 0 ]; then
+"""
+                )
                 f.write(self._script)
+                f.write("\nfi\n")
 
             os.chmod(modelexe, 0o755)
 
