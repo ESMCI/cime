@@ -8,6 +8,7 @@
   <xs:attribute name="grid"  type="xs:string"/>
   <xs:attribute name="modifier" type="xs:NCName"/>
   <xs:attribute name="match" type="xs:NCName"/>
+  <xs:attribute name="lock_on_restart" type="xs:string"/>
   <xs:attribute name="version" type="xs:decimal"/>
 
   <!-- simple elements -->
