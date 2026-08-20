@@ -30,8 +30,7 @@ The environments are installed to `/opt/pixi-env/.pixi/envs/{e3sm,cesm}`. At
 runtime the [`entrypoint.sh`](./entrypoint.sh) selects one based on
 `CIME_MODEL` and puts it on the compiler/linker search paths.
 
-> The legacy spack environment is kept for reference at
-> [`legacy/spack.yaml`](./legacy/spack.yaml).
+
 
 ## Build the container
 

@@ -85,7 +85,7 @@ CIME uses pre-commit hooks to help maintain code quality and consistency. We hig
 .. code-block:: bash
 
     pip install pre-commit
-    
+
 If you install these scripts then `pre-commit` will automatically run on `git commit`.
 
 .. code-block:: bash
@@ -110,6 +110,8 @@ The image can be pulled from ``ghcr.io``.
 .. note::
    The Docker build requires BuildKit. Either set ``DOCKER_BUILDKIT=1`` or
    configure it as the default builder.
+
+.. _contributing-guide-running-tests:
 
 Running
 ```````

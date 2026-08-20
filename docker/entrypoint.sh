@@ -21,7 +21,7 @@ fi
 # Root directory holding the per-model pixi environments (see docker/pixi.toml).
 # Each model gets its own conda prefix built from conda-forge: e3sm ships MOAB,
 # cesm ships ESMF. Both share an identical HDF5/netCDF/pnetcdf stack.
-PIXI_ENV_ROOT="${PIXI_ENV_ROOT:-/opt/pixi-env/.pixi/envs}"
+export PIXI_ENV_ROOT="${PIXI_ENV_ROOT:-/opt/pixi-env/.pixi/envs}"
 
 
 # Fail fast when CIME_MODEL is unset or invalid; the pixi environment to activate
@@ -218,7 +218,7 @@ link_config_machines
 # This runs silently in the background and does not block container startup.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]] && [[ ! -f "${STORAGE_DIR}/inputdata/.download_complete" ]]; then
     (
-        if download_input_data 2>/dev/null; then
+        if download_input_data >/dev/null 2>&1; then
             touch "${STORAGE_DIR}/inputdata/.download_complete"
         fi
     ) &
