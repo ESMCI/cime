@@ -38,9 +38,7 @@ def delete_old_test_data(
     ###############################################################################
     # Remove old dirs
     for clutter_area in [scratch_root, test_root, run_area, build_area, archive_area]:
-        for old_file in glob.glob(
-            f"{clutter_area}/*{mach_comp}*{test_id_root}*"
-        ):
+        for old_file in glob.glob(f"{clutter_area}/*{mach_comp}*{test_id_root}*"):
             if avoid_test_id not in old_file:
                 logging.info(f"TEST ARCHIVER: removing {old_file}")
                 if os.path.isdir(old_file):
@@ -59,9 +57,7 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     ###############################################################################
     results = set([])
     test_id_re = re.compile(".+[.]([^.]+)")
-    for item in glob.glob(
-        f"{old_test_archive}/old_cases/*{mach_comp}*{test_id_root}*"
-    ):
+    for item in glob.glob(f"{old_test_archive}/old_cases/*{mach_comp}*{test_id_root}*"):
         filename = os.path.basename(item)
         the_match = test_id_re.match(filename)
         if the_match:
@@ -99,18 +95,14 @@ def archive_old_test_data(
 
     # Remove the old CTest XML, same reason as above
     if os.path.isdir("Testing"):
-        logging.info(
-            f"TEST ARCHIVER: Removing {os.path.join(os.getcwd(), 'Testing')}"
-        )
+        logging.info(f"TEST ARCHIVER: Removing {os.path.join(os.getcwd(), 'Testing')}")
         shutil.rmtree("Testing")
 
     if not os.path.exists(old_test_archive):
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob(
-        f"{test_root}/*{mach_comp}*{test_id_root}[0-9]*"
-    ):
+    for old_case in glob.glob(f"{test_root}/*{mach_comp}*{test_id_root}[0-9]*"):
         if avoid_test_id not in old_case:
             logging.info(f"TEST ARCHIVER: archiving case {old_case}")
             exeroot, rundir, archdir = run_cmd_no_fail(
@@ -171,9 +163,7 @@ def archive_old_test_data(
         )
         old_test_ids = scan_for_test_ids(old_test_archive, mach_comp, test_id_root)
         for old_test_id in sorted(old_test_ids):
-            logging.info(
-                f"TEST ARCHIVER:   Removing old data for test {old_test_id}"
-            )
+            logging.info(f"TEST ARCHIVER:   Removing old data for test {old_test_id}")
             for item in ["old_cases", "old_builds", "old_runs", "old_archives"]:
                 for dir_to_rm in glob.glob(
                     f"{old_test_archive}/{item}/*{mach_comp}*{old_test_id}*"
@@ -394,7 +384,7 @@ def jenkins_generic_job(
     os.environ["CIME_MACHINE"] = machine.get_machine_name()
 
     mach_comp = f"{machine.get_machine_name()}_{compiler}"
-    globstr   = f"{test_root}/*{mach_comp}*{test_id}/TestStatus"
+    globstr = f"{test_root}/*{mach_comp}*{test_id}/TestStatus"
     if submit_to_cdash:
         logging.info(
             f"To resubmit to dashboard: wait_for_tests {globstr} --no-wait -b {cdash_build_name}"
