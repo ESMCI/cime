@@ -346,7 +346,8 @@ def _post_run_check(case, lid):
         else:
             # The existence/size checks above pass even when the model aborts
             # mid-run, so also require a termination message in the component
-            # log. CAM writes "END OF MODEL RUN" on successful completion.
+            # log. This comp_standalone logic is currently designed for CAM,
+            # which writes "END OF MODEL RUN" on successful completion.
             with open(model_logfile, "r") as fd:
                 logfile = fd.read()
             expect(
