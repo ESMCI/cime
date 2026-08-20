@@ -239,16 +239,16 @@
 <dt class="sig sig-object py" id="CIME.utils.add_flag_to_cmd">
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">add_flag_to_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.add_flag_to_cmd" title="Link to this definition"></a></dt>
 <dd><p>Given a flag and value for a shell command, return a string</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="s2">&quot;hi&quot;</span><span class="p">)</span>
-<span class="go">&#39;-f hi&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">&quot;--foo&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
-<span class="go">&#39;--foo 42&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">&quot;--foo=&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
-<span class="go">&#39;--foo=42&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">&quot;--foo:&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
-<span class="go">&#39;--foo:42&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">&quot;--foo:&quot;</span><span class="p">,</span> <span class="s2">&quot; hi &quot;</span><span class="p">)</span>
-<span class="go">&#39;--foo:hi&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">"-f"</span><span class="p">,</span> <span class="s2">"hi"</span><span class="p">)</span>
+<span class="go">'-f hi'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">"--foo"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+<span class="go">'--foo 42'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">"--foo="</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+<span class="go">'--foo=42'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">"--foo:"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+<span class="go">'--foo:42'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">add_flag_to_cmd</span><span class="p">(</span><span class="s2">"--foo:"</span><span class="p">,</span> <span class="s2">" hi "</span><span class="p">)</span>
+<span class="go">'--foo:hi'</span>
 </pre></div>
 </div>
 </dd></dl>

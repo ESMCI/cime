@@ -159,20 +159,20 @@ shorter than <cite>default</cite> (and thus implicitly ends in null values), the
 elements of <cite>default</cite> will be used where <cite>overwrite</cite> is null.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([],</span> <span class="p">[])</span>
 <span class="go">[]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">&#39;true&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;false&#39;</span><span class="p">])</span>
-<span class="go">[&#39;false&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([],</span> <span class="p">[</span><span class="s1">&#39;false&#39;</span><span class="p">])</span>
-<span class="go">[&#39;false&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">&#39;true&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="go">[&#39;true&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([],</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">])</span>
-<span class="go">[&#39;&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">&#39;true&#39;</span><span class="p">],</span> <span class="p">[])</span>
-<span class="go">[&#39;true&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">&#39;true&#39;</span><span class="p">],</span> <span class="p">[])</span>
-<span class="go">[&#39;true&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">&#39;3*false&#39;</span><span class="p">,</span> <span class="s1">&#39;3*true&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;4*&#39;</span><span class="p">,</span> <span class="s1">&#39;false&#39;</span><span class="p">])</span>
-<span class="go">[&#39;true&#39;, &#39;false&#39;, &#39;false&#39;, &#39;true&#39;, &#39;true&#39;, &#39;false&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">'true'</span><span class="p">],</span> <span class="p">[</span><span class="s1">'false'</span><span class="p">])</span>
+<span class="go">['false']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([],</span> <span class="p">[</span><span class="s1">'false'</span><span class="p">])</span>
+<span class="go">['false']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">'true'</span><span class="p">],</span> <span class="p">[</span><span class="s1">''</span><span class="p">])</span>
+<span class="go">['true']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([],</span> <span class="p">[</span><span class="s1">''</span><span class="p">])</span>
+<span class="go">['']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">'true'</span><span class="p">],</span> <span class="p">[])</span>
+<span class="go">['true']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">'true'</span><span class="p">],</span> <span class="p">[])</span>
+<span class="go">['true']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">merge_literal_lists</span><span class="p">([</span><span class="s1">'3*false'</span><span class="p">,</span> <span class="s1">'3*true'</span><span class="p">],</span> <span class="p">[</span><span class="s1">'true'</span><span class="p">,</span> <span class="s1">'4*'</span><span class="p">,</span> <span class="s1">'false'</span><span class="p">])</span>
+<span class="go">['true', 'false', 'false', 'true', 'true', 'false']</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -239,14 +239,14 @@
 <dt class="sig sig-object py" id="CIME.utils.normalize_case_id">
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">normalize_case_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case_id</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.normalize_case_id" title="Link to this definition"></a></dt>
 <dd><p>Given a case_id, return it in form TESTCASE.GRID.COMPSET.PLATFORM</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel.G.20151121&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod.G.20151121&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">'ERT.ne16_g37.B1850C5.sandiatoss3_intel'</span><span class="p">)</span>
+<span class="go">'ERT.ne16_g37.B1850C5.sandiatoss3_intel'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">'ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod'</span><span class="p">)</span>
+<span class="go">'ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">'ERT.ne16_g37.B1850C5.sandiatoss3_intel.G.20151121'</span><span class="p">)</span>
+<span class="go">'ERT.ne16_g37.B1850C5.sandiatoss3_intel'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normalize_case_id</span><span class="p">(</span><span class="s1">'ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod.G.20151121'</span><span class="p">)</span>
+<span class="go">'ERT.ne16_g37.B1850C5.sandiatoss3_intel.test-mod'</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -241,19 +241,19 @@
 <dd><p>check for unallowed characters in name, this routine only
 checks the final name and does not check if path exists or is
 writable</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;test.id&quot;</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"test.id"</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s2">"."</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;case.name&quot;</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"case.name"</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;/some/file/path/case.name&quot;</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"/some/file/path/case.name"</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase+mods&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"mycase+mods"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase?mods&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"mycase?mods"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;mycase*mods&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"mycase*mods"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">&quot;/some/full/path/name/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_name</span><span class="p">(</span><span class="s2">"/some/full/path/name/"</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>

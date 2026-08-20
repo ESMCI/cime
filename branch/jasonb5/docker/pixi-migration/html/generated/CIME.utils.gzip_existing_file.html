@@ -243,10 +243,10 @@ Note the that the timestamp of the original file will be maintained in
 the zipped file.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"Hello World"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gzfile</span> <span class="o">=</span> <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gunzip_existing_file</span><span class="p">(</span><span class="n">gzfile</span><span class="p">)</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;Hello World&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gunzip_existing_file</span><span class="p">(</span><span class="n">gzfile</span><span class="p">)</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">'Hello World'</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gzfile</span><span class="p">)</span>
 </pre></div>

@@ -155,12 +155,12 @@
 <dd><p>Expands a list of literal values to get rid of repetition syntax.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([])</span>
 <span class="go">[]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">&#39;true&#39;</span><span class="p">])</span>
-<span class="go">[&#39;true&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;f*&#39;</span><span class="p">,</span> <span class="s1">&#39;3*3&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">])</span>
-<span class="go">[&#39;1&#39;, &#39;2&#39;, &#39;f*&#39;, &#39;3&#39;, &#39;3&#39;, &#39;3&#39;, &#39;5&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">&#39;2*f*&#39;</span><span class="p">])</span>
-<span class="go">[&#39;f*&#39;, &#39;f*&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">'true'</span><span class="p">])</span>
+<span class="go">['true']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'f*'</span><span class="p">,</span> <span class="s1">'3*3'</span><span class="p">,</span> <span class="s1">'5'</span><span class="p">])</span>
+<span class="go">['1', '2', 'f*', '3', '3', '3', '5']</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">'2*f*'</span><span class="p">])</span>
+<span class="go">['f*', 'f*']</span>
 </pre></div>
 </div>
 </dd></dl>

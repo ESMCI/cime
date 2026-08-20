@@ -149,36 +149,36 @@
 <dd><p>Reduce case diff comments down to a single line synopsis so that we can put
 something in the TestStatus file. It’s expected that the comments provided
 to this function came from compare_baseline, not compare_tests.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;big error&#39;</span><span class="p">)</span>
-<span class="go">&#39;big error&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;big error</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;big error&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;stuff</span><span class="se">\n</span><span class="s1">    File foo had a different field list from bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;FIELDLIST field lists differ (otherwise bit-for-bit)&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;stuff</span><span class="se">\n</span><span class="s1">    File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERROR BFAIL some baseline files were missing&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;stuff</span><span class="se">\n</span><span class="s1">    File foo had a different field list from bar with suffix baz</span><span class="se">\n</span><span class="s1">    File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;MULTIPLE ISSUES: field lists differ and some baseline files were missing&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;stuff</span><span class="se">\n</span><span class="s1">    File foo did NOT match bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;DIFF&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;stuff</span><span class="se">\n</span><span class="s1">    File foo did NOT match bar with suffix baz</span><span class="se">\n</span><span class="s1">    File foo had a different field list from bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;DIFF&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;stuff</span><span class="se">\n</span><span class="s1">    File foo did NOT match bar with suffix baz</span><span class="se">\n</span><span class="s1">    File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;DIFF&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1"> File foo had no original counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;DIFF&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">Failed to open file</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERROR CPRNC failed to open files&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">Some other error</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;ERROR Could not interpret CPRNC output&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">  diff_test: the two files seem to be IDENTICAL </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">&#39;Comparing hists</span><span class="se">\n</span><span class="s1">PASS</span><span class="se">\n</span><span class="s1">  Most recent bless: sha:abc</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'big error'</span><span class="p">)</span>
+<span class="go">'big error'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'big error</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'big error'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'stuff</span><span class="se">\n</span><span class="s1">    File foo had a different field list from bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'FIELDLIST field lists differ (otherwise bit-for-bit)'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'stuff</span><span class="se">\n</span><span class="s1">    File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'ERROR BFAIL some baseline files were missing'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'stuff</span><span class="se">\n</span><span class="s1">    File foo had a different field list from bar with suffix baz</span><span class="se">\n</span><span class="s1">    File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'MULTIPLE ISSUES: field lists differ and some baseline files were missing'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'stuff</span><span class="se">\n</span><span class="s1">    File foo did NOT match bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'DIFF'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'stuff</span><span class="se">\n</span><span class="s1">    File foo did NOT match bar with suffix baz</span><span class="se">\n</span><span class="s1">    File foo had a different field list from bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'DIFF'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'stuff</span><span class="se">\n</span><span class="s1">    File foo did NOT match bar with suffix baz</span><span class="se">\n</span><span class="s1">    File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">Pass</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'DIFF'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'File foo had no compare counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1"> File foo had no original counterpart in bar with suffix baz</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'DIFF'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">Failed to open file</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'ERROR CPRNC failed to open files'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">Some other error</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">'ERROR Could not interpret CPRNC output'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'file1=</span><span class="se">\n</span><span class="s1">file2=</span><span class="se">\n</span><span class="s1">  diff_test: the two files seem to be IDENTICAL </span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_ts_synopsis</span><span class="p">(</span><span class="s1">'Comparing hists</span><span class="se">\n</span><span class="s1">PASS</span><span class="se">\n</span><span class="s1">  Most recent bless: sha:abc</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+<span class="go">''</span>
 </pre></div>
 </div>
 </dd></dl>

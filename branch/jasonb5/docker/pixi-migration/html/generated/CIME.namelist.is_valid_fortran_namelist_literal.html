@@ -163,45 +163,45 @@ a string containing nothing but spaces and newlines will always cause
 repetition of null values.</p>
 <p>Detailed rules and examples follow.</p>
 <p>Integers: Must be a sequence of one or more digits, with an optional sign.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;5*&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"5*"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;5*1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"5*1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot; 5*1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">" 5*1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;5* 1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"5* 1"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;5 *1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"5 *1"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot; 1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">" 1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;1 &quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"1 "</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;1 2&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"1 2"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;0123456789&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"0123456789"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;+22&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"+22"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;-26&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"-26"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;2A&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"2A"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;1_8&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"1_8"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;2.1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"2.1"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span> <span class="s2">&quot;2e6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"integer"</span><span class="p">,</span> <span class="s2">"2e6"</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
@@ -214,96 +214,96 @@ or a sign must be present to separate the number from the exponent.)
 - The (case-insensitive) strings “inf”, “infinity”, and “nan” are allowed.
 NaN values can also contain additional information in parentheses, e.g.
 “NaN(x1234ABCD)”.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"a"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot; 1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">" 1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1 &quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1 "</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1 2&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1 2"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;+1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"+1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;-1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"-1"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1."</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1.5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1.5"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;.5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">".5"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;+.5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"+.5"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"."</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"+"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1e6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1e6"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1e-6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1e-6"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1e+6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1e+6"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;.5e6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">".5e6"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1e&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1e"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1D6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1D6"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1q6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1q6"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1+6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1+6"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1.6.5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1.6.5"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1._8&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1._8"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;1,5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"1,5"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"inf"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;INFINITY&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"INFINITY"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;NaN&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"NaN"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;nan(x56)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"nan(x56)"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;nan())&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"real"</span><span class="p">,</span> <span class="s2">"nan())"</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
 <p>Complex numbers:
 - A pair of real numbers enclosed by parentheses, and separated by a comma.
 - Any number of spaces or newlines may be placed before or after each real.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;()&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"()"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(,)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(,)"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;( ,</span><span class="se">\n</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"( ,</span><span class="se">\n</span><span class="s2">)"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(a,2.)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(a,2.)"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(1.,b)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(1.,b)"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(1,2)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(1,2)"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(-1.e+06,+2.d-5)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(-1.e+06,+2.d-5)"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(inf,NaN)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(inf,NaN)"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(  1. ,  2. )&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(  1. ,  2. )"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;( </span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> 1. </span><span class="se">\n</span><span class="s2">,</span><span class="se">\n</span><span class="s2"> 2.</span><span class="se">\n</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"( </span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> 1. </span><span class="se">\n</span><span class="s2">,</span><span class="se">\n</span><span class="s2"> 2.</span><span class="se">\n</span><span class="s2">)"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot; (1.,2.)&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">" (1.,2.)"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;(1.,2.) &quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"complex"</span><span class="p">,</span> <span class="s2">"(1.,2.) "</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -317,47 +317,47 @@ two ways of representing a string containing a single apostrophe).
 since they are interpreted as an “end of record”, but they are allowed as
 long as they don’t come between one of the aforementioned double pairs of
 characters.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"''"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot; &#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">" ''"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;</span><span class="se">\n</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"'</span><span class="se">\n</span><span class="s2">'"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;</span><span class="se">\n</span><span class="s2">&#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"''</span><span class="se">\n</span><span class="s2">''"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"'''"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"''''"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&#39;Cookie&#39;&#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"'''Cookie'''"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&#39;&#39;Cookie&#39;&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"'''Cookie''"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"'</span><span class="se">\"</span><span class="s2">'"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;</span><span class="se">\&quot;\&quot;</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s2">"'</span><span class="se">\"\"</span><span class="s2">'"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'""'</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot; &#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'"" '</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="se">\n</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'"</span><span class="se">\n</span><span class="s1">"'</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot;</span><span class="se">\n</span><span class="s1">&quot;&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'""</span><span class="se">\n</span><span class="s1">""'</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'""'</span> <span class="o">+</span> <span class="s1">'"'</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'""'</span> <span class="o">+</span> <span class="s1">'""'</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&quot;Cookie&quot;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'"'</span> <span class="o">+</span> <span class="s1">'""Cookie""'</span> <span class="o">+</span> <span class="s1">'"'</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&quot;Cookie&quot;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'""Cookie""'</span> <span class="o">+</span> <span class="s1">'"'</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="se">\&#39;</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'"</span><span class="se">\'</span><span class="s1">"'</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="se">\&#39;\&#39;</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"character"</span><span class="p">,</span> <span class="s1">'"</span><span class="se">\'\'</span><span class="s1">"'</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -368,37 +368,37 @@ a period.
 - The rest of the string is ignored, but cannot contain a comma, newline,
 equals sign, slash, or space (except that trailing spaces are allowed and
 ignored).</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">"t"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">"F"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.T&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".T"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.f&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".f"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot; f&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">" f"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot; .t&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">" .t"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;at&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">"at"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.TRUE.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".TRUE."</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.false.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".false."</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.TEXAS$&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".TEXAS$"</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.f=&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".f="</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.f/1&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".f/1"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.t</span><span class="se">\n</span><span class="s2">ted&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".t</span><span class="se">\n</span><span class="s2">ted"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.Fant astic&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".Fant astic"</span><span class="p">)</span>
 <span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;logical&quot;</span><span class="p">,</span> <span class="s2">&quot;.t2 &quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">"logical"</span><span class="p">,</span> <span class="s2">".t2 "</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>

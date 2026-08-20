@@ -153,18 +153,18 @@
 <dt class="sig sig-object py" id="CIME.namelist.fortran_namelist_base_value">
 <span class="sig-prename descclassname"><span class="pre">CIME.namelist.</span></span><span class="sig-name descname"><span class="pre">fortran_namelist_base_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/namelist.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.namelist.fortran_namelist_base_value" title="Link to this definition"></a></dt>
 <dd><p>Strip off whitespace and repetition syntax from a namelist value.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
-<span class="go">&#39;f&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">&quot;6*&quot;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">&quot;6*f&quot;</span><span class="p">)</span>
-<span class="go">&#39;f&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">&quot; </span><span class="se">\n</span><span class="s2">6* </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="go">&#39;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> 6*f</span><span class="se">\n</span><span class="s2"> &quot;</span><span class="p">)</span>
-<span class="go">&#39;f&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">"f"</span><span class="p">)</span>
+<span class="go">'f'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">"6*"</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">"6*f"</span><span class="p">)</span>
+<span class="go">'f'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">" </span><span class="se">\n</span><span class="s2">6* </span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="go">''</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fortran_namelist_base_value</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2"> 6*f</span><span class="se">\n</span><span class="s2"> "</span><span class="p">)</span>
+<span class="go">'f'</span>
 </pre></div>
 </div>
 </dd></dl>

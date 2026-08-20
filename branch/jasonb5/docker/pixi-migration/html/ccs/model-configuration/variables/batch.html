@@ -152,8 +152,8 @@ design. For example each batch system type only needs to be defined once and mac
 that support a specific type can just define their queues and inherit the rest of the
 configuration.</p>
 <p>An example of this can be seen if <code class="docutils literal notranslate"><span class="pre">slurm</span></code> was defined as the following.</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;slurm&quot;</span><span class="w"> </span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_query</span><span class="w"> </span><span class="na">per_job_arg=</span><span class="s">&quot;-j&quot;</span><span class="nt">&gt;</span>squeue<span class="nt">&lt;/batch_query&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">type=</span><span class="s">"slurm"</span><span class="w"> </span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;batch_query</span><span class="w"> </span><span class="na">per_job_arg=</span><span class="s">"-j"</span><span class="nt">&gt;</span>squeue<span class="nt">&lt;/batch_query&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_submit&gt;</span>sbatch<span class="nt">&lt;/batch_submit&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_cancel&gt;</span>scancel<span class="nt">&lt;/batch_cancel&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_directive&gt;</span>#SBATCH<span class="nt">&lt;/batch_directive&gt;</span>
@@ -166,9 +166,9 @@ configuration.</p>
 <span class="w">    </span><span class="nt">&lt;batch_mail_type_flag&gt;</span>--mail-type<span class="nt">&lt;/batch_mail_type_flag&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_mail_type&gt;</span>none,<span class="w"> </span>all,<span class="w"> </span>begin,<span class="w"> </span>end,<span class="w"> </span>fail<span class="nt">&lt;/batch_mail_type&gt;</span>
 <span class="w">    </span><span class="nt">&lt;submit_args&gt;</span>
-<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">&quot;--time&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;$JOB_WALLCLOCK_TIME&quot;</span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">&quot;-p&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;$JOB_QUEUE&quot;</span><span class="nt">/&gt;</span>
-<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">&quot;--account&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;$PROJECT&quot;</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">"--time"</span><span class="w"> </span><span class="na">name=</span><span class="s">"$JOB_WALLCLOCK_TIME"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">"-p"</span><span class="w"> </span><span class="na">name=</span><span class="s">"$JOB_QUEUE"</span><span class="nt">/&gt;</span>
+<span class="w">        </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">"--account"</span><span class="w"> </span><span class="na">name=</span><span class="s">"$PROJECT"</span><span class="nt">/&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/submit_args&gt;</span>
 <span class="w">    </span><span class="nt">&lt;directives&gt;</span>
 <span class="w">        </span><span class="nt">&lt;directive&gt;</span><span class="w"> </span>--job-name={{<span class="w"> </span>job_id<span class="w"> </span>}}<span class="nt">&lt;/directive&gt;</span>
@@ -181,17 +181,17 @@ configuration.</p>
 </div>
 <p>Then there may be multiple machines that support slurm but only need to define their queues as
 long as they set their type to <code class="docutils literal notranslate"><span class="pre">slurm</span></code>.</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;X&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;slurm&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"X"</span><span class="w"> </span><span class="na">type=</span><span class="s">"slurm"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;queues&gt;</span>
-<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;24:00:00&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;520&quot;</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>pbatch<span class="nt">&lt;/queue&gt;</span>
-<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;01:00:00&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;12&quot;</span><span class="nt">&gt;</span>pdebug<span class="nt">&lt;/queue&gt;</span>
+<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">"24:00:00"</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">"520"</span><span class="w"> </span><span class="na">default=</span><span class="s">"true"</span><span class="nt">&gt;</span>pbatch<span class="nt">&lt;/queue&gt;</span>
+<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">"01:00:00"</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">"12"</span><span class="nt">&gt;</span>pdebug<span class="nt">&lt;/queue&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/queues&gt;</span>
 <span class="nt">&lt;/batch_system&gt;</span>
 
-<span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;Y&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;slurm&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"Y"</span><span class="w"> </span><span class="na">type=</span><span class="s">"slurm"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;queues&gt;</span>
-<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;24:00:00&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;520&quot;</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>pbatch<span class="nt">&lt;/queue&gt;</span>
-<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;01:00:00&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;20&quot;</span><span class="nt">&gt;</span>pdebug<span class="nt">&lt;/queue&gt;</span>
+<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">"24:00:00"</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">"520"</span><span class="w"> </span><span class="na">default=</span><span class="s">"true"</span><span class="nt">&gt;</span>pbatch<span class="nt">&lt;/queue&gt;</span>
+<span class="w">        </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">"01:00:00"</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">"20"</span><span class="nt">&gt;</span>pdebug<span class="nt">&lt;/queue&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/queues&gt;</span>
 <span class="nt">&lt;/batch_system&gt;</span>
 </pre></div>
@@ -203,7 +203,7 @@ long as they set their type to <code class="docutils literal notranslate"><span 
 <p>This varaible only requires a single value.</p>
 <section id="example">
 <h3><a class="toc-backref" href="#id4" role="doc-backlink">Example</a><a class="headerlink" href="#example" title="Link to this heading"></a></h3>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;BATCH_SPEC_FILE&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">"BATCH_SPEC_FILE"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
 <span class="w">    </span><span class="nt">&lt;default_value&gt;</span>$SRCROOT/cime_config/machines/config_batch.xml<span class="nt">&lt;/default_value&gt;</span>
 <span class="w">    </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
@@ -350,15 +350,15 @@ long as they set their type to <code class="docutils literal notranslate"><span 
 </table>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- Generated with doc/generate_xmlschema.py CIME/data/config/xml_schemas/config_batch.xsd config_batch on 2025-02-06 --&gt;</span>
 
-<span class="cm">&lt;!-- Attributes &#39;version&#39; is required--&gt;</span>
+<span class="cm">&lt;!-- Attributes 'version' is required--&gt;</span>
 <span class="cm">&lt;!-- Occurrences min: 1 max: 1--&gt;</span>
-<span class="nt">&lt;config_batch</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="cm">&lt;!-- Attributes &#39;MACH&#39; is optional,&#39;type&#39; is required,&#39;version&#39; is optional--&gt;</span>
+<span class="nt">&lt;config_batch</span><span class="w"> </span><span class="na">version=</span><span class="s">""</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!-- Attributes 'MACH' is optional,'type' is required,'version' is optional--&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">    </span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;args&#39; is optional,&#39;per_job_arg&#39; is optional--&gt;</span>
+<span class="w">    </span><span class="nt">&lt;batch_system</span><span class="w"> </span><span class="na">MACH=</span><span class="s">""</span><span class="w"> </span><span class="na">type=</span><span class="s">""</span><span class="w"> </span><span class="na">version=</span><span class="s">""</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes 'args' is optional,'per_job_arg' is optional--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;batch_query</span><span class="w"> </span><span class="na">args=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">per_job_arg=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;batch_query</span><span class="w"> </span><span class="na">args=</span><span class="s">""</span><span class="w"> </span><span class="na">per_job_arg=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/batch_query&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;batch_submit&gt;&lt;/batch_submit&gt;</span>
@@ -390,37 +390,37 @@ long as they set their type to <code class="docutils literal notranslate"><span 
 <span class="w">        </span><span class="nt">&lt;batch_mail_default&gt;&lt;/batch_mail_default&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;submit_args&gt;</span>
-<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;flag&#39; is required,&#39;name&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes 'flag' is required,'name' is optional--&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">            </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">""</span><span class="w"> </span><span class="na">name=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="nt">&lt;/arg&gt;</span>
-<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;job_queue&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes 'job_queue' is optional--&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">            </span><span class="nt">&lt;argument</span><span class="w"> </span><span class="na">job_queue=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;argument</span><span class="w"> </span><span class="na">job_queue=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="nt">&lt;/argument&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/submit_args&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;None&#39; is None--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes 'None' is None--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;directives</span><span class="w"> </span><span class="na">None=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;default&#39; is optional,&#39;prefix&#39; is optional--&gt;</span>
+<span class="w">        </span><span class="nt">&lt;directives</span><span class="w"> </span><span class="na">None=</span><span class="s">""</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes 'default' is optional,'prefix' is optional--&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">            </span><span class="nt">&lt;directive</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">prefix=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;directive</span><span class="w"> </span><span class="na">default=</span><span class="s">""</span><span class="w"> </span><span class="na">prefix=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="nt">&lt;/directive&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/directives&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;unknown_queue_directives&gt;&lt;/unknown_queue_directives&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">        </span><span class="nt">&lt;queues&gt;</span>
-<span class="w">            </span><span class="cm">&lt;!-- Attributes &#39;default&#39; is optional,&#39;strict&#39; is optional,&#39;nodemax&#39; is optional,&#39;nodemin&#39; is optional,&#39;jobmax&#39; is optional,&#39;jobmin&#39; is optional,&#39;jobname&#39; is optional,&#39;walltimemax&#39; is optional,&#39;walltimemin&#39; is optional,&#39;walltimedef&#39; is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes 'default' is optional,'strict' is optional,'nodemax' is optional,'nodemin' is optional,'jobmax' is optional,'jobmin' is optional,'jobname' is optional,'walltimemax' is optional,'walltimemin' is optional,'walltimedef' is optional--&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">            </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">default=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">strict=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">nodemin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobmax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobmin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">jobname=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimemin=</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="na">walltimedef=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;&lt;/queue&gt;</span>
+<span class="w">            </span><span class="nt">&lt;queue</span><span class="w"> </span><span class="na">default=</span><span class="s">""</span><span class="w"> </span><span class="na">strict=</span><span class="s">""</span><span class="w"> </span><span class="na">nodemax=</span><span class="s">""</span><span class="w"> </span><span class="na">nodemin=</span><span class="s">""</span><span class="w"> </span><span class="na">jobmax=</span><span class="s">""</span><span class="w"> </span><span class="na">jobmin=</span><span class="s">""</span><span class="w"> </span><span class="na">jobname=</span><span class="s">""</span><span class="w"> </span><span class="na">walltimemax=</span><span class="s">""</span><span class="w"> </span><span class="na">walltimemin=</span><span class="s">""</span><span class="w"> </span><span class="na">walltimedef=</span><span class="s">""</span><span class="nt">&gt;&lt;/queue&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/queues&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/batch_system&gt;</span>
 <span class="w">    </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>
 <span class="w">    </span><span class="nt">&lt;batch_jobs&gt;</span>
-<span class="w">        </span><span class="cm">&lt;!-- Attributes &#39;name&#39; is required--&gt;</span>
+<span class="w">        </span><span class="cm">&lt;!-- Attributes 'name' is required--&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">        </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: 1--&gt;</span>
 <span class="w">            </span><span class="nt">&lt;template&gt;&lt;/template&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 0 max: 1--&gt;</span>

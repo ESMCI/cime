@@ -154,14 +154,14 @@
 <span class="sig-prename descclassname"><span class="pre">CIME.namelist.</span></span><span class="sig-name descname"><span class="pre">character_literal_to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/namelist.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.namelist.character_literal_to_string" title="Link to this definition"></a></dt>
 <dd><p>Convert a Fortran character literal to a Python string.</p>
 <p>This function assumes (without checking) that <cite>literal</cite> is a valid literal.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s2">&quot;&#39;blah&#39;&quot;</span><span class="p">)</span>
-<span class="go">&#39;blah&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s1">&#39;&quot;blah&quot;&#39;</span><span class="p">)</span>
-<span class="go">&#39;blah&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s2">&quot;&#39;don&#39;&#39;t&#39;&quot;</span><span class="p">)</span>
-<span class="go">&quot;don&#39;t&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&quot;Hello!&quot;&quot;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
-<span class="go">&#39;&quot;Hello!&quot;&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s2">"'blah'"</span><span class="p">)</span>
+<span class="go">'blah'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s1">'"blah"'</span><span class="p">)</span>
+<span class="go">'blah'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s2">"'don''t'"</span><span class="p">)</span>
+<span class="go">"don't"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">character_literal_to_string</span><span class="p">(</span><span class="s1">'"'</span> <span class="o">+</span> <span class="s1">'""Hello!""'</span> <span class="o">+</span> <span class="s1">'"'</span><span class="p">)</span>
+<span class="go">'"Hello!"'</span>
 </pre></div>
 </div>
 </dd></dl>
