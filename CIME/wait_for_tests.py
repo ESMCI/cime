@@ -376,7 +376,10 @@ def create_cdash_upload_xml(
                         except CIMEError:
                             continue
 
-                    log_dst_dir = log_path / f"{test_name}{'' if case_dir == test_case_dir else '.case2'}_{param}_logs"
+                    log_dst_dir = (
+                        log_path
+                        / f"{test_name}{'' if case_dir == test_case_dir else '.case2'}_{param}_logs"
+                    )
                     log_dst_dir.mkdir(parents=True)
                     for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
                         if os.path.isdir(log_file):
@@ -639,9 +642,7 @@ def wait_for_test(
 
             else:
                 if wait and not SIGNAL_RECEIVED:
-                    logging.debug(
-                        f"File '{test_status_filepath}' does not yet exist"
-                    )
+                    logging.debug(f"File '{test_status_filepath}' does not yet exist")
                     time.sleep(SLEEP_INTERVAL_SEC)
                 else:
                     test_name = os.path.abspath(test_status_filepath).split("/")[-2]
