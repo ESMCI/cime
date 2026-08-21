@@ -27,9 +27,15 @@ scripts/Tools/JENKINS*
 test_coverage/**
 *.bak
 
+# Local test data
+data/
+
 # AI coding tool local state
 .gemini/
 .codex/
+
+# pixi local environments (docker/pixi.toml)
+.pixi/
 
 # Special for Claude Code user config
 .claude/*
