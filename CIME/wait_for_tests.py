@@ -42,7 +42,7 @@ def get_test_time(test_path):
     ts = TestStatus(test_dir=test_path)
     comment = ts.get_comment(RUN_PHASE)
     if "time=" not in comment:
-        logging.warning("No run-phase time data found in {}".format(test_path))
+        logging.warning(f"No run-phase time data found in {test_path}")
         return 0
     else:
         time_data = [token for token in comment.split() if token.startswith("time=")][0]
@@ -83,7 +83,7 @@ def get_test_output(test_path):
     if os.path.exists(output_file):
         return open(output_file, "r").read()
     else:
-        logging.warning("File '{}' not found".format(output_file))
+        logging.warning(f"File '{output_file}' not found")
         return ""
 
 
@@ -100,7 +100,7 @@ def create_cdash_xml_boiler(
     site_elem = xmlet.Element("Site")
 
     site_elem.attrib["BuildName"] = cdash_build_name
-    site_elem.attrib["BuildStamp"] = "{}-{}".format(utc_time, cdash_build_group)
+    site_elem.attrib["BuildStamp"] = f"{utc_time}-{cdash_build_group}"
     site_elem.attrib["Name"] = hostname
     site_elem.attrib["OSName"] = "Linux"
     site_elem.attrib["Hostname"] = hostname
@@ -110,7 +110,7 @@ def create_cdash_xml_boiler(
 
     xmlet.SubElement(phase_elem, "StartDateTime").text = time.ctime(current_time)
     xmlet.SubElement(
-        phase_elem, "Start{}Time".format("Test" if phase == "Testing" else phase)
+        phase_elem, f"Start{'Test' if phase == 'Testing' else phase}Time"
     ).text = str(int(current_time))
 
     return site_elem, phase_elem
@@ -147,9 +147,7 @@ def create_cdash_config_xml(
         nml_phase_result = get_test_phase(test_norm_path, NAMELIST_PHASE)
         if nml_phase_result == TEST_FAIL_STATUS:
             nml_diff = get_nml_diff(test_norm_path)
-            cdash_warning = "CMake Warning:\n\n{} NML DIFF:\n{}\n".format(
-                test_name, nml_diff
-            )
+            cdash_warning = f"CMake Warning:\n\n{test_name} NML DIFF:\n{nml_diff}\n"
             config_results.append(cdash_warning)
 
     xmlet.SubElement(config_elem, "Log").text = "\n".join(config_results)
@@ -372,16 +370,15 @@ def create_cdash_upload_xml(
                         # will not be able to support xmlquery
                         try:
                             log_src_dir = run_cmd_no_fail(
-                                "./xmlquery {} --value".format(param),
+                                f"./xmlquery {param} --value",
                                 from_dir=case_dir,
                             )
                         except CIMEError:
                             continue
 
-                    log_dst_dir = log_path / "{}{}_{}_logs".format(
-                        test_name,
-                        "" if case_dir == test_case_dir else ".case2",
-                        param,
+                    log_dst_dir = (
+                        log_path
+                        / f"{test_name}{'' if case_dir == test_case_dir else '.case2'}_{param}_logs"
                     )
                     log_dst_dir.mkdir(parents=True)
                     for log_file in glob.glob(os.path.join(log_src_dir, "*log*")):
@@ -400,34 +397,27 @@ def create_cdash_upload_xml(
 
     if need_to_upload:
 
-        tarball = "{}.tar.gz".format(log_dirname)
+        tarball = f"{log_dirname}.tar.gz"
 
         run_cmd_no_fail(
-            "tar -cf - {} | gzip -c".format(log_dirname),
+            f"tar -cf - {log_dirname} | gzip -c",
             arg_stdout=tarball,
             from_dir=str(tmp_path),
         )
-        base64 = run_cmd_no_fail("base64 {}".format(tarball), from_dir=str(tmp_path))
+        base64 = run_cmd_no_fail(f"base64 {tarball}", from_dir=str(tmp_path))
 
-        xml_text = r"""<?xml version="1.0" encoding="UTF-8"?>
+        xml_text = f"""<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="Dart/Source/Server/XSL/Build.xsl <file:///Dart/Source/Server/XSL/Build.xsl> "?>
-<Site BuildName="{}" BuildStamp="{}-{}" Name="{}" Generator="ctest3.0.0">
+<Site BuildName="{cdash_build_name}" BuildStamp="{utc_time}-{cdash_build_group}" Name="{hostname}" Generator="ctest3.0.0">
 <Upload>
-<File filename="{}">
+<File filename="{str((tmp_path / tarball).absolute())}">
 <Content encoding="base64">
-{}
+{base64}
 </Content>
 </File>
 </Upload>
 </Site>
-""".format(
-            cdash_build_name,
-            utc_time,
-            cdash_build_group,
-            hostname,
-            str((tmp_path / tarball).absolute()),
-            base64,
-        )
+"""
 
         with (data_rel_path / "Upload.xml").open(mode="w") as fd:
             fd.write(xml_text)
@@ -457,7 +447,7 @@ def create_cdash_xml(
     if hostname is None:
         hostname = socket.gethostname().split(".")[0]
         logging.warning(
-            "Could not convert hostname '{}' into an E3SM machine name".format(hostname)
+            f"Could not convert hostname '{hostname}' into an E3SM machine name"
         )
 
     # We assume all cases were created from the same code repo
@@ -531,43 +521,35 @@ def create_cdash_xml(
                 )
 
                 for drop_method in ["https", "http"]:
-                    dart_config = """
-SourceDirectory: {0}
-BuildDirectory: {0}
+                    dart_config = f"""
+SourceDirectory: {str(tmp_path.absolute())}
+BuildDirectory: {str(tmp_path.absolute())}
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: {1}
+Site: {hostname}
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: {2}
+BuildName: {cdash_build_name}
 
 # Submission information
 IsCDash: TRUE
 CDashVersion:
 QueryCDashVersion:
 DropSite: my.cdash.org
-DropLocation: /submit.php?project={3}
+DropLocation: /submit.php?project={cdash_project}
 DropSiteUser:
 DropSitePassword:
 DropSiteMode:
-DropMethod: {6}
+DropMethod: {drop_method}
 TriggerSite:
-ScpCommand: {4}
+ScpCommand: {shutil.which('scp')}
 
 # Dashboard start time
-NightlyStartTime: {5} UTC
+NightlyStartTime: {cdash_timestamp} UTC
 
 UseLaunchers:
 CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
-""".format(
-                        str(tmp_path.absolute()),
-                        hostname,
-                        cdash_build_name,
-                        cdash_project,
-                        shutil.which("scp"),
-                        cdash_timestamp,
-                        drop_method,
-                    )
+"""
                     with dart_path.open(mode="w") as dart_fd:
                         dart_fd.write(dart_config)
 
@@ -578,12 +560,10 @@ CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
                     )
                     if stat != 0:
                         logging.warning(
-                            "ctest upload drop method {} FAILED:\n{}".format(
-                                drop_method, out
-                            )
+                            f"ctest upload drop method {drop_method} FAILED:\n{out}"
                         )
                     else:
-                        logging.info("Upload SUCCESS:\n{}".format(out))
+                        logging.info(f"Upload SUCCESS:\n{out}")
                         if ENV_VAR_KEEP_CDASH in os.environ:
                             logging.info(
                                 f"Test mode enabled, copying {str(tmp_path)} to {os.getcwd()}"
@@ -618,7 +598,7 @@ def wait_for_test(
     else:
         test_status_filepath = test_path
 
-    logging.debug("Watching file: '{}'".format(test_status_filepath))
+    logging.debug(f"Watching file: '{test_status_filepath}'")
     test_log_path = os.path.join(
         os.path.dirname(test_status_filepath), ".internal_test_status.log"
     )
@@ -649,7 +629,7 @@ def wait_for_test(
 
                 if prior_ts is not None and prior_ts != ts:
                     log_fd.write(ts.phase_statuses_dump())
-                    log_fd.write("OVERALL: {}\n\n".format(test_status))
+                    log_fd.write(f"OVERALL: {test_status}\n\n")
 
                 prior_ts = ts
 
@@ -662,9 +642,7 @@ def wait_for_test(
 
             else:
                 if wait and not SIGNAL_RECEIVED:
-                    logging.debug(
-                        "File '{}' does not yet exist".format(test_status_filepath)
-                    )
+                    logging.debug(f"File '{test_status_filepath}' does not yet exist")
                     time.sleep(SLEEP_INTERVAL_SEC)
                 else:
                     test_name = os.path.abspath(test_status_filepath).split("/")[-2]
@@ -672,7 +650,7 @@ def wait_for_test(
                         (
                             test_name,
                             test_path,
-                            "File '{}' doesn't exist".format(test_status_filepath),
+                            f"File '{test_status_filepath}' doesn't exist",
                             CREATE_NEWCASE_PHASE,
                         )
                     )
@@ -724,29 +702,23 @@ def wait_for_tests_impl(
             prior_path, prior_status, _ = test_results[test_name]
             if test_status == prior_status:
                 logging.warning(
-                    "Test name '{}' was found in both '{}' and '{}'".format(
-                        test_name, test_path, prior_path
-                    )
+                    f"Test name '{test_name}' was found in both '{test_path}' and '{prior_path}'"
                 )
             else:
                 raise CIMEError(
-                    "Test name '{}' was found in both '{}' and '{}' with different results".format(
-                        test_name, test_path, prior_path
-                    )
+                    f"Test name '{test_name}' was found in both '{test_path}' and '{prior_path}' with different results"
                 )
 
         expect(
             test_name is not None,
-            "Failed to get test name for test_path: {}".format(test_path),
+            f"Failed to get test name for test_path: {test_path}",
         )
         test_results[test_name] = (test_path, test_status, test_phase)
         completed_test_paths.append(test_path)
 
     expect(
         set(test_paths) == set(completed_test_paths),
-        "Missing results for test paths: {}".format(
-            set(test_paths) - set(completed_test_paths)
-        ),
+        f"Missing results for test paths: {set(test_paths) - set(completed_test_paths)}",
     )
     return test_results
 
@@ -799,7 +771,7 @@ def wait_for_tests(
             NAMELIST_FAIL_STATUS,
         ]:
             # Report failed phases
-            logging.info("{} {} (phase {})".format(test_status, test_name, phase))
+            logging.info(f"{test_status} {test_name} (phase {phase})")
             all_pass = False
         else:
             # Be cautious about telling the user that the test passed since we might
@@ -807,33 +779,27 @@ def wait_for_tests(
             if test_status == TEST_PEND_STATUS:
                 if expect_test_complete:
                     logging.info(
-                        "{} {} (phase {} unexpectedly left in PEND)".format(
-                            TEST_PEND_STATUS, test_name, phase
-                        )
+                        f"{TEST_PEND_STATUS} {test_name} (phase {phase} unexpectedly left in PEND)"
                     )
                     all_pass = False
                 else:
                     logging.info(
-                        "{} {} (phase {} has not yet completed)".format(
-                            TEST_PEND_STATUS, test_name, phase
-                        )
+                        f"{TEST_PEND_STATUS} {test_name} (phase {phase} has not yet completed)"
                     )
 
             elif test_status == NAMELIST_FAIL_STATUS:
                 logging.info(
-                    "{} {} (but otherwise OK) {}".format(
-                        NAMELIST_FAIL_STATUS, test_name, phase
-                    )
+                    f"{NAMELIST_FAIL_STATUS} {test_name} (but otherwise OK) {phase}"
                 )
                 all_pass = False
             else:
                 expect(
                     test_status == TEST_PASS_STATUS,
-                    "Expected pass if we made it here, instead: {}".format(test_status),
+                    f"Expected pass if we made it here, instead: {test_status}",
                 )
-                logging.info("{} {} {}".format(test_status, test_name, phase))
+                logging.info(f"{test_status} {test_name} {phase}")
 
-        logging.info("    Case dir: {}".format(case_dir))
+        logging.info(f"    Case dir: {case_dir}")
 
         if update_success or (cdash_build_name and not env_loaded):
             try:
@@ -857,9 +823,7 @@ def wait_for_tests(
 
             except CIMEError as e:
                 logging.warning(
-                    "Failed to update success / load_env for Case {}: {}".format(
-                        case_dir, e
-                    )
+                    f"Failed to update success / load_env for Case {case_dir}: {e}"
                 )
 
     if cdash_build_name:
