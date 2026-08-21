@@ -1,6 +1,7 @@
 """
 Interface to the env_run.xml file.  This class inherits from EnvBase
 """
+from itertools import zip_longest
 from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
@@ -66,5 +67,55 @@ class EnvRun(EnvBase):
                     self._pio_async_interface[comp] = convert_to_type(
                         value, "logical", vid
                     )
+        # PIO_NETCDF_FORMAT=64bit_data is not compatible with PIO_TYPENAME=netcdf4p
+        # make sure that this combination of options is not set
+        if "PIO_TYPENAME" in vid or "PIO_NETCDF_FORMAT" in vid:
+            nvid, comp, iscompvar = self.check_if_comp_var(vid, None)
+            pio_netcdf_formats = []
+            pio_typenames = []
+
+            if nvid == "PIO_TYPENAME":
+                if comp:
+                    pio_netcdf_format_val = self.get_value(
+                        "PIO_NETCDF_FORMAT_{}".format(comp.upper())
+                    )
+                    if pio_netcdf_format_val is None:
+                        pio_netcdf_format_val = ""
+                    pio_netcdf_formats = [pio_netcdf_format_val]
+                else:
+                    pio_netcdf_formats = self.get_values("PIO_NETCDF_FORMAT")
+                pio_typenames = [value]
+            elif nvid == "PIO_NETCDF_FORMAT":
+                if comp:
+                    pio_typename_val = self.get_value(
+                        "PIO_TYPENAME_{}".format(comp.upper())
+                    )
+                    if pio_typename_val is None:
+                        pio_typename_val = ""
+                    pio_typenames = [pio_typename_val]
+                else:
+                    pio_typenames = self.get_values("PIO_TYPENAME")
+                pio_netcdf_formats = [value]
+
+            last_format = pio_netcdf_formats[-1]
+            last_typename = pio_typenames[-1]
+            for pio_typename, pio_netcdf_format in zip_longest(
+                pio_typenames, pio_netcdf_formats
+            ):
+                if pio_typename is None:
+                    pio_typename = last_typename
+                if pio_netcdf_format is None:
+                    pio_netcdf_format = last_format
+
+                incompatible_pio_typenames = ("netcdf4p", "netcdf4c")
+                expect(
+                    not (
+                        pio_typename in incompatible_pio_typenames
+                        and "64bit_data" in pio_netcdf_format
+                    ),
+                    "pio_typename {} is not compatible with pio_netcdf_format {}".format(
+                        pio_typename, pio_netcdf_format
+                    ),
+                )
 
         return EnvBase.set_value(self, vid, value, subgroup, ignore_type)
