@@ -10,16 +10,14 @@ def cleanup_queue(test_root, test_id):
     """
     Delete all jobs left in the queue
     """
-    for teststatus_file in glob.iglob("{}/*{}*/TestStatus".format(test_root, test_id)):
+    for teststatus_file in glob.iglob(f"{test_root}/*{test_id}*/TestStatus"):
         case_dir = os.path.dirname(teststatus_file)
         with Case(case_dir, read_only=True) as case:
             jobmap = case.get_job_info()
             jobkills = []
             for jobname, jobid in jobmap.items():
                 logging.warning(
-                    "Found leftover batch job {} ({}) that need to be deleted".format(
-                        jobid, jobname
-                    )
+                    f"Found leftover batch job {jobid} ({jobname}) that need to be deleted"
                 )
                 jobkills.append(jobid)
 
@@ -40,11 +38,9 @@ def delete_old_test_data(
     ###############################################################################
     # Remove old dirs
     for clutter_area in [scratch_root, test_root, run_area, build_area, archive_area]:
-        for old_file in glob.glob(
-            "{}/*{}*{}*".format(clutter_area, mach_comp, test_id_root)
-        ):
+        for old_file in glob.glob(f"{clutter_area}/*{mach_comp}*{test_id_root}*"):
             if avoid_test_id not in old_file:
-                logging.info("TEST ARCHIVER: removing {}".format(old_file))
+                logging.info(f"TEST ARCHIVER: removing {old_file}")
                 if os.path.isdir(old_file):
                     shutil.rmtree(old_file)
                 else:
@@ -52,9 +48,7 @@ def delete_old_test_data(
 
             else:
                 logging.info(
-                    "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
-                        old_file, avoid_test_id
-                    )
+                    f"TEST ARCHIVER: leaving case {old_file} due to avoiding test id {avoid_test_id}"
                 )
 
 
@@ -63,9 +57,7 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     ###############################################################################
     results = set([])
     test_id_re = re.compile(".+[.]([^.]+)")
-    for item in glob.glob(
-        "{}/{}/*{}*{}*".format(old_test_archive, "old_cases", mach_comp, test_id_root)
-    ):
+    for item in glob.glob(f"{old_test_archive}/old_cases/*{mach_comp}*{test_id_root}*"):
         filename = os.path.basename(item)
         the_match = test_id_re.match(filename)
         if the_match:
@@ -91,32 +83,28 @@ def archive_old_test_data(
     bytes_allowed = gb_allowed * 1000000000
     expect(
         bytes_allowed > 0,
-        "Machine {} does not support test archiving".format(machine.get_machine_name()),
+        f"Machine {machine.get_machine_name()} does not support test archiving",
     )
 
     # Remove old cs.status, cs.submit. I don't think there's any value to leaving these around
     # or archiving them
-    for old_cs_file in glob.glob("{}/cs.*.{}[0-9]*".format(test_root, test_id_root)):
+    for old_cs_file in glob.glob(f"{test_root}/cs.*.{test_id_root}[0-9]*"):
         if avoid_test_id not in old_cs_file:
-            logging.info("TEST ARCHIVER: Removing {}".format(old_cs_file))
+            logging.info(f"TEST ARCHIVER: Removing {old_cs_file}")
             os.remove(old_cs_file)
 
     # Remove the old CTest XML, same reason as above
     if os.path.isdir("Testing"):
-        logging.info(
-            "TEST ARCHIVER: Removing {}".format(os.path.join(os.getcwd(), "Testing"))
-        )
+        logging.info(f"TEST ARCHIVER: Removing {os.path.join(os.getcwd(), 'Testing')}")
         shutil.rmtree("Testing")
 
     if not os.path.exists(old_test_archive):
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob(
-        "{}/*{}*{}[0-9]*".format(test_root, mach_comp, test_id_root)
-    ):
+    for old_case in glob.glob(f"{test_root}/*{mach_comp}*{test_id_root}[0-9]*"):
         if avoid_test_id not in old_case:
-            logging.info("TEST ARCHIVER: archiving case {}".format(old_case))
+            logging.info(f"TEST ARCHIVER: archiving case {old_case}")
             exeroot, rundir, archdir = run_cmd_no_fail(
                 "./xmlquery EXEROOT RUNDIR DOUT_S_ROOT --value", from_dir=old_case
             ).split(",")
@@ -130,9 +118,7 @@ def archive_old_test_data(
                 if os.path.exists(the_dir):
                     start_time = time.time()
                     logging.info(
-                        "TEST ARCHIVER:   archiving {} to {}".format(
-                            the_dir, os.path.join(old_test_archive, target_area)
-                        )
+                        f"TEST ARCHIVER:   archiving {the_dir} to {os.path.join(old_test_archive, target_area)}"
                     )
                     if not os.path.exists(os.path.join(old_test_archive, target_area)):
                         os.mkdir(os.path.join(old_test_archive, target_area))
@@ -142,7 +128,7 @@ def archive_old_test_data(
                         os.path.join(
                             old_test_archive,
                             target_area,
-                            "{}.tar.gz".format(old_case_name),
+                            f"{old_case_name}.tar.gz",
                         ),
                         "w:gz",
                     ) as tfd:
@@ -159,56 +145,44 @@ def archive_old_test_data(
 
                     end_time = time.time()
                     logging.info(
-                        "TEST ARCHIVER:   archiving {} took {} seconds".format(
-                            the_dir, int(end_time - start_time)
-                        )
+                        f"TEST ARCHIVER:   archiving {the_dir} took {int(end_time - start_time)} seconds"
                     )
 
         else:
             logging.info(
-                "TEST ARCHIVER: leaving case {} due to avoiding test id {}".format(
-                    old_case, avoid_test_id
-                )
+                f"TEST ARCHIVER: leaving case {old_case} due to avoiding test id {avoid_test_id}"
             )
 
     # Check size of archive
     bytes_of_old_test_data = int(
-        run_cmd_no_fail("du -sb {}".format(old_test_archive)).split()[0]
+        run_cmd_no_fail(f"du -sb {old_test_archive}").split()[0]
     )
     if bytes_of_old_test_data > bytes_allowed:
         logging.info(
-            "TEST ARCHIVER: Too much test data, {}GB (actual) > {}GB (limit)".format(
-                bytes_of_old_test_data / 1000000000, bytes_allowed / 1000000000
-            )
+            f"TEST ARCHIVER: Too much test data, {bytes_of_old_test_data / 1000000000}GB (actual) > {bytes_allowed / 1000000000}GB (limit)"
         )
         old_test_ids = scan_for_test_ids(old_test_archive, mach_comp, test_id_root)
         for old_test_id in sorted(old_test_ids):
-            logging.info(
-                "TEST ARCHIVER:   Removing old data for test {}".format(old_test_id)
-            )
+            logging.info(f"TEST ARCHIVER:   Removing old data for test {old_test_id}")
             for item in ["old_cases", "old_builds", "old_runs", "old_archives"]:
                 for dir_to_rm in glob.glob(
-                    "{}/{}/*{}*{}*".format(
-                        old_test_archive, item, mach_comp, old_test_id
-                    )
+                    f"{old_test_archive}/{item}/*{mach_comp}*{old_test_id}*"
                 ):
-                    logging.info("TEST ARCHIVER:     Removing {}".format(dir_to_rm))
+                    logging.info(f"TEST ARCHIVER:     Removing {dir_to_rm}")
                     if os.path.isdir(dir_to_rm):
                         shutil.rmtree(dir_to_rm)
                     else:
                         os.remove(dir_to_rm)
 
             bytes_of_old_test_data = int(
-                run_cmd_no_fail("du -sb {}".format(old_test_archive)).split()[0]
+                run_cmd_no_fail(f"du -sb {old_test_archive}").split()[0]
             )
             if bytes_of_old_test_data < bytes_allowed:
                 break
 
     else:
         logging.info(
-            "TEST ARCHIVER: Test data is within accepted bounds, {}GB (actual) < {}GB (limit)".format(
-                bytes_of_old_test_data / 1000000000, bytes_allowed / 1000000000
-            )
+            f"TEST ARCHIVER: Test data is within accepted bounds, {bytes_of_old_test_data / 1000000000}GB (actual) < {bytes_allowed / 1000000000}GB (limit)"
         )
 
 
@@ -228,7 +202,7 @@ def handle_old_test_data(
     )  # Assumes XXX/archive/$CASE
     old_test_archive = os.path.join(scratch_root, "old_test_archive")
 
-    mach_comp = "{}_{}".format(machine.get_machine_name(), compiler)
+    mach_comp = f"{machine.get_machine_name()}_{compiler}"
 
     try:
         archive_old_test_data(
@@ -241,9 +215,7 @@ def handle_old_test_data(
         )
     except Exception:
         logging.warning(
-            "TEST ARCHIVER: Archiving of old test data FAILED: {}\nDeleting data instead".format(
-                sys.exc_info()[1]
-            )
+            f"TEST ARCHIVER: Archiving of old test data FAILED: {sys.exc_info()[1]}\nDeleting data instead"
         )
         delete_old_test_data(
             mach_comp,
@@ -327,12 +299,10 @@ def jenkins_generic_job(
 
     if jenkins_id is not None:
         test_id_root = jenkins_id
-        test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp("%y%m%d_%H%M%S"))
+        test_id = f"{test_id_root}{CIME.utils.get_timestamp('%y%m%d_%H%M%S')}"
     else:
-        test_id_root = "J{}{}".format(
-            baseline_name.capitalize(), test_suite.replace("e3sm_", "").capitalize()
-        )
-        test_id = "%s%s" % (test_id_root, CIME.utils.get_timestamp())
+        test_id_root = f"J{baseline_name.capitalize()}{test_suite.replace('e3sm_', '').capitalize()}"
+        test_id = f"{test_id_root}{CIME.utils.get_timestamp()}"
     archiver_thread = threading.Thread(
         target=handle_old_test_data,
         args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
@@ -345,10 +315,10 @@ def jenkins_generic_job(
 
     create_test_args = [
         test_suite,
-        "--test-root %s" % test_root,
-        "-t %s" % test_id,
-        "--machine %s" % machine.get_machine_name(),
-        "--compiler %s" % compiler,
+        f"--test-root {test_root}",
+        f"-t {test_id}",
+        f"--machine {machine.get_machine_name()}",
+        f"--compiler {compiler}",
     ]
     if generate_baselines:
         create_test_args.append("-g -b " + real_baseline_name)
@@ -362,7 +332,7 @@ def jenkins_generic_job(
         create_test_args.append("--no-batch")
 
     if parallel_jobs is not None:
-        create_test_args.append("-j {:d}".format(parallel_jobs))
+        create_test_args.append(f"-j {parallel_jobs:d}")
 
     if walltime is not None:
         create_test_args.append("--walltime " + walltime)
@@ -395,9 +365,7 @@ def jenkins_generic_job(
         # Create_test should have either passed, detected failing tests, or timed out
         expect(
             create_test_stat in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
-            "Create_test script FAILED with error code '{:d}'!".format(
-                create_test_stat
-            ),
+            f"Create_test script FAILED with error code '{create_test_stat:d}'!",
         )
 
     #
@@ -415,15 +383,15 @@ def jenkins_generic_job(
 
     os.environ["CIME_MACHINE"] = machine.get_machine_name()
 
+    mach_comp = f"{machine.get_machine_name()}_{compiler}"
+    globstr = f"{test_root}/*{mach_comp}*{test_id}/TestStatus"
     if submit_to_cdash:
         logging.info(
-            "To resubmit to dashboard: wait_for_tests {}/*{}/TestStatus --no-wait -b {}".format(
-                test_root, test_id, cdash_build_name
-            )
+            f"To resubmit to dashboard: wait_for_tests {globstr} --no-wait -b {cdash_build_name}"
         )
 
     tests_passed = CIME.wait_for_tests.wait_for_tests(
-        glob.glob("{}/*{}/TestStatus".format(test_root, test_id)),
+        glob.glob(globstr),
         no_wait=not use_batch,  # wait if using queue
         check_throughput=check_throughput,
         check_memory=check_memory,
