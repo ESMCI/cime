@@ -270,6 +270,7 @@ def bless_test_results(
     bless_tput=False,
     bless_mem=False,
     bless_perf=False,
+    dry_run=False,
     **_,  # Capture all for extra
 ):
     if bless_perf:
@@ -407,31 +408,48 @@ def bless_test_results(
             logger.info(
                 "###############################################################################"
             )
-            if not force:
-                time.sleep(2)
 
-            try:
-                _bless_test(
-                    test_name,
-                    test_dir,
-                    baseline_name,
-                    baseline_root,
-                    nl_bless,
-                    hist_bless,
-                    tput_bless,
-                    mem_bless,
-                    lock_baselines,
-                    pes_file,
-                    new_test_root,
-                    new_test_id,
-                    report_only,
-                    force,
+            if dry_run:
+                bless_types = []
+                if nl_bless:
+                    bless_types.append("namelists")
+                if hist_bless:
+                    bless_types.append("history")
+                if tput_bless:
+                    bless_types.append("throughput")
+                if mem_bless:
+                    bless_types.append("memory")
+                logger.info(
+                    "DRY-RUN: would bless {} for test: {}".format(
+                        ", ".join(bless_types), test_name
+                    )
                 )
-            except BlessError as e:
-                for reason in e:
-                    broken_blesses.append((e.test_name, reason))
-            except CIMEError as e:
-                broken_blesses.append((test_name, str(e)))
+            else:
+                if not force:
+                    time.sleep(2)
+
+                try:
+                    _bless_test(
+                        test_name,
+                        test_dir,
+                        baseline_name,
+                        baseline_root,
+                        nl_bless,
+                        hist_bless,
+                        tput_bless,
+                        mem_bless,
+                        lock_baselines,
+                        pes_file,
+                        new_test_root,
+                        new_test_id,
+                        report_only,
+                        force,
+                    )
+                except BlessError as e:
+                    for reason in e:
+                        broken_blesses.append((e.test_name, reason))
+                except CIMEError as e:
+                    broken_blesses.append((test_name, str(e)))
 
     # Emit a warning if items in bless_tests did not match anything
     if bless_tests:

@@ -141,6 +141,12 @@ def create_bless_options(parser):
         "--bless-perf", action="store_true", help="Bless both throughput and memory"
     )
 
+    bless_group.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be blessed without making any changes to baselines.",
+    )
+
 
 def create_baseline_options(parser):
     baseline_group = parser.add_argument_group("Baseline options")
