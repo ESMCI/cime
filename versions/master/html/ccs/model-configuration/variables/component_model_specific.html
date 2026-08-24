@@ -98,7 +98,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
 </ul>
 
@@ -141,7 +141,7 @@
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Entry</a><a class="headerlink" href="#entry" title="Link to this heading"></a></h2>
 <p>The following is an example entry for <code class="docutils literal notranslate"><span class="pre">CONFIG_CPL_FILE_MODEL_SPECIFIC</span></code> in <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
 <p>This is an example entry for <code class="docutils literal notranslate"><span class="pre">config_files.xml</span></code>.</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;CONFIG_CPL_FILE_MODEL_SPECIFIC&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">"CONFIG_CPL_FILE_MODEL_SPECIFIC"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
 <span class="w">    </span><span class="nt">&lt;values&gt;</span>
 <span class="w">    </span><span class="nt">&lt;value&gt;</span>$SRCROOT/driver-$COMP_INTERFACE/cime_config/config_component_$MODEL.xml<span class="nt">&lt;/value&gt;</span>
@@ -149,8 +149,8 @@
 <span class="w">    </span><span class="nt">&lt;group&gt;</span>case_last<span class="nt">&lt;/group&gt;</span>
 <span class="w">    </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>
 <span class="w">    </span><span class="nt">&lt;desc&gt;</span>file<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>component<span class="w"> </span>specific<span class="w"> </span>driver<span class="w"> </span>configuration<span class="w"> </span>variables<span class="w"> </span>(for<span class="w"> </span>documentation<span class="w"> </span>only<span class="w"> </span>-<span class="w"> </span>DO<span class="w"> </span>NOT<span class="w"> </span>EDIT)<span class="nt">&lt;/desc&gt;</span>
-<span class="w">    </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;2.0&quot;</span><span class="nt">&gt;</span>$CIMEROOT/CIME/data/config/xml_schemas/entry_id.xsd<span class="nt">&lt;/schema&gt;</span>
-<span class="w">    </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;3.0&quot;</span><span class="nt">&gt;</span>$CIMEROOT/CIME/data/config/xml_schemas/entry_id_version3.xsd<span class="nt">&lt;/schema&gt;</span>
+<span class="w">    </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">version=</span><span class="s">"2.0"</span><span class="nt">&gt;</span>$CIMEROOT/CIME/data/config/xml_schemas/entry_id.xsd<span class="nt">&lt;/schema&gt;</span>
+<span class="w">    </span><span class="nt">&lt;schema</span><span class="w"> </span><span class="na">version=</span><span class="s">"3.0"</span><span class="nt">&gt;</span>$CIMEROOT/CIME/data/config/xml_schemas/entry_id_version3.xsd<span class="nt">&lt;/schema&gt;</span>
 <span class="nt">&lt;/entry&gt;</span>
 </pre></div>
 </div>
@@ -163,13 +163,13 @@
 <li><p>Specifying the compset-specific <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> xml variables.</p></li>
 </ol>
 <p id="xml-schema-component-model">CIME first parses the following nodes to identify appropriate <strong>config_component.xml</strong> files for the driver. There are two such files; one is model-independent and the other is model-specific.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CONFIG_CPL_FILE&quot;&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id="CONFIG_CPL_FILE"&gt;
   ...
   &lt;value&gt;$COMP_ROOT_DIR_CPL/cime_config/config_component.xml&lt;/value&gt;
   ...
 &lt;/entry&gt;
 
-&lt;entry id=&quot;CONFIG_CPL_FILE_MODEL_SPECIFIC&quot;&gt;
+&lt;entry id="CONFIG_CPL_FILE_MODEL_SPECIFIC"&gt;
   ...
   &lt;value&gt;$SRCROOT/driver-$COMP_INTERFACE/cime_config/config_component_$MODEL.xml&lt;/value&gt;
   ...
@@ -177,25 +177,25 @@
 </pre></div>
 </div>
 <p>CIME then parses each of the nodes listed below, using using the value of the <em>component</em> attribute to determine which xml files to use for the requested compset longname.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ATM_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ESP_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ICE_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_GLC_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_LND_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_OCN_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ROF_FILE&quot;</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_WAV_FILE&quot;</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_ATM_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_ESP_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_ICE_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_GLC_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_LND_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_OCN_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_ROF_FILE"</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">"CONFIG_WAV_FILE"</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>As an example, the possible atmosphere components for CESM have the following associated xml files.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CONFIG_ATM_FILE&quot;&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;entry id="CONFIG_ATM_FILE"&gt;
   &lt;type&gt;char&lt;/type&gt;
   &lt;default_value&gt;unset&lt;/default_value&gt;
   &lt;values&gt;
-    &lt;value component=&quot;cam&quot; &gt;$SRCROOT/components/cam/cime_config/config_component.xml&lt;/value&gt;
-    &lt;value component=&quot;datm&quot;&gt;$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml&lt;/value&gt;
-    &lt;value component=&quot;satm&quot;&gt;$CIMEROOT/components/stub_comps/satm/cime_config/config_component.xml&lt;/value&gt;
-    &lt;value component=&quot;xatm&quot;&gt;$CIMEROOT/components/xcpl_comps/xatm/cime_config/config_component.xml&lt;/value&gt;
+    &lt;value component="cam" &gt;$SRCROOT/components/cam/cime_config/config_component.xml&lt;/value&gt;
+    &lt;value component="datm"&gt;$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml&lt;/value&gt;
+    &lt;value component="satm"&gt;$CIMEROOT/components/stub_comps/satm/cime_config/config_component.xml&lt;/value&gt;
+    &lt;value component="xatm"&gt;$CIMEROOT/components/xcpl_comps/xatm/cime_config/config_component.xml&lt;/value&gt;
   &lt;/values&gt;
   &lt;group&gt;case_last&lt;/group&gt;
   &lt;file&gt;env_case.xml&lt;/file&gt;

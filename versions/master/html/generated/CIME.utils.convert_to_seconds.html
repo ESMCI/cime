@@ -56,7 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
@@ -240,11 +240,11 @@
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_str</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.convert_to_seconds" title="Link to this definition"></a></dt>
 <dd><p>Convert time value in [[HH:]MM:]SS to seconds</p>
 <p>We assume that XX:YY is likely to be HH:MM, not MM:SS</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_seconds</span><span class="p">(</span><span class="s2">&quot;42&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_seconds</span><span class="p">(</span><span class="s2">"42"</span><span class="p">)</span>
 <span class="go">42</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_seconds</span><span class="p">(</span><span class="s2">&quot;01:01:01&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_seconds</span><span class="p">(</span><span class="s2">"01:01:01"</span><span class="p">)</span>
 <span class="go">3661</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_seconds</span><span class="p">(</span><span class="s2">&quot;01:01&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">convert_to_seconds</span><span class="p">(</span><span class="s2">"01:01"</span><span class="p">)</span>
 <span class="go">3660</span>
 </pre></div>
 </div>

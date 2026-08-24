@@ -75,7 +75,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
@@ -141,18 +141,18 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
   <span class="k">if</span> <span class="p">(</span> <span class="nb">id</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="n">then</span>
      <span class="n">wtime</span> <span class="o">=</span> <span class="n">MPI_Wtime</span> <span class="p">(</span> <span class="p">)</span>
 
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;HELLO_MPI - Master process:&#39;</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  FORTRAN90/MPI version&#39;</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  An MPI test program.&#39;</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a,i8)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  The number of processes is &#39;</span><span class="p">,</span> <span class="n">p</span>
-     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">' '</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">'HELLO_MPI - Master process:'</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">'  FORTRAN90/MPI version'</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">' '</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">'  An MPI test program.'</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">' '</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a,i8)'</span> <span class="p">)</span> <span class="s1">'  The number of processes is '</span><span class="p">,</span> <span class="n">p</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">' '</span>
   <span class="n">end</span> <span class="k">if</span>
   <span class="n">call</span> <span class="n">MPI_GET_PROCESSOR_NAME</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">CLEN</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">)</span>
-  <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
-  <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a,i8,a,a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  Process &#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="s1">&#39; says &quot;Hello, world!&quot; &#39;</span><span class="p">,</span><span class="n">name</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">clen</span><span class="p">)</span>
+  <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a)'</span> <span class="p">)</span> <span class="s1">' '</span>
+  <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">'(a,i8,a,a)'</span> <span class="p">)</span> <span class="s1">'  Process '</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="s1">' says "Hello, world!" '</span><span class="p">,</span><span class="n">name</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">clen</span><span class="p">)</span>
 
   <span class="n">call</span> <span class="n">MPI_Finalize</span> <span class="p">(</span> <span class="n">error</span> <span class="p">)</span>
 <span class="n">end</span> <span class="n">program</span>
@@ -180,14 +180,14 @@ The two supported schemas are:</p>
 <dl>
 <dt><strong>Version 2.0 (monolithic)</strong> — <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/CIME/data/config/xml_schemas/config_machines.xsd</span></code></dt><dd><p>A single file contains the full definition for every supported machine.
 Each <code class="docutils literal notranslate"><span class="pre">&lt;machine</span> <span class="pre">MACH=&quot;...&quot;&gt;</span></code> block carries its own <code class="docutils literal notranslate"><span class="pre">&lt;NODENAME_REGEX&gt;</span></code> (used by CIME to auto-detect the machine), and <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> must appear at least once at the top level.</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;2.0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;mymachine&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">"2.0"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"mymachine"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;DESC&gt;</span>...<span class="nt">&lt;/DESC&gt;</span>
 <span class="w">    </span><span class="nt">&lt;NODENAME_REGEX&gt;</span>mymachine.*<span class="nt">&lt;/NODENAME_REGEX&gt;</span>
 <span class="w">    </span><span class="nt">&lt;OS&gt;</span>LINUX<span class="nt">&lt;/OS&gt;</span>
 <span class="w">    </span>...
 <span class="w">  </span><span class="nt">&lt;/machine&gt;</span>
-<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;othermachine&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"othermachine"</span><span class="nt">&gt;</span>
 <span class="w">    </span>...
 <span class="w">  </span><span class="nt">&lt;/machine&gt;</span>
 <span class="nt">&lt;/config_machines&gt;</span>
@@ -197,17 +197,17 @@ Each <code class="docutils literal notranslate"><span class="pre">&lt;machine</s
 <dt><strong>Version 3.0 (per-machine directory)</strong> — <code class="docutils literal notranslate"><span class="pre">$CIMEROOT/CIME/data/config/xml_schemas/config_machines_version3.xsd</span></code></dt><dd><p>The top-level <code class="docutils literal notranslate"><span class="pre">config_machines.xml</span></code> only holds a registry that maps each machine to its node-name regex.
 The full definition for each machine lives in its own subdirectory (<code class="docutils literal notranslate"><span class="pre">&lt;machines_dir&gt;/&lt;MACH&gt;/config_machines.xml</span></code>) next to that machine’s <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> and <code class="docutils literal notranslate"><span class="pre">*.cmake</span></code> files.
 Top-level <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> blocks are optional, <code class="docutils literal notranslate"><span class="pre">&lt;NODENAME_REGEX&gt;</span></code> is removed from individual <code class="docutils literal notranslate"><span class="pre">&lt;machine&gt;</span></code> blocks, and the v3 schema additionally accepts a <code class="docutils literal notranslate"><span class="pre">&lt;TORCH_DIR&gt;</span></code> element per machine.</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;3.0&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">"3.0"</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;NODENAME_REGEX&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;mymachine&quot;</span><span class="nt">&gt;</span>mymachine.*<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;othermachine&quot;</span><span class="nt">&gt;</span>other.*<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"mymachine"</span><span class="nt">&gt;</span>mymachine.*<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"othermachine"</span><span class="nt">&gt;</span>other.*<span class="nt">&lt;/value&gt;</span>
 <span class="w">  </span><span class="nt">&lt;/NODENAME_REGEX&gt;</span>
 <span class="nt">&lt;/config_machines&gt;</span>
 </pre></div>
 </div>
 <p>Per-machine file (<code class="docutils literal notranslate"><span class="pre">&lt;machines_dir&gt;/mymachine/config_machines.xml</span></code>):</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;3.0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">&quot;mymachine&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;config_machines</span><span class="w"> </span><span class="na">version=</span><span class="s">"3.0"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;machine</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"mymachine"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;DESC&gt;</span>...<span class="nt">&lt;/DESC&gt;</span>
 <span class="w">    </span><span class="nt">&lt;OS&gt;</span>LINUX<span class="nt">&lt;/OS&gt;</span>
 <span class="w">    </span>...

@@ -69,7 +69,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
@@ -121,10 +121,10 @@ For example, the output for the “docker” machine may look like this:</p>
 
 <span class="n">docker</span> <span class="p">:</span> <span class="n">Docker</span>
     <span class="n">os</span>              <span class="n">LINUX</span>
-    <span class="n">compilers</span>       <span class="n">gnu</span><span class="p">,</span><span class="n">gnuX</span>
-    <span class="n">mpilibs</span>         <span class="n">openmpi</span>
-    <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">8</span>
-    <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">8</span>
+    <span class="n">compilers</span>       <span class="n">gnu</span>
+    <span class="n">mpilibs</span>         <span class="n">mpich</span>
+    <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">4</span>
+    <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">4</span>
     <span class="n">max_gpus</span><span class="o">/</span><span class="n">node</span>   <span class="mi">0</span>
 </pre></div>
 </div>
@@ -145,19 +145,17 @@ For example, the output for the “docker” machine may look like this:</p>
 
 <span class="n">docker</span> <span class="p">(</span><span class="n">gnu</span><span class="p">)</span> <span class="p">:</span> <span class="n">Docker</span>
             <span class="n">os</span>              <span class="n">LINUX</span>
-            <span class="n">compilers</span>       <span class="n">gnu</span><span class="p">,</span><span class="n">gnuX</span>
-            <span class="n">mpilibs</span>         <span class="n">openmpi</span>
-            <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">8</span>
-            <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">8</span>
+            <span class="n">compilers</span>       <span class="n">gnu</span>
+            <span class="n">mpilibs</span>         <span class="n">mpich</span>
+            <span class="n">pes</span><span class="o">/</span><span class="n">node</span>        <span class="mi">4</span>
+            <span class="n">max_tasks</span><span class="o">/</span><span class="n">node</span>  <span class="mi">4</span>
             <span class="n">max_gpus</span><span class="o">/</span><span class="n">node</span>   <span class="mi">0</span>
 
         <span class="n">Module</span> <span class="n">commands</span><span class="p">:</span>
 
         <span class="n">Environment</span> <span class="n">variables</span><span class="p">:</span>
-            <span class="n">OMPI_ALLOW_RUN_AS_ROOT</span><span class="p">:</span> <span class="mi">1</span>
-            <span class="n">OMPI_ALLOW_RUN_AS_ROOT_CONFIRM</span><span class="p">:</span> <span class="mi">1</span>
-            <span class="n">NETCDF_C_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
-            <span class="n">NETCDF_FORTRAN_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">conda</span>
+            <span class="n">NETCDF_C_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">pixi</span><span class="o">-</span><span class="n">env</span><span class="o">/.</span><span class="n">pixi</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">e3sm</span>
+            <span class="n">NETCDF_FORTRAN_PATH</span><span class="p">:</span> <span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">pixi</span><span class="o">-</span><span class="n">env</span><span class="o">/.</span><span class="n">pixi</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">e3sm</span>
 </pre></div>
 </div>
 </section>

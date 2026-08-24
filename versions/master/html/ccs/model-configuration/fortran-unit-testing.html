@@ -75,7 +75,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
 </ul>
 
@@ -244,7 +244,7 @@ To do this, specify the appropriate path using the <code class="docutils literal
 For a build with no MPI or openMP support (as recommended above), the block should look like this (with the actual path replaced with the PFUNIT path you specified when doing the build):</p>
 <blockquote>
 <div><div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="s">MPILIB</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s">mpi-serial</span><span class="w"> </span><span class="s">AND</span><span class="w"> </span><span class="s">NOT</span><span class="w"> </span><span class="s">compile_threaded</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">PFUNIT_PATH</span><span class="w"> </span><span class="s2">&quot;$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit4.7.0_cheyenne_Intel19.1.1_noMPI_noOpenMP&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">set</span><span class="p">(</span><span class="s">PFUNIT_PATH</span><span class="w"> </span><span class="s2">"$ENV{CESMDATAROOT}/tools/pFUnit/pFUnit4.7.0_cheyenne_Intel19.1.1_noMPI_noOpenMP"</span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -438,7 +438,7 @@ teardown portion of the test.</p>
 <h3>More detailed examples in CIME<a class="headerlink" href="#more-detailed-examples-in-cime" title="Link to this heading"></a></h3>
 <p>There are many examples of unit tests in CIME, some simple and some quite complex.
 You can find them by looking for files with the “.pf” extension:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span>--name<span class="w"> </span><span class="s1">&#39;*.pf&#39;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span>--name<span class="w"> </span><span class="s1">'*.pf'</span>
 </pre></div>
 </div>
 <p>You can also see examples of the unit test build scripts by viewing the

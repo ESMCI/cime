@@ -98,7 +98,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
 </ul>
 
@@ -147,15 +147,15 @@
 The <code class="docutils literal notranslate"><span class="pre">&lt;component&gt;</span></code> is replaced by the name of the component.
 Each <code class="docutils literal notranslate"><span class="pre">value</span></code> provides the path to the root directory of the component for a specific component denoted by the <code class="docutils literal notranslate"><span class="pre">component</span></code> attribute.
 There will be multiple <code class="docutils literal notranslate"><span class="pre">entry</span></code> elements, one for each component supported by the model.</p>
-<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;COMP_ROOT_DIR_ATM&quot;</span><span class="nt">&gt;</span>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;entry</span><span class="w"> </span><span class="na">id=</span><span class="s">"COMP_ROOT_DIR_ATM"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
 <span class="w">    </span><span class="nt">&lt;values&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;datm&quot;</span><span class="nt">&gt;</span>$SRCROOT/components/data_comps/datm<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;satm&quot;</span><span class="nt">&gt;</span>$SRCROOT/components/stub_comps/satm<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;xatm&quot;</span><span class="nt">&gt;</span>$SRCROOT/components/xcpl_comps/xatm<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;eam&quot;</span><span class="nt">&gt;</span>$SRCROOT/components/eam/<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;eamxx&quot;</span><span class="nt">&gt;</span>$SRCROOT/components/eamxx/<span class="nt">&lt;/value&gt;</span>
-<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">&quot;scream&quot;</span><span class="nt">&gt;</span>$SRCROOT/components/eamxx/<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">"datm"</span><span class="nt">&gt;</span>$SRCROOT/components/data_comps/datm<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">"satm"</span><span class="nt">&gt;</span>$SRCROOT/components/stub_comps/satm<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">"xatm"</span><span class="nt">&gt;</span>$SRCROOT/components/xcpl_comps/xatm<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">"eam"</span><span class="nt">&gt;</span>$SRCROOT/components/eam/<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">"eamxx"</span><span class="nt">&gt;</span>$SRCROOT/components/eamxx/<span class="nt">&lt;/value&gt;</span>
+<span class="w">    </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">component=</span><span class="s">"scream"</span><span class="nt">&gt;</span>$SRCROOT/components/eamxx/<span class="nt">&lt;/value&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/values&gt;</span>
 <span class="w">    </span><span class="nt">&lt;group&gt;</span>case_comps<span class="nt">&lt;/group&gt;</span>
 <span class="w">    </span><span class="nt">&lt;file&gt;</span>env_case.xml<span class="nt">&lt;/file&gt;</span>

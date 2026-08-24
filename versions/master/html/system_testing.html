@@ -56,7 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -258,17 +258,17 @@ and follow the <a class="reference internal" href="#system-testing-individual">i
 <section id="example">
 <h5><a class="toc-backref" href="#id9" role="doc-backlink">Example</a><a class="headerlink" href="#example" title="Link to this heading"></a></h5>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_TESTS</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s2">&quot;suite_a&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;inherit&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;suite_b&quot;</span><span class="p">),</span>
-    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;0:45:00&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;share&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tests&quot;</span><span class="p">:</span> <span class="p">(</span>
+  <span class="s2">"suite_a"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"inherit"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"suite_b"</span><span class="p">),</span>
+    <span class="s2">"time"</span><span class="p">:</span> <span class="s2">"0:45:00"</span><span class="p">,</span>
+    <span class="s2">"share"</span><span class="p">:</span> <span class="s2">"true"</span><span class="p">,</span>
+    <span class="s2">"tests"</span><span class="p">:</span> <span class="p">(</span>
       <span class="o">&lt;</span><span class="n">testname</span><span class="o">&gt;</span>
     <span class="p">)</span>
   <span class="p">},</span>
-  <span class="s2">&quot;suite_b&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;02:00:00&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;tests&quot;</span><span class="p">:</span> <span class="p">(</span>
+  <span class="s2">"suite_b"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"time"</span><span class="p">:</span> <span class="s2">"02:00:00"</span><span class="p">,</span>
+    <span class="s2">"tests"</span><span class="p">:</span> <span class="p">(</span>
       <span class="o">&lt;</span><span class="n">testname</span><span class="o">&gt;</span>
     <span class="p">)</span>
   <span class="p">}</span>
@@ -602,7 +602,7 @@ Sometimes you may want to run a test with modifications to a namelist or other s
 directory containing the testmods would be <code class="docutils literal notranslate"><span class="pre">$E3SM/components/eam/cime_config/testdefs/testmods_dirs/eam/rrtmpg</span></code>.</p>
 <p>In this directory, you’d find a <cite>shell_commands`</cite> file containing the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="o">./</span><span class="n">xmlchange</span> <span class="o">--</span><span class="n">append</span> <span class="n">CAM_CONFIG_OPTS</span><span class="o">=</span><span class="s1">&#39;-rad rrtmgp&#39;</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="o">--</span><span class="n">append</span> <span class="n">CAM_CONFIG_OPTS</span><span class="o">=</span><span class="s1">'-rad rrtmgp'</span>
 </pre></div>
 </div>
 <p>These commands are applied after the testcase is created and case.setup is called.</p>
@@ -794,7 +794,7 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># $DRIVER/cime_config/customize/perf_baseline.py</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">perf_get_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Parameters</span>
 <span class="sd">  ----------</span>
 <span class="sd">  case : CIME.case.case.Case</span>
@@ -806,13 +806,13 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 <span class="sd">    Storing throughput value.</span>
 <span class="sd">  str</span>
 <span class="sd">    Open baseline file for writing.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_throughput</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 
-  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span>
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="s2">"w"</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">perf_get_memory</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Parameters</span>
 <span class="sd">  ----------</span>
 <span class="sd">  case : CIME.case.case.Case</span>
@@ -824,13 +824,13 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 <span class="sd">    Storing memory value.</span>
 <span class="sd">  str</span>
 <span class="sd">    Open baseline file for writing.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
-  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span>
+  <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="s2">"w"</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">perf_compare_throughput_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Parameters</span>
 <span class="sd">  ----------</span>
 <span class="sd">  case : CIME.case.case.Case</span>
@@ -846,7 +846,7 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 <span class="sd">    Whether throughput diff is below tolerance.</span>
 <span class="sd">  str</span>
 <span class="sd">    Comments about the results.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_throughput</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
   <span class="n">baseline</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
@@ -856,7 +856,7 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
   <span class="k">return</span> <span class="n">diff</span><span class="p">,</span> <span class="n">comments</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">perf_compare_memory_baseline</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">baseline</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">):</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Parameters</span>
 <span class="sd">  ----------</span>
 <span class="sd">  case : CIME.case.case.Case</span>
@@ -872,7 +872,7 @@ This is done with the <code class="docutils literal notranslate"><span class="pr
 <span class="sd">    Whether memory diff is below tolerance.</span>
 <span class="sd">  str</span>
 <span class="sd">    Comments about the results.</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
   <span class="n">current</span> <span class="o">=</span> <span class="n">analyze_memory</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
 
   <span class="n">baseline</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>

@@ -56,7 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
@@ -148,19 +148,19 @@ Formats supported:
 “%Y-%m-%d”
 “%Y-%m”
 “%Y.%m”</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0001-01-06-00435.nc&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"./ne4np4_oQU240.cam.r.0001-01-06-00435.nc"</span><span class="p">)</span>
 <span class="go">date(1, 1, 6, 0, 7, 15)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0010-1-06_00435.nc&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"./ne4np4_oQU240.cam.r.0010-1-06_00435.nc"</span><span class="p">)</span>
 <span class="go">date(10, 1, 6, 0, 7, 15)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;./ne4np4_oQU240.cam.r.0010-10.nc&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"./ne4np4_oQU240.cam.r.0010-10.nc"</span><span class="p">)</span>
 <span class="go">date(10, 10, 1, 0, 0, 0)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0064-3-8_10.20.30.nc&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"0064-3-8_10.20.30.nc"</span><span class="p">)</span>
 <span class="go">date(64, 3, 8, 10, 20, 30)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140-3-5&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"0140-3-5"</span><span class="p">)</span>
 <span class="go">date(140, 3, 5, 0, 0, 0)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140-3&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"0140-3"</span><span class="p">)</span>
 <span class="go">date(140, 3, 1, 0, 0, 0)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">&quot;0140.3&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_file_date</span><span class="p">(</span><span class="s2">"0140.3"</span><span class="p">)</span>
 <span class="go">date(140, 3, 1, 0, 0, 0)</span>
 </pre></div>
 </div>

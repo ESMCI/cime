@@ -56,7 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
@@ -152,12 +152,12 @@
 a group of tests that can share executables.</p>
 <p>When a suite’s share field is a test name string, that test is placed first
 in its build group and acts as the build leader.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SMS_P2.f19_g16.A.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;SMS_P4.f19_g16.A.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;SMS_P2.f19_g16.X.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;SMS_P4.f19_g16.X.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu&quot;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SMS_P2.f19_g16.A.melvin_gnu"</span><span class="p">,</span> <span class="s2">"SMS_P4.f19_g16.A.melvin_gnu"</span><span class="p">,</span> <span class="s2">"SMS_P2.f19_g16.X.melvin_gnu"</span><span class="p">,</span> <span class="s2">"SMS_P4.f19_g16.X.melvin_gnu"</span><span class="p">,</span> <span class="s2">"TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu"</span><span class="p">,</span> <span class="s2">"TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu"</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_build_groups</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
-<span class="go">[(&#39;SMS_P2.f19_g16.A.melvin_gnu&#39;, &#39;SMS_P4.f19_g16.A.melvin_gnu&#39;), (&#39;SMS_P2.f19_g16.X.melvin_gnu&#39;, &#39;SMS_P4.f19_g16.X.melvin_gnu&#39;), (&#39;TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu&#39;,), (&#39;TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu&#39;,)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tests2</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SMS_P2.f45_g37.A.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;SMS_P4.f45_g37.A.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;SMS_P8.f45_g37.A.melvin_gnu&quot;</span><span class="p">,</span> <span class="s2">&quot;SMS_P16.f45_g37.A.melvin_gnu&quot;</span><span class="p">]</span>
+<span class="go">[('SMS_P2.f19_g16.A.melvin_gnu', 'SMS_P4.f19_g16.A.melvin_gnu'), ('SMS_P2.f19_g16.X.melvin_gnu', 'SMS_P4.f19_g16.X.melvin_gnu'), ('TESTRUNSLOWPASS_P1.f19_g16.A.melvin_gnu',), ('TESTRUNSLOWPASS_P1.ne30_g16.A.melvin_gnu',)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tests2</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"SMS_P2.f45_g37.A.melvin_gnu"</span><span class="p">,</span> <span class="s2">"SMS_P4.f45_g37.A.melvin_gnu"</span><span class="p">,</span> <span class="s2">"SMS_P8.f45_g37.A.melvin_gnu"</span><span class="p">,</span> <span class="s2">"SMS_P16.f45_g37.A.melvin_gnu"</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_build_groups</span><span class="p">(</span><span class="n">tests2</span><span class="p">)</span>
-<span class="go">[(&#39;SMS_P8.f45_g37.A.melvin_gnu&#39;, &#39;SMS_P2.f45_g37.A.melvin_gnu&#39;, &#39;SMS_P4.f45_g37.A.melvin_gnu&#39;, &#39;SMS_P16.f45_g37.A.melvin_gnu&#39;)]</span>
+<span class="go">[('SMS_P8.f45_g37.A.melvin_gnu', 'SMS_P2.f45_g37.A.melvin_gnu', 'SMS_P4.f45_g37.A.melvin_gnu', 'SMS_P16.f45_g37.A.melvin_gnu')]</span>
 </pre></div>
 </div>
 </dd></dl>

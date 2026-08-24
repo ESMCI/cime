@@ -56,7 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
@@ -153,15 +153,15 @@
 <dt class="sig sig-object py" id="CIME.namelist.get_fortran_variable_indices">
 <span class="sig-prename descclassname"><span class="pre">CIME.namelist.</span></span><span class="sig-name descname"><span class="pre">get_fortran_variable_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varlen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_any_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/namelist.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.namelist.get_fortran_variable_indices" title="Link to this definition"></a></dt>
 <dd><p>get indices from a fortran namelist variable as a triplet of minindex, maxindex and step</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">&#39;foo(3)&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">'foo(3)'</span><span class="p">)</span>
 <span class="go">(3, 3, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">&#39;foo(1:2:3)&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">'foo(1:2:3)'</span><span class="p">)</span>
 <span class="go">(1, 2, 3)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">&#39;foo(::)&#39;</span><span class="p">,</span> <span class="n">varlen</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">'foo(::)'</span><span class="p">,</span> <span class="n">varlen</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="go">(1, 4, 1)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">&#39;foo(::2)&#39;</span><span class="p">,</span> <span class="n">varlen</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">'foo(::2)'</span><span class="p">,</span> <span class="n">varlen</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="go">(1, 4, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">&#39;foo(::)&#39;</span><span class="p">,</span> <span class="n">allow_any_len</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_fortran_variable_indices</span><span class="p">(</span><span class="s1">'foo(::)'</span><span class="p">,</span> <span class="n">allow_any_len</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">(1, -1, 1)</span>
 </pre></div>
 </div>

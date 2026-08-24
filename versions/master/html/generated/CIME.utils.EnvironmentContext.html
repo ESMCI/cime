@@ -56,7 +56,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing-guide.html">Contributing to CIME</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="CIME.baselines.html">CIME.baselines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.build_scripts.html">CIME.build_scripts</a></li>
@@ -241,12 +241,12 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Context manager for environment variables.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Usage</span><span class="p">:</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MYVAR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;oldvalue&#39;</span>
-    <span class="k">with</span> <span class="n">EnvironmentContex</span><span class="p">(</span><span class="n">MYVAR</span><span class="o">=</span><span class="s1">&#39;myvalue&#39;</span><span class="p">,</span> <span class="n">MYVAR2</span><span class="o">=</span><span class="s1">&#39;myvalue2&#39;</span><span class="p">):</span>
-    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;MYVAR&#39;</span><span class="p">)</span>    <span class="c1"># Should print myvalue.</span>
-    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;MYVAR2&#39;</span><span class="p">)</span>    <span class="c1"># Should print myvalue2.</span>
-    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;MYVAR&#39;</span><span class="p">)</span>        <span class="c1"># Should print oldvalue.</span>
-    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;MYVAR2&#39;</span><span class="p">)</span>        <span class="c1"># Should print None.</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'MYVAR'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'oldvalue'</span>
+    <span class="k">with</span> <span class="n">EnvironmentContex</span><span class="p">(</span><span class="n">MYVAR</span><span class="o">=</span><span class="s1">'myvalue'</span><span class="p">,</span> <span class="n">MYVAR2</span><span class="o">=</span><span class="s1">'myvalue2'</span><span class="p">):</span>
+    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'MYVAR'</span><span class="p">)</span>    <span class="c1"># Should print myvalue.</span>
+    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'MYVAR2'</span><span class="p">)</span>    <span class="c1"># Should print myvalue2.</span>
+    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'MYVAR'</span><span class="p">)</span>        <span class="c1"># Should print oldvalue.</span>
+    <span class="nb">print</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'MYVAR2'</span><span class="p">)</span>        <span class="c1"># Should print None.</span>
 </pre></div>
 </div>
 <p>CREDIT: <a class="reference external" href="https://github.com/sakurai-youhei/envcontext">https://github.com/sakurai-youhei/envcontext</a></p>
