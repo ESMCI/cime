@@ -270,6 +270,7 @@ def bless_test_results(
     bless_tput=False,
     bless_mem=False,
     bless_perf=False,
+    dry_run=False,
     **_,  # Capture all for extra
 ):
     if bless_perf:
@@ -382,56 +383,69 @@ def bless_test_results(
         )
 
         # Now, do the bless
+        logger.info(
+            "###############################################################################"
+        )
+        logger.info(
+            f"Blessing results for test: {test_name}, most recent result: {overall_result}"
+        )
+        logger.info(f"Case dir: {test_dir}")
+
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
             logger.info(
-                "Nothing to bless for test: {}, overall status: {}".format(
+                "  NOTHING to bless for test: {}, overall status: {}".format(
                     test_name, overall_result
                 )
             )
         else:
+
             logger.debug("Determined blesses for {!r}".format(test_name))
             logger.debug("nl_bless     = {}".format(nl_bless))
             logger.debug("hist_bless   = {}".format(hist_bless))
             logger.debug("tput_bless   = {}".format(tput_bless))
             logger.debug("mem_bless    = {}".format(mem_bless))
 
-            logger.info(
-                "###############################################################################"
-            )
-            logger.info(
-                "Blessing results for test: {}, most recent result: {}".format(
-                    test_name, overall_result
+            if dry_run:
+                bless_types = []
+                if nl_bless:
+                    bless_types.append("namelists")
+                if hist_bless:
+                    bless_types.append("history")
+                if tput_bless:
+                    bless_types.append("throughput")
+                if mem_bless:
+                    bless_types.append("memory")
+                logger.info(
+                    "  DRY-RUN: would bless {} for test: {}".format(
+                        ", ".join(bless_types), test_name
+                    )
                 )
-            )
-            logger.info("Case dir: {}".format(test_dir))
-            logger.info(
-                "###############################################################################"
-            )
-            if not force:
-                time.sleep(2)
+            else:
+                if not force:
+                    time.sleep(2)
 
-            try:
-                _bless_test(
-                    test_name,
-                    test_dir,
-                    baseline_name,
-                    baseline_root,
-                    nl_bless,
-                    hist_bless,
-                    tput_bless,
-                    mem_bless,
-                    lock_baselines,
-                    pes_file,
-                    new_test_root,
-                    new_test_id,
-                    report_only,
-                    force,
-                )
-            except BlessError as e:
-                for reason in e:
-                    broken_blesses.append((e.test_name, reason))
-            except CIMEError as e:
-                broken_blesses.append((test_name, str(e)))
+                try:
+                    _bless_test(
+                        test_name,
+                        test_dir,
+                        baseline_name,
+                        baseline_root,
+                        nl_bless,
+                        hist_bless,
+                        tput_bless,
+                        mem_bless,
+                        lock_baselines,
+                        pes_file,
+                        new_test_root,
+                        new_test_id,
+                        report_only,
+                        force,
+                    )
+                except BlessError as e:
+                    for reason in e:
+                        broken_blesses.append((e.test_name, reason))
+                except CIMEError as e:
+                    broken_blesses.append((test_name, str(e)))
 
     # Emit a warning if items in bless_tests did not match anything
     if bless_tests:
