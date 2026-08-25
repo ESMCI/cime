@@ -6,7 +6,6 @@ import shutil
 import sys
 import tempfile
 
-import pytest
 import unittest
 from unittest import mock
 from CIME.status import run_and_log_case_status
@@ -440,41 +439,47 @@ class TestUtils(unittest.TestCase):
             self.assertMatchAllLines(tempdir, test_lines)
 
 
-class TestDistributedDirLock:
+class TestDistributedDirLock(unittest.TestCase):
     """Tests for the distributed_dir_lock context manager."""
 
-    def test_distributed_dir_lock_acquires_and_releases(self, tmp_path):
+    def setUp(self):
+        self._workdir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self._workdir, ignore_errors=True)
+
+    def test_distributed_dir_lock_acquires_and_releases(self):
         # Context
-        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+        lock_dir = os.path.join(self._workdir, _CIME_LOCK_DIR_NAME)
 
         # Act / Assert
-        with distributed_dir_lock(str(tmp_path)):
-            assert lock_dir.exists()
+        with distributed_dir_lock(self._workdir):
+            self.assertTrue(os.path.isdir(lock_dir))
 
-        assert not lock_dir.exists()
+        self.assertFalse(os.path.exists(lock_dir))
 
-    def test_distributed_dir_lock_releases_on_exception(self, tmp_path):
+    def test_distributed_dir_lock_releases_on_exception(self):
         # Context
-        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+        lock_dir = os.path.join(self._workdir, _CIME_LOCK_DIR_NAME)
 
         # Act / Assert
-        with pytest.raises(RuntimeError):
-            with distributed_dir_lock(str(tmp_path)):
+        with self.assertRaises(RuntimeError):
+            with distributed_dir_lock(self._workdir):
                 raise RuntimeError("body error")
 
-        assert not lock_dir.exists()
+        self.assertFalse(os.path.exists(lock_dir))
 
-    def test_distributed_dir_lock_timeout(self, tmp_path):
+    def test_distributed_dir_lock_timeout(self):
         # Context — pre-create the lock dir to simulate a held lock
-        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
-        lock_dir.mkdir()
+        lock_dir = os.path.join(self._workdir, _CIME_LOCK_DIR_NAME)
+        os.mkdir(lock_dir)
 
         # Act / Assert
-        with pytest.raises(TimeoutError):
-            with distributed_dir_lock(str(tmp_path), poll_interval=0.01, timeout=0.05):
+        with self.assertRaises(TimeoutError):
+            with distributed_dir_lock(self._workdir, poll_interval=0.01, timeout=0.05):
                 pass
 
-    def test_distributed_dir_lock_retries_until_acquired(self, tmp_path):
+    def test_distributed_dir_lock_retries_until_acquired(self):
         # Context
         original_mkdir = os.mkdir
         attempt = {"count": 0}
@@ -488,19 +493,19 @@ class TestDistributedDirLock:
         # Mocks
         with mock.patch("os.mkdir", side_effect=flaky_mkdir):
             # Act
-            with distributed_dir_lock(str(tmp_path), poll_interval=0.001):
+            with distributed_dir_lock(self._workdir, poll_interval=0.001):
                 pass
 
         # Assert
-        assert attempt["count"] == 3
+        self.assertEqual(attempt["count"], 3)
 
-    def test_distributed_dir_lock_handles_external_cleanup(self, tmp_path):
+    def test_distributed_dir_lock_handles_external_cleanup(self):
         # Context
-        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+        lock_dir = os.path.join(self._workdir, _CIME_LOCK_DIR_NAME)
 
         # Act / Assert — no error when lock dir is removed externally before release
-        with distributed_dir_lock(str(tmp_path)):
-            lock_dir.rmdir()
+        with distributed_dir_lock(self._workdir):
+            os.rmdir(lock_dir)
 
 
 if __name__ == "__main__":
