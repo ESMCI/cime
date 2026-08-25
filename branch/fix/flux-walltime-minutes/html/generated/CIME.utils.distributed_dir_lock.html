@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.utils.wait_for_unlocked &mdash; CIME master documentation</title>
+  <title>CIME.utils.distributed_dir_lock &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.utils.EnvironmentContext" href="CIME.utils.EnvironmentContext.html" />
-    <link rel="prev" title="CIME.utils.verbatim_success_msg" href="CIME.utils.verbatim_success_msg.html" /> 
+    <link rel="next" title="CIME.utils.does_file_have_string" href="CIME.utils.does_file_have_string.html" />
+    <link rel="prev" title="CIME.utils.deprecate_action" href="CIME.utils.deprecate_action.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -115,6 +115,10 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.copy_over_file.html">CIME.utils.copy_over_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.copyifnewer.html">CIME.utils.copyifnewer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.deprecate_action.html">CIME.utils.deprecate_action</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.utils.distributed_dir_lock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.distributed_dir_lock"><code class="docutils literal notranslate"><span class="pre">distributed_dir_lock()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.does_file_have_string.html">CIME.utils.does_file_have_string</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.expect.html">CIME.utils.expect</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.file_contains_python_function.html">CIME.utils.file_contains_python_function</a></li>
@@ -192,10 +196,6 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.touch.html">CIME.utils.touch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.transform_vars.html">CIME.utils.transform_vars</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.verbatim_success_msg.html">CIME.utils.verbatim_success_msg</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.utils.wait_for_unlocked</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.wait_for_unlocked"><code class="docutils literal notranslate"><span class="pre">wait_for_unlocked()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.EnvironmentContext.html">CIME.utils.EnvironmentContext</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.IndentFormatter.html">CIME.utils.IndentFormatter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.SharedArea.html">CIME.utils.SharedArea</a></li>
@@ -223,9 +223,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
           <li class="breadcrumb-item"><a href="CIME.utils.html">CIME.utils</a></li>
-      <li class="breadcrumb-item active">CIME.utils.wait_for_unlocked</li>
+      <li class="breadcrumb-item active">CIME.utils.distributed_dir_lock</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.utils.wait_for_unlocked.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.utils.distributed_dir_lock.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -233,12 +233,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cime-utils-wait-for-unlocked">
-<h1>CIME.utils.wait_for_unlocked<a class="headerlink" href="#cime-utils-wait-for-unlocked" title="Link to this heading"></a></h1>
+  <section id="cime-utils-distributed-dir-lock">
+<h1>CIME.utils.distributed_dir_lock<a class="headerlink" href="#cime-utils-distributed-dir-lock" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.wait_for_unlocked">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">wait_for_unlocked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.wait_for_unlocked" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="CIME.utils.distributed_dir_lock">
+<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">distributed_dir_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.distributed_dir_lock" title="Link to this definition"></a></dt>
+<dd><p>An atomic directory-based distributed lock for shared network filesystems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir_path</strong> – Path to the directory you want to lock. Only this directory will be locked</p></li>
+<li><p><strong>poll_interval</strong> – Time (seconds) to wait between retry attempts.</p></li>
+<li><p><strong>timeout</strong> – Maximum time (seconds) to wait for lock acquisition before raising TimeoutError.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -246,8 +256,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.utils.verbatim_success_msg.html" class="btn btn-neutral float-left" title="CIME.utils.verbatim_success_msg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.utils.EnvironmentContext.html" class="btn btn-neutral float-right" title="CIME.utils.EnvironmentContext" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.utils.deprecate_action.html" class="btn btn-neutral float-left" title="CIME.utils.deprecate_action" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.utils.does_file_have_string.html" class="btn btn-neutral float-right" title="CIME.utils.does_file_have_string" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
