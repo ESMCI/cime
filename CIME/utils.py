@@ -2718,7 +2718,10 @@ def is_comp_standalone(case):
         return True, model
     return False, None
 
+
 _CIME_LOCK_DIR_NAME = "cime_utils_distributed_dir_lock"
+
+
 @contextmanager
 def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
     """
@@ -2742,7 +2745,9 @@ def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
         except FileExistsError:
             # Check if we have timed out while waiting
             if timeout is not None and (time.time() - start_time) > timeout:
-                raise TimeoutError(f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds.")
+                raise TimeoutError(  # pylint: disable=raise-missing-from
+                    f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds."
+                )
 
             # Lock is busy; wait and try again
             time.sleep(poll_interval)
