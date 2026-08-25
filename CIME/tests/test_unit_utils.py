@@ -6,6 +6,7 @@ import shutil
 import sys
 import tempfile
 
+import pytest
 import unittest
 from unittest import mock
 from CIME.status import run_and_log_case_status
@@ -16,6 +17,8 @@ from CIME.utils import (
     file_contains_python_function,
     copy_globs,
     import_and_run_sub_or_cmd,
+    distributed_dir_lock,
+    _CIME_LOCK_DIR_NAME,
 )
 
 
@@ -435,6 +438,69 @@ class TestUtils(unittest.TestCase):
                 run_and_log_case_status(self.error_func, "default", caseroot=tempdir)
 
             self.assertMatchAllLines(tempdir, test_lines)
+
+
+class TestDistributedDirLock:
+    """Tests for the distributed_dir_lock context manager."""
+
+    def test_distributed_dir_lock_acquires_and_releases(self, tmp_path):
+        # Context
+        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+
+        # Act / Assert
+        with distributed_dir_lock(str(tmp_path)):
+            assert lock_dir.exists()
+
+        assert not lock_dir.exists()
+
+    def test_distributed_dir_lock_releases_on_exception(self, tmp_path):
+        # Context
+        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+
+        # Act / Assert
+        with pytest.raises(RuntimeError):
+            with distributed_dir_lock(str(tmp_path)):
+                raise RuntimeError("body error")
+
+        assert not lock_dir.exists()
+
+    def test_distributed_dir_lock_timeout(self, tmp_path):
+        # Context — pre-create the lock dir to simulate a held lock
+        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+        lock_dir.mkdir()
+
+        # Act / Assert
+        with pytest.raises(TimeoutError):
+            with distributed_dir_lock(str(tmp_path), poll_interval=0.01, timeout=0.05):
+                pass
+
+    def test_distributed_dir_lock_retries_until_acquired(self, tmp_path):
+        # Context
+        original_mkdir = os.mkdir
+        attempt = {"count": 0}
+
+        def flaky_mkdir(path):
+            attempt["count"] += 1
+            if attempt["count"] < 3:
+                raise FileExistsError()
+            original_mkdir(path)
+
+        # Mocks
+        with mock.patch("os.mkdir", side_effect=flaky_mkdir):
+            # Act
+            with distributed_dir_lock(str(tmp_path), poll_interval=0.001):
+                pass
+
+        # Assert
+        assert attempt["count"] == 3
+
+    def test_distributed_dir_lock_handles_external_cleanup(self, tmp_path):
+        # Context
+        lock_dir = tmp_path / _CIME_LOCK_DIR_NAME
+
+        # Act / Assert — no error when lock dir is removed externally before release
+        with distributed_dir_lock(str(tmp_path)):
+            lock_dir.rmdir()
 
 
 if __name__ == "__main__":
