@@ -137,7 +137,7 @@ allotted less time than requested.
         <batch_submit>flux batch</batch_submit>
         <walltime_format>%Mm</walltime_format>
         <submit_args>
-            <arg flag="--time" name="$JOB_WALLCLOCK_TIME"/>
+            <arg flag="--time-limit" name="$JOB_WALLCLOCK_TIME"/>
         </submit_args>
     </batch_system>
 
