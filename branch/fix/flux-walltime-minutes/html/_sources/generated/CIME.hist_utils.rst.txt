@@ -1,0 +1,42 @@
+﻿..
+  module.rst
+
+CIME.hist\_utils
+================
+
+.. automodule:: CIME.hist_utils
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    compare_baseline
+                    compare_test
+                    copy_histfiles
+                    cprnc
+                    generate_baseline
+                    generate_teststatus
+                    get_ts_synopsis
+                    rename_all_hist_files
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

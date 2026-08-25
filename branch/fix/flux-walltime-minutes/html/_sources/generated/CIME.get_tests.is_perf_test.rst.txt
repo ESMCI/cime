@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.is\_perf\_test
+==============================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: is_perf_test

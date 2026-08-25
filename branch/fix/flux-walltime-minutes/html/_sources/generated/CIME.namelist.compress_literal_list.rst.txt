@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.compress\_literal\_list
+=====================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: compress_literal_list
