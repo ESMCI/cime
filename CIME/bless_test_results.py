@@ -386,7 +386,9 @@ def bless_test_results(
         logger.info(
             "###############################################################################"
         )
-        logger.info(f"Blessing results for test: {test_name}, most recent result: {overall_result}")
+        logger.info(
+            f"Blessing results for test: {test_name}, most recent result: {overall_result}"
+        )
         logger.info(f"Case dir: {test_dir}")
 
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
