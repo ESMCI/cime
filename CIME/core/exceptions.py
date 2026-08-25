@@ -38,6 +38,10 @@ class LockingError(CIMEError):
     """Case locking or unlocking failure."""
 
 
+class CimeTimeoutError(CIMEError):
+    """Timeout errors."""
+
+
 class ExternalCommandError(CIMEError):
     """An external command (subprocess) failed.
 

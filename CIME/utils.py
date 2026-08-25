@@ -155,7 +155,7 @@ class EnvironmentContext(object):
 #
 # Canonical definition lives in CIME.core.exceptions; re-exported here
 # for backward compatibility.
-from CIME.core.exceptions import CIMEError  # noqa: F401
+from CIME.core.exceptions import CIMEError, CimeTimeoutError  # noqa: F401
 
 
 def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
@@ -2745,8 +2745,8 @@ def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
         except FileExistsError:
             # Check if we have timed out while waiting
             if timeout is not None and (time.time() - start_time) > timeout:
-                raise TimeoutError(  # pylint: disable=raise-missing-from
-                    f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds."
+                raise CimeTimeoutError(  # pylint: disable=raise-missing-from
+                    f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds. It's possible that a process crashed while holding the lock and this directory will need to be manually removed."
                 )
 
             # Lock is busy; wait and try again
