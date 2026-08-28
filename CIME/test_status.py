@@ -266,7 +266,8 @@ class TestStatus(object):
             and phase != CORE_PHASES[-1]
         ):
             next_core_phase = CORE_PHASES[CORE_PHASES.index(phase) + 1]
-            self._phase_statuses[next_core_phase] = (TEST_PEND_STATUS, "")
+            if next_core_phase != SHAREDLIB_BUILD_PHASE:
+                self._phase_statuses[next_core_phase] = (TEST_PEND_STATUS, "")
 
     def get_status(self, phase):
         return self._phase_statuses[phase][0] if phase in self._phase_statuses else None
