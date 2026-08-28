@@ -356,6 +356,15 @@ def bless_test_results(
             check_memory=bless_mem,
         )
 
+        # Report that we have discovered a case
+        logger.info(
+            "###############################################################################"
+        )
+        logger.info(
+            f"Blessing results for test: {test_name}, most recent result: {overall_result}"
+        )
+        logger.info(f"Case dir: {test_dir}")
+
         # See if we need to bless namelist
         if namelists_only or bless_all_non_perf:
             if no_skip_pass:
@@ -382,15 +391,6 @@ def bless_test_results(
             "Do not mix performance and non-performance blessing",
         )
 
-        # Now, do the bless
-        logger.info(
-            "###############################################################################"
-        )
-        logger.info(
-            f"Blessing results for test: {test_name}, most recent result: {overall_result}"
-        )
-        logger.info(f"Case dir: {test_dir}")
-
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
             logger.info(
                 "  NOTHING to bless for test: {}, overall status: {}".format(
@@ -399,6 +399,7 @@ def bless_test_results(
             )
         else:
 
+            # Now, do the bless
             logger.debug("Determined blesses for {!r}".format(test_name))
             logger.debug("nl_bless     = {}".format(nl_bless))
             logger.debug("hist_bless   = {}".format(hist_bless))
@@ -462,11 +463,21 @@ had a mistake (likely compiler or testid).""".format(
 
     # Make sure user knows that some tests were not blessed
     success = True
+    if broken_blesses:
+        logger.warning(
+            "###############################################################################"
+        )
+        logger.warning("THERE WERE FAILED ATTEMPTS TO BLESS TESTS:")
+
     for broken_bless, reason in broken_blesses:
         logger.warning(
-            "FAILED TO BLESS TEST: {}, reason {}".format(broken_bless, reason)
+            "  FAILED TO BLESS TEST: {}, reason {}".format(broken_bless, reason)
         )
-        success = False
+
+        # If the user specifically requested this test be blessed OR
+        # if not but the reason was not a SKIP
+        if bless_tests or "(SKIP)" not in reason:
+            success = False
 
     return success
 
@@ -594,13 +605,13 @@ def is_hist_bless_needed(
     run_result = ts.get_status(RUN_PHASE)
 
     if run_result is None:
-        broken_blesses.append((test_name, "no run phase"))
+        broken_blesses.append((test_name, "no run phase (SKIP)"))
         logger.warning("Test '{}' did not make it to run phase".format(test_name))
         needed = False
     elif run_result != TEST_PASS_STATUS:
-        broken_blesses.append((test_name, "run phase did not pass"))
+        broken_blesses.append((test_name, "run phase did not pass (SKIP)"))
         logger.warning(
-            "Test '{}' run phase did not pass, not safe to bless, test status = {}".format(
+            "Test '{}' run phase did not pass, not safe to bless, test status = ...\n{}".format(
                 test_name, ts.phase_statuses_dump()
             )
         )
@@ -621,9 +632,9 @@ def is_hist_bless_needed(
         if only_failed_generate:
             needed = True
         else:
-            broken_blesses.append((test_name, "test did not pass"))
+            broken_blesses.append((test_name, "test did not pass (SKIP)"))
             logger.warning(
-                "Test '{}' did not pass due to phase {}, not safe to bless, test status = {}".format(
+                "Test '{}' did not pass due to phase {}, not safe to bless, test status = ...\n{}".format(
                     test_name, phase, ts.phase_statuses_dump()
                 )
             )
