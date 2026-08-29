@@ -1123,6 +1123,17 @@ class Case(object):
         if comp_root_dir is not None:
             self.set_value(root_dir_node_name, comp_root_dir)
 
+        #
+        # For CESM add coupling_mode to the list of attributes
+        # This has to be done after the driver env variables where done above
+        #
+        if self._cime_model == "cesm":
+            coupling_mode = self.get_value("COUPLING_MODE")
+            expect( coupling_mode is not None, "coupling_mode should be set so it can be used")
+            attlist['coupling_mode'] = coupling_mode
+        #
+        # Loop through all components
+        #
         for i in range(1, len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name = self._components[i - 1]
