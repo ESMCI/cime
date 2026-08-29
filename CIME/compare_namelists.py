@@ -842,7 +842,7 @@ def compare_namelist_files(gold_file, compare_file, case=None):
 
     if gold_file.endswith(".yaml") or gold_file.endswith(".yml"):
         comments = _compare_yamls(gold_file, compare_file, case)
-    elif gold_file.endswith(".toml"):
+    elif gold_file.endswith("_toml"):
         comments = _compare_tomls(gold_file, compare_file, case)
     else:
         gold_namelists = _parse_namelists(open(gold_file, "r").readlines(), gold_file)

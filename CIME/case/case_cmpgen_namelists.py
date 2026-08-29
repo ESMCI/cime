@@ -16,16 +16,21 @@ import os, shutil, traceback, stat, glob
 logger = logging.getLogger(__name__)
 
 
-def _do_full_nl_comp(caseroot, test, compare_name, baseline_root):
-    casedoc_dir = os.path.join(caseroot, "CaseDocs")
+def _do_full_nl_comp(case, test, compare_name, baseline_root=None):
+    """Compare nearly all files between test case dir and baseline dir.
+    Special-case comparators for runconfig, namelists, and toml; the rest fall back to simple line-by-line diffing, see CIME/simple_compare.py.
+    If baseline_root is None, the root is extracted from the case BASELINE_ROOT setting.
+    """
+    test_dir = case.get_value("CASEROOT")
+    casedoc_dir = os.path.join(test_dir, "CaseDocs")
+    baseline_root = (
+        case.get_value("BASELINE_ROOT") if baseline_root is None else baseline_root
+    )
 
     all_match = True
-    case_baseline_dir = os.path.join(baseline_root, compare_name, test)
-    baseline_casedocs = os.path.join(case_baseline_dir, "CaseDocs")
+    baseline_dir = os.path.join(baseline_root, compare_name, test)
+    baseline_casedocs = os.path.join(baseline_dir, "CaseDocs")
 
-    # Generic format migration transition check (e.g. .control <-> .toml).
-    # During format migration, if a case generates both formats (stem.control and stem.toml),
-    # allow comparing against whichever format exists in the baseline directory.
     # Start off by comparing everything in CaseDocs except a few arbitrary files (ugh!)
     # TODO: Namelist files should have consistent suffix
     all_items_to_compare = [
@@ -38,50 +43,14 @@ def _do_full_nl_comp(caseroot, test, compare_name, baseline_root):
     ]
 
     comments = "NLCOMP\n"
-    casedoc_files_lower = (
-        {f.lower(): f for f in os.listdir(casedoc_dir)}
-        if os.path.exists(casedoc_dir)
-        else {}
-    )
-
     for item in all_items_to_compare:
-        filebase = os.path.basename(item)
         baseline_counterpart = os.path.join(
             baseline_casedocs
             if os.path.dirname(item).endswith("CaseDocs")
-            else case_baseline_dir,
-            filebase,
+            else baseline_dir,
+            os.path.basename(item),
         )
-        baseline_dir = os.path.dirname(baseline_counterpart)
-
-        # Generic format transition check (.control <-> .toml)
-        stem, ext = os.path.splitext(filebase)
-        ext_lower = ext.lower()
-        if ext_lower in [".control", ".toml"]:
-            alt_ext = ".toml" if ext_lower == ".control" else ".control"
-            alt_casedoc_key = (stem + alt_ext).lower()
-            has_both_in_casedocs = alt_casedoc_key in casedoc_files_lower
-
-            if has_both_in_casedocs and os.path.exists(baseline_dir):
-                baseline_files_lower = {
-                    f.lower(): f for f in os.listdir(baseline_dir)
-                }
-                alt_baseline_key = (stem + alt_ext).lower()
-                has_alt_in_baseline = alt_baseline_key in baseline_files_lower
-
-                if ext_lower == ".control" and has_alt_in_baseline:
-                    # Skip legacy .control if baseline has .toml (prefer .toml)
-                    continue
-                if (
-                    ext_lower == ".toml"
-                    and not os.path.exists(baseline_counterpart)
-                    and has_alt_in_baseline
-                ):
-                    # Skip .toml if baseline has legacy .control
-                    continue
-
         if not os.path.exists(baseline_counterpart):
-
             comments += "Missing baseline namelist '{}'\n".format(baseline_counterpart)
             all_match = False
         else:
@@ -200,9 +169,8 @@ def case_cmpgen_namelists(
             success = True
             output = ""
             if compare:
-                b_root = baseline_root if baseline_root is not None else self.get_value("BASELINE_ROOT")
                 success, output = _do_full_nl_comp(
-                    caseroot, test_name, compare_name, b_root
+                    self, test_name, compare_name, baseline_root
                 )
                 if not success and ts.get_status(RUN_PHASE) is not None:
                     run_warn = """NOTE: It is not necessarily safe to compare namelists after RUN
