@@ -1094,9 +1094,9 @@ class Case(object):
         )
         drv_comp_model_specific = Component(drv_config_file_model_specific, "CPL")
 
-        self._component_description[
-            "forcing"
-        ] = drv_comp_model_specific.get_forcing_description(self._compsetname)
+        self._component_description["forcing"] = (
+            drv_comp_model_specific.get_forcing_description(self._compsetname)
+        )
         logger.info(
             "Compset forcing is {}".format(self._component_description["forcing"])
         )
@@ -1129,8 +1129,11 @@ class Case(object):
         #
         if self._cime_model == "cesm":
             coupling_mode = self.get_value("COUPLING_MODE")
-            expect( coupling_mode is not None, "coupling_mode should be set so it can be used")
-            attlist['coupling_mode'] = coupling_mode
+            expect(
+                coupling_mode is not None,
+                "coupling_mode should be set so it can be used",
+            )
+            attlist["coupling_mode"] = coupling_mode
         #
         # Loop through all components
         #
