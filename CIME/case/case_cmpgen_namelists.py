@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 
 
 def _do_full_nl_comp(case, test, compare_name, baseline_root=None):
+    """Compare nearly all files between test case dir and baseline dir.
+    Special-case comparators for runconfig, namelists, and toml; the rest fall back to simple line-by-line diffing, see CIME/simple_compare.py.
+    If baseline_root is None, the root is extracted from the case BASELINE_ROOT setting.
+    """
     test_dir = case.get_value("CASEROOT")
     casedoc_dir = os.path.join(test_dir, "CaseDocs")
     baseline_root = (

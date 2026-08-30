@@ -59,9 +59,29 @@ def _skip_comments_and_whitespace(lines, idx):
 
 
 ###############################################################################
-def _compare_data(gold_lines, comp_lines, case, offset_method=False):
+def compare_lines_generic(gold_lines, comp_lines, case_id, try_realign=False):
     ###############################################################################
     """
+    Compare lines in order, filtering #! comment lines and leading/trailing whitepace.
+
+    Expected Input Format:
+        gold_lines (list[str]): Lines of text from the gold/baseline file (e.g. readlines()).
+        comp_lines (list[str]): Lines of text from the file being compared against gold.
+        case_id (str | None): Optional case base ID string used to normalize case IDs/timestamps.
+        try_realign (bool): If True, advances the index of the longer line list on mismatch 
+                            to attempt realigning shifted lines. Default is False.
+
+    Returns:
+        tuple[str, int]: A tuple of (diff_desc, mismatch_count), where diff_desc contains diff 
+                         output describing inequivalent, extra, or missing lines, and 
+                         mismatch_count is the integer count of line mismatches.
+
+    Note:
+        This comparison only strips leading and trailing whitespace per line (.strip()) and skips 
+        lines that start with '#' or '!'. It is NOT fully whitespace-agnostic: internal spacing 
+        differences (e.g., between key and value), inline comments at line ends, and line-order 
+        changes will trigger mismatch errors.
+
     >>> teststr = '''
     ... data1
     ... data2 data3
@@ -70,7 +90,7 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
     ... # Comment
     ... data7 data8 data9 data10
     ... '''
-    >>> _compare_data(teststr.splitlines(), teststr.splitlines(), None)
+    >>> compare_lines_generic(teststr.splitlines(), teststr.splitlines(), None)
     ('', 0)
 
     >>> teststr2 = '''
@@ -80,7 +100,7 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
     ... data7 data8 data9 data10
     ... data00
     ... '''
-    >>> results,_ = _compare_data(teststr.splitlines(), teststr2.splitlines(), None)
+    >>> results,_ = compare_lines_generic(teststr.splitlines(), teststr2.splitlines(), None)
     >>> print(results)
     Inequivalent lines data2 data3 != data2 data30
       NORMALIZED: data2 data3 != data2 data30
@@ -93,7 +113,7 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
     ... data7 data8 data9 data10
     ... data00
     ... '''
-    >>> results,_ = _compare_data(teststr3.splitlines(), teststr2.splitlines(), None, offset_method=True)
+    >>> results,_ = compare_lines_generic(teststr3.splitlines(), teststr2.splitlines(), None, try_realign=True)
     >>> print(results)
     Inequivalent lines data4 data5 data6 != data2 data30
       NORMALIZED: data4 data5 data6 != data2 data30
@@ -124,15 +144,15 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
         comp_value = comp_lines[cidx].strip()
         comp_value = comp_value.replace('"', "'")
 
-        norm_gold_value = _normalize_string_value(gold_value, case)
-        norm_comp_value = _normalize_string_value(comp_value, case)
+        norm_gold_value = _normalize_string_value(gold_value, case_id)
+        norm_comp_value = _normalize_string_value(comp_value, case_id)
         if norm_gold_value != norm_comp_value:
             comments += "Inequivalent lines {} != {}\n".format(gold_value, comp_value)
             comments += "  NORMALIZED: {} != {}\n".format(
                 norm_gold_value, norm_comp_value
             )
             cnt += 1
-        if offset_method and (norm_gold_value != norm_comp_value):
+        if try_realign and (norm_gold_value != norm_comp_value):
             if gnum > cnum:
                 gidx += 1
             else:
@@ -148,22 +168,22 @@ def _compare_data(gold_lines, comp_lines, case, offset_method=False):
 def compare_files(gold_file, compare_file, case=None):
     ###############################################################################
     """
-    Returns true if files are the same, comments are returned too:
-    (success, comments)
+    Compare two text files with compare_lines_generic algorithm.
     """
     expect(os.path.exists(gold_file), "File not found: {}".format(gold_file))
     expect(os.path.exists(compare_file), "File not found: {}".format(compare_file))
 
-    comments, cnt = _compare_data(
+    comments, cnt = compare_lines_generic(
         open(gold_file, "r").readlines(), open(compare_file, "r").readlines(), case
     )
 
+    # If initial comparison finds mismatches, retry with offset realignment to see if line shifting yields fewer errors.
     if cnt > 0:
-        comments2, cnt2 = _compare_data(
+        comments2, cnt2 = compare_lines_generic(
             open(gold_file, "r").readlines(),
             open(compare_file, "r").readlines(),
             case,
-            offset_method=True,
+            try_realign=True,
         )
         if cnt2 < cnt:
             comments = comments2
