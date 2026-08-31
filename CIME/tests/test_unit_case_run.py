@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 from CIME.case.case_run import TERMINATION_TEXT
 from CIME.case.case_run import _post_run_check
 

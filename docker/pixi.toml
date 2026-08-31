@@ -1,0 +1,45 @@
+[workspace]
+name = "cime-docker"
+description = "CIME CI container dependencies (E3SM and CESM) built from conda-forge"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+# Shared build/runtime toolchain and I/O libraries used by both models.
+# Everything is pinned to the mpich MPI variant so a single, consistent
+# HDF5/netCDF/pnetcdf stack is used across the whole graph. This avoids the
+# multiple-netcdf-copy problem that broke cprnc under spack's
+# `concretizer.unify: when_possible`.
+#
+# MPICH (rather than Open MPI) is required because E3SM's bundled scorpio still
+# calls MPI-1 symbols that were removed from the MPI-3.0 standard (e.g.
+# MPI_Type_hvector, MPI_Type_struct, MPI_Address). conda-forge's Open MPI is
+# built without --enable-mpi1-compatibility at every version, so those symbols
+# are undeclared; MPICH still ships them by default.
+[dependencies]
+gcc = "13.*"
+gxx = "13.*"
+gfortran = "13.*"
+cmake = "*"
+make = "*"
+pkg-config = "*"
+mpich = "*"
+libopenblas = "*"
+hdf5 = { version = "*", build = "mpi_mpich_*" }
+libnetcdf = { version = "*", build = "mpi_mpich_*" }
+netcdf-fortran = { version = "*", build = "mpi_mpich_*" }
+libpnetcdf = { version = "*", build = "mpi_mpich_*" }
+
+# E3SM uses MOAB (with tempest-remap) for online regridding.
+[feature.e3sm.dependencies]
+moab = { version = "*", build = "mpi_mpich_tempest_*" }
+
+# CESM uses ESMF; conda-forge's esmf pulls parallelio (external PIO) as a
+# transitive dependency, which is harmless for the A/X/S compsets we test.
+[feature.cesm.dependencies]
+esmf = { version = "*", build = "mpi_mpich_*" }
+
+# Keep both environments on a single solve so their shared libraries
+# (hdf5, netcdf, pnetcdf, compilers) resolve to byte-identical builds.
+[environments]
+e3sm = { features = ["e3sm"], solve-group = "shared" }
+cesm = { features = ["cesm"], solve-group = "shared" }

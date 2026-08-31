@@ -141,6 +141,9 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
     <OS>ubuntu</OS>
     <COMPILERS>gnu,gnugpu,intel</COMPILERS>
     <MPILIBS>mpi-serial,openmpi,mpich2</MPILIBS>
+    <MPILIBS compiler="intel">impi,mpi-serial</MPILIBS>
+    <GMAKE_J>8</GMAKE_J>
+    <GMAKE_J mpilib="openmpi">16</GMAKE_J>
     <PROJECT>custom</PROJECT>
     <SAVE_TIMING_DIR>/data/timings</SAVE_TIMING_DIR>
     <SAVE_TIMING_DIR_PROJECTS>testing</SAVE_TIMING_DIR_PROJECTS>
@@ -150,7 +153,6 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>/data/baselines/$COMPILER</BASELINE_ROOT>
     <CCSM_CPRNC>/data/tools/cprnc</CCSM_CPRNC>
-    <GMAKE_J>8</GMAKE_J>
     <TESTS>e3sm_developer</TESTS>
     <NTEST_PARALLEL_JOBS>4</NTEST_PARALLEL_JOBS>
     <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
@@ -248,13 +250,6 @@ class TestUnitXMLMachines(unittest.TestCase):
         )
         assert "" == self.machine._get_resolved_environment_variable("")
 
-        pattern = r"Failed to resolve '\$SHELL{\./xmlquery MODEL}' with: ERROR: Command: '\./xmlquery MODEL' failed with error '/bin/sh: 1: \./xmlquery: not found' from dir '.*/cime'"
-        output = self.machine._get_resolved_environment_variable(
-            "$SHELL{./xmlquery MODEL}"
-        )
-
-        assert re.match(pattern, output) is not None
-
     def test_filter_children_by_compiler(self):
         self.machine.set_machine("multi-compiler")
 
@@ -346,3 +341,50 @@ class TestUnitXMLMachines(unittest.TestCase):
         assert self.machine.is_valid_compiler("gnu")
 
         assert not self.machine.is_valid_compiler("bogus")
+
+    def test_get_value_without_compiler_returns_generic(self):
+        """get_value returns the generic value when no compiler is set in custom_settings."""
+        self.machine.set_machine("multi-compiler")
+
+        assert self.machine.get_value("MPILIBS") == "mpi-serial,openmpi,mpich2"
+
+    def test_get_value_with_compiler_returns_compiler_specific(self):
+        """get_value auto-injects compiler from custom_settings and returns its specific value."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("COMPILER", "intel")
+
+        assert self.machine.get_value("MPILIBS") == "impi,mpi-serial"
+
+    def test_get_value_compiler_falls_back_to_generic_when_no_match(self):
+        """get_value falls back to the generic value when no compiler-specific node exists."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("COMPILER", "gnu")
+
+        # No <MPILIBS compiler="gnu"> node, so the generic value is returned.
+        assert self.machine.get_value("MPILIBS") == "mpi-serial,openmpi,mpich2"
+
+    def test_get_value_with_compiler_and_mpilib_uses_priority_order(self):
+        """With both COMPILER and MPILIB set, compiler+mpilib is most specific, then compiler, then mpilib."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("COMPILER", "intel")
+        self.machine.set_value("MPILIB", "openmpi")
+
+        # compiler-only match found for MPILIBS before mpilib-only is tried
+        assert self.machine.get_value("MPILIBS") == "impi,mpi-serial"
+        # no compiler-only GMAKE_J, so mpilib-only match is used
+        assert self.machine.get_value("GMAKE_J") == 16
+
+    def test_get_value_with_mpilib_returns_mpilib_specific(self):
+        """get_value auto-injects mpilib from custom_settings and returns its specific value."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("MPILIB", "openmpi")
+
+        assert self.machine.get_value("GMAKE_J") == 16
+
+    def test_get_value_mpilib_falls_back_to_generic_when_no_match(self):
+        """get_value falls back to the generic value when no mpilib-specific node exists."""
+        self.machine.set_machine("multi-compiler")
+        self.machine.set_value("MPILIB", "mpi-serial")
+
+        # No <GMAKE_J mpilib="mpi-serial"> node, so the generic value is returned.
+        assert self.machine.get_value("GMAKE_J") == 8

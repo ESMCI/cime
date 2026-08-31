@@ -5,8 +5,8 @@
     <DESC>Docker</DESC>
     <OS>LINUX</OS>
     <PROXY />
-    <COMPILERS>gnu,gnuX</COMPILERS>
-    <MPILIBS>openmpi</MPILIBS>
+    <COMPILERS>gnu</COMPILERS>
+    <MPILIBS>mpich</MPILIBS>
     <PROJECT>CIME</PROJECT>
     <SAVE_TIMING_DIR>/root/storage/timings</SAVE_TIMING_DIR>
     <SAVE_TIMING_DIR_PROJECTS>CIME</SAVE_TIMING_DIR_PROJECTS>
@@ -21,27 +21,37 @@
     <TESTS>e3sm_developer</TESTS>
     <BATCH_SYSTEM>none</BATCH_SYSTEM>
     <SUPPORTED_BY>boutte3@llnl.gov</SUPPORTED_BY>
-    <MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
-    <MAX_MPITASKS_PER_NODE>16</MAX_MPITASKS_PER_NODE>
-    <mpirun mpilib="openmpi">
+    <!--
+      MAX_TASKS and MAX_MPITASKS_PER_NODE are dynamically set to the container's
+      usable core count (respecting docker run cpus/cpuset-cpus limits) via
+      DOCKER_MAX_TASKS exported by entrypoint.sh. This prevents default PE layouts
+      (which often request 32-64 fixed ranks) from exceeding the proc pool
+      (MAX_TASKS_PER_NODE * 1.25) or oversubscribing conda-forge MPICH (which
+      busy-polls and livelocks). Use the shipped docker/.cime/config_pes.xml
+      (pesfile) for automatic capping, or pass pecount N / _PN test options.
+    -->
+    <MAX_TASKS_PER_NODE>$ENV{DOCKER_MAX_TASKS}</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>$ENV{DOCKER_MAX_TASKS}</MAX_MPITASKS_PER_NODE>
+    <mpirun mpilib="mpich">
       <executable>mpiexec</executable>
       <arguments>
         <arg name="ntasks">-n {{ total_tasks }}</arg>
-        <arg name="oversubscribe">--oversubscribe</arg>
+        <!-- Disable CPU binding so MPICH can oversubscribe cleanly when the
+             test's task count exceeds the host's physical cores (e.g. running
+             a 64-PE test inside a container on a smaller machine). -->
+        <arg name="binding">-bind-to none</arg>
       </arguments>
     </mpirun>
     <module_system type="none" />
     <RUNDIR>$CASEROOT/run</RUNDIR>
     <EXEROOT>$CASEROOT/bld</EXEROOT>
     <environment_variables>
-      <env name="OMPI_ALLOW_RUN_AS_ROOT">1</env>
-      <env name="OMPI_ALLOW_RUN_AS_ROOT_CONFIRM">1</env>
-      <env name="NETCDF_C_PATH">/opt/spack-envs/view</env>
-      <env name="NETCDF_FORTRAN_PATH">/opt/spack-envs/view</env>
-      <env name="PNETCDF_PATH">/opt/spack-envs/view</env>
-      <env name="PATH">/opt/spack-envs/view/bin:$ENV{PATH}</env>
-      <env name="LD_LIBRARY_PATH">/opt/spack-envs/view/lib</env>
-      <env name="PKG_CONFIG_PATH">/opt/spack-envs/view/lib/pkgconfig</env>
+      <env name="NETCDF_C_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}</env>
+      <env name="NETCDF_FORTRAN_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}</env>
+      <env name="PNETCDF_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}</env>
+      <env name="PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/lib:$ENV{LD_LIBRARY_PATH}</env>
+      <env name="PKG_CONFIG_PATH">/opt/pixi-env/.pixi/envs/$ENV{CIME_MODEL}/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}</env>
     </environment_variables>
   </machine>
 </config_machines>

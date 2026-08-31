@@ -1,0 +1,57 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Large untracked data files
+data/
+
+# Python bytecode and build artifacts
+*.pyc
+__pycache__/
+*.egg-info/
+build/
+_build/
+dist/
+.coverage
+*.pyo
+*.pyd
+.pytest_cache/
+.tox/
+
+# Documentation build artifacts
+doc/build/
+doc/_build/
+doc/source/Tools_user/temp_files
+
+# Editor and IDE files
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+*.bak
+
+# AI coding tool local state
+.gemini/
+.codex/
+.claude/
+
+# Pixi local environments
+.pixi/
+
+# Test and development artifacts
+test_coverage/
+scripts/Tools/JENKINS*
+scripts/cases/
+
+# CI/CD and workflows
+.github/
+
+# Docker-specific
+.dockerignore
+docker/legacy/
+
+# OS-specific
+.DS_Store
+Thumbs.db

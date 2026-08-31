@@ -4,7 +4,7 @@ from unittest import mock
 from pathlib import Path
 
 from CIME import locked_files
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 from CIME.XML.entry_id import EntryID
 from CIME.XML.env_batch import EnvBatch
 from CIME.XML.files import Files

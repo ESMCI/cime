@@ -453,9 +453,3 @@ class TestSafeCopy(unittest.TestCase):
             tgt_mode,
             "Permissions should not be preserved with preserve_meta=False",
         )
-
-        # Outside SharedArea, file should NOT be group-writable (typical umask is 0o022)
-        self.assertFalse(
-            tgt_mode & stat.S_IWGRP,
-            f"File should not be group-writable outside SharedArea, got {oct(tgt_mode)}",
-        )

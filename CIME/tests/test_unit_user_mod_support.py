@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import os
 from CIME.user_mod_support import apply_user_mods
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 # ========================================================================
 # Define some parameters

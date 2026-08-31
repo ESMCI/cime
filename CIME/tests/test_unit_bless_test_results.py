@@ -15,7 +15,7 @@ from CIME.bless_test_results import (
 )
 from CIME.test_status import ALL_PHASES, GENERATE_PHASE
 from CIME.tests import utils as test_utils
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 
 class TestUnitBlessTestResults(unittest.TestCase):
@@ -1015,7 +1015,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         )
 
         assert not needed
-        assert broken_blesses == [("SMS.f19_g16.A", "test did not pass")]
+        assert broken_blesses == [("SMS.f19_g16.A", "test did not pass (SKIP)")]
 
     def test_is_bless_needed_generate_fail(self):
         ts = mock.MagicMock()
@@ -1064,7 +1064,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         )
 
         assert not needed
-        assert broken_blesses == [("SMS.f19_g16.A", "run phase did not pass")]
+        assert broken_blesses == [("SMS.f19_g16.A", "run phase did not pass (SKIP)")]
 
     def test_is_bless_needed_no_run_phase(self):
         ts = mock.MagicMock()
@@ -1077,7 +1077,7 @@ class TestUnitBlessTestResults(unittest.TestCase):
         )
 
         assert not needed
-        assert broken_blesses == [("SMS.f19_g16.A", "no run phase")]
+        assert broken_blesses == [("SMS.f19_g16.A", "no run phase (SKIP)")]
 
     def test_is_bless_needed(self):
         ts = mock.MagicMock()

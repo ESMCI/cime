@@ -7,7 +7,8 @@ This is seperate from FakeCase that's under CIME/tests
 
 import unittest
 import os
-from CIME.utils import get_model, CIMEError, GLOBAL, get_src_root
+from CIME.core.exceptions import CIMEError
+from CIME.utils import get_model, GLOBAL, get_src_root
 
 from CIME.BuildTools.configure import FakeCase
 

@@ -1,9 +1,11 @@
 import os, re, logging
-from CIME.utils import expect, CIMEError
+from CIME.core.exceptions import CIMEError
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
 # pragma pylint: disable=unsubscriptable-object
+
 
 ###############################################################################
 def _normalize_lists(value_str):

@@ -1,6 +1,7 @@
 """
 Functions for actions pertaining to history files.
 """
+
 import logging
 import os
 import re
@@ -17,7 +18,7 @@ from CIME.utils import (
     SharedArea,
     parse_test_name,
 )
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 logger = logging.getLogger(__name__)
 
@@ -786,13 +787,19 @@ def get_ts_synopsis(comments):
     'ERROR Could not interpret CPRNC output'
     >>> get_ts_synopsis('file1=\nfile2=\n  diff_test: the two files seem to be IDENTICAL \n')
     ''
+    >>> get_ts_synopsis('Comparing hists\nPASS\n  Most recent bless: sha:abc\n')
+    ''
     """
     comments = comments.strip()
 
     if comments == "" or "\n" not in comments:
         return comments
 
-    if comments.endswith("PASS"):
+    # Comparison passed if a line consisting of exactly "PASS" appears.
+    # _compare_hists writes this token verbatim; any other casing (Pass, pass,
+    # PASSING, ...) is not a status marker and must fall through. The optional
+    # \r tolerates CRLF line endings without weakening the exact-match check.
+    if re.search(r"^PASS\r?$", comments, re.MULTILINE):
         return ""
 
     # Empty synopsis when files are identicial

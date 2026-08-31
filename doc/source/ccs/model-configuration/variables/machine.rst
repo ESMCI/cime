@@ -71,39 +71,39 @@ The following is an example of a version 2.0 ``config_machines.xml`` file. This 
                 <DESC>Docker</DESC>
                 <OS>LINUX</OS>
                 <PROXY />
-                <COMPILERS>gnu,gnuX</COMPILERS>
-                <MPILIBS>openmpi</MPILIBS>
+                <COMPILERS>gnu</COMPILERS>
+                <MPILIBS>mpich</MPILIBS>
                 <PROJECT>CIME</PROJECT>
-                <SAVE_TIMING_DIR>/storage/timings</SAVE_TIMING_DIR>
+                <SAVE_TIMING_DIR>/root/storage/timings</SAVE_TIMING_DIR>
                 <SAVE_TIMING_DIR_PROJECTS>CIME</SAVE_TIMING_DIR_PROJECTS>
-                <CIME_OUTPUT_ROOT>/storage/cases</CIME_OUTPUT_ROOT>
-                <DIN_LOC_ROOT>/storage/inputdata</DIN_LOC_ROOT>
-                <DIN_LOC_ROOT_CLMFORC>/storage/inputdata-clmforc</DIN_LOC_ROOT_CLMFORC>
-                <DOUT_S_ROOT>/storage/archive/$CASE</DOUT_S_ROOT>
-                <BASELINE_ROOT>/storage/baselines/$COMPILER</BASELINE_ROOT>
-                <CCSM_CPRNC>/storage/tools/cprnc</CCSM_CPRNC>
+                <CIME_OUTPUT_ROOT>/root/storage/cases</CIME_OUTPUT_ROOT>
+                <DIN_LOC_ROOT>/root/storage/inputdata</DIN_LOC_ROOT>
+                <DIN_LOC_ROOT_CLMFORC>/root/storage/inputdata-clmforc</DIN_LOC_ROOT_CLMFORC>
+                <DOUT_S_ROOT>/root/storage/archive/$CASE</DOUT_S_ROOT>
+                <BASELINE_ROOT>/root/storage/baselines/$COMPILER</BASELINE_ROOT>
+                <CCSM_CPRNC>/root/storage/tools/cprnc</CCSM_CPRNC>
                 <GMAKE>make</GMAKE>
                 <GMAKE_J>4</GMAKE_J>
+                <BATCHED_BUILD>FALSE</BATCHED_BUILD>
+                <CMAKE_BACKEND>Ninja</CMAKE_BACKEND>
                 <TESTS>e3sm_developer</TESTS>
                 <BATCH_SYSTEM>none</BATCH_SYSTEM>
-                <SUPPORTED_BY>boutte3@llnl.gov</SUPPORTED_BY>
-                <MAX_TASKS_PER_NODE>8</MAX_TASKS_PER_NODE>
-                <MAX_MPITASKS_PER_NODE>8</MAX_MPITASKS_PER_NODE>
-                <mpirun mpilib="openmpi">
+                <SUPPORTED_BY>cime-dev@ucar.edu</SUPPORTED_BY>
+                <MAX_TASKS_PER_NODE>$ENV{DOCKER_MAX_TASKS}</MAX_TASKS_PER_NODE>
+                <MAX_MPITASKS_PER_NODE>$ENV{DOCKER_MAX_TASKS}</MAX_MPITASKS_PER_NODE>
+                <mpirun mpilib="mpich">
                 <executable>mpiexec</executable>
                 <arguments>
                         <arg name="ntasks">-n {{ total_tasks }}</arg>
-                        <arg name="oversubscribe">--oversubscribe</arg>
+                        <arg name="bind">-bind-to none</arg>
                 </arguments>
                 </mpirun>
                 <module_system type="none" />
                 <RUNDIR>$CASEROOT/run</RUNDIR>
                 <EXEROOT>$CASEROOT/bld</EXEROOT>
                 <environment_variables>
-                        <env name="OMPI_ALLOW_RUN_AS_ROOT">1</env>
-                        <env name="OMPI_ALLOW_RUN_AS_ROOT_CONFIRM">1</env>
-                        <env name="NETCDF_C_PATH">/opt/conda</env>
-                        <env name="NETCDF_FORTRAN_PATH">/opt/conda</env>
+                        <env name="NETCDF_C_PATH">$ENV{PIXI_ENV_ROOT}/$ENV{CIME_MODEL}</env>
+                        <env name="NETCDF_FORTRAN_PATH">$ENV{PIXI_ENV_ROOT}/$ENV{CIME_MODEL}</env>
                 </environment_variables>
         </machine>
         ...
@@ -146,6 +146,8 @@ CCSM_CPRNC                  Location of the cprnc tool.
 PERL5LIB                    Perl library path.
 GMAKE                       GNU-compatible make tool.
 GMAKE_J                     Number of threads for gmake.
+BATCHED_BUILD               Optional, builds will be done through batch submissions
+CMAKE_BACKEND               Optional, tells CMake which backend to use
 TESTS                       List of tests to run on the machine.
 NTEST_PARALLEL_JOBS         Number of parallel jobs for testing.
 BATCH_SYSTEM                Batch system used on the machine.
@@ -348,6 +350,10 @@ Version 3.0
                     <!-- Occurrences min: 0 max: 1-->
                     <GMAKE_J></GMAKE_J>
                     <!-- Occurrences min: 0 max: 1-->
+                    <BATCHED_BUILD></BATCHED_BUILD>
+                    <!-- Occurrences min: 0 max: 1-->
+                    <CMAKE_BACKEND></CMAKE_BACKEND>
+                    <!-- Occurrences min: 0 max: 1-->
                     <TESTS></TESTS>
                     <!-- Occurrences min: 0 max: 1-->
                     <NTEST_PARALLEL_JOBS></NTEST_PARALLEL_JOBS>
@@ -519,6 +525,10 @@ Version 2.0
                     <GMAKE></GMAKE>
                     <!-- Occurrences min: 0 max: 1-->
                     <GMAKE_J></GMAKE_J>
+                    <!-- Occurrences min: 0 max: 1-->
+                    <BATCHED_BUILD></BATCHED_BUILD>
+                    <!-- Occurrences min: 0 max: 1-->
+                    <CMAKE_BACKEND></CMAKE_BACKEND>
                     <!-- Occurrences min: 0 max: 1-->
                     <TESTS></TESTS>
                     <!-- Occurrences min: 0 max: 1-->

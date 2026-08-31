@@ -56,6 +56,10 @@ The following describes the most important parts of this timing file:
 
 An example timing file of this type is:
 
+.. note::
+
+   The following is an example timing output. The specific machine, paths, compset, and component names will vary depending on your model and configuration.
+
 .. code-block:: text
 
    ---------------- TIMING PROFILE ---------------------

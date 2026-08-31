@@ -152,8 +152,10 @@ class EnvironmentContext(object):
 # hate seeing. It's a subclass of Exception because we want it to be
 # "catchable". If you are debugging CIME and want to see the stacktrace,
 # run your CIME command with the --debug flag.
-class CIMEError(SystemExit, Exception):
-    pass
+#
+# Canonical definition lives in CIME.core.exceptions; re-exported here
+# for backward compatibility.
+from CIME.core.exceptions import CIMEError, CimeTimeoutError  # noqa: F401
 
 
 def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
@@ -175,7 +177,7 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
 
             pdb.set_trace()  # pylint: disable=forgotten-debug-statement
 
-        msg = error_prefix + " " + error_msg
+        msg = f"{error_prefix} {error_msg}"
         raise exc_type(msg)
 
 
@@ -2217,24 +2219,6 @@ def transform_vars(text, case=None, subgroup=None, overrides=None, default=None)
     return text
 
 
-def wait_for_unlocked(filepath):
-    locked = True
-    file_object = None
-    while locked:
-        try:
-            buffer_size = 8
-            # Opening file in append mode and read the first 8 characters.
-            file_object = open(filepath, "a", buffer_size)
-            if file_object:
-                locked = False
-        except IOError:
-            locked = True
-            time.sleep(1)
-        finally:
-            if file_object:
-                file_object.close()
-
-
 def gunzip_existing_file(filepath):
     with gzip.open(filepath, "rb") as fd:
         return fd.read()
@@ -2733,3 +2717,49 @@ def is_comp_standalone(case):
     if stubcnt >= numclasses - 2:
         return True, model
     return False, None
+
+
+_CIME_LOCK_DIR_NAME = "cime_utils_distributed_dir_lock"
+
+
+@contextmanager
+def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
+    """
+    An atomic directory-based distributed lock for shared network filesystems.
+
+    :param dir_path: Path to the directory you want to lock. Only this directory will be locked
+    :param poll_interval: Time (seconds) to wait between retry attempts.
+    :param timeout: Maximum time (seconds) to wait for lock acquisition before raising TimeoutError.
+    """
+    start_time = time.time()
+    acquired = False
+
+    lock_dir_path = os.path.join(dir_path, _CIME_LOCK_DIR_NAME)
+
+    while True:
+        try:
+            # os.mkdir is atomic over network filesystems (NFS, SMB, EFS)
+            os.mkdir(lock_dir_path)
+            acquired = True
+            break
+        except FileExistsError:
+            # Check if we have timed out while waiting
+            if timeout is not None and (time.time() - start_time) > timeout:
+                raise CimeTimeoutError(  # pylint: disable=raise-missing-from
+                    f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds. It's possible that a process crashed while holding the lock and this directory will need to be manually removed."
+                )
+
+            # Lock is busy; wait and try again
+            time.sleep(poll_interval)
+
+    try:
+        # Pass control back to the 'with' block
+        yield
+    finally:
+        # This block ALWAYS runs, even if the code inside the 'with' statement crashes
+        if acquired:
+            try:
+                os.rmdir(lock_dir_path)
+            except FileNotFoundError:
+                # Handle edge case where lock was manually cleaned up externally
+                pass
