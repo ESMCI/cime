@@ -850,7 +850,9 @@ class EnvBatch(EnvBase):
                     break
 
         else:
-            expect(job, "If not following workflow, please specific which job to submit")
+            expect(
+                job, "If not following workflow, please specific which job to submit"
+            )
             jobs = [(job, None)]
 
         depid = OrderedDict()

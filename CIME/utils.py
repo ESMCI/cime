@@ -2764,9 +2764,11 @@ def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
                 # Handle edge case where lock was manually cleaned up externally
                 pass
 
+
 class SectionTimer:
     def __init__(self, name):
         self.name = name
+        self.start = None
 
     def __enter__(self):
         self.start = time.perf_counter()

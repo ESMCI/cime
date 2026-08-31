@@ -239,7 +239,12 @@ def get_test_suites():
 
 ###############################################################################
 def get_test_suite(
-        suite, machine=None, compiler=None, skip_inherit=False, skip_tests=None, machobj=None
+    suite,
+    machine=None,
+    compiler=None,
+    skip_inherit=False,
+    skip_tests=None,
+    machobj=None,
 ):
     ###############################################################################
     """
@@ -285,7 +290,9 @@ def get_test_suite(
 
     if not skip_inherit:
         for inherits in inherits_from:
-            inherited_tests = get_test_suite(inherits, machine, compiler, machobj=machobj)
+            inherited_tests = get_test_suite(
+                inherits, machine, compiler, machobj=machobj
+            )
 
             for inherited_test in inherited_tests:
                 if inherited_test not in tests:
@@ -299,12 +306,18 @@ def suite_has_test(suite, test_full_name, skip_inherit=False, machobj=None):
     ###############################################################################
     _, _, _, _, machine, compiler, _ = CIME.utils.parse_test_name(test_full_name)
     expect(machine is not None, "{} is not a full test name".format(test_full_name))
-    if (machobj is not None):
-        expect(machine == machobj.get_machine_name(),
-               f"machobj '{machobj.get_machine_name()}' does not match parsed machine '{machine}'")
+    if machobj is not None:
+        expect(
+            machine == machobj.get_machine_name(),
+            f"machobj '{machobj.get_machine_name()}' does not match parsed machine '{machine}'",
+        )
 
     tests = get_test_suite(
-        suite, machine=machine, compiler=compiler, skip_inherit=skip_inherit, machobj=machobj
+        suite,
+        machine=machine,
+        compiler=compiler,
+        skip_inherit=skip_inherit,
+        machobj=machobj,
     )
     return test_full_name in tests
 
