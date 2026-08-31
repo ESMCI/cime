@@ -796,7 +796,6 @@ class EnvBatch(EnvBase):
               waiting to resubmit at the end of the first sequence
         workflow is a logical indicating whether only "job" is submitted or the workflow sequence starting with "job" is submitted
         """
-
         external_workflow = case.get_value("EXTERNAL_WORKFLOW")
         if not self._env_workflow:
             self._env_workflow = case.get_env("workflow")
@@ -816,38 +815,43 @@ class EnvBatch(EnvBase):
 
         startindex = 0
         jobs = []
-        if job is not None:
-            expect(job in alljobs, "Do not know about batch job {}".format(job))
-            startindex = alljobs.index(job)
-        for index, job in enumerate(alljobs):
-            logger.debug(
-                "Index {:d} job {} startindex {:d}".format(index, job, startindex)
-            )
-            if index < startindex:
-                continue
-            try:
-                prereq = self._env_workflow.get_value(
-                    "prereq", subgroup=job, resolved=False
+        if workflow:
+            if job is not None:
+                expect(job in alljobs, "Do not know about batch job {}".format(job))
+                startindex = alljobs.index(job)
+            for index, job in enumerate(alljobs):
+                logger.debug(
+                    "Index {:d} job {} startindex {:d}".format(index, job, startindex)
                 )
-                if external_workflow or prereq is None or dry_run:
-                    prereq = True
-                else:
-                    prereq = case.get_resolved_value(prereq)
-                    prereq = eval(prereq)
-            except Exception:
-                expect(
-                    False,
-                    "Unable to evaluate prereq expression '{}' for job '{}'".format(
-                        self.get_value("prereq", subgroup=job), job
-                    ),
-                )
-            if prereq:
-                jobs.append(
-                    (job, self._env_workflow.get_value("dependency", subgroup=job))
-                )
+                if index < startindex:
+                    continue
+                try:
+                    prereq = self._env_workflow.get_value(
+                        "prereq", subgroup=job, resolved=False
+                    )
+                    if external_workflow or prereq is None or dry_run:
+                        prereq = True
+                    else:
+                        prereq = case.get_resolved_value(prereq)
+                        prereq = eval(prereq)
+                except Exception:
+                    expect(
+                        False,
+                        "Unable to evaluate prereq expression '{}' for job '{}'".format(
+                            self.get_value("prereq", subgroup=job), job
+                        ),
+                    )
+                if prereq:
+                    jobs.append(
+                        (job, self._env_workflow.get_value("dependency", subgroup=job))
+                    )
 
-            if self._batchtype == "cobalt":
-                break
+                if self._batchtype == "cobalt":
+                    break
+
+        else:
+            expect(job, "If not following workflow, please specific which job to submit")
+            jobs = [(job, None)]
 
         depid = OrderedDict()
         jobcmds = []
