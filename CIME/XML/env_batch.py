@@ -851,8 +851,9 @@ class EnvBatch(EnvBase):
 
         else:
             expect(
-                job, "If not following workflow, please specific which job to submit"
+                job, "If not following workflow, please specify which job to submit"
             )
+            expect(job in alljobs, "Do not know about batch job {}".format(job))
             jobs = [(job, None)]
 
         depid = OrderedDict()
