@@ -2763,3 +2763,15 @@ def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
             except FileNotFoundError:
                 # Handle edge case where lock was manually cleaned up externally
                 pass
+
+class SectionTimer:
+    def __init__(self, name):
+        self.name = name
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        elapsed = time.perf_counter() - self.start
+        print(f"[Timer] {self.name} took {elapsed:.4f} seconds")
