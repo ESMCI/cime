@@ -850,9 +850,7 @@ class EnvBatch(EnvBase):
                     break
 
         else:
-            expect(
-                job, "If not following workflow, please specify which job to submit"
-            )
+            expect(job, "If not following workflow, please specify which job to submit")
             expect(job in alljobs, "Do not know about batch job {}".format(job))
             jobs = [(job, None)]
 
