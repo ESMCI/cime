@@ -1319,11 +1319,12 @@ def start_buffering_output():
 def match_any(item, re_counts):
     """
     Return true if item matches any regex in re_counts' keys. Increments
-    count if a match was found.
+    count if a match was found. Note, this does a regex search, not a strict
+    match.
     """
     for regex_str in re_counts:
         regex = re.compile(regex_str)
-        if regex.match(item):
+        if regex.search(item):
             re_counts[regex_str] += 1
             return True
 
