@@ -324,7 +324,7 @@ class TestScheduler(object):
         if parallel_jobs is None:
             mach_parallel_jobs = self._machobj.get_value("NTEST_PARALLEL_JOBS")
             if mach_parallel_jobs is None:
-                mach_parallel_jobs = self._machobj.get_value("MAX_MPITASKS_PER_NODE")
+                mach_parallel_jobs = self._machobj.get_value("MAX_TASKS_PER_NODE")
             self._parallel_jobs = min(len(test_names), mach_parallel_jobs)
         else:
             self._parallel_jobs = parallel_jobs
@@ -481,7 +481,7 @@ class TestScheduler(object):
             self._build_groups = [tuple(self._tests.keys())]
         elif self._config.share_exes:
             # Any test that's in a shared-enabled suite with other tests should share exes
-            self._build_groups = get_build_groups(self._tests)
+            self._build_groups = get_build_groups(self._tests, machobj=self._machobj)
         else:
             self._build_groups = [(item,) for item in self._tests]
 

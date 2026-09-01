@@ -239,14 +239,19 @@ def get_test_suites():
 
 ###############################################################################
 def get_test_suite(
-    suite, machine=None, compiler=None, skip_inherit=False, skip_tests=None
+    suite,
+    machine=None,
+    compiler=None,
+    skip_inherit=False,
+    skip_tests=None,
+    machobj=None,
 ):
     ###############################################################################
     """
     Return a list of FULL test names for a suite.
     """
     expect(suite in get_test_suites(), "Unknown test suite: '{}'".format(suite))
-    machobj = Machines(machine=machine)
+    machobj = Machines(machine=machine) if machobj is None else machobj
     machine = machobj.get_machine_name()
 
     if compiler is None:
@@ -285,7 +290,9 @@ def get_test_suite(
 
     if not skip_inherit:
         for inherits in inherits_from:
-            inherited_tests = get_test_suite(inherits, machine, compiler)
+            inherited_tests = get_test_suite(
+                inherits, machine, compiler, machobj=machobj
+            )
 
             for inherited_test in inherited_tests:
                 if inherited_test not in tests:
@@ -295,19 +302,28 @@ def get_test_suite(
 
 
 ###############################################################################
-def suite_has_test(suite, test_full_name, skip_inherit=False):
+def suite_has_test(suite, test_full_name, skip_inherit=False, machobj=None):
     ###############################################################################
     _, _, _, _, machine, compiler, _ = CIME.utils.parse_test_name(test_full_name)
     expect(machine is not None, "{} is not a full test name".format(test_full_name))
+    if machobj is not None:
+        expect(
+            machine == machobj.get_machine_name(),
+            f"machobj '{machobj.get_machine_name()}' does not match parsed machine '{machine}'",
+        )
 
     tests = get_test_suite(
-        suite, machine=machine, compiler=compiler, skip_inherit=skip_inherit
+        suite,
+        machine=machine,
+        compiler=compiler,
+        skip_inherit=skip_inherit,
+        machobj=machobj,
     )
     return test_full_name in tests
 
 
 ###############################################################################
-def get_build_groups(tests):
+def get_build_groups(tests, machobj=None):
     ###############################################################################
     """
     Given a list of tests, return a list of lists, with each list representing
@@ -349,7 +365,7 @@ def get_build_groups(tests):
         # Find which suites have this test
         my_share_suites = set()
         for suite in share_suites:
-            if suite_has_test(suite, test, skip_inherit=True):
+            if suite_has_test(suite, test, skip_inherit=True, machobj=machobj):
                 my_share_suites.add(suite)
 
         # Try to match this test with an existing build group. If there is
