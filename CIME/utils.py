@@ -1319,11 +1319,12 @@ def start_buffering_output():
 def match_any(item, re_counts):
     """
     Return true if item matches any regex in re_counts' keys. Increments
-    count if a match was found.
+    count if a match was found. Note, this does a regex search, not a strict
+    match.
     """
     for regex_str in re_counts:
         regex = re.compile(regex_str)
-        if regex.match(item):
+        if regex.search(item):
             re_counts[regex_str] += 1
             return True
 
@@ -2763,3 +2764,17 @@ def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
             except FileNotFoundError:
                 # Handle edge case where lock was manually cleaned up externally
                 pass
+
+
+class SectionTimer:
+    def __init__(self, name):
+        self.name = name
+        self.start = None
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        elapsed = time.perf_counter() - self.start
+        print(f"[Timer] {self.name} took {elapsed:.4f} seconds")

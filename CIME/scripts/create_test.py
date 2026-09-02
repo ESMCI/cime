@@ -771,14 +771,6 @@ def parse_command_line(args, description):
         dot_count = name.count(".")
         expect(dot_count > 1 and dot_count <= 4, "Invalid test Name, '{}'".format(name))
 
-    # for e3sm, sort by walltime
-    if model_config.sort_tests:
-        if args.walltime is None:
-            # Longest tests should run first
-            test_names.sort(key=get_tests.key_test_time, reverse=True)
-        else:
-            test_names.sort()
-
     return (
         test_names,
         test_extra_data,
