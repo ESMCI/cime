@@ -157,9 +157,12 @@ class ArchiveBase(GenericXML):
         for ext in extensions:
             if ext.endswith("$") and has_suffix:
                 ext = ext[:-1]
-            # Anchor the component name at a filename boundary. Without this, a
-            # component name that happens to be a substring of another one (e.g.
-            # "eam" inside "scream") matches the other component's history files.
+            # The first part of this regex forces the model name to appear
+            # either at the start of the string or following a '.', '-' or '_'.
+            # Without this, re.search would find the model name anywhere in the
+            # file name, so a model whose name is a substring of another model's
+            # name (e.g. "eam" within "scream") would match the other model's
+            # history files.
             string = r"(?:^|[\.\-_])" + model + r"\d?_?(\d{4})?(_d\d{2})?\." + ext
             if has_suffix:
                 if not suffix in string:
