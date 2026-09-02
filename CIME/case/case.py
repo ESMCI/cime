@@ -1124,8 +1124,9 @@ class Case(object):
             self.set_value(root_dir_node_name, comp_root_dir)
 
         #
-        # For CESM add coupling_mode to the list of attributes
-        # This has to be done after the driver env variables where done above
+        # For CESM add coupling_mode to the list of attributes needed to distinquish between cesm and noresm
+        # This has to be done after the driver env variables were done above
+        # (NOTE: This happens before testmods are applied, so coupling_mode will be the default value)
         #
         if self._cime_model == "cesm":
             coupling_mode = self.get_value("COUPLING_MODE")
