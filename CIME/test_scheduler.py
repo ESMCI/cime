@@ -259,6 +259,8 @@ class TestScheduler(object):
             self._machobj.set_value("MPILIB", self._mpilib)
 
         self._batched_build = batch_build and self._machobj.get_value("BATCHED_BUILD")
+        if batch_build and not self._machobj.get_value("BATCHED_BUILD"):
+            logger.warning("You requested batched builds but that is not supported on the current machine (see BATCHED_BUILD)")
 
         # Compute cost on current node of doing the model build
         if self._batched_build:
