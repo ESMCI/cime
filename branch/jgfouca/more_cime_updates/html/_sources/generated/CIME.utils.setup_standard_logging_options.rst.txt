@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.setup\_standard\_logging\_options
+============================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: setup_standard_logging_options

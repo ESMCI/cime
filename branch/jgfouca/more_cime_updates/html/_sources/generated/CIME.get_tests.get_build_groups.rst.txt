@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.get\_build\_groups
+==================================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: get_build_groups

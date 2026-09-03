@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.get\_recommended\_test\_time
+============================================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: get_recommended_test_time

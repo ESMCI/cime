@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.expand\_literal\_list
+===================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: expand_literal_list
