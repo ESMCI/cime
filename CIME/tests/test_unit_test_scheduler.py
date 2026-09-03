@@ -9,8 +9,8 @@ False on the model config, the sharedlib and model build phases are fused:
   ``./case.build --model-only``, submitting one batch job for both phases.
 
 When either condition is not met the original two-phase behaviour is kept.
-The ``no_batch_build`` constructor flag forces ``_batched_build = False``
-regardless of the machine setting.
+The ``batch_build`` constructor flag enables batched builds only if the
+machine also supports them (BATCHED_BUILD=True).
 
 The _xml_phase sets GMAKE_J to MAX_TASKS_PER_NODE when batched builds are
 enabled so the entire compute node is used for the build job.
@@ -313,29 +313,29 @@ class TestModelBuildPhaseFusion:
 
 
 # ---------------------------------------------------------------------------
-# no_batch_build constructor flag
+# batch_build constructor flag
 # ---------------------------------------------------------------------------
 
 
-class TestNoBatchBuildFlag:
-    """Tests for the no_batch_build=True constructor behaviour."""
+class TestBatchBuildFlag:
+    """Tests for the batch_build constructor behaviour."""
 
-    def test_no_batch_build_disables_batched_build(self):
-        """no_batch_build=True must set _batched_build to False, causing
+    def test_batch_build_false_disables_batched_build(self):
+        """batch_build=False (default) must set _batched_build to False, causing
         --no-batch-build to be appended to case.build calls."""
         ts = _make_scheduler(serialize_sharedlib_builds=False, batched_build=True)
-        # Simulate the __init__ logic: no_batch_build overrides _batched_build
-        ts._batched_build = False  # as __init__ would do when no_batch_build=True
+        # Simulate the __init__ logic: batch_build=False means no batching
+        ts._batched_build = False  # as __init__ would do when batch_build=False
 
         ts._sharedlib_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
         assert cmd == "./case.build --sharedlib-only --no-batch-build"
 
-    def test_no_batch_build_init_param_sets_attribute(self):
-        """TestScheduler.__init__ sets _batched_build=False when no_batch_build=True."""
+    def test_batch_build_init_param_enables_batched_build(self):
+        """TestScheduler.__init__ enables batched builds when batch_build=True and machine supports it."""
         # We test the init logic in isolation by checking the attribute assignment
-        # path (lines 250-251 of test_scheduler.py) with a minimal mock.
+        # path with a minimal mock.
         with mock.patch.object(
             test_scheduler.TestScheduler,
             "__init__",
@@ -344,12 +344,12 @@ class TestNoBatchBuildFlag:
             ts = test_scheduler.TestScheduler.__new__(test_scheduler.TestScheduler)
 
         # Replicate exactly what __init__ does for this flag:
-        ts._batched_build = True  # pretend machine says True
-        no_batch_build = True
-        if no_batch_build:
-            ts._batched_build = False
+        ts._batched_build = False  # default (machine supports it but not enabled)
+        batch_build = True
+        machine_supports_it = True
+        ts._batched_build = batch_build and machine_supports_it
 
-        assert ts._batched_build is False
+        assert ts._batched_build is True
 
 
 # ---------------------------------------------------------------------------

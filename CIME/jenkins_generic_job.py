@@ -234,6 +234,7 @@ def jenkins_generic_job(
     generate_baselines,
     submit_to_cdash,
     no_batch,
+    batch_build,
     baseline_name,
     arg_cdash_build_name,
     cdash_project,
@@ -330,6 +331,9 @@ def jenkins_generic_job(
 
     if no_batch:
         create_test_args.append("--no-batch")
+
+    if batch_build:
+        create_test_args.append("--batch-build")
 
     if parallel_jobs is not None:
         create_test_args.append(f"-j {parallel_jobs:d}")

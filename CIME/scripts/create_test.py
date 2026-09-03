@@ -103,10 +103,10 @@ def parse_command_line(args, description):
     )
 
     parser.add_argument(
-        "--no-batch-build",
+        "--batch-build",
         action="store_true",
-        help="Disable batched builds (BATCHED_BUILD) even if the machine enables"
-        "\nthem by default. Builds will run interactively on the login node.",
+        help="Enable batched builds (BATCHED_BUILD) if the machine supports them."
+        "\nBuilds will be submitted to the batch system. Disabled by default.",
     )
 
     parser.add_argument(
@@ -780,7 +780,7 @@ def parse_command_line(args, description):
         args.no_build,
         args.no_setup,
         args.no_batch,
-        args.no_batch_build,
+        args.batch_build,
         args.test_root,
         args.baseline_root,
         args.clean,
@@ -946,7 +946,7 @@ def create_test(
     no_build,
     no_setup,
     no_batch,
-    no_batch_build,
+    batch_build,
     test_root,
     baseline_root,
     clean,
@@ -997,7 +997,7 @@ def create_test(
         no_build=no_build,
         no_setup=no_setup,
         no_batch=no_batch,
-        no_batch_build=no_batch_build,
+        batch_build=batch_build,
         test_root=test_root,
         test_id=test_id,
         baseline_root=baseline_root,
@@ -1101,7 +1101,7 @@ def _main_func(description=None):
         no_build,
         no_setup,
         no_batch,
-        no_batch_build,
+        batch_build,
         test_root,
         baseline_root,
         clean,
@@ -1159,7 +1159,7 @@ def _main_func(description=None):
             no_build,
             no_setup,
             no_batch,
-            no_batch_build,
+            batch_build,
             test_root,
             baseline_root,
             clean,
