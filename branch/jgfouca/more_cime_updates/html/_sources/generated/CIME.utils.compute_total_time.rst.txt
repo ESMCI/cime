@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.compute\_total\_time
-===============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: compute_total_time

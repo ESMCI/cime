@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.buildnml.build\_xcpl\_nml
-==============================
-
-.. currentmodule:: CIME.buildnml
-
-.. autofunction:: build_xcpl_nml
