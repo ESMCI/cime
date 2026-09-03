@@ -1125,6 +1125,9 @@ class TestScheduler(object):
         elif self._gmake:
             cmd += " --gmake"
 
+        if self._batched_build:
+            cmd += " --batch-build"
+
         # When BATCHED_BUILD is enabled and sharedlib builds are not serialized,
         # the sharedlib phase was skipped; run a full build (sharedlib + model)
         # here in a single batch job submission.
@@ -1134,8 +1137,6 @@ class TestScheduler(object):
             )
 
         cmd += " --model-only"
-        if self._batched_build:
-            cmd += " --batch-build"
         return self._shell_cmd_for_phase(
             test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
         )
