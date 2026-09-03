@@ -146,7 +146,7 @@ CCSM_CPRNC                  Location of the cprnc tool.
 PERL5LIB                    Perl library path.
 GMAKE                       GNU-compatible make tool.
 GMAKE_J                     Number of threads for gmake.
-BATCHED_BUILD               Optional, builds will be done through batch submissions
+BATCHED_BUILD               Optional, builds can be done through batch submissions
 CMAKE_BACKEND               Optional, tells CMake which backend to use
 TESTS                       List of tests to run on the machine.
 NTEST_PARALLEL_JOBS         Number of parallel jobs for testing.

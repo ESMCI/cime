@@ -37,6 +37,7 @@ CIME.utils
                     copy_over_file
                     copyifnewer
                     deprecate_action
+                    distributed_dir_lock
                     does_file_have_string
                     expect
                     file_contains_python_function
@@ -114,7 +115,6 @@ CIME.utils
                     touch
                     transform_vars
                     verbatim_success_msg
-                    wait_for_unlocked
         
     
 
@@ -129,6 +129,7 @@ CIME.utils
                 
                     EnvironmentContext
                     IndentFormatter
+                    SectionTimer
                     SharedArea
                     Timeout
         

@@ -115,6 +115,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.copy_over_file.html">CIME.utils.copy_over_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.copyifnewer.html">CIME.utils.copyifnewer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.deprecate_action.html">CIME.utils.deprecate_action</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.distributed_dir_lock.html">CIME.utils.distributed_dir_lock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.does_file_have_string.html">CIME.utils.does_file_have_string</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.expect.html">CIME.utils.expect</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.file_contains_python_function.html">CIME.utils.file_contains_python_function</a></li>
@@ -195,9 +196,9 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.touch.html">CIME.utils.touch</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.transform_vars.html">CIME.utils.transform_vars</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.verbatim_success_msg.html">CIME.utils.verbatim_success_msg</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.utils.wait_for_unlocked.html">CIME.utils.wait_for_unlocked</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.EnvironmentContext.html">CIME.utils.EnvironmentContext</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.IndentFormatter.html">CIME.utils.IndentFormatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.SectionTimer.html">CIME.utils.SectionTimer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.SharedArea.html">CIME.utils.SharedArea</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.Timeout.html">CIME.utils.Timeout</a></li>
 </ul>
@@ -239,7 +240,8 @@
 <dt class="sig sig-object py" id="CIME.utils.match_any">
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">match_any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">re_counts</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.match_any" title="Link to this definition"></a></dt>
 <dd><p>Return true if item matches any regex in re_counts’ keys. Increments
-count if a match was found.</p>
+count if a match was found. Note, this does a regex search, not a strict
+match.</p>
 </dd></dl>
 
 </section>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CIME.utils.parse_test_name &mdash; CIME master documentation</title>
+  <title>CIME.utils.distributed_dir_lock &mdash; CIME master documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.utils.redirect_logger" href="CIME.utils.redirect_logger.html" />
-    <link rel="prev" title="CIME.utils.parse_args_and_handle_standard_logging_options" href="CIME.utils.parse_args_and_handle_standard_logging_options.html" /> 
+    <link rel="next" title="CIME.utils.does_file_have_string" href="CIME.utils.does_file_have_string.html" />
+    <link rel="prev" title="CIME.utils.deprecate_action" href="CIME.utils.deprecate_action.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -115,7 +115,10 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.copy_over_file.html">CIME.utils.copy_over_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.copyifnewer.html">CIME.utils.copyifnewer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.deprecate_action.html">CIME.utils.deprecate_action</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CIME.utils.distributed_dir_lock.html">CIME.utils.distributed_dir_lock</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.utils.distributed_dir_lock</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.distributed_dir_lock"><code class="docutils literal notranslate"><span class="pre">distributed_dir_lock()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.does_file_have_string.html">CIME.utils.does_file_have_string</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.expect.html">CIME.utils.expect</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.file_contains_python_function.html">CIME.utils.file_contains_python_function</a></li>
@@ -169,10 +172,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.new_lid.html">CIME.utils.new_lid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.normalize_case_id.html">CIME.utils.normalize_case_id</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.parse_args_and_handle_standard_logging_options.html">CIME.utils.parse_args_and_handle_standard_logging_options</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">CIME.utils.parse_test_name</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#CIME.utils.parse_test_name"><code class="docutils literal notranslate"><span class="pre">parse_test_name()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.parse_test_name.html">CIME.utils.parse_test_name</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.redirect_logger.html">CIME.utils.redirect_logger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.redirect_stderr.html">CIME.utils.redirect_stderr</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.redirect_stdout.html">CIME.utils.redirect_stdout</a></li>
@@ -224,9 +224,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
           <li class="breadcrumb-item"><a href="CIME.utils.html">CIME.utils</a></li>
-      <li class="breadcrumb-item active">CIME.utils.parse_test_name</li>
+      <li class="breadcrumb-item active">CIME.utils.distributed_dir_lock</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/CIME.utils.parse_test_name.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/CIME.utils.distributed_dir_lock.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -234,58 +234,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="cime-utils-parse-test-name">
-<h1>CIME.utils.parse_test_name<a class="headerlink" href="#cime-utils-parse-test-name" title="Link to this heading"></a></h1>
+  <section id="cime-utils-distributed-dir-lock">
+<h1>CIME.utils.distributed_dir_lock<a class="headerlink" href="#cime-utils-distributed-dir-lock" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="CIME.utils.parse_test_name">
-<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">parse_test_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test_name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.parse_test_name" title="Link to this definition"></a></dt>
-<dd><p>Given a CIME test name TESTCASE[_CASEOPTS].GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]],
-return each component of the testname with machine and compiler split.
-Do not error if a partial testname is provided (TESTCASE or TESTCASE.GRID) instead
-parse and return the partial results.</p>
-<p>TESTMODS use hyphens in a special way:
-- A single hyphen stands for a path separator (for example, ‘test-mods’ resolves to the path ‘test/mods’)
-- A double hyphen separates multiple test mods (for example, ‘test-mods–other-dir-path’ indicates two test mods: ‘test/mods’ and ‘other/dir/path’)</p>
-<p>If there are one or more TESTMODS, then the testmods component of the result will be a
-list, where each element of the list is one testmod, and hyphens have been replaced by
-slashes. (If there are no TESTMODS in this test, then the TESTMODS component of the
-result is None, as for other optional components.)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS'</span><span class="p">)</span>
-<span class="go">['ERS', None, None, None, None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', None, None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS_D.fe12_123.JGF'</span><span class="p">)</span>
-<span class="go">['ERS', ['D'], 'fe12_123', 'JGF', None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS_D_P1.fe12_123.JGF'</span><span class="p">)</span>
-<span class="go">['ERS', ['D', 'P1'], 'fe12_123', 'JGF', None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS_D_G2.fe12_123.JGF'</span><span class="p">)</span>
-<span class="go">['ERS', ['D', 'G2'], 'fe12_123', 'JGF', None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'SMS_D_Ln9_Mmpi-serial.f19_g16_rx1.A'</span><span class="p">)</span>
-<span class="go">['SMS', ['D', 'Ln9', 'Mmpi-serial'], 'f19_g16_rx1', 'A', None, None, None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF.machine_compiler'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', None]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF.machine_compiler.test-mods'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods']]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF.*_compiler.test-mods'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', None, 'compiler', ['test/mods']]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF.machine_*.test-mods'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', 'machine', None, ['test/mods']]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF.*_*.test-mods'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', None, None, ['test/mods']]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'ERS.fe12_123.JGF.machine_compiler.test-mods--other-dir-path--and-one-more'</span><span class="p">)</span>
-<span class="go">['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', ['test/mods', 'other/dir/path', 'and/one/more']]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods'</span><span class="p">)</span> 
-<span class="gt">Traceback (most recent call last):</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="gr">CIMEError</span>: <span class="n">ERROR: Expected 4th item of 'SMS.f19_g16.2000_DATM%QI.A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods' ('A_XLND_SICE_SOCN_XROF_XGLC_SWAV') to be in form machine_compiler</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_test_name</span><span class="p">(</span><span class="s1">'SMS.f19_g16.2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV.mach-ine_compiler.test-mods'</span><span class="p">)</span> 
-<span class="gt">Traceback (most recent call last):</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="gr">CIMEError</span>: <span class="n">ERROR: Invalid compset name 2000_DATM%QI/A_XLND_SICE_SOCN_XROF_XGLC_SWAV</span>
-</pre></div>
-</div>
+<dt class="sig sig-object py" id="CIME.utils.distributed_dir_lock">
+<span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">distributed_dir_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poll_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.distributed_dir_lock" title="Link to this definition"></a></dt>
+<dd><p>An atomic directory-based distributed lock for shared network filesystems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir_path</strong> – Path to the directory you want to lock. Only this directory will be locked</p></li>
+<li><p><strong>poll_interval</strong> – Time (seconds) to wait between retry attempts.</p></li>
+<li><p><strong>timeout</strong> – Maximum time (seconds) to wait for lock acquisition before raising TimeoutError.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -294,8 +257,8 @@ result is None, as for other optional components.)</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="CIME.utils.parse_args_and_handle_standard_logging_options.html" class="btn btn-neutral float-left" title="CIME.utils.parse_args_and_handle_standard_logging_options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.utils.redirect_logger.html" class="btn btn-neutral float-right" title="CIME.utils.redirect_logger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.utils.deprecate_action.html" class="btn btn-neutral float-left" title="CIME.utils.deprecate_action" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CIME.utils.does_file_have_string.html" class="btn btn-neutral float-right" title="CIME.utils.does_file_have_string" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
