@@ -217,7 +217,6 @@ class TestSharedlibBuildPhaseFusion:
         ts._sharedlib_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert "--no-batch-build" not in cmd
         assert cmd == "./case.build --sharedlib-only"
 
     def test_non_first_test_unaffected(self):
@@ -255,12 +254,12 @@ class TestModelBuildPhaseFusion:
         assert cmd == "./case.build"
 
     def test_model_only_when_serialized(self):
-        """When serialize_sharedlib_builds is True, use --model-only (batched=True, no --no-batch-build)."""
+        """When serialize_sharedlib_builds is True, use --model-only (batched=True)."""
         ts = _make_scheduler(serialize_sharedlib_builds=True, batched_build=True)
         ts._model_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert cmd == "./case.build --model-only"
+        assert cmd == "./case.build --model-only --batch-build"
 
     def test_no_special_flags_when_not_batched(self):
         """When _batched_build is False, run case.build without batch flags.
@@ -270,7 +269,7 @@ class TestModelBuildPhaseFusion:
         ts._model_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert cmd == "./case.build"
+        assert cmd == "./case.build --model-only"
 
     def test_no_special_flags_when_serialized_and_not_batched(self):
         """When serialize=True and batched=False, run case.build without batch flags."""
@@ -278,7 +277,6 @@ class TestModelBuildPhaseFusion:
         ts._model_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert "--no-batch-build" not in cmd
         assert cmd == "./case.build --model-only"
 
     def test_full_build_uses_model_build_phase_label(self):
@@ -335,7 +333,6 @@ class TestBatchBuildFlag:
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
         assert cmd == "./case.build --sharedlib-only"
-        assert "--no-batch-build" not in cmd
 
     def test_batch_build_init_param_enables_batched_build(self):
         """TestScheduler.__init__ enables batched builds when batch_build=True and machine supports it."""
