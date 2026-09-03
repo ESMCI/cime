@@ -31,7 +31,7 @@ Note: If CMAKE_BACKEND is something other than gmake, it will be up to the host 
 +------------------+-----------------------------------------------------------+
 | GMAKE_J          | The number of threads GNU Make should use while building. |
 +------------------+-----------------------------------------------------------+
-| BATCHED_BUILD    | Whether to batch submit build phases                      |
+| BATCHED_BUILD    | Whether to allow batch submission of build phases         |
 +------------------+-----------------------------------------------------------+
 | CMAKE_BACKEND    | The CMake backend to use                                  |
 +------------------+-----------------------------------------------------------+

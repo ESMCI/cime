@@ -1074,8 +1074,6 @@ class TestScheduler(object):
             return True, ""
 
         cmd = "./case.build --sharedlib-only"
-        if not self._batched_build:
-            cmd += " --no-batch-build"
         if self._ninja:
             cmd += " --ninja"
         elif self._gmake:
@@ -1134,8 +1132,8 @@ class TestScheduler(object):
             )
 
         cmd += " --model-only"
-        if not self._batched_build:
-            cmd += " --no-batch-build"
+        if self._batched_build:
+            cmd += " --batch-build"
         return self._shell_cmd_for_phase(
             test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
         )

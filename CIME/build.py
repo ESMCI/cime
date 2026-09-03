@@ -1146,7 +1146,7 @@ def _submit_build_as_batch(
         )
 
     # Build the argument string that the batch script will receive via ARGS_FOR_SCRIPT.
-    args = ["--no-batch-build"]
+    args = []
     if sharedlib_only:
         args.append("--sharedlib-only")
     if model_only:
