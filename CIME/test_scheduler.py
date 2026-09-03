@@ -214,7 +214,7 @@ class TestScheduler(object):
         workflow=None,
         chksum=False,
         force_rebuild=False,
-        no_batch_build=False,
+        batch_build=False,
         ninja=False,
         gmake=False,
         driver=None,
@@ -258,9 +258,11 @@ class TestScheduler(object):
         if self._mpilib is not None:
             self._machobj.set_value("MPILIB", self._mpilib)
 
-        self._batched_build = self._machobj.get_value("BATCHED_BUILD")
-        if no_batch_build:
-            self._batched_build = False
+        self._batched_build = batch_build and self._machobj.get_value("BATCHED_BUILD")
+        if batch_build and not self._machobj.get_value("BATCHED_BUILD"):
+            logger.warning(
+                "You requested batched builds but that is not supported on the current machine (see BATCHED_BUILD)"
+            )
 
         # Compute cost on current node of doing the model build
         if self._batched_build:
@@ -1074,8 +1076,6 @@ class TestScheduler(object):
             return True, ""
 
         cmd = "./case.build --sharedlib-only"
-        if not self._batched_build:
-            cmd += " --no-batch-build"
         if self._ninja:
             cmd += " --ninja"
         elif self._gmake:
@@ -1134,8 +1134,8 @@ class TestScheduler(object):
             )
 
         cmd += " --model-only"
-        if not self._batched_build:
-            cmd += " --no-batch-build"
+        if self._batched_build:
+            cmd += " --batch-build"
         return self._shell_cmd_for_phase(
             test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
         )

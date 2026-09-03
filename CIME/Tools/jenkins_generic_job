@@ -84,6 +84,12 @@ OR
     )
 
     parser.add_argument(
+        "--batch-build",
+        action="store_true",
+        help="Enable batched builds if the machine supports them",
+    )
+
+    parser.add_argument(
         "-c",
         "--cdash-build-name",
         help="Build name to use for CDash submission. Default will be <TEST_SUITE>_<BRANCH>_<COMPILER>",
@@ -265,6 +271,7 @@ OR
         args.generate_baselines,
         args.submit_to_cdash,
         args.no_batch,
+        args.batch_build,
         args.baseline_name,
         args.cdash_build_name,
         args.cdash_project,
@@ -299,6 +306,7 @@ def _main_func(description):
         generate_baselines,
         submit_to_cdash,
         no_batch,
+        batch_build,
         baseline_name,
         cdash_build_name,
         cdash_project,
@@ -331,6 +339,7 @@ def _main_func(description):
             generate_baselines,
             submit_to_cdash,
             no_batch,
+            batch_build,
             baseline_name,
             cdash_build_name,
             cdash_project,

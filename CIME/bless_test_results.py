@@ -341,11 +341,10 @@ def bless_test_results(
         # Must pass tests to continue
         has_no_tests = bless_tests in [[], None]
         match_test_name = match_any(test_name, bless_tests_counts)
-        excluded = exclude.match(test_name) if exclude else False
+        excluded = exclude.search(test_name) if exclude else False
 
         if (not has_no_tests and not match_test_name) or excluded:
             logger.debug("Skipping {!r}".format(test_name))
-
             continue
 
         overall_result, phase = ts.get_overall_test_status(
