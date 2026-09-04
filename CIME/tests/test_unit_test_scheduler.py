@@ -251,7 +251,7 @@ class TestModelBuildPhaseFusion:
 
         ts._shell_cmd_for_phase.assert_called_once()
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert cmd == "./case.build"
+        assert cmd == "./case.build --batch-build"
 
     def test_model_only_when_serialized(self):
         """When serialize_sharedlib_builds is True, use --model-only (batched=True)."""
@@ -259,7 +259,7 @@ class TestModelBuildPhaseFusion:
         ts._model_build_phase(_TEST_NAME)
 
         cmd = ts._shell_cmd_for_phase.call_args[0][1]
-        assert cmd == "./case.build --model-only --batch-build"
+        assert cmd == "./case.build --batch-build --model-only"
 
     def test_no_special_flags_when_not_batched(self):
         """When _batched_build is False, run case.build without batch flags.
