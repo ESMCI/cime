@@ -24,6 +24,22 @@ from itertools import zip_longest
 
 logger = logging.getLogger(__name__)
 
+# Static mapping of batch system type to the well-known environment
+# variable that indicates the current process is running inside an
+# active job for that scheduler. Batch schedulers change infrequently
+# so this is maintained in code rather than in per-machine config.
+IN_JOB_ENVIRONMENT_VARIABLES = {
+    "flux": "FLUX_JOB_ID",
+    "lsf": "LSB_JOBID",
+    "pbs": "PBS_JOBID",
+    "pbspro": "PBS_JOBID",
+    "moab": "PBS_JOBID",
+    "slurm": "SLURM_JOB_ID",
+    "slurm_single_node": "SLURM_JOB_ID",
+    "cobalt": "COBALT_JOBID",
+    "cobalt_theta": "COBALT_JOBID",
+}
+
 # pragma pylint: disable=attribute-defined-outside-init
 
 
@@ -704,7 +720,37 @@ class EnvBatch(EnvBase):
 
         return submitargs
 
+    def is_in_batch_job(self, environ=None):
+        """Checks whether the current process is running inside a batch job.
+
+        Detection is based on the presence of the scheduler specific
+        environment variable for the case's batch system, e.g.
+        ``FLUX_JOB_ID`` for flux or ``SLURM_JOB_ID`` for slurm. This is
+        used to drop submit args marked ``omit_in_job`` which are only
+        valid when submitting from outside a job, e.g. flux nested
+        instances define no partitions so ``-p`` must be omitted when
+        resubmitting from inside a job.
+
+        Args:
+            environ (dict, optional): Environment mapping to check,
+                defaults to ``os.environ``.
+
+        Returns:
+            bool: True if inside an active batch job, otherwise False.
+        """
+        if environ is None:
+            environ = os.environ
+
+        env_var = IN_JOB_ENVIRONMENT_VARIABLES.get(self._batchtype)
+
+        return env_var is not None and env_var in environ
+
     def _get_argument(self, case, arg):
+        omit_in_job = self.get(arg, "omit_in_job", default="false")
+
+        if omit_in_job.lower() in ("true", "1") and self.is_in_batch_job():
+            raise ValueError()
+
         flag = self.get(arg, "flag")
 
         name = self.get(arg, "name")
