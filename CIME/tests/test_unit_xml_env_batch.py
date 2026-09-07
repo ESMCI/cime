@@ -1266,8 +1266,39 @@ class TestXMLEnvBatch(unittest.TestCase):
         self.assertEqual(overrides["thread_count"], str(thread_count))
         self.assertEqual(overrides["num_nodes"], 1)
 
+    def test_get_job_overrides_esmf_aware_threading(self):
+        """Test that get_job_overrides requests one core per rank with ESMF-aware threading"""
+        task_count = 4
+        thread_count = 2
+        mem_per_task = 10
+        tasks_per_node = task_count
+        max_mem = 235
+        overrides = self.run_get_job_overrides(
+            task_count,
+            thread_count,
+            mem_per_task,
+            tasks_per_node,
+            max_mem,
+            esmf_aware_threading=True,
+        )
+        # the threads are provided by ESMF from neighbouring ranks' cores, so
+        # the batch/launcher templates must see one core per rank
+        self.assertEqual(overrides["thread_count"], 1)
+        self.assertEqual(overrides["tasks_per_node"], task_count)
+        # ... and the same setup without ESMF-aware threading keeps the thread count
+        overrides = self.run_get_job_overrides(
+            task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        )
+        self.assertEqual(overrides["thread_count"], str(thread_count))
+
     def run_get_job_overrides(
-        self, task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        self,
+        task_count,
+        thread_count,
+        mem_per_task,
+        tasks_per_node,
+        max_mem,
+        esmf_aware_threading=False,
     ):
         """Setup and run get_job_overrides so it can be tested from a variety of tests"""
 
@@ -1296,6 +1327,7 @@ class TestXMLEnvBatch(unittest.TestCase):
 
         case.set_value("MAX_GPUS_PER_NODE", 4)
         case.set_value("NGPUS_PER_NODE", 0)
+        case.set_value("ESMF_AWARE_THREADING", esmf_aware_threading)
         overrides = env_batch.get_job_overrides("case.test", case)
         self.assertEqual(overrides["ngpus_per_node"], 0)
 

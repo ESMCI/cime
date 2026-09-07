@@ -155,6 +155,7 @@ class FakeCase(object):
             "PIO_VERSION": 2,
             "GPU_TYPE": gpu_type,
             "BUILD_THREADED": threading,
+            "ESMF_AWARE_THREADING": False,
             "MODEL": get_model(),
             "SRCROOT": get_src_root(),
         }

@@ -235,6 +235,23 @@ class EnvBatch(EnvBase):
         if int(total_tasks) < case.get_value("MAX_TASKS_PER_NODE"):
             overrides["max_tasks_per_node"] = total_tasks
 
+        # ESMF-aware threading (nuopc, ESMF_AWARE_THREADING=TRUE): one MPI rank
+        # is launched per core (TOTALPES already counts the threads, see
+        # env_mach_pes.get_total_tasks) and ESMF provides a component's OpenMP
+        # threads by merging the cores of neighbouring ranks into one PET, then
+        # sets the thread count inside the component itself.  
+        # The batch and launcher templates must therefore request one core per rank,
+        #  e.g, PBS "ompthreads=1" or an srun/mpiexec depth of 1: requesting
+        # thread_count cores per rank makes the launcher's per-rank core
+        # domains wrap around the node, so two PET-owning ranks end up sharing
+        # a core.  
+        # case.thread_count itself is left alone; it still drives the
+        # threaded build, TOTALPES and OMP_NUM_THREADS.
+        if case.get_value("COMP_INTERFACE") == "nuopc" and case.get_value(
+            "ESMF_AWARE_THREADING"
+        ):
+            overrides["thread_count"] = 1
+
         # when developed this variable was only needed on derecho, but I have tried to
         # make it general enough that it can be used on other systems by defining MEM_PER_TASK and MAX_MEM_PER_NODE in config_machines.xml
         # and adding {{ mem_per_node }} in config_batch.xml
