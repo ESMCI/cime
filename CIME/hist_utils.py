@@ -51,7 +51,7 @@ COMPARISON_FAILURE_COMMENT_OPTIONS = COMPARISON_COMMENT_OPTIONS - set(
 )
 
 NO_HIST_TESTS = ["IRT", "PFS", "TSC"]
-ALL_HIST_TESTS = ["MVK", "MVKO", "PGN", "TSC"]
+ALL_HIST_TESTS = ["MVK", "MVKO", "PGN", "TSC", "RCS"]
 
 
 def _iter_model_file_substrs(case):
