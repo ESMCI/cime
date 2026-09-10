@@ -56,7 +56,7 @@ class TestCaseSetup(unittest.TestCase):
             assert os.path.exists(os.path.join(case_path, "cmake_macros", "test.cmake"))
 
             copy_depends_files.assert_called_with(
-                "test", machines_path, case_path, "gnu-test"
+                "test", machines_path, case_path, "gnu-test", machine_mock.get_value.return_value
             )
 
     @mock.patch("CIME.case.case_setup._create_macros_cmake")

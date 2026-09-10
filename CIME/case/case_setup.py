@@ -182,7 +182,7 @@ def _create_macros_cmake(
                     "and should be replaced with the form MACHINE_COMPILER.cmake\n"
                 )
 
-    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
+    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler, os_)
 
 
 ###############################################################################
