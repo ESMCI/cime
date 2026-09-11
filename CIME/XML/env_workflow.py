@@ -208,3 +208,10 @@ class EnvWorkflow(EnvBase):
             )
 
         return nodes
+
+    def get_queue(self, subgroup):
+        """
+        Get the queue for a specific job if one is defined in env_workflow.xml.
+        Returns None if no queue is defined for this job.
+        """
+        return self.get_value("queue", subgroup=subgroup, resolved=True)

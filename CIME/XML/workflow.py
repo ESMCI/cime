@@ -83,31 +83,3 @@ class Workflow(GenericXML):
                     jobs.append((name, jdict))
 
         return jobs
-
-    def get_queue(self, case, subgroup, machine=None):
-        """
-        Get the queue for a specific job if one is defined in the workflow config.
-        Returns None if no queue is defined for this job.
-        """
-        if machine is None:
-            machine = case.get_value("MACH")
-
-        job_node = self.get_optional_child("workflow_jobs", attributes={"id": "default"})
-        if job_node is not None:
-            job_nodes = self.get_children("job", {"name": subgroup}, root=job_node)
-            for jnode in job_nodes:
-                # First check for queue in job-level configuration
-                queue_node = self.get_optional_child("queue", root=jnode)
-                if queue_node is not None:
-                    return self.text(queue_node)
-
-                # Then check runtime_parameters for machine-specific queue
-                rt_nodes = self.get_children("runtime_parameters", root=jnode)
-                for rt_node in rt_nodes:
-                    attrib = self.attrib(rt_node)
-                    if attrib and attrib.get("MACH") == machine:
-                        queue_node = self.get_optional_child("queue", root=rt_node)
-                        if queue_node is not None:
-                            return self.text(queue_node)
-
-        return None
