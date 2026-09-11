@@ -1046,7 +1046,7 @@ class EnvBatch(EnvBase):
 
         # Check if workflow config specifies a queue override for this job
         if self._env_workflow is not None:
-            workflow_queue = self._env_workflow.get_queue(case, job)
+            workflow_queue = self._env_workflow.get_queue(job)
             if workflow_queue is not None:
                 # Validate that the queue exists on this system
                 available_queues = self._get_all_queue_names()
