@@ -1044,6 +1044,28 @@ class EnvBatch(EnvBase):
             elif batch_system == "slurm" and " --account " in submitargs:
                 submitargs = submitargs.replace("--account", "")
 
+        # Check if workflow config specifies a queue override for this job
+        if self._env_workflow is not None:
+            workflow_queue = self._env_workflow.get_queue(case, job)
+            if workflow_queue is not None:
+                # Validate that the queue exists on this system
+                available_queues = self._get_all_queue_names()
+                if workflow_queue in available_queues:
+                    # Replace $JOB_QUEUE with the workflow-specified queue
+                    submitargs = submitargs.replace("$JOB_QUEUE", workflow_queue)
+                    logger.info(
+                        "Using workflow-specified queue '{}' for job '{}'".format(
+                            workflow_queue, job
+                        )
+                    )
+                else:
+                    logger.warning(
+                        "Workflow specifies queue '{}' for job '{}', but it is not "
+                        "available on this system. Falling back to default queue selection.".format(
+                            workflow_queue, job
+                        )
+                    )
+
         if dep_jobs is not None and len(dep_jobs) > 0:
             logger.debug("dependencies: {}".format(dep_jobs))
             if allow_fail:
