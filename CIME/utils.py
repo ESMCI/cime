@@ -230,7 +230,7 @@ def _read_cime_config_file():
     """
     READ the config file in ~/.cime, this file may contain
     [main]
-    CIME_MODEL=e3sm,cesm,ufs
+    CIME_MODEL=e3sm,cesm,noresm,ufs
     PROJECT=someprojectnumber
     """
     allowed_sections = ("main", "create_test")
@@ -499,6 +499,57 @@ def set_model(model):
     cime_config.set("main", "CIME_MODEL", model)
 
 
+# Models that share CESM's directory layout, tagging conventions and build
+# configuration, and are therefore treated identically where CIME branches on
+# the model name.
+CESM_LIKE_MODELS = ("cesm", "noresm")
+
+
+MODEL_ID_FILE = ".cime_model_id"
+
+
+def _model_from_srcroot(srcroot):
+    """
+    Return the model declared in $SRCROOT/.cime_model_id, or None.
+
+    A checkout may declare which CIME model it is with a one line file at the
+    top of the repository holding the model name, e.g. a NorESM checkout
+    contains "noresm".  Blank lines and # comments are ignored.
+
+    This is an explicit declaration rather than something inferred from the
+    layout or from submodule urls, so it still holds for a checkout whose
+    submodules point at forks or development branches.  Checkouts without the
+    file fall back to the heuristics in get_model().
+    """
+    model_id_file = os.path.join(srcroot, MODEL_ID_FILE)
+
+    if not os.path.isfile(model_id_file):
+        return None
+
+    model = None
+
+    with open(model_id_file) as fd:
+        for line in fd:
+            line = line.split("#", 1)[0].strip()
+
+            if line:
+                model = line
+                break
+
+    if model is None:
+        return None
+
+    cime_models = get_all_cime_models()
+
+    expect(
+        model in cime_models,
+        "model '{}' declared in {} not recognized. The acceptable values "
+        "of CIME_MODEL currently are {}".format(model, model_id_file, cime_models),
+    )
+
+    return model
+
+
 def get_model():
     """
     Get the currently configured model value
@@ -540,16 +591,21 @@ def get_model():
     if model is None:
         srcroot = get_src_root()
 
-        if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
-            model = "cesm"
-        elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
-            model = "cesm"
-            with open(os.path.join(srcroot, "Externals.cfg")) as fd:
-                for line in fd:
-                    if re.search("ufs", line):
-                        model = "ufs"
-        else:
-            model = "e3sm"
+        # an explicit declaration at the top of the checkout wins over the
+        # layout based guesses below
+        model = _model_from_srcroot(srcroot)
+
+        if model is None:
+            if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
+                model = "cesm"
+            elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+                model = "cesm"
+                with open(os.path.join(srcroot, "Externals.cfg")) as fd:
+                    for line in fd:
+                        if re.search("ufs", line):
+                            model = "ufs"
+            else:
+                model = "e3sm"
         # This message interfers with the correct operation of xmlquery
         # logger.debug("Guessing CIME_MODEL={}, set environment variable if this is incorrect".format(model))
 

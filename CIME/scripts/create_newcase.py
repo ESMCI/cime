@@ -193,7 +193,7 @@ def parse_command_line(args, cimeroot, description):
         parser.add_argument(
             "--run-unsupported",
             action="store_true",
-            help="Force the creation of a case that is not tested or supported by CESM developers.",
+            help="Force the creation of a case that is not tested or supported by CESM/NorESM developers.",
         )
     # hidden argument indicating called from create_test
     # Indicates that create_newcase was called from create_test - do not use otherwise.
