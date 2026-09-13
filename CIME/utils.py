@@ -230,7 +230,7 @@ def _read_cime_config_file():
     """
     READ the config file in ~/.cime, this file may contain
     [main]
-    CIME_MODEL=e3sm,cesm,noresm,ufs
+    CIME_MODEL=e3sm,cesm,noresm
     PROJECT=someprojectnumber
     """
     allowed_sections = ("main", "create_test")
@@ -621,10 +621,6 @@ def get_model():
             model = "cesm"
         elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"
-            with open(os.path.join(srcroot, "Externals.cfg")) as fd:
-                for line in fd:
-                    if re.search("ufs", line):
-                        model = "ufs"
         else:
             model = "e3sm"
         # This message interfers with the correct operation of xmlquery

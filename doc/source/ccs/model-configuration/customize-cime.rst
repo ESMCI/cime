@@ -53,9 +53,7 @@ shared_clm_component               True                     bool   If set to `Tr
 sort_tests                         False                    bool   If set to `True` then the TestScheduler will sort tests by runtime.
 test_custom_project_machine        melvin                   str    Sets the machine name to use when testing a machine with no PROJECT.
 test_mode                          cesm                     str    Sets the testing mode, this changes various configuration for CIME's unit and system tests.
-ufs_alternative_config             False                    bool   If set to `True` and UFS_DRIVER is set to `nems` then model config dir is set to `$CIMEROOT/../src/model/NEMS/cime/cime_config`.
 use_kokkos                         False                    bool   If set to `True` and CAM_TARGET is `preqx_kokkos`, `theta-l` or `theta-l_kokkos` then kokkos is built with the shared libs.
-use_nems_comp_root_dir             False                    bool   If set to `True` then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.
 use_testreporter_template          True                     bool   If set to `True` then the TestScheduler will create `testreporter` in $CIME_OUTPUT_ROOT.
 verbose_run_phase                  False                    bool   If set to `True` then after a SystemTests successful run phase the elapsed time is recorded to BASELINE_ROOT, on a failure the test is checked against the previous run and potential breaking merges are listed in the testlog.
 xml_component_key                  COMP_ROOT_DIR_{}         str    The string template used as the key to query the XML system to find a components root directory e.g. the template `COMP_ROOT_DIR_{}` and component `LND` becomes `COMP_ROOT_DIR_LND`.

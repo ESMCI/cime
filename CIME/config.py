@@ -243,11 +243,6 @@ class Config(ConfigBase):
             desc="If set to `True` and then the `clm` land component is built as a shared lib.",
         )
         self._set_attribute(
-            "ufs_alternative_config",
-            False,
-            desc="If set to `True` and UFS_DRIVER is set to `nems` then model config dir is set to `$CIMEROOT/../src/model/NEMS/cime/cime_config`.",
-        )
-        self._set_attribute(
             "enable_smp",
             True,
             desc="If set to `True` then `SMP=` is added to model compile command.",
@@ -303,7 +298,6 @@ class Config(ConfigBase):
             True,
             desc="If set to `True` then unsupported compsets and resolutions are allowed.",
         )
-        # set for ufs
         self._set_attribute(
             "check_machine_name_from_test_name",
             True,
@@ -356,11 +350,6 @@ class Config(ConfigBase):
             "set_comp_root_dir_cpl",
             True,
             desc="If set to `True` then COMP_ROOT_DIR_CPL is set for the case.",
-        )
-        self._set_attribute(
-            "use_nems_comp_root_dir",
-            False,
-            desc="If set to `True` then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.",
         )
         self._set_attribute(
             "test_custom_project_machine",
