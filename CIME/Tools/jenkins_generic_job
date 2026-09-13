@@ -84,6 +84,12 @@ OR
     )
 
     parser.add_argument(
+        "--batch-build",
+        action="store_true",
+        help="Enable batched builds if the machine supports them",
+    )
+
+    parser.add_argument(
         "-c",
         "--cdash-build-name",
         help="Build name to use for CDash submission. Default will be <TEST_SUITE>_<BRANCH>_<COMPILER>",
@@ -209,6 +215,11 @@ OR
         help="Specify an 'id' for the Jenkins jobs.",
     )
 
+    parser.add_argument(
+        "--driver",
+        help="Override the coupler driver used by create_test (e.g. mct, nuopc).",
+    )
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     if args.no_submit:
@@ -260,6 +271,7 @@ OR
         args.generate_baselines,
         args.submit_to_cdash,
         args.no_batch,
+        args.batch_build,
         args.baseline_name,
         args.cdash_build_name,
         args.cdash_project,
@@ -283,6 +295,7 @@ OR
         args.pes_file,
         args.jenkins_id,
         args.queue,
+        args.driver,
     )
 
 
@@ -293,6 +306,7 @@ def _main_func(description):
         generate_baselines,
         submit_to_cdash,
         no_batch,
+        batch_build,
         baseline_name,
         cdash_build_name,
         cdash_project,
@@ -316,6 +330,7 @@ def _main_func(description):
         pes_file,
         jenkins_id,
         queue,
+        driver,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -324,6 +339,7 @@ def _main_func(description):
             generate_baselines,
             submit_to_cdash,
             no_batch,
+            batch_build,
             baseline_name,
             cdash_build_name,
             cdash_project,
@@ -347,6 +363,7 @@ def _main_func(description):
             pes_file,
             jenkins_id,
             queue,
+            driver,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )

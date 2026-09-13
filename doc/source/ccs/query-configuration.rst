@@ -25,10 +25,10 @@ For example, the output for the "docker" machine may look like this:
 
     docker : Docker 
         os              LINUX
-        compilers       gnu,gnuX
-        mpilibs         openmpi
-        pes/node        8
-        max_tasks/node  8
+        compilers       gnu
+        mpilibs         mpich
+        pes/node        4
+        max_tasks/node  4
         max_gpus/node   0
 
 To display the current machine configuration, use:
@@ -57,19 +57,17 @@ For example, the output for the "docker" machine with the "gnu" compiler may loo
 
     docker (gnu) : Docker 
                 os              LINUX
-                compilers       gnu,gnuX
-                mpilibs         openmpi
-                pes/node        8
-                max_tasks/node  8
+                compilers       gnu
+                mpilibs         mpich
+                pes/node        4
+                max_tasks/node  4
                 max_gpus/node   0
 
             Module commands:
 
             Environment variables:
-                OMPI_ALLOW_RUN_AS_ROOT: 1
-                OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
-                NETCDF_C_PATH: /opt/conda
-                NETCDF_FORTRAN_PATH: /opt/conda
+                NETCDF_C_PATH: /opt/pixi-env/.pixi/envs/e3sm
+                NETCDF_FORTRAN_PATH: /opt/pixi-env/.pixi/envs/e3sm
 
 Compsets 
 --------

@@ -6,7 +6,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.XML.entry_id import EntryID
 from CIME.XML.files import Files
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 logger = logging.getLogger(__name__)
 

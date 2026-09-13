@@ -19,7 +19,7 @@ Variables can be defined in the **[main]** section of the config file.
 .. code-block:: ini
 
    [main]
-   CIME_MODEL=<model>
+   CIME_MODEL=<your-model>
    PROJECT=<project>
    MAIL_TYPE=<mail_type>
    SRCROOT=<srcroot>

@@ -152,8 +152,10 @@ class EnvironmentContext(object):
 # hate seeing. It's a subclass of Exception because we want it to be
 # "catchable". If you are debugging CIME and want to see the stacktrace,
 # run your CIME command with the --debug flag.
-class CIMEError(SystemExit, Exception):
-    pass
+#
+# Canonical definition lives in CIME.core.exceptions; re-exported here
+# for backward compatibility.
+from CIME.core.exceptions import CIMEError, CimeTimeoutError  # noqa: F401
 
 
 def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
@@ -175,7 +177,7 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
 
             pdb.set_trace()  # pylint: disable=forgotten-debug-statement
 
-        msg = error_prefix + " " + error_msg
+        msg = f"{error_prefix} {error_msg}"
         raise exc_type(msg)
 
 
@@ -1317,11 +1319,12 @@ def start_buffering_output():
 def match_any(item, re_counts):
     """
     Return true if item matches any regex in re_counts' keys. Increments
-    count if a match was found.
+    count if a match was found. Note, this does a regex search, not a strict
+    match.
     """
     for regex_str in re_counts:
         regex = re.compile(regex_str)
-        if regex.match(item):
+        if regex.search(item):
             re_counts[regex_str] += 1
             return True
 
@@ -1368,9 +1371,16 @@ def copy_globs(globs_to_copy, output_directory, lid=None):
             )
 
 
-def copy_over_file(src_path, tgt_path):
+def copy_over_file(src_path, tgt_path, preserve_meta=True):
     """
-    Copy a file over a file that already exists
+    Copy a file over a file that already exists.
+
+    preserve_meta controls whether file metadata (permissions, timestamps) are
+    copied from src_path. When True and the caller owns the target, shutil.copy2
+    is used (contents + metadata). When False and the caller owns the target, the
+    contents are written to a fresh temp file (so the caller's umask takes effect)
+    which is then renamed atomically over the target. In either case, a read-only
+    owned target is made writable before the copy.
     """
     st = os.stat(tgt_path)
     owner_uid = st.st_uid
@@ -1388,17 +1398,36 @@ def copy_over_file(src_path, tgt_path):
                 )
             )
 
-    if owner_uid == os.getuid():
-        # I am the owner, copy file contents, permissions, and metadata
+    if owner_uid == os.getuid() and preserve_meta:
+        # I am the owner and metadata should be preserved: copy contents, permissions,
+        # and timestamps.
         try:
             shutil.copy2(src_path, tgt_path)
         # ignore same file error
         except shutil.SameFileError:
             pass
 
+    elif owner_uid == os.getuid():
+        # I am the owner but preserve_meta=False: copy src to a fresh temp file in the
+        # same directory so the OS applies the caller's umask (e.g. from SharedArea)
+        # naturally when creating the new file, then atomically replace the target.
+        tmp_path = tgt_path + f".safe_copy_tmp.{os.getpid()}"
+        try:
+            shutil.copyfile(src_path, tmp_path)
+            os.rename(tmp_path, tgt_path)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
+
     else:
-        # I am not the owner, just copy file contents
-        shutil.copyfile(src_path, tgt_path)
+        # I am not the owner: copy file contents only (cannot change permissions).
+        try:
+            shutil.copyfile(src_path, tgt_path)
+        except shutil.SameFileError:
+            pass
 
 
 def safe_copy(src_path, tgt_path, preserve_meta=True):
@@ -1428,7 +1457,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
     try:
         if os.path.isfile(src_path):
             if os.path.isfile(tgt_path):
-                copy_over_file(src_path, tgt_path)
+                copy_over_file(src_path, tgt_path, preserve_meta=preserve_meta)
 
             elif preserve_meta:
                 # We are making a new file, copy file contents, permissions, and metadata.
@@ -1436,7 +1465,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
                 shutil.copy2(src_path, tgt_path)
 
             else:
-                shutil.copy(src_path, tgt_path)
+                shutil.copyfile(src_path, tgt_path)
         else:
             # Some of the archived "files" are directories, like ADIOS BP output "files"
             if preserve_meta:
@@ -2191,24 +2220,6 @@ def transform_vars(text, case=None, subgroup=None, overrides=None, default=None)
     return text
 
 
-def wait_for_unlocked(filepath):
-    locked = True
-    file_object = None
-    while locked:
-        try:
-            buffer_size = 8
-            # Opening file in append mode and read the first 8 characters.
-            file_object = open(filepath, "a", buffer_size)
-            if file_object:
-                locked = False
-        except IOError:
-            locked = True
-            time.sleep(1)
-        finally:
-            if file_object:
-                file_object.close()
-
-
 def gunzip_existing_file(filepath):
     with gzip.open(filepath, "rb") as fd:
         return fd.read()
@@ -2707,3 +2718,63 @@ def is_comp_standalone(case):
     if stubcnt >= numclasses - 2:
         return True, model
     return False, None
+
+
+_CIME_LOCK_DIR_NAME = "cime_utils_distributed_dir_lock"
+
+
+@contextmanager
+def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
+    """
+    An atomic directory-based distributed lock for shared network filesystems.
+
+    :param dir_path: Path to the directory you want to lock. Only this directory will be locked
+    :param poll_interval: Time (seconds) to wait between retry attempts.
+    :param timeout: Maximum time (seconds) to wait for lock acquisition before raising TimeoutError.
+    """
+    start_time = time.time()
+    acquired = False
+
+    lock_dir_path = os.path.join(dir_path, _CIME_LOCK_DIR_NAME)
+
+    while True:
+        try:
+            # os.mkdir is atomic over network filesystems (NFS, SMB, EFS)
+            os.mkdir(lock_dir_path)
+            acquired = True
+            break
+        except FileExistsError:
+            # Check if we have timed out while waiting
+            if timeout is not None and (time.time() - start_time) > timeout:
+                raise CimeTimeoutError(  # pylint: disable=raise-missing-from
+                    f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds. It's possible that a process crashed while holding the lock and this directory will need to be manually removed."
+                )
+
+            # Lock is busy; wait and try again
+            time.sleep(poll_interval)
+
+    try:
+        # Pass control back to the 'with' block
+        yield
+    finally:
+        # This block ALWAYS runs, even if the code inside the 'with' statement crashes
+        if acquired:
+            try:
+                os.rmdir(lock_dir_path)
+            except FileNotFoundError:
+                # Handle edge case where lock was manually cleaned up externally
+                pass
+
+
+class SectionTimer:
+    def __init__(self, name):
+        self.name = name
+        self.start = None
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        elapsed = time.perf_counter() - self.start
+        print(f"[Timer] {self.name} took {elapsed:.4f} seconds")

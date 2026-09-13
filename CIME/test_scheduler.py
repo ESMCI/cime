@@ -214,6 +214,9 @@ class TestScheduler(object):
         workflow=None,
         chksum=False,
         force_rebuild=False,
+        batch_build=False,
+        ninja=False,
+        gmake=False,
         driver=None,
     ):
         ###########################################################################
@@ -247,7 +250,25 @@ class TestScheduler(object):
 
         self._config = Config.instance()
 
-        if self._config.calculate_mode_build_cost:
+        self._compiler = (
+            self._machobj.get_default_compiler() if compiler is None else compiler
+        )
+        # Some machine settings may depend on compiler or mpilib
+        self._machobj.set_value("COMPILER", self._compiler)
+        if self._mpilib is not None:
+            self._machobj.set_value("MPILIB", self._mpilib)
+
+        self._batched_build = batch_build and self._machobj.get_value("BATCHED_BUILD")
+        if batch_build and not self._machobj.get_value("BATCHED_BUILD"):
+            logger.warning(
+                "You requested batched builds but that is not supported on the current machine (see BATCHED_BUILD)"
+            )
+
+        # Compute cost on current node of doing the model build
+        if self._batched_build:
+            # Low cost on current node because build won't be done here
+            self._model_build_cost = 1
+        elif self._config.calculate_mode_build_cost:
             # Current build system is unlikely to be able to productively use more than 16 cores
             self._model_build_cost = min(
                 16, int((self._machobj.get_value("GMAKE_J") * 2) / 3) + 1
@@ -293,20 +314,19 @@ class TestScheduler(object):
         self._test_root = os.path.abspath(self._test_root)
         self._test_id = test_id if test_id is not None else get_timestamp()
 
-        self._compiler = (
-            self._machobj.get_default_compiler() if compiler is None else compiler
-        )
-
         self._clean = clean
 
         self._namelists_only = namelists_only
+
+        self._ninja = ninja
+        self._gmake = gmake
 
         self._walltime = walltime
 
         if parallel_jobs is None:
             mach_parallel_jobs = self._machobj.get_value("NTEST_PARALLEL_JOBS")
             if mach_parallel_jobs is None:
-                mach_parallel_jobs = self._machobj.get_value("MAX_MPITASKS_PER_NODE")
+                mach_parallel_jobs = self._machobj.get_value("MAX_TASKS_PER_NODE")
             self._parallel_jobs = min(len(test_names), mach_parallel_jobs)
         else:
             self._parallel_jobs = parallel_jobs
@@ -326,7 +346,6 @@ class TestScheduler(object):
 
         # Compute baseline_root. Need to set some properties on machobj in order for
         # the baseline_root to resolve correctly.
-        self._machobj.set_value("COMPILER", self._compiler)
         self._machobj.set_value("PROJECT", self._project)
         self._baseline_root = (
             os.path.abspath(baseline_root)
@@ -464,7 +483,7 @@ class TestScheduler(object):
             self._build_groups = [tuple(self._tests.keys())]
         elif self._config.share_exes:
             # Any test that's in a shared-enabled suite with other tests should share exes
-            self._build_groups = get_build_groups(self._tests)
+            self._build_groups = get_build_groups(self._tests, machobj=self._machobj)
         else:
             self._build_groups = [(item,) for item in self._tests]
 
@@ -986,6 +1005,10 @@ class TestScheduler(object):
             if self._model_build_cost > self._proc_pool:
                 case.set_value("GMAKE_J", self._proc_pool)
                 self._model_build_cost = self._proc_pool
+            elif self._batched_build:
+                # May as well use whole node for batched builds
+                max_tasks = self._machobj.get_value("MAX_TASKS_PER_NODE")
+                case.set_value("GMAKE_J", max_tasks)
 
         return True, ""
 
@@ -1045,9 +1068,21 @@ class TestScheduler(object):
                 )
 
         test_dir = self._get_test_dir(test)
+
+        # When BATCHED_BUILD is enabled and sharedlib builds are not serialized,
+        # skip the sharedlib-only step here and fuse it with the model build so
+        # the entire build runs in a single batch job submission.
+        if self._batched_build and not self._config.serialize_sharedlib_builds:
+            return True, ""
+
+        cmd = "./case.build --sharedlib-only"
+        if self._ninja:
+            cmd += " --ninja"
+        elif self._gmake:
+            cmd += " --gmake"
         return self._shell_cmd_for_phase(
             test,
-            "./case.build --sharedlib-only",
+            cmd,
             SHAREDLIB_BUILD_PHASE,
             from_dir=test_dir,
         )
@@ -1084,8 +1119,26 @@ class TestScheduler(object):
                     first_test
                 )
 
+        cmd = "./case.build"
+        if self._ninja:
+            cmd += " --ninja"
+        elif self._gmake:
+            cmd += " --gmake"
+
+        if self._batched_build:
+            cmd += " --batch-build"
+
+        # When BATCHED_BUILD is enabled and sharedlib builds are not serialized,
+        # the sharedlib phase was skipped; run a full build (sharedlib + model)
+        # here in a single batch job submission.
+        if self._batched_build and not self._config.serialize_sharedlib_builds:
+            return self._shell_cmd_for_phase(
+                test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
+            )
+
+        cmd += " --model-only"
         return self._shell_cmd_for_phase(
-            test, "./case.build --model-only", MODEL_BUILD_PHASE, from_dir=test_dir
+            test, cmd, MODEL_BUILD_PHASE, from_dir=test_dir
         )
 
     ###########################################################################
@@ -1296,7 +1349,7 @@ class TestScheduler(object):
         elif procs_needed > self._proc_pool:
             # This test is asking for more than we can ever provide
             # This should only ever happen for RUN_PHASE
-            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool (self._proc_pool)"
+            msg = f"Test {test} phase {next_phase} requested more ({procs_needed}) than entire pool ({self._proc_pool})"
             expect(next_phase == RUN_PHASE, msg)
 
             # CIME phase won't be run, so we need to update TEST_STATUS ourselves
