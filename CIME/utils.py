@@ -553,8 +553,13 @@ def _model_from_srcroot(srcroot):
 def get_model():
     """
     Get the currently configured model value
-    The CIME_MODEL env variable may or may not be set
 
+    A model declared in $SRCROOT/.cime_model_id wins over everything else.
+    Otherwise the CIME_MODEL env variable is used if set, then ~/.cime/config,
+    then the layout of the checkout.
+
+    >>> import tempfile
+    >>> os.environ["SRCROOT"] = tempfile.mkdtemp()
     >>> os.environ["CIME_MODEL"] = "garbage"
     >>> get_model() # doctest:+ELLIPSIS +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
@@ -569,7 +574,28 @@ def get_model():
     >>> get_model()
     'e3sm'
     >>> reset_cime_config()
+    >>> del os.environ["SRCROOT"]
     """
+    srcroot = get_src_root()
+
+    # an explicit declaration in the checkout wins over the environment,
+    # ~/.cime/config and the layout based guesses below
+    model = _model_from_srcroot(srcroot)
+
+    if model is not None:
+        env_model = os.environ.get("CIME_MODEL")
+
+        if env_model is not None and env_model != model:
+            logger.warning(
+                "Ignoring CIME_MODEL={} from the environment, {} declares {}".format(
+                    env_model, MODEL_ID_FILE, model
+                )
+            )
+
+        set_model(model)
+
+        return model
+
     model = os.environ.get("CIME_MODEL")
     cime_models = get_all_cime_models()
     if model in cime_models:
@@ -589,23 +615,16 @@ def get_model():
 
     # One last try
     if model is None:
-        srcroot = get_src_root()
-
-        # an explicit declaration at the top of the checkout wins over the
-        # layout based guesses below
-        model = _model_from_srcroot(srcroot)
-
-        if model is None:
-            if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
-                model = "cesm"
-            elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
-                model = "cesm"
-                with open(os.path.join(srcroot, "Externals.cfg")) as fd:
-                    for line in fd:
-                        if re.search("ufs", line):
-                            model = "ufs"
-            else:
-                model = "e3sm"
+        if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
+            model = "cesm"
+        elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
+            model = "cesm"
+            with open(os.path.join(srcroot, "Externals.cfg")) as fd:
+                for line in fd:
+                    if re.search("ufs", line):
+                        model = "ufs"
+        else:
+            model = "e3sm"
         # This message interfers with the correct operation of xmlquery
         # logger.debug("Guessing CIME_MODEL={}, set environment variable if this is incorrect".format(model))
 
