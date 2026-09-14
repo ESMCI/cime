@@ -57,7 +57,7 @@ def _get_cmake_includes(cmake_file_path):
     # Match include() statements
     # Handles: include(filename), include(${VAR}/filename), include(${VAR}), etc.
     # We look for patterns like: include(...)
-    pattern = r'include\s*\(\s*([^)]+)\s*\)'
+    pattern = r"include\s*\(\s*([^)]+)\s*\)"
     matches = re.findall(pattern, content, re.IGNORECASE)
 
     for m in matches:
@@ -81,9 +81,7 @@ def _get_cmake_includes(cmake_file_path):
 
 
 ###############################################################################
-def _copy_cmake_includes_recursive(
-    source_file_path, dest_dir, visited=None
-):
+def _copy_cmake_includes_recursive(source_file_path, dest_dir, visited=None):
     """
     Recursively copy a cmake file and all its includes to the destination directory.
 
@@ -126,9 +124,7 @@ def _copy_cmake_includes_recursive(
 
             # Check if file exists and is within or related to source_dir
             if os.path.isfile(include_path):
-                _copy_cmake_includes_recursive(
-                    include_path, dest_dir, visited
-                )
+                _copy_cmake_includes_recursive(include_path, dest_dir, visited)
 
 
 ###############################################################################
@@ -288,9 +284,7 @@ def _create_macros_cmake(
             # Recursively copy any includes from the copied file
             if copied and copied_path and copied_path.endswith(".cmake"):
                 source_dir = os.path.dirname(copied_path)
-                _copy_cmake_includes_recursive(
-                    copied_path, source_dir, case_cmake_path
-                )
+                _copy_cmake_includes_recursive(copied_path, source_dir, case_cmake_path)
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 

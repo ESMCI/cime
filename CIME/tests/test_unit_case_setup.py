@@ -33,11 +33,11 @@ def create_machines_dir_with_includes():
         Path(cmake_path).mkdir(parents=True)
 
         # Create base Macros.cmake
-        macros_content = 'include(common.cmake)\ninclude(utilities.cmake)\n'
+        macros_content = "include(common.cmake)\ninclude(utilities.cmake)\n"
         Path(os.path.join(cmake_path, "Macros.cmake")).write_text(macros_content)
 
         # Create common.cmake that includes another file
-        common_content = 'include(base_config.cmake)\n# Common definitions\n'
+        common_content = "include(base_config.cmake)\n# Common definitions\n"
         Path(os.path.join(cmake_path, "common.cmake")).write_text(common_content)
 
         # Create utilities.cmake
@@ -51,7 +51,7 @@ def create_machines_dir_with_includes():
         )
 
         # Create test.cmake with an include
-        test_content = 'include(helper.cmake)\n# Test file\n'
+        test_content = "include(helper.cmake)\n# Test file\n"
         Path(os.path.join(cmake_path, "test.cmake")).write_text(test_content)
 
         # Create helper.cmake
@@ -287,4 +287,3 @@ class TestCaseSetup(unittest.TestCase):
             copy_depends_files.assert_called_with(
                 "test", machines_path, case_path, "gnu-test"
             )
-
