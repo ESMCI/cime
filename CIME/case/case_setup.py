@@ -28,8 +28,107 @@ from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
 from CIME.gitinterface import GitInterface
 
 import errno, shutil
+import re
 
 logger = logging.getLogger(__name__)
+
+
+###############################################################################
+def _get_cmake_includes(cmake_file_path):
+    """
+    Extract include() statements from a cmake file.
+
+    Args:
+        cmake_file_path: Path to the cmake file to parse.
+
+    Returns:
+        List of include file paths found in the cmake file.
+    """
+    includes = []
+    if not os.path.isfile(cmake_file_path):
+        return includes
+
+    try:
+        with open(cmake_file_path, "r") as f:
+            content = f.read()
+    except (IOError, OSError):
+        return includes
+
+    # Match include() statements
+    # Handles: include(filename), include(${VAR}/filename), include(${VAR}), etc.
+    # We look for patterns like: include(...)
+    pattern = r'include\s*\(\s*([^)]+)\s*\)'
+    matches = re.findall(pattern, content, re.IGNORECASE)
+
+    for m in matches:
+        # Remove quotes if present
+        include_path = m.strip().strip('"').strip("'")
+
+        # Skip variable-only references (like ${CMAKE_MODULE_PATH})
+        # but keep mixed references (like ${VAR}/filename.cmake)
+        if "${" in include_path and not any(
+            include_path.endswith(ext) for ext in [".cmake", ".txt"]
+        ):
+            continue
+
+        # Replace simple variable references we can handle
+        include_path = include_path.replace("${CMAKE_CURRENT_SOURCE_DIR}", ".")
+        include_path = include_path.replace("${CMAKE_CURRENT_LIST_DIR}", ".")
+
+        includes.append(include_path)
+
+    return includes
+
+
+###############################################################################
+def _copy_cmake_includes_recursive(
+    source_file_path, dest_dir, visited=None
+):
+    """
+    Recursively copy a cmake file and all its includes to the destination directory.
+
+    Args:
+        source_file_path: Path to the cmake file to copy (full path).
+        dest_dir: Destination directory for copied files.
+        visited: Set of already processed files to avoid infinite recursion.
+    """
+    if visited is None:
+        visited = set()
+
+    # Normalize the path
+    source_dir = os.path.dirname(source_file_path)
+    source_file_path = os.path.abspath(source_file_path)
+
+    # Check if already visited to avoid infinite recursion
+    if source_file_path in visited:
+        return
+
+    visited.add(source_file_path)
+
+    # Copy the current file if it exists and isn't already in destination
+    if os.path.isfile(source_file_path):
+        dest_file_path = os.path.join(dest_dir, os.path.basename(source_file_path))
+        if not os.path.exists(dest_file_path):
+            safe_copy(source_file_path, dest_dir)
+
+        # Get includes from this file
+        includes = _get_cmake_includes(source_file_path)
+
+        # Recursively process each include
+        for include in includes:
+            # Handle relative paths
+            if include.startswith("./"):
+                include = include[2:]
+
+            # Try to find the include file in the source directory
+            include_path = os.path.join(source_dir, include)
+            include_path = os.path.abspath(include_path)
+
+            # Check if file exists and is within or related to source_dir
+            if os.path.isfile(include_path):
+                _copy_cmake_includes_recursive(
+                    include_path, dest_dir, visited
+                )
 
 
 ###############################################################################
@@ -143,7 +242,8 @@ def _create_macros_cmake(
     caseroot, cmake_macros_dir, mach_obj, compiler, case_cmake_path
 ):
     ###############################################################################
-    if not os.path.isfile(os.path.join(caseroot, "Macros.cmake")):
+    macros_cmake_path = os.path.join(caseroot, "Macros.cmake")
+    if not os.path.isfile(macros_cmake_path):
         safe_copy(os.path.join(cmake_macros_dir, "Macros.cmake"), caseroot)
 
     if not os.path.exists(case_cmake_path):
@@ -169,17 +269,27 @@ def _create_macros_cmake(
         case_macro = os.path.join(case_cmake_path, macro)
         if not os.path.exists(case_macro):
             copied = False
+            copied_path = None
             if os.path.exists(mach_repo_macro):
                 safe_copy(mach_repo_macro, case_cmake_path)
                 copied = True
+                copied_path = mach_repo_macro
             elif os.path.exists(repo_macro):
                 safe_copy(repo_macro, case_cmake_path)
                 copied = True
+                copied_path = repo_macro
 
             if copied and macro == deprecated:
                 logger.warning(
                     "\nWARNING: Macros of the form COMPILER_MACHINE.cmake are deprecated "
                     "and should be replaced with the form MACHINE_COMPILER.cmake\n"
+                )
+
+            # Recursively copy any includes from the copied file
+            if copied and copied_path and copied_path.endswith(".cmake"):
+                source_dir = os.path.dirname(copied_path)
+                _copy_cmake_includes_recursive(
+                    copied_path, source_dir, case_cmake_path
                 )
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
