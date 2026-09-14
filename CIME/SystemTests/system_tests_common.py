@@ -7,6 +7,7 @@ from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
 from CIME.status import append_testlog
 from CIME.utils import (
+    CESM_LIKE_MODELS,
     get_model,
     safe_copy,
     get_timestamp,
@@ -514,7 +515,7 @@ class SystemTestsCommon(object):
             case=self._case,
             sharedlib_only=sharedlib_only,
             model_only=model_only,
-            save_build_provenance=not model == "cesm",
+            save_build_provenance=model not in CESM_LIKE_MODELS,
             ninja=self._ninja,
             dry_run=self._dry_run,
             separate_builds=self._user_separate_builds,

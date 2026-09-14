@@ -3,7 +3,7 @@ create_clone is a member of the Case class from file case.py
 """
 import os, glob, shutil
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, check_name, safe_copy, get_model
+from CIME.utils import expect, check_name, safe_copy, get_model, CESM_LIKE_MODELS
 from CIME.simple_compare import compare_files
 from CIME.locked_files import lock_file
 from CIME.user_mod_support import apply_user_mods
@@ -51,7 +51,10 @@ def create_clone(
         )
 
     # *** create case object as deepcopy of clone object ***
-    if os.path.isdir(os.path.join(newcase_cimeroot, "share")) and get_model() == "cesm":
+    if (
+        os.path.isdir(os.path.join(newcase_cimeroot, "share"))
+        and get_model() in CESM_LIKE_MODELS
+    ):
         srcroot = newcase_cimeroot
     else:
         srcroot = os.path.join(newcase_cimeroot, "..")

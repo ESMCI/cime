@@ -7,6 +7,7 @@ from pathlib import Path
 from CIME.XML.standard_module_setup import *
 from CIME.status import run_and_log_case_status
 from CIME.utils import (
+    CESM_LIKE_MODELS,
     get_model,
     analyze_build_log,
     stringify_bool,
@@ -775,7 +776,7 @@ def _build_libraries(
         # shared libs it might need.
         if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
             libs = []
-        elif case.get_value("MODEL") == "cesm":
+        elif case.get_value("MODEL") in CESM_LIKE_MODELS:
             libs = ["gptl", "pio", "csm_share"]
         elif case.get_value("MODEL") == "e3sm":
             libs = ["gptl", "mct", "spio", "csm_share"]

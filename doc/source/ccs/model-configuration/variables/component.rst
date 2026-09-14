@@ -85,12 +85,15 @@ The ``CASE_SUPPORT_LIBRARIES`` variable should be defined in the drivers ``confi
         <type>char</type>
         <default_value></default_value>
         <values>
-            <value cime_model="cesm">gptl,pio,csm_share,FTorch,CDEPS</value>
+            <value cime_model="cesm|noresm">gptl,pio,csm_share,FTorch,CDEPS</value>
         </values>
         <group>build_def</group>
         <file>env_build.xml</file>
         <desc>Support libraries required</desc>
    </entry>
+
+The ``cime_model`` attribute is matched as a regular expression, so a single value can be
+shared by several models as shown above.
 
 The components ``buildnml`` script can modify the variable and add a list of libraries needed by the given component.
 The list should be ordered so that a library comes after all of the libraries it depends on.
