@@ -32,11 +32,12 @@ def create_machines_dir_with_includes():
         cmake_path = os.path.join(machines_path, "cmake_macros")
         Path(cmake_path).mkdir(parents=True)
 
-        # Create base Macros.cmake
-        macros_content = "include(common.cmake)\ninclude(utilities.cmake)\n"
-        Path(os.path.join(cmake_path, "Macros.cmake")).write_text(macros_content)
+        # Create base Macros.cmake without includes (not recursively examined)
+        Path(os.path.join(cmake_path, "Macros.cmake")).write_text(
+            "# Macros file\n"
+        )
 
-        # Create common.cmake that includes another file
+        # Create common.cmake with an include
         common_content = "include(base_config.cmake)\n# Common definitions\n"
         Path(os.path.join(cmake_path, "common.cmake")).write_text(common_content)
 
@@ -58,6 +59,7 @@ def create_machines_dir_with_includes():
         Path(os.path.join(cmake_path, "helper.cmake")).write_text("# Helper\n")
 
         yield temp_path
+
 
 
 # pylint: disable=protected-access
@@ -270,20 +272,26 @@ class TestCaseSetup(unittest.TestCase):
             assert os.path.exists(os.path.join(case_path, "Macros.cmake"))
             assert os.path.exists(os.path.join(case_path, "cmake_macros", "test.cmake"))
 
-            # Verify included files are also copied recursively
-            assert os.path.exists(
-                os.path.join(case_path, "cmake_macros", "common.cmake")
-            )
-            assert os.path.exists(
-                os.path.join(case_path, "cmake_macros", "utilities.cmake")
-            )
-            assert os.path.exists(
-                os.path.join(case_path, "cmake_macros", "base_config.cmake")
-            )
+            # Verify included files from test.cmake are recursively copied
+            # (but NOT common.cmake or utilities.cmake, since Macros.cmake is not examined)
             assert os.path.exists(
                 os.path.join(case_path, "cmake_macros", "helper.cmake")
+            )
+
+            # Verify that files included only by Macros.cmake are NOT copied
+            assert not os.path.exists(
+                os.path.join(case_path, "cmake_macros", "common.cmake")
+            )
+            assert not os.path.exists(
+                os.path.join(case_path, "cmake_macros", "utilities.cmake")
+            )
+
+            # base_config.cmake should NOT be copied (only included by common.cmake)
+            assert not os.path.exists(
+                os.path.join(case_path, "cmake_macros", "base_config.cmake")
             )
 
             copy_depends_files.assert_called_with(
                 "test", machines_path, case_path, "gnu-test"
             )
+
