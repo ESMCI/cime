@@ -128,7 +128,7 @@ int GPTLget_memusage (int *size, int *rss, int *share, int *text, int *datastack
     return -1;
   }
 
-  if ((fd = fopen (file, "r")) < 0) {
+  if ((fd = fopen (file, "r")) == NULL) {
     fprintf (stderr, "get_memusage: bad attempt to open %s\n", file);
     return -1;
   }
