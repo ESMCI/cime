@@ -515,11 +515,6 @@ def _model_from_srcroot(srcroot):
     A checkout may declare which CIME model it is with a one line file at the
     top of the repository holding the model name, e.g. a NorESM checkout
     contains "noresm".  Blank lines and # comments are ignored.
-
-    This is an explicit declaration rather than something inferred from the
-    layout or from submodule urls, so it still holds for a checkout whose
-    submodules point at forks or development branches.  Checkouts without the
-    file fall back to the heuristics in get_model().
     """
     model_id_file = os.path.join(srcroot, MODEL_ID_FILE)
 
@@ -528,6 +523,13 @@ def _model_from_srcroot(srcroot):
 
     model = None
 
+    # The file may contain comment lines and blank lines, e.g.
+    #
+    #     # this checkout is NorESM
+    #     noresm
+    #
+    # so drop any '#' comment and surrounding whitespace from each line and
+    # take the first line that still has something left on it.
     with open(model_id_file) as fd:
         for line in fd:
             line = line.split("#", 1)[0].strip()
