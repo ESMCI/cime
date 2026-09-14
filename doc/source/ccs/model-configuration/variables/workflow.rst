@@ -131,7 +131,28 @@ You can also specify different queues for different machines using runtime_param
         </runtime_parameters>
     </job>
 
+**Integration with config_batch.xml:**
+Once a queue is specified for a job, the batch system configuration (``config_batch.xml``) can use queue-specific settings:
+
+.. code-block:: xml
+
+    <!-- In config_batch.xml -->
+    <directives>
+      <directive queue="debug">
+        #SBATCH --gpu=none
+      </directive>
+      <directive queue="gpu">
+        #SBATCH --gres=gpu:1
+      </directive>
+    </directives>
+
+This allows you to:
+1. Specify in the workflow that ``case.build`` uses the ``debug`` queue
+2. Configure batch system directives/arguments in ``config_batch.xml`` for each queue
+3. Let the batch system apply the appropriate settings based on the selected queue
+
 **Notes:**
 - The queue specified in the workflow configuration must exist on the target system. If the queue is not available, a warning is logged and the default queue selection is used.
 - Queue names vary by machine and batch system (e.g., slurm, PBS, LSF).
 - The queue element is optional and defaults to the regular queue selection process if not specified.
+- Queue-specific batch directives and arguments in ``config_batch.xml`` (using ``queue`` attribute) apply regardless of how the queue is selected (workflow config, xmlchange, or default).
