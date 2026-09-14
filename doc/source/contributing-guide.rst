@@ -1,132 +1,91 @@
-.. _contributing-guide:
+.. _contributing:
 
-Contributing Guide
-==================
+######################
+Contributing to CIME
+######################
 
-.. contents::
-    :local:
+The Common Infrastructure for Modeling the Earth (CIME - pronounced "SEAM")
+provides a Case Control System for configuring, compiling and executing
+Earth system models. It provides access to many tools including testing
+utilities, workflow planning and management, archiving capabilities and
+analysis tools.
 
-Introduction
-------------
+This document provides instructions for contributing to the CIME
+project. All contributions are welcome and can be made in various ways.
 
-The `Case` class is the core of the CIME Case Control system. All interactions with a case are performed through this class. The variables used to create and manipulate a case are defined in XML files, and for each XML file, there is a corresponding Python class to interact with it.
+CIME currently supports both the Community Earth System Model (CESM_) and the
+Energy Exascale Earth System Model (E3SM_).
 
-XML files that are part of the CIME distribution and are intended to be read-only with respect to a case are typically named `config_something.xml`. The corresponding Python class is named `Something` and can be found in the file `CIME.XML.something.py`. These are referred to as the CIME config classes.
+See the CIME documentation at http://esmci.github.io/cime
 
-XML files that are part of a case and thus are read/write to a case are typically named `env_whatever.xml`. The corresponding Python modules are `CIME.XML.env_whatever.py`, and the classes are named `EnvWhatever`. These are referred to as the Case env classes.
+.. _CESM: http://www.cesm.ucar.edu/
 
-The `Case` class includes an array of the Case env classes. In the `configure` function and its supporting functions, the case object creates and manipulates the Case env classes by reading and interpreting the CIME config classes.
+.. _E3SM: https://e3sm.org/
 
-.. _contributing-guide-running-tests:
+Ways to contribute
+------------------
 
-Testing
--------
-CIME splits its tests into two categories: `unit` and `sys`.
+There are various ways to contribute to the CIME project.
 
-The `unit` category covers doctests and unit tests, while the `sys` category covers regression tests. Tests are named accordingly (e.g., unit tests: `CIME/tests/test_unit*`).
+Bug reports and feature requests
+`````````````````````````````````
 
-How to run the tests
-```````````````````````
-There are two possible methods to run these tests.
+CIME uses the git issue tracker on github to track bugs and feature requests.
+If you find a bug or have a feature request, please open an issue at https://github.com/ESMCI/cime/issues
 
-.. warning::
+Documentation improvements
+```````````````````````````
 
-    scripts_regression_tests.py is deprecated and will be removed in the future.
+CIME documentation is written using Sphinx and is hosted at http://esmci.github.io/cime
 
-pytest
-::::::
-CIME supports running tests using `pytest`. By using `pytest` coverage reports are automatically generated. `pytest` supports all the same arguments as `scripts_regression_tests.py`, see `--help` for details.
+Documentation is an important aspect of CIME that we often don't give
+enough time to. If you find any documentation that is unclear, incorrect,
+or missing, please consider contributing a documentation fix.
 
-To get started install `pytest` and `pytest-cov`.
+Code contributions
+``````````````````
 
-.. code-block:: bash
+CIME welcomes code contributions. Please read the rest of this document
+for information on how to contribute code.
 
-    pip install -r test-requirements.txt
-    pip install pytest pytest-cov
+Development model
+-----------------
 
-Examples
-........
-Running all the ``sys`` and ``unit`` tests.
+CIME uses the Github development model. The master branch is the main
+development branch. All contributions are made via pull requests. Pull
+requests should be made against the master branch.
 
-.. code-block:: bash
+Development process
+-------------------
 
-    pytest
+1. Fork the CIME repository
+2. Create a branch for your feature or bugfix
+3. Make your changes
+4. Add tests for your changes
+5. Make sure all tests pass
+6. Push your changes to your fork
+7. Open a pull request
 
-Running only ``sys`` tests, ``sys`` can be replaced with ``unit`` to run only unit testing.
+Code style
+----------
 
-.. code-block:: bash
+CIME uses the PEP 8 style guide for Python code. Please make sure your
+code follows the PEP 8 guidelines. A few guidelines:
 
-    pytest CIME/tests/test_sys.*
+- Use 4 spaces for indentation
+- Use underscores for function and variable names
+- Use CamelCase for class names
+- Keep lines under 100 characters where possible
 
-Running a specific test case.
+Pre-commit hooks
+````````````````
 
-.. code-block:: bash
-
-    pytest CIME/tests/test_unit_case.py
-
-A specific test can be run with the following.
-
-.. code-block:: bash
-
-    pytest CIME/tests/test_unit_case.py::TestCaseSubmit::test_check_case
-
-
-scripts_regression_tests.py
-:::::::::::::::::::::::::::
-The `scripts_regression_tests.py` script is located under `CIME/tests`.
-
-You can pass either the module name or the file path of a test.
-
-Examples
-........
-Running all the ``sys`` and ``unit`` tests.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py
-
-Running only ``sys`` tests, ``sys`` can be replaced with ``unit`` to run only unit testing.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py CIME/tests/test_sys*
-
-Runnig a specific test case.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case
-
-A specific test can be run with the following.
-
-.. code-block:: bash
-
-    python CIME/tests/scripts_regression_tests.py CIME.tests.test_unit_case.TestCaseSubmit.test_check_case
-
-Code Quality
-------------
-To ensure code quality we require all code to be linted by `pylint` and formatted using `black`. We run a few other tools to check XML formatting, ending files with newlines and trailing white spaces.
-
-To ensure consistency when running these checks we require the use of [`pre-commit`](https://pre-commit.com/).
-
-Our GitHub actions will lint and check the format of each PR but will not automatically fix any issues. It's up to the developer to resolve linting and formatting issues. We encourage installing `pre-commit`'s [Git hooks](#installing-git-hook-scripts) that will run these checks before code can be committed.
-
-Installing pre-commit
-`````````````````````
+CIME uses pre-commit hooks to help maintain code quality and consistency. We highly recommend installing pre-commit before contributing.
 
 .. code-block:: bash
 
     pip install pre-commit
 
-Running pre-commit
-``````````````````
-
-.. code-block:: bash
-
-    pre-commit run -a
-
-Installing git hook scripts
-```````````````````````````
 If you install these scripts then `pre-commit` will automatically run on `git commit`.
 
 .. code-block:: bash
@@ -136,10 +95,9 @@ If you install these scripts then `pre-commit` will automatically run on `git co
 Docker container
 ----------------
 CIME provides a container that the CI uses to run all the testing. This container
-
-can also be used to test locally providing a reproducible environment. The
-
-compiler is ``GNU`` and the MPI implementation is ``OpenMPI``.
+can also be used to test locally, providing a reproducible environment. The
+compiler is ``GNU`` and the MPI implementation is ``MPICH``. Dependencies are
+managed via ``pixi`` and come from ``conda-forge``.
 
 The image can be pulled from ``ghcr.io``.
 
@@ -147,40 +105,103 @@ The image can be pulled from ``ghcr.io``.
 
    docker pull ghcr.io/esmci/cime:latest
 
-or can be built locally. The build context needs to be set to the root of the CIME repository.
-
-.. code-block:: bash
-
    docker build -t ghcr.io/esmci/cime:latest -f docker/Dockerfile .
+
+.. note::
+   The Docker build requires BuildKit. Either set ``DOCKER_BUILDKIT=1`` or
+   configure it as the default builder.
+
+.. _contributing-guide-running-tests:
 
 Running
 ```````
 The container does not provide any source, as such you will need to bind
-mount the model+cime directory and define which model is being used. The 
+mount the model+cime directory and define which model is being used. The
 following example assumes the model is checked out in ``$SRC_PATH``.
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest bash
+   docker run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest bash
 
 This example will drop into a shell where CIME commands or tests can be run.
 The options are broken down below.
 
 - ``--hostname docker`` is required to tell CIME which machine definition to use.
-- ``-e CIME_MODEL=e3sm`` defines the model.
-- ``-v ${SRC_PATH}:/root/E3SM`` passes through the model source.
-- ``-v ./storage:/root/storage`` persist all data; cases, baselines, archive, inputdata. the bind mounts can be broken out if you only want to persist certain input/outputs.
-- ``-w /root/E3SM/cime`` set the current working directory to CIME's root.
+- ``--shm-size=1g`` is required when running MPI model tests (not needed for unit tests or build-only). MPICH/UCX use ``/dev/shm`` for shared memory, and Docker's 64MB default is too small.
+- ``-e CIME_MODEL=e3sm`` defines the model (must be ``e3sm`` or ``cesm`` in lowercase).
+- ``-v ${SRC_PATH}:/root/model`` passes through the model source.
+- ``-v ./storage:/root/storage`` persists data such as cases, baselines, archive, and inputdata. Files are created with world-readable permissions so they can be accessed from the host in real-time.
+- ``-w /root/model/cime`` sets the current working directory to CIME's root.
 - ``ghcr.io/esmci/cime:latest`` container image.
 - ``bash`` the command to run in the container.
 
-You can even run CIME or testing without a shell.
+You can also run CIME commands or tests without opening a shell.
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
+   docker run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest pytest CIME/tests/test_unit*
 
 .. code-block:: bash
 
-   docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
+   docker run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest \
+     ./scripts/create_test SMS.f19_g16.X --pesfile /root/.cime/config_pes.xml
 
+.. note::
+   When running system tests in the container, use ``--pesfile /root/.cime/config_pes.xml``
+   to prevent PE layout overflow. The container dynamically sizes MPI tasks to match
+   available cores. See `docker/README.md <https://github.com/ESMCI/cime/blob/master/docker/README.md>`_
+   for more details on PE layout and core count management.
+
+Troubleshooting
+```````````````
+
+**"CIME_MODEL is not set" error**
+   Make sure you pass ``-e CIME_MODEL=e3sm`` or ``-e CIME_MODEL=cesm`` (lowercase).
+
+**Out of memory errors during MPI runs**
+   Add ``--shm-size=1g`` or larger. MPICH uses ``/dev/shm`` for shared memory.
+
+**Container core count mismatch**
+   Use ``--cpus=N`` to limit container CPU allocation and match your test requirements.
+
+For complete Docker documentation, see ``docker/README.md`` in the repository.
+
+Using Podman
+````````````
+Podman can be used as a drop-in replacement for Docker. Use ``podman unshare`` to run commands within Podman's user namespace, allowing access to files created in bind mounts.
+
+.. code-block:: bash
+
+   podman run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest bash
+
+Run tests directly:
+
+.. code-block:: bash
+
+   podman run -it --rm --hostname docker --shm-size=1g \
+     -e CIME_MODEL=e3sm \
+     -v ${SRC_PATH}:/root/model \
+     -v ./storage:/root/storage \
+     -w /root/model/cime \
+     ghcr.io/esmci/cime:latest \
+     ./scripts/create_test SMS.f19_g16.X --pesfile /root/.cime/config_pes.xml

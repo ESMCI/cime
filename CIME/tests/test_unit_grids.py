@@ -19,7 +19,7 @@ import shutil
 import string
 import tempfile
 from CIME.XML.grids import Grids, _ComponentGrids, _add_grid_info, _strip_grid_from_name
-from CIME.utils import CIMEError
+from CIME.core.exceptions import CIMEError
 
 
 class TestGrids(unittest.TestCase):

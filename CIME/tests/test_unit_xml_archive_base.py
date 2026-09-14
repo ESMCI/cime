@@ -34,6 +34,46 @@ EXCLUDE_TEST_CONFIG = """<components version="2.0">
   </comp_archive_spec>
 </components>"""
 
+# "eam" is a substring of "scream", so both specs are candidates for either
+# component's files unless the component name is anchored at a name boundary.
+SUBSTRING_TEST_CONFIG = r"""<components version="2.0">
+  <comp_archive_spec compname="eam" compclass="atm">
+    <hist_file_extension>h\d*.*\.nc$</hist_file_extension>
+  </comp_archive_spec>
+  <comp_archive_spec compname="scream" compclass="atm">
+    <hist_file_extension>(.*\.)?h\.(?!rhist\.).*\.nc$</hist_file_extension>
+  </comp_archive_spec>
+</components>"""
+
+
+def test_component_name_is_not_matched_as_substring(tmp_path):
+    """History files of one component must not match a substring component name."""
+    archiver = ArchiveBase()
+    archiver.read_fd(io.StringIO(SUBSTRING_TEST_CONFIG))
+
+    eam_file = "casename.eam.h0.0001-01.nc"
+    scream_file = "casename.scream.h.AVERAGE.nmonths_x1.0001-01.nc"
+    for name in (eam_file, scream_file):
+        (tmp_path / name).touch()
+
+    assert archiver.get_all_hist_files("casename", "eam", str(tmp_path)) == [eam_file]
+    assert archiver.get_all_hist_files("casename", "scream", str(tmp_path)) == [
+        scream_file
+    ]
+
+
+def test_component_name_at_start_of_filename(tmp_path):
+    """A filename may start with the component name instead of the casename."""
+    archiver = ArchiveBase()
+    archiver.read_fd(io.StringIO(SUBSTRING_TEST_CONFIG))
+
+    scream_file = "scream.h.AVERAGE.nmonths_x1.0001-01.nc"
+    (tmp_path / scream_file).touch()
+
+    assert archiver.get_all_hist_files("casename", "scream", str(tmp_path)) == [
+        scream_file
+    ]
+
 
 class TestXMLArchiveBase(unittest.TestCase):
     @contextmanager

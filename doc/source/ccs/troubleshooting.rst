@@ -37,7 +37,7 @@ Take these steps to check for problems:
 Runtime problems
 ---------------------------------
 
-To see if a run completed successfully, check the last several lines of the **cpl.log** file for a string like ``SUCCESSFUL TERMINATION``. A successful job also usually copies the log files to the **$CASEROOT/logs** directory.
+To see if a run completed successfully, check the last several lines of the **cpl.log** file for one of the termination markers ``SUCCESSFUL TERMINATION``, ``END OF MODEL RUN``, or ``HAS ENDED``. A successful job also usually copies the log files to the **$CASEROOT/logs** directory.
 
 Check these things first when a job fails:
 
@@ -90,6 +90,9 @@ The output looks like this:
     tStamp_write: model date = 10120 0 wall clock = 2009-09-28 09:10:46 avg dt = 58.58 dt = 58.18
     tStamp_write: model date = 10121 0 wall clock = 2009-09-28 09:12:32 avg dt = 60.10 dt = 105.90
 
+.. note::
+
+   The ``tStamp_write`` format shown above is produced by MCT/cpl7-based drivers; other drivers may emit different timing diagnostics.
 
 Review the run times at the end of each line for each model day.
 The "avg dt =" is  the average time to simulate a model day and "dt = " is the time needed to simulate the latest model day.
@@ -103,11 +106,8 @@ For instance, on the last day of every simulated month, the model typically writ
 Also, some model configurations read data mid-month or run physics intermittently at a timestep longer than one day.
 In those cases, some variability is expected. The time variation typically is quite erratic and unpredictable if the problem is system performance variability.
 
-Sometimes when a job times out or overflows disk space, the restart files will get mangled.
-With the exception of the CAM and CLM history files, all the restart files have consistent sizes.
-
-Compare the restart files against the sizes of a previous restart. If they don't match, remove them and move the previous restart into place before resubmitting the job.
-See `Restarting a run <http://esmci.github.io/cime/users_guide/running-a-case.html#restarting-a-run>`_.
+Sometimes when a job times out or overflows disk space, the restart files will get mangled. Since restart files normally have consistent sizes across runs, compare them against a previous restart -- if they don't match, remove them and move the previous restart into place before resubmitting the job.
+See :ref:`restarting-a-run`.
 
 It is not uncommon for nodes to fail on HPC systems or for access to large file systems to hang. Before you file a bug report, make sure a case fails consistently in the same place.
 
