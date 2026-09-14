@@ -9,10 +9,18 @@ def _normalize_string_value(value, case):
     Some of the strings are inherently prone to diffs, like file
     paths, etc. This function attempts to normalize that data so that
     it will not cause diffs.
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.G.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.ACTION.TESTID'
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.GC.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.ACTION.TESTID'
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.C.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.ACTION.TESTID'
+    >>> _normalize_string_value("ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.GG.20260410_135953_nhg5ae","ERS.TL319_t232.G1850MARBL_JRA.derecho_intel")
+    'ERS.TL319_t232.G1850MARBL_JRA.derecho_intel.GG.20260410_135953_nhg5ae'
     """
     # Any occurance of case must be normalized because test-ids might not match
     if case is not None:
-        case_re = re.compile(r"{}[.]([GC])[.]([^./\s]+)".format(case))
+        case_re = re.compile(r"{}[.](GC?|C)[.]([^./\s]+)".format(case))
         value = case_re.sub("{}.ACTION.TESTID".format(case), value)
 
     if "/" in value:

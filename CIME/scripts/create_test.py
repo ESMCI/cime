@@ -103,6 +103,13 @@ def parse_command_line(args, description):
     )
 
     parser.add_argument(
+        "--batch-build",
+        action="store_true",
+        help="Enable batched builds (BATCHED_BUILD) if the machine supports them."
+        "\nBuilds will be submitted to the batch system. Disabled by default.",
+    )
+
+    parser.add_argument(
         "--single-exe",
         action="store_true",
         default=False,
@@ -509,11 +516,31 @@ def parse_command_line(args, description):
         "tests will have their 'BUILD_SHAREDLIB' phase reset to 'PEND'.",
     )
 
+    parser.add_argument(
+        "--ninja",
+        action="store_true",
+        help="Use ninja backend for CMake (instead of gmake). "
+        "The ninja backend is better at scanning fortran dependencies but "
+        "seems to be less reliable across different platforms and compilers.",
+    )
+
+    parser.add_argument(
+        "--gmake",
+        action="store_true",
+        help="Use gmake backend for CMake (instead of ninja). "
+        "Slower, but potentially more reliable.",
+    )
+
     CIME.utils.add_mail_type_args(parser)
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     CIME.utils.resolve_mail_type_args(args)
+
+    expect(
+        not (args.ninja and args.gmake),
+        "Cannot request both gmake and ninja cmake backends",
+    )
 
     if args.force_rebuild:
         expect(
@@ -744,14 +771,6 @@ def parse_command_line(args, description):
         dot_count = name.count(".")
         expect(dot_count > 1 and dot_count <= 4, "Invalid test Name, '{}'".format(name))
 
-    # for e3sm, sort by walltime
-    if model_config.sort_tests:
-        if args.walltime is None:
-            # Longest tests should run first
-            test_names.sort(key=get_tests.key_test_time, reverse=True)
-        else:
-            test_names.sort()
-
     return (
         test_names,
         test_extra_data,
@@ -761,6 +780,7 @@ def parse_command_line(args, description):
         args.no_build,
         args.no_setup,
         args.no_batch,
+        args.batch_build,
         args.test_root,
         args.baseline_root,
         args.clean,
@@ -799,6 +819,8 @@ def parse_command_line(args, description):
         args.workflow,
         args.chksum,
         args.force_rebuild,
+        args.ninja,
+        args.gmake,
         args.driver,
     )
 
@@ -924,6 +946,7 @@ def create_test(
     no_build,
     no_setup,
     no_batch,
+    batch_build,
     test_root,
     baseline_root,
     clean,
@@ -962,6 +985,8 @@ def create_test(
     workflow,
     chksum,
     force_rebuild,
+    ninja,
+    gmake,
     driver,
 ):
     ###############################################################################
@@ -972,6 +997,7 @@ def create_test(
         no_build=no_build,
         no_setup=no_setup,
         no_batch=no_batch,
+        batch_build=batch_build,
         test_root=test_root,
         test_id=test_id,
         baseline_root=baseline_root,
@@ -1005,6 +1031,8 @@ def create_test(
         workflow=workflow,
         chksum=chksum,
         force_rebuild=force_rebuild,
+        ninja=ninja,
+        gmake=gmake,
         driver=driver,
     )
 
@@ -1073,6 +1101,7 @@ def _main_func(description=None):
         no_build,
         no_setup,
         no_batch,
+        batch_build,
         test_root,
         baseline_root,
         clean,
@@ -1111,6 +1140,8 @@ def _main_func(description=None):
         workflow,
         chksum,
         force_rebuild,
+        ninja,
+        gmake,
         driver,
     ) = parse_command_line(sys.argv, description)
 
@@ -1128,6 +1159,7 @@ def _main_func(description=None):
             no_build,
             no_setup,
             no_batch,
+            batch_build,
             test_root,
             baseline_root,
             clean,
@@ -1166,6 +1198,8 @@ def _main_func(description=None):
             workflow,
             chksum,
             force_rebuild,
+            ninja,
+            gmake,
             driver,
         )
         run_count += 1

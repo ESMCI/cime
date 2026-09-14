@@ -167,6 +167,13 @@ class EnvMachSpecific(EnvBase):
 
         self._set_resources_for_case(case)
 
+        # Make ninja access convenient if it exists.
+        srcroot = case.get_value("SRCROOT")
+        ninja_bin = os.path.join(srcroot, "externals", "ninja", "bin")
+        if os.path.isdir(ninja_bin):
+            os.environ["PATH"] = ninja_bin + os.pathsep + os.environ.get("PATH", "")
+            logger.debug("Added {} to PATH".format(ninja_bin))
+
         return [] if envs_to_set is None else envs_to_set
 
     def _set_resources_for_case(self, case):
@@ -292,6 +299,14 @@ class EnvMachSpecific(EnvBase):
                             sh_mod_cmd, action, "" if argument is None else argument
                         )
                     )
+
+        srcroot = case.get_value("SRCROOT")
+        ninja_bin = os.path.join(srcroot, "externals", "ninja", "bin")
+        if os.path.isdir(ninja_bin):
+            ninja_path = f"{ninja_bin}{os.pathsep}$PATH"
+            if envs_to_set is None:
+                envs_to_set = []
+            envs_to_set.append(("PATH", ninja_path))
 
         if envs_to_set is not None:
             for env_name, env_value in envs_to_set:

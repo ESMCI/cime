@@ -48,7 +48,7 @@ Every file listed in ``COMPSETS_SPEC_FILE`` will be searched to compile possible
 
 CIME will note which component's config_compsets.xml had the matching compset name and that component will be treated as
 the **primary component** As an example, the primary component for a compset that has a prognostic atmosphere,
-land and cice (in prescribed mode) and a data ocean is the atmosphere component (for cesm this is CAM) because the compset
+land and cice (in prescribed mode) and a data ocean is the atmosphere component (e.g. CAM in CESM) because the compset
 is defined, using the above example, in ``$SRCROOT/components/cam/cime_config/config_compsets.xml``
 In a compset where all components are prognostic, the primary component will be **allactive**.
 

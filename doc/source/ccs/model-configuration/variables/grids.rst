@@ -387,14 +387,14 @@ The steps for adding a new component grid to the model system follow. This proce
    At this time, if you are running with a new ocean or runoff grid, please contact Michael Levy (mlevy_AT_ucar_DOT_edu) for assistance. If you are running with standard ocean and runoff grids, the mapping file should already exist and you do not need to generate it.
 
 
-6. CESM specific: If you are adding a new atmosphere grid, this means you are also generating a new land grid, and you will need to create a new CLM surface dataset. (Otherwise you can skip this step).
-   You need to first generate mapping files for CLM surface dataset (since this is a non-standard grid).
+6. If you are adding a new atmosphere grid, this means you are also generating a new land grid, and you may need to create a new land surface dataset. (Otherwise you can skip this step).
+   You need to first generate mapping files for the land surface dataset (since this is a non-standard grid).
    ::
 
       > cd $CIMEROOT/../components/clm/tools/mkmapdata
       > ./mkmapdata.sh --gridfile <lnd SCRIP grid file> --res <atm resolution name> --gridtype global
 
-    These mapping files are then used to generate CLM surface dataset. Below is an example for a current day surface dataset (model year 2000).
+    These mapping files are then used to generate the land surface dataset. Below is an example for a current day surface dataset (model year 2000).
 
     ::
 
@@ -403,7 +403,7 @@ The steps for adding a new component grid to the model system follow. This proce
 
 7. Create grid file needed for create_newcase.
    The next step is to add the necessary new entries in the appropriate ``config_grids.xml`` file.
-   You will need to modify ``$CIMEROOT/config/cesm/config_grids.xml`` or ``$CIMEROOT/config/e3sm/config_grids.xml`` depending on the value of ``$CIME_MODEL``.
+   You will need to modify ``$CIMEROOT/config/$model/config_grids.xml`` depending on the value of ``$CIME_MODEL``.
    You will need to:
 
    - add a single  ``<model_grid>`` entry
