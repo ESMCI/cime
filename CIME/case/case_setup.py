@@ -283,8 +283,7 @@ def _create_macros_cmake(
 
             # Recursively copy any includes from the copied file
             if copied and copied_path and copied_path.endswith(".cmake"):
-                source_dir = os.path.dirname(copied_path)
-                _copy_cmake_includes_recursive(copied_path, source_dir, case_cmake_path)
+                _copy_cmake_includes_recursive(copied_path, case_cmake_path)
 
     copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
 
