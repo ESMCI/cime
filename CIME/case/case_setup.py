@@ -118,9 +118,9 @@ def _copy_cmake_includes_recursive(source_file_path, dest_dir, visited=None):
             if include.startswith("./"):
                 include = include[2:]
 
-            # Try to find the include file in the source directory
-            include_path = os.path.join(source_dir, include)
-            include_path = os.path.abspath(include_path)
+            include_path = os.path.abspath(os.path.join(source_dir, include))
+            if not os.path.isfile(include_path) and not os.path.splitext(include_path)[1]:
+                include_path += ".cmake"
 
             # Check if file exists and is within or related to source_dir
             if os.path.isfile(include_path):
