@@ -33,9 +33,7 @@ def create_machines_dir_with_includes():
         Path(cmake_path).mkdir(parents=True)
 
         # Create base Macros.cmake without includes (not recursively examined)
-        Path(os.path.join(cmake_path, "Macros.cmake")).write_text(
-            "# Macros file\n"
-        )
+        Path(os.path.join(cmake_path, "Macros.cmake")).write_text("# Macros file\n")
 
         # Create common.cmake with an include
         common_content = "include(base_config.cmake)\n# Common definitions\n"
@@ -59,7 +57,6 @@ def create_machines_dir_with_includes():
         Path(os.path.join(cmake_path, "helper.cmake")).write_text("# Helper\n")
 
         yield temp_path
-
 
 
 # pylint: disable=protected-access
@@ -294,4 +291,3 @@ class TestCaseSetup(unittest.TestCase):
             copy_depends_files.assert_called_with(
                 "test", machines_path, case_path, "gnu-test"
             )
-
