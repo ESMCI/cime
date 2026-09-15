@@ -53,6 +53,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           submodules: "true"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -113,6 +115,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up python
         uses: actions/setup-python@v5
         with:
@@ -160,6 +165,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: cesm/cime
           submodules: "true"
       - name: Run tests
@@ -248,6 +255,8 @@ jobs:
       - name: Checkout CIME
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: ${{ matrix.model.name }}/cime
           submodules: 'true'
       - name: Create storage directory
