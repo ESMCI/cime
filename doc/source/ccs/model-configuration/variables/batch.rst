@@ -121,15 +121,16 @@ minutes).
 ``walltime_format`` Description                                  Example (``01:10:00``)
 =================== ============================================ ======================
 *(unset)*           Total minutes as FSD, the default.           ``70m``
-``%M``              Total minutes, bare.                         ``70``
+``%M``              Total whole minutes, bare.                   ``70``
 ``%Ss``             Total seconds as FSD.                        ``4200s``
 ``%Mm``             Total minutes as FSD.                        ``70m``
 ``%Hh``             Total hours as FSD.                          ``1.17h``
 ``%Dd``             Total days as FSD.                           ``0.05d``
 =================== ============================================ ======================
 
-Partial values are rounded up at two decimal places so a job is never
-allotted less time than requested.
+Bare minutes (``%M``) round up to the next whole minute. FSD values round
+up at two decimal places so a job is never allotted less time than
+requested.
 
 .. code-block:: xml
 

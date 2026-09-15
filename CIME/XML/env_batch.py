@@ -522,9 +522,9 @@ class EnvBatch(EnvBase):
         here expand to the *total* duration expressed in that unit, so a
         literal FSD suffix in the format yields a valid FSD value, e.g.
         ``%Mm`` on ``01:10:00`` gives ``70m`` and ``%Hh`` gives ``1.17h``.
-        Partial values round up at two decimal places so the job is never
-        allotted less time than requested. Without a format, the default
-        is FSD minutes.
+        Bare ``%M`` yields whole minutes rounded up, while FSD formats
+        round up at two decimal places, so the job is never allotted less
+        time than requested. Without a format, the default is FSD minutes.
 
         Only formats producing values Flux accepts are permitted: ``%M``
         (bare minutes) or a specifier paired with its matching FSD suffix
@@ -557,7 +557,10 @@ class EnvBatch(EnvBase):
 
         def _total(match):
             unit = {"H": 3600, "M": 60, "S": 1, "D": 86400}[match.group(1)]
-            value = math.ceil(seconds / unit * 100) / 100
+            if walltime_format == "%M":
+                value = math.ceil(seconds / unit)
+            else:
+                value = math.ceil(seconds / unit * 100) / 100
             return "{:.2f}".format(value).rstrip("0").rstrip(".")
 
         return re.sub(r"%([HMSD])", _total, walltime_format)
