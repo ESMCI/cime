@@ -14,7 +14,7 @@ from CIME.XML.standard_module_setup import *
 from CIME import utils
 from CIME.config import Config
 from CIME.status import append_status
-from CIME.utils import expect, get_cime_root
+from CIME.utils import expect, get_cime_root, CESM_LIKE_MODELS
 from CIME.utils import convert_to_type, get_model, set_model
 from CIME.utils import get_project, get_charge_account, check_name
 from CIME.utils import get_current_commit, safe_copy, get_cime_default_driver
@@ -1532,10 +1532,12 @@ class Case(object):
         logger.info(" Grid is: {} ".format(self._gridname))
         logger.info(" Components in compset are: {} ".format(self._components))
 
-        if not test and not run_unsupported and self._cime_model == "cesm":
+        if not test and not run_unsupported and self._cime_model in CESM_LIKE_MODELS:
             if grid_name in science_support:
                 logger.info(
-                    "\nThis is a CESM scientifically supported compset at this resolution.\n"
+                    "\nThis is a {} scientifically supported compset at this resolution.\n".format(
+                        self._cime_model.upper()
+                    )
                 )
             else:
                 self._check_testlists(compset_alias, grid_name, files)
@@ -2163,7 +2165,7 @@ directory, NOT in this subdirectory."""
     def set_model_version(self, model):
         version = "unknown"
         srcroot = self.get_value("SRCROOT")
-        version = get_current_commit(True, srcroot, tag=(model == "cesm"))
+        version = get_current_commit(True, srcroot, tag=(model in CESM_LIKE_MODELS))
 
         self.set_value("MODEL_VERSION", version)
 

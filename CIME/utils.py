@@ -230,7 +230,7 @@ def _read_cime_config_file():
     """
     READ the config file in ~/.cime, this file may contain
     [main]
-    CIME_MODEL=e3sm,cesm,ufs
+    CIME_MODEL=e3sm,cesm,noresm,ufs
     PROJECT=someprojectnumber
     """
     allowed_sections = ("main", "create_test")
@@ -499,11 +499,70 @@ def set_model(model):
     cime_config.set("main", "CIME_MODEL", model)
 
 
+# Models that share CESM's directory layout, tagging conventions and build
+# configuration, and are therefore treated identically where CIME branches on
+# the model name.
+CESM_LIKE_MODELS = ("cesm", "noresm")
+
+
+MODEL_ID_FILE = ".cime_model_id"
+
+
+def _model_from_srcroot(srcroot):
+    """
+    Return the model declared in $SRCROOT/.cime_model_id, or None.
+
+    A checkout may declare which CIME model it is with a one line file at the
+    top of the repository holding the model name, e.g. a NorESM checkout
+    contains "noresm".  Blank lines and # comments are ignored.
+    """
+    model_id_file = os.path.join(srcroot, MODEL_ID_FILE)
+
+    if not os.path.isfile(model_id_file):
+        return None
+
+    model = None
+
+    # The file may contain comment lines and blank lines, e.g.
+    #
+    #     # this checkout is NorESM
+    #     noresm
+    #
+    # so drop any '#' comment and surrounding whitespace from each line and
+    # take the first line that still has something left on it.
+    with open(model_id_file) as fd:
+        for line in fd:
+            line = line.split("#", 1)[0].strip()
+
+            if line:
+                model = line
+                break
+
+    if model is None:
+        return None
+
+    cime_models = get_all_cime_models()
+
+    expect(
+        model in cime_models,
+        "model '{}' declared in {} not recognized. The acceptable values "
+        "of CIME_MODEL currently are {}".format(model, model_id_file, cime_models),
+    )
+
+    return model
+
+
 def get_model():
     """
     Get the currently configured model value
-    The CIME_MODEL env variable may or may not be set
 
+    A model declared in $SRCROOT/.cime_model_id wins over everything else.
+    Otherwise the CIME_MODEL env variable is used if set, then ~/.cime/config,
+    then the layout of the checkout.
+
+    >>> import tempfile
+    >>> _prev_srcroot = os.environ.get("SRCROOT")
+    >>> os.environ["SRCROOT"] = tempfile.mkdtemp()
     >>> os.environ["CIME_MODEL"] = "garbage"
     >>> get_model() # doctest:+ELLIPSIS +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
@@ -518,7 +577,31 @@ def get_model():
     >>> get_model()
     'e3sm'
     >>> reset_cime_config()
+    >>> if _prev_srcroot is None:
+    ...     del os.environ["SRCROOT"]
+    ... else:
+    ...     os.environ["SRCROOT"] = _prev_srcroot
     """
+    srcroot = get_src_root()
+
+    # an explicit declaration in the checkout wins over the environment,
+    # ~/.cime/config and the layout based guesses below
+    model = _model_from_srcroot(srcroot)
+
+    if model is not None:
+        env_model = os.environ.get("CIME_MODEL")
+
+        if env_model is not None and env_model != model:
+            logger.warning(
+                "Ignoring CIME_MODEL={} from the environment, {} declares {}".format(
+                    env_model, MODEL_ID_FILE, model
+                )
+            )
+
+        set_model(model)
+
+        return model
+
     model = os.environ.get("CIME_MODEL")
     cime_models = get_all_cime_models()
     if model in cime_models:
@@ -538,8 +621,6 @@ def get_model():
 
     # One last try
     if model is None:
-        srcroot = get_src_root()
-
         if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
             model = "cesm"
         elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):

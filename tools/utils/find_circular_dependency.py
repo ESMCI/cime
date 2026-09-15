@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Look for and output any circular dependencies in a CESM Depends file"""
 
 import sys
