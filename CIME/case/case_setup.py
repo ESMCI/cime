@@ -384,7 +384,13 @@ def _case_setup_impl(
             case.set_value("COST_PES", case.num_nodes * cost_per_node)
             threaded = case.get_build_threaded()
             case.set_value("BUILD_THREADED", threaded)
-            if threaded and case.total_tasks * case.thread_count > cost_per_node:
+            # TOTALPES counts cores.  With ESMF-aware threading every OpenMP
+            # thread is already counted as an MPI task in case.total_tasks, so
+            # the thread count used here is 1 and threads are not counted twice.
+            thread_count = case.get_env("mach_pes").get_batch_thread_count(
+                case.thread_count
+            )
+            if threaded and case.total_tasks * thread_count > cost_per_node:
                 smt_factor = max(
                     1.0, int(case.get_value("MAX_TASKS_PER_NODE") / cost_per_node)
                 )
@@ -393,14 +399,13 @@ def _case_setup_impl(
                     case.iotasks
                     + int(
                         (case.total_tasks - case.iotasks)
-                        * max(1.0, float(case.thread_count) / smt_factor)
+                        * max(1.0, float(thread_count) / smt_factor)
                     ),
                 )
             else:
                 case.set_value(
                     "TOTALPES",
-                    (case.total_tasks - case.iotasks) * case.thread_count
-                    + case.iotasks,
+                    (case.total_tasks - case.iotasks) * thread_count + case.iotasks,
                 )
 
             # ----------------------------------------------------------------------------------------------------------
