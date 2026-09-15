@@ -108,7 +108,7 @@ int GPTLget_memusage (int *size, int *rss, int *share, int *text, int *datastack
 #elif (defined HAVE_SLASHPROC)
   FILE *fd;                       /* file descriptor for fopen */
   int pid;                        /* process id */
-  char file[19];                  /* full path to file in /proc */
+  char file[32];                  /* full path to file in /proc */
   int dum;                        /* placeholder for unused return arguments */
   int ret;                        /* function return value */
   static int pg_sz = -1;          /* page size */
@@ -123,8 +123,12 @@ int GPTLget_memusage (int *size, int *rss, int *share, int *text, int *datastack
     return -1;
   }
 
-  sprintf (file, "/proc/%d/statm", pid);
-  if ((fd = fopen (file, "r")) < 0) {
+  if (snprintf (file, sizeof (file), "/proc/%d/statm", pid) >= (int) sizeof (file)) {
+    fprintf (stderr, "get_memusage: path for pid %d too long\n", pid);
+    return -1;
+  }
+
+  if ((fd = fopen (file, "r")) == NULL) {
     fprintf (stderr, "get_memusage: bad attempt to open %s\n", file);
     return -1;
   }
