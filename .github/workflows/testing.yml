@@ -173,12 +173,14 @@ jobs:
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
             bash -c "
+              set -euxo pipefail
               source /entrypoint.sh
               uv python install ${{ matrix.python-version }}
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
-              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+              uv run python -u -m pytest --collect-only -vv --machine docker CIME/tests/test_unit*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
@@ -269,6 +271,7 @@ jobs:
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
             bash -c "
+              set -euxo pipefail
               source /entrypoint.sh
               uv python install 3.10
               uv venv
@@ -276,7 +279,8 @@ jobs:
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+              uv run python -u -m pytest --collect-only -vv --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
