@@ -199,13 +199,31 @@ class EnvMachPes(EnvBase):
                 )
         return tasks_per_node if tasks_per_node > 0 else 1
 
+    def get_batch_thread_count(self, max_thread_count):
+        """Return the number of cores per MPI task to request from the batch system.
+
+        Normally this is the largest thread count of any component, so that each
+        MPI task gets enough cores for its OpenMP threads.  With ESMF-aware
+        threading (nuopc interface and ESMF_AWARE_THREADING=TRUE) it is 1: every
+        thread is already counted as an MPI task by get_total_tasks, and ESMF
+        creates a component's OpenMP threads from the cores of neighbouring MPI
+        tasks.
+
+        Args:
+            max_thread_count: the largest NTHRDS of any component in the case.
+
+        Returns:
+            1 with ESMF-aware threading, otherwise ``max_thread_count``.
+        """
+        if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
+            return 1
+        return max_thread_count
+
     def get_total_nodes(self, total_tasks, max_thread_count):
         """
         Return (num_active_nodes, num_spare_nodes)
         """
-        # threads have already been included in nuopc interface
-        if self._comp_interface == "nuopc" and self.get_value("ESMF_AWARE_THREADING"):
-            max_thread_count = 1
+        max_thread_count = self.get_batch_thread_count(max_thread_count)
         tasks_per_node = self.get_tasks_per_node(total_tasks, max_thread_count)
         num_nodes = int(math.ceil(float(total_tasks) / tasks_per_node))
         return num_nodes, self.get_spare_nodes(num_nodes)

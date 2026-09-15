@@ -188,6 +188,12 @@ XML_WORKFLOW = b"""<?xml version="1.0"?>
       These variables may be changed anytime during a run, they
       control jobs that will be submitted and their dependancies.
  </header>
+ <!-- the primary job takes its task and thread counts from the case, not from here -->
+ <group id="case.run">
+    <entry id="template" value="template.case.run">
+      <type>char</type>
+    </entry>
+ </group>
  <group id="case.test">
     <entry id="task_count" value="1">
       <type>char</type>
@@ -233,6 +239,7 @@ class FakeCaseWWorkflow(FakeCase):
         tasks_per_node,
         mem_per_task,
         max_mem,
+        batch_thread_count=None,
     ):
         super().__init__(compiler, mpilib, debug, comp_interface)
         self._vals["task_count"] = task_count
@@ -240,12 +247,24 @@ class FakeCaseWWorkflow(FakeCase):
         self._vals["tasks_per_node"] = tasks_per_node
         self._vals["mem_per_task"] = mem_per_task
         self._vals["max_mem"] = max_mem
+        # a real Case sets this attribute in initialize_derived_attributes and
+        # get_job_overrides reads it for the primary (case.run) job
+        self.thread_count = thread_count
+        # value the fake env_mach_pes returns from get_batch_thread_count; a real
+        # EnvMachPes returns 1 with ESMF-aware threading
+        self.batch_thread_count = (
+            thread_count if batch_thread_count is None else batch_thread_count
+        )
 
     def get_env(self, short_name):
         expect(
-            short_name == "workflow",
-            "FakeWWorkflow only can handle workflow as short_name sent in",
+            short_name in ("workflow", "mach_pes"),
+            "FakeWWorkflow only can handle workflow or mach_pes as short_name sent in",
         )
+        if short_name == "mach_pes":
+            mach_pes = mock.Mock()
+            mach_pes.get_batch_thread_count.return_value = self.batch_thread_count
+            return mach_pes
         with ExitStack() as stack:
             WorkflowFile = _open_temp_file(stack, XML_WORKFLOW)
             env_workflow = EnvWorkflow(infile=WorkflowFile.name)
@@ -271,6 +290,8 @@ class FakeCaseWWorkflow(FakeCase):
         self, item, attribute=None, subgroup="PRIMARY", resolved=True
     ):
         print(item)
+        if item is None:
+            return None
         expect(isinstance(item, str), "item must be a string")
         expect(("$" not in item), "$ not allowed in item for this fake")
         return item
@@ -1266,10 +1287,64 @@ class TestXMLEnvBatch(unittest.TestCase):
         self.assertEqual(overrides["thread_count"], str(thread_count))
         self.assertEqual(overrides["num_nodes"], 1)
 
+    def test_get_job_overrides_esmf_aware_threading(self):
+        """Test that the primary job requests one core per task with ESMF-aware threading"""
+        # env_mach_pes reports one core per task, because ESMF creates the
+        # OpenMP threads from the cores of neighbouring tasks
+        overrides = self.run_get_job_overrides(
+            task_count=4,
+            thread_count=2,
+            mem_per_task=10,
+            tasks_per_node=4,
+            max_mem=235,
+            batch_thread_count=1,
+            job="case.run",
+        )
+        self.assertEqual(overrides["thread_count"], 1)
+
+    def test_get_job_overrides_primary_job_without_esmf_aware_threading(self):
+        """Test that the primary job leaves thread_count to the case without ESMF-aware threading"""
+        overrides = self.run_get_job_overrides(
+            task_count=4,
+            thread_count=2,
+            mem_per_task=10,
+            tasks_per_node=4,
+            max_mem=235,
+            job="case.run",
+        )
+        # no override is set, so the batch templates use case.thread_count
+        self.assertNotIn("thread_count", overrides)
+
+    def test_get_job_overrides_esmf_aware_threading_workflow_job(self):
+        """Test that ESMF-aware threading does not touch a workflow job's own thread_count"""
+        overrides = self.run_get_job_overrides(
+            task_count=4,
+            thread_count=2,
+            mem_per_task=10,
+            tasks_per_node=4,
+            max_mem=235,
+            batch_thread_count=1,
+        )
+        self.assertEqual(overrides["thread_count"], "2")
+
     def run_get_job_overrides(
-        self, task_count, thread_count, mem_per_task, tasks_per_node, max_mem
+        self,
+        task_count,
+        thread_count,
+        mem_per_task,
+        tasks_per_node,
+        max_mem,
+        batch_thread_count=None,
+        job="case.test",
     ):
-        """Setup and run get_job_overrides so it can be tested from a variety of tests"""
+        """Setup and run get_job_overrides so it can be tested from a variety of tests
+
+        Args:
+            batch_thread_count: cores per MPI task that the fake env_mach_pes
+                tells get_job_overrides to request, defaults to thread_count.
+            job: "case.test" takes its task and thread counts from the workflow
+                file, "case.run" is the primary job and takes them from the case.
+        """
 
         env_batch = EnvBatch()
         # NOTE: GPU_TYPE is assumed to be none, so no GPU settings will be done
@@ -1286,6 +1361,7 @@ class TestXMLEnvBatch(unittest.TestCase):
             mem_per_task=mem_per_task,
             tasks_per_node=tasks_per_node,
             max_mem=max_mem,
+            batch_thread_count=batch_thread_count,
         )
         totalpes = task_count * thread_count
 
@@ -1296,7 +1372,7 @@ class TestXMLEnvBatch(unittest.TestCase):
 
         case.set_value("MAX_GPUS_PER_NODE", 4)
         case.set_value("NGPUS_PER_NODE", 0)
-        overrides = env_batch.get_job_overrides("case.test", case)
+        overrides = env_batch.get_job_overrides(job, case)
         self.assertEqual(overrides["ngpus_per_node"], 0)
 
         return overrides
