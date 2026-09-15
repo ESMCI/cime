@@ -165,6 +165,7 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm \
+            --entrypoint bash \
             -v ${{ github.workspace }}/cesm:/root/cesm \
             -w /root/cesm/cime \
             -e CIME_MODEL=cesm \
@@ -260,6 +261,7 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm \
+            --entrypoint bash \
             --hostname docker \
             --shm-size=1g \
             -v ${{ github.workspace }}/${{ matrix.model.name }}:/root/model \
