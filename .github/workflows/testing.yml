@@ -173,7 +173,7 @@ jobs:
             -e CIME_TEST_PLATFORM=ubuntu-latest \
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
-            bash -c "
+            -c "
               set -euxo pipefail
               source /entrypoint.sh
               uv python install ${{ matrix.python-version }}
@@ -272,7 +272,7 @@ jobs:
             -e CIME_TEST_PLATFORM=ubuntu-latest \
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
-            bash -c "
+            -c "
               set -euxo pipefail
               source /entrypoint.sh
               uv python install 3.10
