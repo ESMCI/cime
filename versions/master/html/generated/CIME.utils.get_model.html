@@ -239,9 +239,14 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.utils.get_model">
 <span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.get_model" title="Link to this definition"></a></dt>
-<dd><p>Get the currently configured model value
-The CIME_MODEL env variable may or may not be set</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"CIME_MODEL"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"garbage"</span>
+<dd><p>Get the currently configured model value</p>
+<p>A model declared in $SRCROOT/.cime_model_id wins over everything else.
+Otherwise the CIME_MODEL env variable is used if set, then ~/.cime/config,
+then the layout of the checkout.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_prev_srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"SRCROOT"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SRCROOT"</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"CIME_MODEL"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"garbage"</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_model</span><span class="p">()</span> 
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
@@ -255,6 +260,10 @@ The CIME_MODEL env variable may or may not be set</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_model</span><span class="p">()</span>
 <span class="go">'e3sm'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">reset_cime_config</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">_prev_srcroot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SRCROOT"</span><span class="p">]</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"SRCROOT"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_prev_srcroot</span>
 </pre></div>
 </div>
 </dd></dl>

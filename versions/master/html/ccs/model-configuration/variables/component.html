@@ -223,7 +223,7 @@ it is important that dependent libraries are identified.</p>
 <span class="w">     </span><span class="nt">&lt;type&gt;</span>char<span class="nt">&lt;/type&gt;</span>
 <span class="w">     </span><span class="nt">&lt;default_value&gt;&lt;/default_value&gt;</span>
 <span class="w">     </span><span class="nt">&lt;values&gt;</span>
-<span class="w">     </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">cime_model=</span><span class="s">"cesm"</span><span class="nt">&gt;</span>gptl,pio,csm_share,FTorch,CDEPS<span class="nt">&lt;/value&gt;</span>
+<span class="w">     </span><span class="nt">&lt;value</span><span class="w"> </span><span class="na">cime_model=</span><span class="s">"cesm|noresm"</span><span class="nt">&gt;</span>gptl,pio,csm_share,FTorch,CDEPS<span class="nt">&lt;/value&gt;</span>
 <span class="w">     </span><span class="nt">&lt;/values&gt;</span>
 <span class="w">     </span><span class="nt">&lt;group&gt;</span>build_def<span class="nt">&lt;/group&gt;</span>
 <span class="w">     </span><span class="nt">&lt;file&gt;</span>env_build.xml<span class="nt">&lt;/file&gt;</span>
@@ -231,6 +231,8 @@ it is important that dependent libraries are identified.</p>
 <span class="nt">&lt;/entry&gt;</span>
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">cime_model</span></code> attribute is matched as a regular expression, so a single value can be
+shared by several models as shown above.</p>
 <p>The components <code class="docutils literal notranslate"><span class="pre">buildnml</span></code> script can modify the variable and add a list of libraries needed by the given component.
 The list should be ordered so that a library comes after all of the libraries it depends on.</p>
 <p>The following is a small example of a <code class="docutils literal notranslate"><span class="pre">buildnml</span></code> script modifying <code class="docutils literal notranslate"><span class="pre">CASE_SUPPORT_LIBRARIES</span></code>.</p>
