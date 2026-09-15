@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.new\_lid
+===================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: new_lid

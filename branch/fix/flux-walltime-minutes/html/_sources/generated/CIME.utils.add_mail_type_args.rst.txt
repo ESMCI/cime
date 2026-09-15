@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.add\_mail\_type\_args
+================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: add_mail_type_args

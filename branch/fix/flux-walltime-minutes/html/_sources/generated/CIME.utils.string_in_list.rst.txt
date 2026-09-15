@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.string\_in\_list
+===========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: string_in_list

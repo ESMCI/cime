@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.configure\_logging
+=============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: configure_logging

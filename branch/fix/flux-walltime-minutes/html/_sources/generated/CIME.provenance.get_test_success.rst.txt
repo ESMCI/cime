@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.provenance.get\_test\_success
+==================================
+
+.. currentmodule:: CIME.provenance
+
+.. autofunction:: get_test_success

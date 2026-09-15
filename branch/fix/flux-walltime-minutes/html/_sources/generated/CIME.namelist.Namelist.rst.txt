@@ -1,0 +1,34 @@
+..
+  class.rst
+
+CIME.namelist.Namelist
+======================
+
+.. currentmodule:: CIME.namelist
+
+.. autoclass:: Namelist
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Namelist.__init__
+                    ~Namelist.clean_groups
+                    ~Namelist.delete_variable
+                    ~Namelist.get_group_names
+                    ~Namelist.get_group_variables
+                    ~Namelist.get_value
+                    ~Namelist.get_variable_names
+                    ~Namelist.get_variable_value
+                    ~Namelist.merge_nl
+                    ~Namelist.set_variable_value
+                    ~Namelist.write
+                    ~Namelist.write_nuopc
+        
+    
