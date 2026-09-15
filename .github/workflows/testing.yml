@@ -180,7 +180,6 @@ jobs:
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
-              uv run python -u -m pytest --collect-only -vv --machine docker CIME/tests/test_unit*
               time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
             "
       - name: Upload coverage reports to Codecov
@@ -281,7 +280,6 @@ jobs:
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              uv run python -u -m pytest --collect-only -vv --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
               time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
