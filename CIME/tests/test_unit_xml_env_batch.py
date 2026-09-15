@@ -23,6 +23,7 @@ from CIME.BuildTools.configure import FakeCase
         ("01:10:00", None, "70m"),
         ("00:10:30", None, "11m"),
         ("01:10:00", "%M", "70"),
+        ("00:10:30", "%M", "11"),
         ("01:10:00", "%Mm", "70m"),
         ("01:10:00", "%Hh", "1.17h"),
         ("02:00:00", "%Hh", "2h"),
@@ -1030,6 +1031,68 @@ class TestXMLEnvBatch(unittest.TestCase):
 
         env_workflow.set_value.assert_any_call(
             "JOB_WALLCLOCK_TIME", "70", subgroup="case.run"
+        )
+
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_value")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.text", return_value="default")
+    # nodemin, nodemax, jobname, walltimemin, walltimemax, jobmin, jobmax, strict
+    @mock.patch(
+        "CIME.XML.env_batch.EnvBatch.get_queue_specs",
+        return_value=[
+            1,
+            1,
+            "case.run",
+            None,
+            None,
+            "12:00:00",
+            1,
+            1,
+            False,
+        ],
+    )
+    @mock.patch("CIME.XML.env_batch.EnvBatch.select_best_queue")
+    @mock.patch("CIME.XML.env_batch.EnvBatch.get_default_queue")
+    def test_set_job_defaults_flux_walltime_format_minutes_rounds_up(
+        self, get_default_queue, select_best_queue, get_queue_specs, text, get_value
+    ):
+        # Context, walltime_format %M emits whole minutes for flux
+        get_value.side_effect = lambda name, *args, **kwargs: (
+            "%M" if name == "walltime_format" else None
+        )
+
+        case = mock.MagicMock()
+
+        batch_jobs = [
+            (
+                "case.run",
+                {
+                    "template": "template.case.run",
+                    "prereq": "$BUILD_COMPLETE and not $TEST",
+                },
+            )
+        ]
+
+        def case_get_value(*args, **kwargs):
+            if args[0] == "USER_REQUESTED_WALLTIME":
+                return "00:10:30"
+
+            return mock.MagicMock()
+
+        case.get_value = case_get_value
+
+        case.get_env.return_value.get_jobs.return_value = ["case.run"]
+
+        batch = EnvBatch()
+        batch.set_batch_system_type("flux")
+
+        # Act
+        batch.set_job_defaults(batch_jobs, case)
+
+        # Assert
+        env_workflow = case.get_env.return_value
+
+        env_workflow.set_value.assert_any_call(
+            "JOB_WALLCLOCK_TIME", "11", subgroup="case.run"
         )
 
     @mock.patch("CIME.XML.env_batch.EnvBatch.get_value")
