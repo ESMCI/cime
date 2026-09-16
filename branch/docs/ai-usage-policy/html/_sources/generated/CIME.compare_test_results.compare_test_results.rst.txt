@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.compare\_test\_results.compare\_test\_results
+==================================================
+
+.. currentmodule:: CIME.compare_test_results
+
+.. autofunction:: compare_test_results
