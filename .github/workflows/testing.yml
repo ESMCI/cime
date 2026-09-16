@@ -289,17 +289,19 @@ jobs:
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-      - uses: mxschmitt/action-tmate@v3
-        if: ${{ failure() && !cancelled() }}
-        with:
-          limit-access-to-actor: true
+      # Optional debugging step. Re-enable intentionally when interactive SSH
+      # access to a failed system-testing job is needed.
+      # - uses: mxschmitt/action-tmate@v3
+      #   if: ${{ failure() && !cancelled() }}
+      #   with:
+      #     limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
