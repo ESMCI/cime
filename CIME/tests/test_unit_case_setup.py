@@ -24,6 +24,41 @@ def create_machines_dir():
         yield temp_path
 
 
+@contextlib.contextmanager
+def create_machines_dir_with_includes():
+    """Creates temp machines directory with cmake files containing includes"""
+    with tempfile.TemporaryDirectory() as temp_path:
+        machines_path = os.path.join(temp_path, "machines")
+        cmake_path = os.path.join(machines_path, "cmake_macros")
+        Path(cmake_path).mkdir(parents=True)
+
+        # Create base Macros.cmake without includes (not recursively examined)
+        Path(os.path.join(cmake_path, "Macros.cmake")).write_text("# Macros file\n")
+
+        # Create common.cmake with an include
+        common_content = "include(base_config.cmake)\n# Common definitions\n"
+        Path(os.path.join(cmake_path, "common.cmake")).write_text(common_content)
+
+        # Create utilities.cmake
+        Path(os.path.join(cmake_path, "utilities.cmake")).write_text(
+            "# Utility functions\n"
+        )
+
+        # Create base_config.cmake
+        Path(os.path.join(cmake_path, "base_config.cmake")).write_text(
+            "# Base configuration\n"
+        )
+
+        # Create test.cmake with an include
+        test_content = "include(helper.cmake)\n# Test file\n"
+        Path(os.path.join(cmake_path, "test.cmake")).write_text(test_content)
+
+        # Create helper.cmake
+        Path(os.path.join(cmake_path, "helper.cmake")).write_text("# Helper\n")
+
+        yield temp_path
+
+
 # pylint: disable=protected-access
 class TestCaseSetup(unittest.TestCase):
     @mock.patch("CIME.case.case_setup.copy_depends_files")
@@ -201,4 +236,58 @@ class TestCaseSetup(unittest.TestCase):
 
             assert os.path.exists(
                 os.path.join(case_path, "cmake_macros", "extra.cmake")
+            )
+
+    @mock.patch("CIME.case.case_setup.copy_depends_files")
+    def test_create_macros_cmake_recursive_includes(self, copy_depends_files):
+        """Test that cmake includes are recursively copied"""
+        machine_mock = mock.MagicMock()
+        machine_mock.get_machine_name.return_value = "test"
+
+        # create context stack to cleanup after test
+        with contextlib.ExitStack() as stack:
+            root_path = stack.enter_context(create_machines_dir_with_includes())
+            case_path = stack.enter_context(tempfile.TemporaryDirectory())
+
+            machines_path = os.path.join(root_path, "machines")
+            type(machine_mock).machines_dir = mock.PropertyMock(
+                return_value=machines_path
+            )
+
+            # make sure we're calling everything from within the case root
+            stack.enter_context(chdir(case_path))
+
+            case_setup._create_macros_cmake(
+                case_path,
+                os.path.join(machines_path, "cmake_macros"),
+                machine_mock,
+                "gnu-test",
+                os.path.join(case_path, "cmake_macros"),
+            )
+
+            # Verify main macro files are copied
+            assert os.path.exists(os.path.join(case_path, "Macros.cmake"))
+            assert os.path.exists(os.path.join(case_path, "cmake_macros", "test.cmake"))
+
+            # Verify included files from test.cmake are recursively copied
+            # (but NOT common.cmake or utilities.cmake, since Macros.cmake is not examined)
+            assert os.path.exists(
+                os.path.join(case_path, "cmake_macros", "helper.cmake")
+            )
+
+            # Verify that files included only by Macros.cmake are NOT copied
+            assert not os.path.exists(
+                os.path.join(case_path, "cmake_macros", "common.cmake")
+            )
+            assert not os.path.exists(
+                os.path.join(case_path, "cmake_macros", "utilities.cmake")
+            )
+
+            # base_config.cmake should NOT be copied (only included by common.cmake)
+            assert not os.path.exists(
+                os.path.join(case_path, "cmake_macros", "base_config.cmake")
+            )
+
+            copy_depends_files.assert_called_with(
+                "test", machines_path, case_path, "gnu-test"
             )

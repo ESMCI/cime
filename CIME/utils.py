@@ -561,6 +561,7 @@ def get_model():
     then the layout of the checkout.
 
     >>> import tempfile
+    >>> _prev_srcroot = os.environ.get("SRCROOT")
     >>> os.environ["SRCROOT"] = tempfile.mkdtemp()
     >>> os.environ["CIME_MODEL"] = "garbage"
     >>> get_model() # doctest:+ELLIPSIS +IGNORE_EXCEPTION_DETAIL
@@ -576,7 +577,10 @@ def get_model():
     >>> get_model()
     'e3sm'
     >>> reset_cime_config()
-    >>> del os.environ["SRCROOT"]
+    >>> if _prev_srcroot is None:
+    ...     del os.environ["SRCROOT"]
+    ... else:
+    ...     os.environ["SRCROOT"] = _prev_srcroot
     """
     srcroot = get_src_root()
 

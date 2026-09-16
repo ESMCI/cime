@@ -1149,19 +1149,6 @@ def case_st_archive(
             logger.info(
                 "resubmitting from st_archive, resubmit={:d}".format(resubmit_cnt)
             )
-            # SLURM ONLY: st_archive is a single task job, so it runs in a
-            # slurm partition that requires a memory request (--mem), and slurm
-            # therefore sets SLURM_MEM_PER_NODE to that small value.  The
-            # resubmitted run goes to a whole node partition that takes no
-            # memory request, but sbatch reads SLURM_MEM_PER_NODE as the
-            # equivalent of --mem, so without this the model run would inherit
-            # the archiving job's memory limit.  Reset it to the whole node:
-            # MAX_MEM_PER_NODE is in GiB and the slurm variable is in MiB.
-            if self.get_value("MACH") in ["olivia", "betzy"]:
-                logger.info("redefine SLURM_MEM_PER_NODE environment variable")
-                os.environ["SLURM_MEM_PER_NODE"] = "{}".format(
-                    self.get_value("MAX_MEM_PER_NODE") * 1024
-                )
             self.submit(resubmit=True)
 
     return True
