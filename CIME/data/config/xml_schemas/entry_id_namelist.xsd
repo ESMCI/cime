@@ -9,7 +9,8 @@
 
   <!-- simple elements -->
   <xs:element name="type" type="xs:string"/>
-  <xs:element name="input_pathname" type="xs:NCName"/>
+  <!-- NOTE: input_pathname needs to be a type that allows colons (NCName used elsewhere explicitly does NOT) -->
+  <xs:element name="input_pathname" type="xs:Name"/>
   <xs:element name="group" type="xs:NCName"/>
   <xs:element name="file" type="xs:NCName"/>
 
