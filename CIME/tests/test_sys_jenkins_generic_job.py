@@ -22,7 +22,8 @@ class TestJenkinsGenericJob(base.BaseTestCase):
         # Need to run in a subdir in order to not have CTest clash. Name it
         # such that it should be cleaned up by the parent tearDown
         self._testdir = os.path.join(
-            self._testroot, "jenkins_test_%s" % self._baseline_name
+            self._testroot,
+            "jenkins_test_%s_%s" % (self._baseline_name, self._testMethodName),
         )
         os.makedirs(self._testdir)
 
