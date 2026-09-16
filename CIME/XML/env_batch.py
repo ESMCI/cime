@@ -232,6 +232,19 @@ class EnvBatch(EnvBase):
             # Total PES accounts for threads as well as mpi tasks
             total_tasks = case.get_value("TOTALPES")
             thread_count = case.thread_count
+            # With ESMF-aware threading each MPI task must be given a single
+            # core, because ESMF creates a component's OpenMP threads from the
+            # cores of neighbouring tasks.  case.thread_count is not changed:
+            # it is still used to decide whether the model is built with
+            # OpenMP and to set OMP_NUM_THREADS.  The override is only set
+            # when it differs from case.thread_count, because on Cray systems
+            # aprun.py replaces every component's own thread count with the
+            # override whenever one is present.
+            batch_thread_count = case.get_env("mach_pes").get_batch_thread_count(
+                thread_count
+            )
+            if batch_thread_count != thread_count:
+                overrides["thread_count"] = batch_thread_count
         if int(total_tasks) < case.get_value("MAX_TASKS_PER_NODE"):
             overrides["max_tasks_per_node"] = total_tasks
 
