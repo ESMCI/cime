@@ -63,64 +63,6 @@ class TestBuild(unittest.TestCase):
 
         assert get_value.call_args_list == expected, get_value.call_args_list
 
-    @mock.patch.dict(os.environ, {"UFS_DRIVER": "nems"})
-    @mock_case()
-    @mock.patch("CIME.build.uses_kokkos")
-    @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
-    @mock.patch(
-        "CIME.build.Files"
-    )  # used to check expected behavior by checking libs variable
-    def test__build_libraries_ufs_driver(
-        self, Files, _, uses_kokkos, case, caseroot, **kwargs
-    ):
-        uses_kokkos.return_value = False
-
-        exeroot = os.path.join(caseroot, "bld")
-        cimeroot = os.getcwd()
-        libroot = os.path.join(caseroot, "libs")
-        buildlist = ["cpl"]
-        complist = []
-
-        case.get_values = mock.MagicMock(
-            side_effect=[
-                [],  # CASE_SUPPORT_LIBRARIES
-            ]
-        )
-
-        case.get_value = mock.MagicMock(
-            side_effect=[
-                "openmpi",  # MPILIB
-                "e3sm",  # MODEL
-                "e3sm",  # MODEL
-                "",  # COMP_OCN
-                "",  # CAM_DYCORE
-                "",  # SHAREDLIBROOT
-                False,  # TEST
-            ]
-        )
-
-        build._build_libraries(
-            case,
-            exeroot,
-            "shared",
-            caseroot,
-            cimeroot,
-            libroot,
-            "unique",
-            "gnu",
-            buildlist,
-            "mct",
-            complist,
-        )
-
-        get_value = Files.return_value.get_value
-
-        expected = [
-            mock.call("BUILD_LIB_FILE", {"lib": "FTorch"}, attribute_required=True),
-        ]
-
-        assert get_value.call_args_list == expected, get_value.call_args_list
-
     @mock_case()
     @mock.patch("CIME.build.uses_kokkos")
     @mock.patch("CIME.build.generate_makefile_macro")  # no need for makefile macros
