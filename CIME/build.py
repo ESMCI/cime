@@ -757,6 +757,9 @@ def _build_libraries(
             "libraries, please migrate to 'CASE_SUPPORT_LIBRARIES' variable."
         )
         mpilib = case.get_value("MPILIB")
+
+        # This is a bit hacky. The host model should define whatever
+        # shared libs it might need.
         if case.get_value("MODEL") in CESM_LIKE_MODELS:
             libs = ["gptl", "pio", "csm_share"]
         elif case.get_value("MODEL") == "e3sm":
