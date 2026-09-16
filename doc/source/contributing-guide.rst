@@ -6,6 +6,84 @@ Contributing Guide
 .. contents::
     :local:
 
+.. _contributing-guide-ai-policy:
+
+AI usage and human review
+-------------------------
+
+CIME permits generative AI assistance, but responsibility remains with people.
+AI assistance must not shift the work of understanding, debugging, or validating
+a contribution onto maintainers. The same quality, licensing, and reproducibility
+standards apply whether or not AI is used.
+
+Human review of every commit
+````````````````````````````
+
+Before submitting a PR, personally review and understand every change in every
+commit, whether or not AI was used. This includes code, tests, configuration,
+documentation, and generated files. Review subsequent changes before submitting
+them as PR updates, including changes introduced by rebases or conflict
+resolution. This is a review-before-submission requirement, not a requirement
+for approval before creating local commits.
+
+You must be able to explain why each change is correct, how it fits CIME, and
+how it was validated. AI review and passing automated checks do not replace
+human understanding or project review. You remain responsible for your
+contribution and for personally addressing review feedback.
+
+PR descriptions, comments, and review responses must reflect your own reasoning
+and understanding. Translation, grammar, and phrasing assistance are welcome,
+provided you verify the meaning. Do not submit unreviewed AI output or delegate
+conversations with maintainers to an agent.
+
+Disclosure in pull requests
+```````````````````````````
+
+Every PR must state whether generative AI was used in preparing the contribution,
+including research, code, tests, documentation, or language assistance. If yes,
+list the provider and model for each AI service used. If the model is not exposed
+by the service, say ``not exposed`` rather than guessing. A brief description of
+usage is optional. Keep the disclosure current as the PR changes, even if
+generated material was subsequently rewritten. Ordinary formatters, compilers,
+and test runners do not require AI disclosure.
+
+For example::
+
+    AI used: Yes
+    Provider: <provider name>
+    Model: not exposed
+    Usage (optional): Suggested XML parsing tests and helped edit documentation.
+
+Correctness and reproducibility
+```````````````````````````````
+
+Test changes appropriately and verify generated documentation, behavior claims,
+and expected test results against authoritative sources or reference behavior;
+see :ref:`contributing-guide-running-tests`. For CIME workflow changes, consider
+effects on case configuration, builds, restarts, and reproducibility. Do not
+weaken tests merely to make a change pass. Explain intentional changes to
+expected behavior and report tests actually run, their results, and validation
+gaps. Documentation-only changes do not
+require climate-model runs.
+
+Licensing and sensitive information
+```````````````````````````````````
+
+Ensure you have the right to contribute all submitted material under CIME's
+applicable licensing terms, and preserve required third-party notices. AI output
+is not evidence of originality or license compatibility. Do not share secrets
+or restricted material with an AI service without authorization, and follow
+applicable institutional and data-use rules.
+
+Reviewability and enforcement
+`````````````````````````````
+
+Keep PRs focused and small enough to review. Discuss substantial refactors
+or changes to CIME behavior with maintainers before implementing them.
+Maintainers may request smaller changes, defer review until disclosure or
+validation gaps are addressed, or close contributions that require unreasonable
+review effort or whose contributors cannot explain them.
+
 Introduction
 ------------
 
@@ -183,4 +261,3 @@ You can even run CIME or testing without a shell.
 .. code-block:: bash
 
    docker run -it --rm --hostname docker -e CIME_MODEL=e3sm -v ${SRC_PATH}:/root/model -v ./storage:/root/storage -w /root/E3SM/cime ghcr.io/esmci/cime:latest ./scripts/create_test SMS.f19_g16.S
-
