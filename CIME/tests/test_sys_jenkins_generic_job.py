@@ -62,8 +62,18 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             self._thread_error = str(e)
 
     def _get_jenkins_dirs(self, mach_comp, jenkins_id):
-        pattern = os.path.join(self._jenkins_root, f"*.{mach_comp}.{jenkins_id}*/")
-        return glob.glob(pattern)
+        matches = []
+        for path in glob.glob(os.path.join(self._jenkins_root, f"*{jenkins_id}*/")):
+            tokens = os.path.basename(path.rstrip(os.sep)).split(".")
+            if len(tokens) < 2 or not tokens[-1].startswith(jenkins_id):
+                continue
+            if tokens[-2] == mach_comp or (
+                len(tokens) >= 3
+                and tokens[-3] == mach_comp
+                and tokens[-2] in ["G", "C"]
+            ):
+                matches.append(path)
+        return matches
 
     def assert_num_leftovers(self, suite):
         num_tests_in_suite = len(get_tests.get_test_suite(suite))
@@ -222,7 +232,11 @@ class TestJenkinsGenericJob(base.BaseTestCase):
    fake = .true.
 /"""
         baseline_glob = glob.glob(
-            os.path.join(self._baseline_area, self._baseline_name, "TESTRUNPASS*")
+            os.path.join(
+                self._baseline_area,
+                self._baseline_name,
+                "TESTRUNPASS_P1.f19_g16.A*",
+            )
         )
         self.assertEqual(
             len(baseline_glob),
