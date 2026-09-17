@@ -81,8 +81,8 @@ fi
 # Build the cprnc executable (for comparison of netcdf files)
 echo "" >> ${test_log}
 echo "Building cprnc in ${PWD}/builds ..." >> ${test_log}
-mkdir ${PWD}/builds/cprnc
-cd  ${PWD}/builds/cprnc
+mkdir -p cprnc
+cd cprnc
 cmake -DCMAKE_INSTALL_PREFIX=${PWD} ${cime_root}/CIME/non_py/cprnc
 make install
 if [ ! -f bin/cprnc ]; then
