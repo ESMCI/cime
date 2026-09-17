@@ -2,10 +2,11 @@ import os
 import unittest
 import tempfile
 import shutil
+from unittest import mock
 
 from CIME.utils import expect
 
-from CIME.BuildTools.configure import generate_env_mach_specific
+from CIME.BuildTools.configure import configure, generate_env_mach_specific
 from CIME.XML.machines import Machines
 
 
@@ -46,3 +47,71 @@ class TestConfigure(unittest.TestCase):
             unit_testing=False,
             threaded=False,
         )
+
+
+def test_configure_makefile_passes_srcroot_to_cmake(tmp_path, monkeypatch):
+    # Context
+    macros_dir = tmp_path / "cmake_macros"
+    macros_dir.mkdir()
+    (macros_dir / "Macros.cmake").touch()
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    machobj = mock.MagicMock()
+    machobj.get_machine_name.return_value = "docker"
+
+    # Mocks
+    captured = {}
+
+    class FakeFiles:
+        def get_value(self, value):
+            assert value == "CMAKE_MACROS_DIR"
+            return str(macros_dir)
+
+    class FakeCmakeTmpBuildDir:
+        def __init__(self, macroloc=None, rootdir=None, tmpdir=None):
+            assert macroloc == str(output_dir)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def get_makefile_vars(self, case=None, comp=None, cmake_args=None):
+            captured["cmake_args"] = cmake_args
+            return ""
+
+    monkeypatch.setattr(
+        "CIME.BuildTools.configure.Files", lambda comp_interface=None: FakeFiles()
+    )
+    monkeypatch.setattr(
+        "CIME.BuildTools.configure.CmakeTmpBuildDir", FakeCmakeTmpBuildDir
+    )
+    monkeypatch.setattr("CIME.BuildTools.configure.get_src_root", lambda: "/srcroot")
+    monkeypatch.setattr(
+        "CIME.BuildTools.configure.copy_depends_files", lambda *args, **kwargs: None
+    )
+    monkeypatch.setattr(
+        "CIME.BuildTools.configure.generate_env_mach_specific",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(
+        "CIME.BuildTools.configure.copy_local_macros_to_dir",
+        lambda *args, **kwargs: None,
+    )
+
+    # Act
+    configure(
+        machobj,
+        str(output_dir),
+        ["Makefile"],
+        "gnu",
+        "mpi-serial",
+        False,
+        "mct",
+        "LINUX",
+    )
+
+    # Assert
+    assert "-DSRCROOT=/srcroot" in captured["cmake_args"]
+    assert "-DSRC_ROOT=/srcroot" in captured["cmake_args"]
