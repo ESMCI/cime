@@ -5,8 +5,25 @@ from CIME.case import Case
 import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
 
 
-def _test_match_glob(root, mach_comp, test_id_root):
-    return os.path.join(root, f"*.{mach_comp}.{test_id_root}*")
+def _matches_test_name(name, mach_comp, test_id_root):
+    tokens = name.split(".")
+    if len(tokens) < 2 or not tokens[-1].startswith(test_id_root):
+        return False
+
+    if tokens[-2] == mach_comp:
+        return True
+
+    return len(tokens) >= 3 and tokens[-3] == mach_comp and tokens[-2] in ["G", "C"]
+
+
+def _matching_test_paths(root, mach_comp, test_id_root):
+    return [
+        path
+        for path in glob.glob(os.path.join(root, f"*{test_id_root}*"))
+        if _matches_test_name(
+            os.path.basename(path.rstrip(os.sep)), mach_comp, test_id_root
+        )
+    ]
 
 
 ##############################################################################
@@ -43,9 +60,7 @@ def delete_old_test_data(
     ###############################################################################
     # Remove old dirs
     for clutter_area in [scratch_root, test_root, run_area, build_area, archive_area]:
-        for old_file in glob.glob(
-            _test_match_glob(clutter_area, mach_comp, test_id_root)
-        ):
+        for old_file in _matching_test_paths(clutter_area, mach_comp, test_id_root):
             if avoid_test_id not in old_file:
                 logging.info(f"TEST ARCHIVER: removing {old_file}")
                 if os.path.isdir(old_file):
@@ -64,10 +79,8 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     ###############################################################################
     results = set([])
     test_id_re = re.compile(".+[.]([^.]+)")
-    for item in glob.glob(
-        _test_match_glob(
-            os.path.join(old_test_archive, "old_cases"), mach_comp, test_id_root
-        )
+    for item in _matching_test_paths(
+        os.path.join(old_test_archive, "old_cases"), mach_comp, test_id_root
     ):
         filename = os.path.basename(item)
         the_match = test_id_re.match(filename)
@@ -113,7 +126,7 @@ def archive_old_test_data(
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob(_test_match_glob(test_root, mach_comp, test_id_root)):
+    for old_case in _matching_test_paths(test_root, mach_comp, test_id_root):
         if avoid_test_id not in old_case:
             logging.info(f"TEST ARCHIVER: archiving case {old_case}")
             exeroot, rundir, archdir = run_cmd_no_fail(
@@ -176,10 +189,8 @@ def archive_old_test_data(
         for old_test_id in sorted(old_test_ids):
             logging.info(f"TEST ARCHIVER:   Removing old data for test {old_test_id}")
             for item in ["old_cases", "old_builds", "old_runs", "old_archives"]:
-                for dir_to_rm in glob.glob(
-                    _test_match_glob(
-                        os.path.join(old_test_archive, item), mach_comp, old_test_id
-                    )
+                for dir_to_rm in _matching_test_paths(
+                    os.path.join(old_test_archive, item), mach_comp, old_test_id
                 ):
                     logging.info(f"TEST ARCHIVER:     Removing {dir_to_rm}")
                     if os.path.isdir(dir_to_rm):
@@ -401,14 +412,19 @@ def jenkins_generic_job(
     os.environ["CIME_MACHINE"] = machine.get_machine_name()
 
     mach_comp = f"{machine.get_machine_name()}_{compiler}"
-    globstr = os.path.join(test_root, f"*.{mach_comp}.{test_id}", "TestStatus")
+    teststatus_paths = [
+        os.path.join(path, "TestStatus")
+        for path in _matching_test_paths(test_root, mach_comp, test_id)
+    ]
     if submit_to_cdash:
         logging.info(
-            f"To resubmit to dashboard: wait_for_tests {globstr} --no-wait -b {cdash_build_name}"
+            "To resubmit to dashboard: wait_for_tests {} --no-wait -b {}".format(
+                " ".join(teststatus_paths), cdash_build_name
+            )
         )
 
     tests_passed = CIME.wait_for_tests.wait_for_tests(
-        glob.glob(globstr),
+        teststatus_paths,
         no_wait=not use_batch,  # wait if using queue
         check_throughput=check_throughput,
         check_memory=check_memory,
