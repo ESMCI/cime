@@ -265,7 +265,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/storage/inputdata
-          key: inputdata-2
+          # v3: bumped from inputdata-2, which was permanently stuck caching
+          # an empty (~197 byte) directory. That key was never refreshed
+          # because SKIP_ENTRYPOINT=true below skips entrypoint.sh's
+          # automatic background download, and nothing else in this job
+          # populated the cache before actions/cache saved it on the first
+          # (miss) run. See the explicit `download_input_data` call added
+          # to "Run tests" below, which now actually populates this
+          # directory so the cache is saved with real content.
+          key: inputdata-3
       - name: Run tests
         run: |
           docker run --rm \
@@ -283,6 +291,12 @@ jobs:
             -c "
               set -euxo pipefail
               source /entrypoint.sh
+              download_input_data
+              # Visible in the job log for any future failure -- avoids
+              # needing to pull the (large, gitignored) storage/inputdata
+              # artifact just to see whether/why a file is missing or
+              # undersized.
+              ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
               uv python install 3.10
               uv venv
               source .venv/bin/activate
