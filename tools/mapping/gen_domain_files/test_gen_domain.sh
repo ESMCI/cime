@@ -109,7 +109,7 @@ for baseline in ${ocn_baseline} ${lnd_baseline}; do
     fi
     # Compare against baseline and print report from cprnc comparison
     echo "Comparing $testfile against ${baseline}..."
-    (. builds/.env_mach_specific.sh && ./builds/bin/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
+    (. builds/.env_mach_specific.sh && ./builds/cprnc/bin/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
 
     # Check results
     last=`tail -n3 ${test_log}`
