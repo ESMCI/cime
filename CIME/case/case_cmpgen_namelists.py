@@ -45,9 +45,11 @@ def _do_full_nl_comp(case, test, compare_name, baseline_root=None):
     comments = "NLCOMP\n"
     for item in all_items_to_compare:
         baseline_counterpart = os.path.join(
-            baseline_casedocs
-            if os.path.dirname(item).endswith("CaseDocs")
-            else baseline_dir,
+            (
+                baseline_casedocs
+                if os.path.dirname(item).endswith("CaseDocs")
+                else baseline_dir
+            ),
             os.path.basename(item),
         )
         if not os.path.exists(baseline_counterpart):

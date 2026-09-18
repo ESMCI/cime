@@ -18,5 +18,5 @@ setup(
     test_suite="CIME.tests",
     tests_requires=["pytest"],
     url="https://github.com/ESMCI/cime",
-    version="0.1.0"
+    version="0.1.0",
 )

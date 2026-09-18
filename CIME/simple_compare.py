@@ -2,6 +2,7 @@ import os, re
 
 from CIME.utils import expect
 
+
 ###############################################################################
 def _normalize_string_value(value, case):
     ###############################################################################
@@ -68,18 +69,18 @@ def compare_lines_generic(gold_lines, comp_lines, case_id, try_realign=False):
         gold_lines (list[str]): Lines of text from the gold/baseline file (e.g. readlines()).
         comp_lines (list[str]): Lines of text from the file being compared against gold.
         case_id (str | None): Optional case base ID string used to normalize case IDs/timestamps.
-        try_realign (bool): If True, advances the index of the longer line list on mismatch 
+        try_realign (bool): If True, advances the index of the longer line list on mismatch
                             to attempt realigning shifted lines. Default is False.
 
     Returns:
-        tuple[str, int]: A tuple of (diff_desc, mismatch_count), where diff_desc contains diff 
-                         output describing inequivalent, extra, or missing lines, and 
+        tuple[str, int]: A tuple of (diff_desc, mismatch_count), where diff_desc contains diff
+                         output describing inequivalent, extra, or missing lines, and
                          mismatch_count is the integer count of line mismatches.
 
     Note:
-        This comparison only strips leading and trailing whitespace per line (.strip()) and skips 
-        lines that start with '#' or '!'. It is NOT fully whitespace-agnostic: internal spacing 
-        differences (e.g., between key and value), inline comments at line ends, and line-order 
+        This comparison only strips leading and trailing whitespace per line (.strip()) and skips
+        lines that start with '#' or '!'. It is NOT fully whitespace-agnostic: internal spacing
+        differences (e.g., between key and value), inline comments at line ends, and line-order
         changes will trigger mismatch errors.
 
     >>> teststr = '''
