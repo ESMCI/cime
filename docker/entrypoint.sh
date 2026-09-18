@@ -145,26 +145,33 @@ function download_input_data() {
         --no-verbose
     )
 
+    # dest|url|min_bytes. min_bytes is a conservative lower bound (well below
+    # the real file size, comfortably above an HTML error/redirect page or a
+    # partial transfer) used to catch truncated-but-non-empty files that a
+    # plain non-empty check would miss -- e.g. a download interrupted after a
+    # few tens of KB, or a cache (GH Actions, bind-mounted volume, ...)
+    # restoring a stale/corrupt copy from before this validation existed.
     local files=(
-        "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc"
-        "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc"
-        "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc"
+        "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|1000000"
+        "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|95000"
+        "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|95000"
     )
 
     local failed=0
     for file_spec in "${files[@]}"; do
-        local dest="${file_spec%%|*}"
-        local url="${file_spec##*|}"
+        local dest url min_bytes
+        IFS='|' read -r dest url min_bytes <<< "$file_spec"
 
-        # Skip if a complete file already exists. A previously interrupted
-        # download (container kill, CI timeout, network drop) can leave a
+        # Skip if a complete, correctly-sized file already exists. A
+        # previously interrupted download (container kill, CI timeout,
+        # network drop) or a stale/corrupt cache restore can leave a
         # zero-byte or truncated file at $dest; treat that as absent so it
         # gets retried instead of being silently accepted forever.
-        if [[ -s "$dest" ]]; then
+        if [[ -f "$dest" ]] && [[ "$(stat -c%s "$dest" 2>/dev/null || echo 0)" -ge "$min_bytes" ]]; then
             echo "Already present: $(basename "$dest")"
             continue
         elif [[ -f "$dest" ]]; then
-            echo "WARNING: Removing incomplete cached file: $(basename "$dest")" >&2
+            echo "WARNING: Removing incomplete/undersized cached file: $(basename "$dest") ($(stat -c%s "$dest" 2>/dev/null || echo 0) bytes, expected >= ${min_bytes})" >&2
             rm -f "$dest"
         fi
 
@@ -176,10 +183,17 @@ function download_input_data() {
         # Download to a temp file in the same directory and rename into place
         # only on success, so a killed/interrupted download can never leave a
         # partial file sitting at the final destination path.
-        local tmp_dest
+        local tmp_dest tmp_size
         tmp_dest="$(mktemp "${dest}.XXXXXX")"
-        if wget "${wget_opts[@]}" -O "$tmp_dest" "$url" && [[ -s "$tmp_dest" ]]; then
-            mv -f "$tmp_dest" "$dest"
+        if wget "${wget_opts[@]}" -O "$tmp_dest" "$url"; then
+            tmp_size="$(stat -c%s "$tmp_dest" 2>/dev/null || echo 0)"
+            if [[ "$tmp_size" -ge "$min_bytes" ]]; then
+                mv -f "$tmp_dest" "$dest"
+            else
+                echo "WARNING: Downloaded $url but result is too small (${tmp_size} bytes, expected >= ${min_bytes}); treating as failed" >&2
+                rm -f "$tmp_dest"
+                failed=1
+            fi
         else
             echo "WARNING: Failed to download $url after retries" >&2
             rm -f "$tmp_dest"
