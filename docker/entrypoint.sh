@@ -238,12 +238,17 @@ link_config_machines
 # Attempt to download missing input data at runtime (if NERSC was unreachable
 # during build, or if user is mounting a fresh storage directory).
 # This runs silently in the background and does not block container startup.
-if [[ "${SKIP_ENTRYPOINT}" == "false" ]] && [[ ! -f "${STORAGE_DIR}/inputdata/.download_complete" ]]; then
-    (
-        if download_input_data >/dev/null 2>&1; then
-            touch "${STORAGE_DIR}/inputdata/.download_complete"
-        fi
-    ) &
+#
+# Deliberately not gated on a "download complete" marker file: such a marker
+# can go stale (e.g. written once when files looked complete but were later
+# found corrupt, or from before download_input_data() validated file
+# integrity), permanently skipping re-validation on every future container
+# start. download_input_data() already skips real, non-empty files cheaply
+# (a single stat check), so unconditionally invoking it here is nearly free
+# once inputs are actually present and correct, while still self-healing any
+# stale/corrupt cache.
+if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
+    ( download_input_data >/dev/null 2>&1 || true ) &
 fi
 
 # Allow git to operate in any directory, for container/dev scenarios
