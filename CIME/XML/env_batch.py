@@ -89,7 +89,7 @@ class EnvBatch(EnvBase):
             bs_nodes = self.get_children("batch_system")
             for bsnode in bs_nodes:
                 cnode = self.get_optional_child(item, attribute, root=bsnode)
-                if cnode:
+                if cnode is not None:
                     node = cnode
         if node:
             value = self.text(node)
@@ -232,6 +232,19 @@ class EnvBatch(EnvBase):
             # Total PES accounts for threads as well as mpi tasks
             total_tasks = case.get_value("TOTALPES")
             thread_count = case.thread_count
+            # With ESMF-aware threading each MPI task must be given a single
+            # core, because ESMF creates a component's OpenMP threads from the
+            # cores of neighbouring tasks.  case.thread_count is not changed:
+            # it is still used to decide whether the model is built with
+            # OpenMP and to set OMP_NUM_THREADS.  The override is only set
+            # when it differs from case.thread_count, because on Cray systems
+            # aprun.py replaces every component's own thread count with the
+            # override whenever one is present.
+            batch_thread_count = case.get_env("mach_pes").get_batch_thread_count(
+                thread_count
+            )
+            if batch_thread_count != thread_count:
+                overrides["thread_count"] = batch_thread_count
         if int(total_tasks) < case.get_value("MAX_TASKS_PER_NODE"):
             overrides["max_tasks_per_node"] = total_tasks
 
@@ -796,7 +809,6 @@ class EnvBatch(EnvBase):
               waiting to resubmit at the end of the first sequence
         workflow is a logical indicating whether only "job" is submitted or the workflow sequence starting with "job" is submitted
         """
-
         external_workflow = case.get_value("EXTERNAL_WORKFLOW")
         if not self._env_workflow:
             self._env_workflow = case.get_env("workflow")
@@ -816,44 +828,44 @@ class EnvBatch(EnvBase):
 
         startindex = 0
         jobs = []
-        firstjob = job
-        if job is not None:
-            expect(job in alljobs, "Do not know about batch job {}".format(job))
-            startindex = alljobs.index(job)
-        for index, job in enumerate(alljobs):
-            logger.debug(
-                "Index {:d} job {} startindex {:d}".format(index, job, startindex)
-            )
-            if index < startindex:
-                continue
-            try:
-                prereq = self._env_workflow.get_value(
-                    "prereq", subgroup=job, resolved=False
+        if workflow:
+            if job is not None:
+                expect(job in alljobs, "Do not know about batch job {}".format(job))
+                startindex = alljobs.index(job)
+            for index, job in enumerate(alljobs):
+                logger.debug(
+                    "Index {:d} job {} startindex {:d}".format(index, job, startindex)
                 )
-                if (
-                    external_workflow
-                    or prereq is None
-                    or job == firstjob
-                    or (dry_run and prereq == "$BUILD_COMPLETE")
-                ):
-                    prereq = True
-                else:
-                    prereq = case.get_resolved_value(prereq)
-                    prereq = eval(prereq)
-            except Exception:
-                expect(
-                    False,
-                    "Unable to evaluate prereq expression '{}' for job '{}'".format(
-                        self.get_value("prereq", subgroup=job), job
-                    ),
-                )
-            if prereq:
-                jobs.append(
-                    (job, self._env_workflow.get_value("dependency", subgroup=job))
-                )
+                if index < startindex:
+                    continue
+                try:
+                    prereq = self._env_workflow.get_value(
+                        "prereq", subgroup=job, resolved=False
+                    )
+                    if external_workflow or prereq is None or dry_run:
+                        prereq = True
+                    else:
+                        prereq = case.get_resolved_value(prereq)
+                        prereq = eval(prereq)
+                except Exception:
+                    expect(
+                        False,
+                        "Unable to evaluate prereq expression '{}' for job '{}'".format(
+                            self.get_value("prereq", subgroup=job), job
+                        ),
+                    )
+                if prereq:
+                    jobs.append(
+                        (job, self._env_workflow.get_value("dependency", subgroup=job))
+                    )
 
-            if self._batchtype == "cobalt":
-                break
+                if self._batchtype == "cobalt":
+                    break
+
+        else:
+            expect(job, "If not following workflow, please specify which job to submit")
+            expect(job in alljobs, "Do not know about batch job {}".format(job))
+            jobs = [(job, None)]
 
         depid = OrderedDict()
         jobcmds = []
@@ -1389,10 +1401,25 @@ class EnvBatch(EnvBase):
 
         return nodes
 
+    def _get_batch_system_child(self, name):
+        """
+        Find a child element by name, searching within every <batch_system> child.  This is necessary because
+        elements such as batch_query and batch_cancel live inside zero or more
+        <batch_system type="..."> blocks.
+        Returns the last matching node found (consistent with get_value behaviour),
+        or None if no match exists.
+        """
+        node = None
+        for bsnode in self.get_children("batch_system"):
+            cnode = self.get_optional_child(name, root=bsnode)
+            if cnode is not None:
+                node = cnode
+        return node
+
     def get_status(self, jobid):
-        batch_query = self.get_optional_child("batch_query")
+        batch_query = self._get_batch_system_child("batch_query")
         if batch_query is None:
-            logger.warning("Batch queries not supported on this platform")
+            logger.warning(f"Batch queries not supported on platform {self._batchtype}")
         else:
             cmd = self.text(batch_query) + " "
             if self.has(batch_query, "per_job_arg"):
@@ -1409,9 +1436,11 @@ class EnvBatch(EnvBase):
                 return out.strip()
 
     def cancel_job(self, jobid):
-        batch_cancel = self.get_optional_child("batch_cancel")
+        batch_cancel = self._get_batch_system_child("batch_cancel")
         if batch_cancel is None:
-            logger.warning("Batch cancellation not supported on this platform")
+            logger.warning(
+                f"Batch cancellation not supported on platform {self._batchtype}"
+            )
             return False
         else:
             cmd = self.text(batch_cancel) + " " + str(jobid)

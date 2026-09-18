@@ -5,7 +5,8 @@ case_run is a member of Class Case
 from CIME.XML.standard_module_setup import *
 from CIME.config import Config
 from CIME.utils import gzip_existing_file, new_lid
-from CIME.utils import run_sub_or_cmd, safe_copy, model_log, CIMEError
+from CIME.core.exceptions import CIMEError
+from CIME.utils import run_sub_or_cmd, safe_copy, model_log
 from CIME.utils import batch_jobid, is_comp_standalone
 from CIME.status import append_status, run_and_log_case_status
 from CIME.get_timing import get_timing
@@ -342,6 +343,17 @@ def _post_run_check(case, lid):
             )
         elif os.stat(model_logfile).st_size == 0:
             expect(False, "Run FAILED")
+        else:
+            # The existence/size checks above pass even when the model aborts
+            # mid-run, so also require a termination message in the component
+            # log. This comp_standalone logic is currently designed for CAM,
+            # which writes "END OF MODEL RUN" on successful completion.
+            with open(model_logfile, "r") as fd:
+                logfile = fd.read()
+            expect(
+                any([x in logfile for x in TERMINATION_TEXT]),
+                "Model did not complete - see {} \n ".format(model_logfile),
+            )
     else:
         count_ok = 0
         for cpl_logfile in cpl_logs:

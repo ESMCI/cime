@@ -2,7 +2,7 @@ package SetupTools;
 my $pkg_nm = 'SetupTools';
 
 use strict;
-use XML::LibXML;
+use XML::Lite;
 use Data::Dumper;
 
 use Log::Log4perl qw(get_logger);
@@ -115,10 +115,10 @@ sub getAllResolved
     push(@xmlfiles, "env_test.xml") if(-e "./env_test.xml");
     push(@xmlfiles, "env_archive.xml") if(-e "./env_archive.xml");
 
-    # Set up a new XML::LibXML parser for each xml file.
+    # Set up a new XML::Lite parser for each xml file.
     foreach my $basefile(@xmlfiles)
     {
-	my $xml = XML::LibXML->new()->parse_file($basefile);
+	my $xml = new XML::Lite( $basefile );
 	$parsers{$basefile} = $xml;
     }
 
@@ -126,11 +126,11 @@ sub getAllResolved
     foreach my $basefile(@xmlfiles)
     {
 	my $parser = $parsers{$basefile};
-	my @nodes = $parser->findnodes("//entry");
+	my @nodes = $parser->elements_by_name('entry');
 	foreach my $node(@nodes)
 	{
-	    my $id = $node->getAttribute('id');
-	    my $value = $node->getAttribute('value');
+	    my $id = $node->get_attribute('id');
+	    my $value = $node->get_attribute('value');
 	    # if the variable value has an unresolved variable,
 	    # we need to find it in whatever file it might be in.
 	    $value = _resolveValues($value, \%parsers);
@@ -156,7 +156,7 @@ sub getSingleResolved
 
     foreach my $basefile(@xmlfiles)
     {
-        my $xml = XML::LibXML->new()->parse_file($basefile);
+        my $xml = new XML::Lite( $basefile );
         $parsers{$basefile} = $xml;
     }
 
@@ -164,11 +164,12 @@ sub getSingleResolved
     foreach my $basefile(@xmlfiles)
     {
         my $parser = $parsers{$basefile};
-        my @nodes = $parser->findnodes("//entry[\@id=\'$id_to_find\']");
+        my @nodes = grep { defined $_->get_attribute('id') && $_->get_attribute('id') eq $id_to_find }
+                         $parser->elements_by_name('entry');
         if(@nodes)
         {
             my $node = $nodes[0];
-            $value = $node->getAttribute('value');
+            $value = $node->get_attribute('value');
             if($value =~/\$/)
             {
                 $value = _resolValues($value, \%parsers);
@@ -196,15 +197,13 @@ sub getxmlvars
     # Read $caseroot xml files - put restuls in %xmlvars hash
     my ($caseroot, $xmlvars) = @_;
 
-    my $parser = XML::LibXML->new( no_blanks => 1);
-
     my @files = <${caseroot}/*xml>;
     foreach my $file (@files) {
-	my $xml_variables = $parser->parse_file($file);
-	my @nodes = $xml_variables->findnodes(".//entry");
+	my $xml_variables = new XML::Lite( $file );
+	my @nodes = $xml_variables->elements_by_name('entry');
 	foreach my $node (@nodes) {
-	    my $id    = $node->getAttribute('id');
-	    my $value = $node->getAttribute('value');
+	    my $id    = $node->get_attribute('id');
+	    my $value = $node->get_attribute('value');
 	    $xmlvars->{$id} = $value;
 	}
     }
@@ -436,14 +435,15 @@ sub _resolveValues
 	my $found = 0;
 	foreach my $parser(values %$parsers)
 	{
-	    my @resolveplease = $parser->findnodes("//entry[\@id=\'$needed\']");
+	    my @resolveplease = grep { defined $_->get_attribute('id') && $_->get_attribute('id') eq $needed }
+	                             $parser->elements_by_name('entry');
 	    if(@resolveplease)
 	    {
 		$found = 1;
 		foreach my $r(@resolveplease)
 		{
-		    my $rid = $r->getAttribute('id');
-		    my $rvalue = $r->getAttribute('value');
+		    my $rid = $r->get_attribute('id');
+		    my $rvalue = $r->get_attribute('value');
 		    $value =~ s/\$$needed/$rvalue/g;
 # too noisy
 #		    $logger->debug( "value after substitution: $value\n");

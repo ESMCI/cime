@@ -7,6 +7,10 @@ you run this script from the root of the repo you want to bisect.
 
 NOTE: this tool will only work for models that use git and, for bisecting CIME,
 bring in CIME via submodule or clone.
+
+NOTE: since there are no enforced standards when it comes to commits on development
+branches, we do some git processing in this tool to ensure that only mainline
+merge commits are tested.
 """
 
 from standard_script_setup import *
@@ -20,32 +24,26 @@ logger = logging.getLogger(__name__)
 def parse_command_line(args, description):
     ###############################################################################
     parser = argparse.ArgumentParser(
-        usage="""\n{0} <testargs> <last-known-good-commit> [--bad=<bad>] [--verbose]
+        usage="""\n{0} <last-known-good-commit> "<testargs>" [--bad=<bad>] [--verbose]
 OR
 {0} --help
 
 \033[1mEXAMPLES:\033[0m
     \033[1;32m# Bisect ERS.f45_g37.B1850C5 which got broken in the last 4 CIME commits \033[0m
     > cd <root-of-broken-cime-repo>
-    > {0} HEAD~4 ERS.f45_g37.B1850C5
+    > {0} HEAD~4 'ERS.f45_g37.B1850C5 --wait'
 
     \033[1;32m# Bisect ERS.f45_g37.B1850C5 which got broken in the last 4 MODEL commits \033[0m
     > cd <root-of-broken-model>
-    > {0} HEAD~4 ERS.f45_g37.B1850C5
+    > {0} HEAD~4 'ERS.f45_g37.B1850C5 --wait'
 
     \033[1;32m# Bisect ERS.f45_g37.B1850C5 which started to DIFF in the last 4 commits \033[0m
     > cd <root-of-broken-cime-repo>
-    > {0} HEAD~4 'ERS.f45_g37.B1850C5 -c -b master'
+    > {0} HEAD~4 'ERS.f45_g37.B1850C5 -c -b master --wait'
 
     \033[1;32m# Bisect a build error for ERS.f45_g37.B1850C5 which got broken in the last 4 commits \033[0m
     > cd <root-of-broken-cime-repo>
     > {0} HEAD~4 'ERS.f45_g37.B1850C5 --no-run'
-
-    \033[1;32m# Bisect two different failing tests which got broken in the last 4 commits \033[0m
-    > cd <root-of-broken-cime-repo>
-    > {0} HEAD~4 'ERS.f45_g37.B1850C5 --no-run' 'SMS.f45_g37.F'
-
-
 """.format(
             os.path.basename(args[0])
         ),

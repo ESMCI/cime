@@ -18,7 +18,7 @@ The first thing to do is clone the model repository into ``$SRCROOT``.
 
 All examples will be run from ``$CIMEROOT`` which is should exist under ``$SRCROOT`` e.g. (``$CIMEROOT`` would be ``$SRCROOT/cime``).
 
-Next set the ``CIME_MODEL`` evnironment variable for your model, e.g. ``export CIME_MODEL=e3sm``.
+Next set the ``CIME_MODEL`` environment variable for your model, e.g. ``export CIME_MODEL=<your-model>`` (see :ref:`Setting up your environment for CCS <ccs-env-setup>` for valid values).
 
 .. note::
 
@@ -155,16 +155,26 @@ Customizations
 The CCS allows for a number of customizations to be made to a case.
 
 
+.. _ccs-env-setup:
+
 Setting up your environment for CCS
 ```````````````````````````````````
 After you've cloned the model repository, you'll need to set up your environment to use the CCS.
 
 First you'll need to let CIME know which model configuration to use by setting the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
-**<model>** with the appropriate text. Current possibilities are "e3sm", "cesm", or "ufs".
+**<your-model>** with the appropriate text. Current possibilities are "e3sm", "cesm", "noresm", or "ufs".
 
 ::
 
-    export CIME_MODEL=<model>
+    export CIME_MODEL=<your-model>
+
+A checkout may instead declare its own model in a one line file ``.cime_model_id``
+at the top of the repository, containing just the model name, e.g.::
+
+    noresm
+
+This is used in preference to ``CIME_MODEL``, so that a checkout which states
+which model it is cannot be misconfigured by a stale environment variable.
 
 There are a number of possible ways to set CIME variables.
 For variables that can be set in more than one way, the order of precedence is:
@@ -173,6 +183,9 @@ For variables that can be set in more than one way, the order of precedence is:
 - variable is set as an environment variable
 - variable is set in ``$HOME/.cime/config`` as explained further :ref:`here<customizing-cime>`.
 - variable is set in a ``$CASEROOT`` xml file
+
+``CIME_MODEL`` is the exception: a model declared in ``$SRCROOT/.cime_model_id``
+takes precedence over all of the above.
 
 .. toctree::
     :maxdepth: 3

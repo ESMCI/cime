@@ -1149,20 +1149,7 @@ def case_st_archive(
             logger.info(
                 "resubmitting from st_archive, resubmit={:d}".format(resubmit_cnt)
             )
-            if self.get_value("MACH") == "mira":
-                expect(
-                    os.path.isfile(".original_host"), "ERROR alcf host file not found"
-                )
-                with open(".original_host", "r") as fd:
-                    sshhost = fd.read()
-                run_cmd(
-                    "ssh cooleylogin1 ssh {} '{case}/case.submit {case} --resubmit' ".format(
-                        sshhost, case=caseroot
-                    ),
-                    verbose=True,
-                )
-            else:
-                self.submit(resubmit=True)
+            self.submit(resubmit=True)
 
     return True
 

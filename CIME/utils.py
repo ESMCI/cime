@@ -152,8 +152,10 @@ class EnvironmentContext(object):
 # hate seeing. It's a subclass of Exception because we want it to be
 # "catchable". If you are debugging CIME and want to see the stacktrace,
 # run your CIME command with the --debug flag.
-class CIMEError(SystemExit, Exception):
-    pass
+#
+# Canonical definition lives in CIME.core.exceptions; re-exported here
+# for backward compatibility.
+from CIME.core.exceptions import CIMEError, CimeTimeoutError  # noqa: F401
 
 
 def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
@@ -175,7 +177,7 @@ def expect(condition, error_msg, exc_type=CIMEError, error_prefix="ERROR:"):
 
             pdb.set_trace()  # pylint: disable=forgotten-debug-statement
 
-        msg = error_prefix + " " + error_msg
+        msg = f"{error_prefix} {error_msg}"
         raise exc_type(msg)
 
 
@@ -228,7 +230,7 @@ def _read_cime_config_file():
     """
     READ the config file in ~/.cime, this file may contain
     [main]
-    CIME_MODEL=e3sm,cesm,ufs
+    CIME_MODEL=e3sm,cesm,noresm,ufs
     PROJECT=someprojectnumber
     """
     allowed_sections = ("main", "create_test")
@@ -497,11 +499,70 @@ def set_model(model):
     cime_config.set("main", "CIME_MODEL", model)
 
 
+# Models that share CESM's directory layout, tagging conventions and build
+# configuration, and are therefore treated identically where CIME branches on
+# the model name.
+CESM_LIKE_MODELS = ("cesm", "noresm")
+
+
+MODEL_ID_FILE = ".cime_model_id"
+
+
+def _model_from_srcroot(srcroot):
+    """
+    Return the model declared in $SRCROOT/.cime_model_id, or None.
+
+    A checkout may declare which CIME model it is with a one line file at the
+    top of the repository holding the model name, e.g. a NorESM checkout
+    contains "noresm".  Blank lines and # comments are ignored.
+    """
+    model_id_file = os.path.join(srcroot, MODEL_ID_FILE)
+
+    if not os.path.isfile(model_id_file):
+        return None
+
+    model = None
+
+    # The file may contain comment lines and blank lines, e.g.
+    #
+    #     # this checkout is NorESM
+    #     noresm
+    #
+    # so drop any '#' comment and surrounding whitespace from each line and
+    # take the first line that still has something left on it.
+    with open(model_id_file) as fd:
+        for line in fd:
+            line = line.split("#", 1)[0].strip()
+
+            if line:
+                model = line
+                break
+
+    if model is None:
+        return None
+
+    cime_models = get_all_cime_models()
+
+    expect(
+        model in cime_models,
+        "model '{}' declared in {} not recognized. The acceptable values "
+        "of CIME_MODEL currently are {}".format(model, model_id_file, cime_models),
+    )
+
+    return model
+
+
 def get_model():
     """
     Get the currently configured model value
-    The CIME_MODEL env variable may or may not be set
 
+    A model declared in $SRCROOT/.cime_model_id wins over everything else.
+    Otherwise the CIME_MODEL env variable is used if set, then ~/.cime/config,
+    then the layout of the checkout.
+
+    >>> import tempfile
+    >>> _prev_srcroot = os.environ.get("SRCROOT")
+    >>> os.environ["SRCROOT"] = tempfile.mkdtemp()
     >>> os.environ["CIME_MODEL"] = "garbage"
     >>> get_model() # doctest:+ELLIPSIS +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
@@ -516,7 +577,31 @@ def get_model():
     >>> get_model()
     'e3sm'
     >>> reset_cime_config()
+    >>> if _prev_srcroot is None:
+    ...     del os.environ["SRCROOT"]
+    ... else:
+    ...     os.environ["SRCROOT"] = _prev_srcroot
     """
+    srcroot = get_src_root()
+
+    # an explicit declaration in the checkout wins over the environment,
+    # ~/.cime/config and the layout based guesses below
+    model = _model_from_srcroot(srcroot)
+
+    if model is not None:
+        env_model = os.environ.get("CIME_MODEL")
+
+        if env_model is not None and env_model != model:
+            logger.warning(
+                "Ignoring CIME_MODEL={} from the environment, {} declares {}".format(
+                    env_model, MODEL_ID_FILE, model
+                )
+            )
+
+        set_model(model)
+
+        return model
+
     model = os.environ.get("CIME_MODEL")
     cime_models = get_all_cime_models()
     if model in cime_models:
@@ -536,8 +621,6 @@ def get_model():
 
     # One last try
     if model is None:
-        srcroot = get_src_root()
-
         if os.path.isfile(os.path.join(srcroot, "bin", "git-fleximod")):
             model = "cesm"
         elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
@@ -1317,11 +1400,12 @@ def start_buffering_output():
 def match_any(item, re_counts):
     """
     Return true if item matches any regex in re_counts' keys. Increments
-    count if a match was found.
+    count if a match was found. Note, this does a regex search, not a strict
+    match.
     """
     for regex_str in re_counts:
         regex = re.compile(regex_str)
-        if regex.match(item):
+        if regex.search(item):
             re_counts[regex_str] += 1
             return True
 
@@ -2217,24 +2301,6 @@ def transform_vars(text, case=None, subgroup=None, overrides=None, default=None)
     return text
 
 
-def wait_for_unlocked(filepath):
-    locked = True
-    file_object = None
-    while locked:
-        try:
-            buffer_size = 8
-            # Opening file in append mode and read the first 8 characters.
-            file_object = open(filepath, "a", buffer_size)
-            if file_object:
-                locked = False
-        except IOError:
-            locked = True
-            time.sleep(1)
-        finally:
-            if file_object:
-                file_object.close()
-
-
 def gunzip_existing_file(filepath):
     with gzip.open(filepath, "rb") as fd:
         return fd.read()
@@ -2733,3 +2799,63 @@ def is_comp_standalone(case):
     if stubcnt >= numclasses - 2:
         return True, model
     return False, None
+
+
+_CIME_LOCK_DIR_NAME = "cime_utils_distributed_dir_lock"
+
+
+@contextmanager
+def distributed_dir_lock(dir_path, poll_interval=0.2, timeout=None):
+    """
+    An atomic directory-based distributed lock for shared network filesystems.
+
+    :param dir_path: Path to the directory you want to lock. Only this directory will be locked
+    :param poll_interval: Time (seconds) to wait between retry attempts.
+    :param timeout: Maximum time (seconds) to wait for lock acquisition before raising TimeoutError.
+    """
+    start_time = time.time()
+    acquired = False
+
+    lock_dir_path = os.path.join(dir_path, _CIME_LOCK_DIR_NAME)
+
+    while True:
+        try:
+            # os.mkdir is atomic over network filesystems (NFS, SMB, EFS)
+            os.mkdir(lock_dir_path)
+            acquired = True
+            break
+        except FileExistsError:
+            # Check if we have timed out while waiting
+            if timeout is not None and (time.time() - start_time) > timeout:
+                raise CimeTimeoutError(  # pylint: disable=raise-missing-from
+                    f"Failed to acquire lock at {lock_dir_path} within {timeout} seconds. It's possible that a process crashed while holding the lock and this directory will need to be manually removed."
+                )
+
+            # Lock is busy; wait and try again
+            time.sleep(poll_interval)
+
+    try:
+        # Pass control back to the 'with' block
+        yield
+    finally:
+        # This block ALWAYS runs, even if the code inside the 'with' statement crashes
+        if acquired:
+            try:
+                os.rmdir(lock_dir_path)
+            except FileNotFoundError:
+                # Handle edge case where lock was manually cleaned up externally
+                pass
+
+
+class SectionTimer:
+    def __init__(self, name):
+        self.name = name
+        self.start = None
+
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        elapsed = time.perf_counter() - self.start
+        print(f"[Timer] {self.name} took {elapsed:.4f} seconds")

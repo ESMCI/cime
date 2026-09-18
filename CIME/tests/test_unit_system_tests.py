@@ -532,13 +532,13 @@ class TestUnitSystemTests(unittest.TestCase):
                 lines = fd.readlines()
 
             assert len(lines) == 1
-            assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
+            assert re.match(r"sha:.* date:.* (\d+\.\d+)", lines[0])
 
             with open(baseline_dir / "cpl-mem.log") as fd:
                 lines = fd.readlines()
 
             assert len(lines) == 1
-            assert re.match("sha:.* date:.* (\d+\.\d+)", lines[0])
+            assert re.match(r"sha:.* date:.* (\d+\.\d+)", lines[0])
 
             # Check that additional_baseline_generation() was called
             expected_basegen_dir = str(

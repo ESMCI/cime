@@ -595,7 +595,7 @@ ifeq ($(NETCDF_SEPARATE), FALSE)
 else ifeq ($(NETCDF_SEPARATE), TRUE)
     ifeq (,$(findstring $(LIB_NETCDF_C), $(SLIBS)))
       SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
-    else ifeq (,$(findstring $(LIB_NETCDF_FOTRAN), $(SLIBS)))
+    else ifeq (,$(findstring $(LIB_NETCDF_FORTRAN), $(SLIBS)))
       SLIBS += -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
     endif
 endif
