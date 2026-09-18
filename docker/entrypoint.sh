@@ -135,37 +135,68 @@ function download_input_data() {
     mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
-    # wget with retries, timeout, and continue on partial downloads
+    # wget with retries and timeout. Each file is downloaded fresh to a temp
+    # path (see below) and atomically renamed into place, so --continue
+    # would be meaningless here and is intentionally omitted.
     local wget_opts=(
         --tries=5
         --timeout=30
         --waitretry=10
-        --continue
         --no-verbose
     )
 
+    # dest|url|min_bytes. min_bytes is a conservative lower bound (well below
+    # the real file size, comfortably above an HTML error/redirect page or a
+    # partial transfer) used to catch truncated-but-non-empty files that a
+    # plain non-empty check would miss -- e.g. a download interrupted after a
+    # few tens of KB, or a cache (GH Actions, bind-mounted volume, ...)
+    # restoring a stale/corrupt copy from before this validation existed.
     local files=(
-        "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc"
-        "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc"
-        "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc"
+        "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|1000000"
+        "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|95000"
+        "${STORAGE_DIR}/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.lnd.ne4np4_oQU240.160614.nc|95000"
     )
 
     local failed=0
     for file_spec in "${files[@]}"; do
-        local dest="${file_spec%%|*}"
-        local url="${file_spec##*|}"
+        local dest url min_bytes
+        IFS='|' read -r dest url min_bytes <<< "$file_spec"
 
-        # Skip if file already exists
-        if [[ -f "$dest" ]]; then
+        # Skip if a complete, correctly-sized file already exists. A
+        # previously interrupted download (container kill, CI timeout,
+        # network drop) or a stale/corrupt cache restore can leave a
+        # zero-byte or truncated file at $dest; treat that as absent so it
+        # gets retried instead of being silently accepted forever.
+        if [[ -f "$dest" ]] && [[ "$(stat -c%s "$dest" 2>/dev/null || echo 0)" -ge "$min_bytes" ]]; then
             echo "Already present: $(basename "$dest")"
             continue
+        elif [[ -f "$dest" ]]; then
+            echo "WARNING: Removing incomplete/undersized cached file: $(basename "$dest") ($(stat -c%s "$dest" 2>/dev/null || echo 0) bytes, expected >= ${min_bytes})" >&2
+            rm -f "$dest"
         fi
 
+        # Clean up any stray temp files left behind by a prior crashed/killed
+        # invocation of this function targeting the same destination.
+        rm -f "${dest}".??????
+
         echo "Downloading $(basename "$dest")..."
-        if ! wget "${wget_opts[@]}" -O "$dest" "$url"; then
+        # Download to a temp file in the same directory and rename into place
+        # only on success, so a killed/interrupted download can never leave a
+        # partial file sitting at the final destination path.
+        local tmp_dest tmp_size
+        tmp_dest="$(mktemp "${dest}.XXXXXX")"
+        if wget "${wget_opts[@]}" -O "$tmp_dest" "$url"; then
+            tmp_size="$(stat -c%s "$tmp_dest" 2>/dev/null || echo 0)"
+            if [[ "$tmp_size" -ge "$min_bytes" ]]; then
+                mv -f "$tmp_dest" "$dest"
+            else
+                echo "WARNING: Downloaded $url but result is too small (${tmp_size} bytes, expected >= ${min_bytes}); treating as failed" >&2
+                rm -f "$tmp_dest"
+                failed=1
+            fi
+        else
             echo "WARNING: Failed to download $url after retries" >&2
-            # Clean up partial download
-            rm -f "$dest"
+            rm -f "$tmp_dest"
             failed=1
         fi
     done
@@ -221,12 +252,17 @@ link_config_machines
 # Attempt to download missing input data at runtime (if NERSC was unreachable
 # during build, or if user is mounting a fresh storage directory).
 # This runs silently in the background and does not block container startup.
-if [[ "${SKIP_ENTRYPOINT}" == "false" ]] && [[ ! -f "${STORAGE_DIR}/inputdata/.download_complete" ]]; then
-    (
-        if download_input_data >/dev/null 2>&1; then
-            touch "${STORAGE_DIR}/inputdata/.download_complete"
-        fi
-    ) &
+#
+# Deliberately not gated on a "download complete" marker file: such a marker
+# can go stale (e.g. written once when files looked complete but were later
+# found corrupt, or from before download_input_data() validated file
+# integrity), permanently skipping re-validation on every future container
+# start. download_input_data() already skips real, non-empty files cheaply
+# (a single stat check), so unconditionally invoking it here is nearly free
+# once inputs are actually present and correct, while still self-healing any
+# stale/corrupt cache.
+if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
+    ( download_input_data >/dev/null 2>&1 || true ) &
 fi
 
 # Allow git to operate in any directory, for container/dev scenarios

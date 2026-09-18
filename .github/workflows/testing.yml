@@ -53,6 +53,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           submodules: "true"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -113,6 +115,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up python
         uses: actions/setup-python@v5
         with:
@@ -160,11 +165,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: cesm/cime
           submodules: "true"
       - name: Run tests
         run: |
           docker run --rm \
+            --entrypoint bash \
             -v ${{ github.workspace }}/cesm:/root/cesm \
             -w /root/cesm/cime \
             -e CIME_MODEL=cesm \
@@ -172,13 +180,14 @@ jobs:
             -e CIME_TEST_PLATFORM=ubuntu-latest \
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
-            bash -c "
+            -c "
+              set -euxo pipefail
               source /entrypoint.sh
               uv python install ${{ matrix.python-version }}
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
-              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
@@ -246,6 +255,8 @@ jobs:
       - name: Checkout CIME
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: ${{ matrix.model.name }}/cime
           submodules: 'true'
       - name: Create storage directory
@@ -254,10 +265,19 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/storage/inputdata
-          key: inputdata-2
+          # v3: bumped from inputdata-2, which was permanently stuck caching
+          # an empty (~197 byte) directory. That key was never refreshed
+          # because SKIP_ENTRYPOINT=true below skips entrypoint.sh's
+          # automatic background download, and nothing else in this job
+          # populated the cache before actions/cache saved it on the first
+          # (miss) run. See the explicit `download_input_data` call added
+          # to "Run tests" below, which now actually populates this
+          # directory so the cache is saved with real content.
+          key: inputdata-3
       - name: Run tests
         run: |
           docker run --rm \
+            --entrypoint bash \
             --hostname docker \
             --shm-size=1g \
             -v ${{ github.workspace }}/${{ matrix.model.name }}:/root/model \
@@ -268,25 +288,34 @@ jobs:
             -e CIME_TEST_PLATFORM=ubuntu-latest \
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
-            bash -c "
+            -c "
+              set -euxo pipefail
               source /entrypoint.sh
+              download_input_data
+              # Visible in the job log for any future failure -- avoids
+              # needing to pull the (large, gitignored) storage/inputdata
+              # artifact just to see whether/why a file is missing or
+              # undersized.
+              ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
               uv python install 3.10
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-      - uses: mxschmitt/action-tmate@v3
-        if: ${{ failure() && !cancelled() }}
-        with:
-          limit-access-to-actor: true
+      # Optional debugging step. Re-enable intentionally when interactive SSH
+      # access to a failed system-testing job is needed.
+      # - uses: mxschmitt/action-tmate@v3
+      #   if: ${{ failure() && !cancelled() }}
+      #   with:
+      #     limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash
