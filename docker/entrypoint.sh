@@ -135,12 +135,13 @@ function download_input_data() {
     mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
-    # wget with retries, timeout, and continue on partial downloads
+    # wget with retries and timeout. Each file is downloaded fresh to a temp
+    # path (see below) and atomically renamed into place, so --continue
+    # would be meaningless here and is intentionally omitted.
     local wget_opts=(
         --tries=5
         --timeout=30
         --waitretry=10
-        --continue
         --no-verbose
     )
 
@@ -155,17 +156,33 @@ function download_input_data() {
         local dest="${file_spec%%|*}"
         local url="${file_spec##*|}"
 
-        # Skip if file already exists
-        if [[ -f "$dest" ]]; then
+        # Skip if a complete file already exists. A previously interrupted
+        # download (container kill, CI timeout, network drop) can leave a
+        # zero-byte or truncated file at $dest; treat that as absent so it
+        # gets retried instead of being silently accepted forever.
+        if [[ -s "$dest" ]]; then
             echo "Already present: $(basename "$dest")"
             continue
+        elif [[ -f "$dest" ]]; then
+            echo "WARNING: Removing incomplete cached file: $(basename "$dest")" >&2
+            rm -f "$dest"
         fi
 
+        # Clean up any stray temp files left behind by a prior crashed/killed
+        # invocation of this function targeting the same destination.
+        rm -f "${dest}".??????
+
         echo "Downloading $(basename "$dest")..."
-        if ! wget "${wget_opts[@]}" -O "$dest" "$url"; then
+        # Download to a temp file in the same directory and rename into place
+        # only on success, so a killed/interrupted download can never leave a
+        # partial file sitting at the final destination path.
+        local tmp_dest
+        tmp_dest="$(mktemp "${dest}.XXXXXX")"
+        if wget "${wget_opts[@]}" -O "$tmp_dest" "$url" && [[ -s "$tmp_dest" ]]; then
+            mv -f "$tmp_dest" "$dest"
+        else
             echo "WARNING: Failed to download $url after retries" >&2
-            # Clean up partial download
-            rm -f "$dest"
+            rm -f "$tmp_dest"
             failed=1
         fi
     done
