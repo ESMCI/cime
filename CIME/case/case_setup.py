@@ -432,9 +432,11 @@ def _case_setup_impl(
                 if ngpus_per_node >= 0:
                     case.set_value(
                         "NGPUS_PER_NODE",
-                        max(1, ngpus_per_node)
-                        if ngpus_per_node <= max_gpus_per_node
-                        else max_gpus_per_node,
+                        (
+                            max(1, ngpus_per_node)
+                            if ngpus_per_node <= max_gpus_per_node
+                            else max_gpus_per_node
+                        ),
                     )
             elif gpu_offload:
                 raise CIMEError(
