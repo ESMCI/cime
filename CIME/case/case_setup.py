@@ -288,7 +288,7 @@ def _create_macros_cmake(
             if copied and copied_path and copied_path.endswith(".cmake"):
                 _copy_cmake_includes_recursive(copied_path, case_cmake_path)
 
-    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler)
+    copy_depends_files(mach, mach_obj.machines_dir, caseroot, compiler, os_)
 
 
 ###############################################################################
@@ -543,9 +543,11 @@ def _case_setup_impl(
                 if ngpus_per_node >= 0:
                     case.set_value(
                         "NGPUS_PER_NODE",
-                        max(1, ngpus_per_node)
-                        if ngpus_per_node <= max_gpus_per_node
-                        else max_gpus_per_node,
+                        (
+                            max(1, ngpus_per_node)
+                            if ngpus_per_node <= max_gpus_per_node
+                            else max_gpus_per_node
+                        ),
                     )
             elif gpu_offload:
                 raise CIMEError(
