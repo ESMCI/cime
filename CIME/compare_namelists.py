@@ -814,6 +814,24 @@ def _compare_yamls(gold_file, compare_file, case):
 
 
 ###############################################################################
+def _compare_tomls(gold_file, compare_file, case):
+    ###############################################################################
+    """
+    Compare contents of two TOML files
+    """
+    try:
+        import tomllib
+    except ImportError:
+        import tomli as tomllib
+
+    with open(gold_file, "rb") as f1, open(compare_file, "rb") as f2:
+        data1 = tomllib.load(f1)
+        data2 = tomllib.load(f2)
+
+    return normalized_dict_compare("top-level", data1, data2, case)
+
+
+###############################################################################
 def compare_namelist_files(gold_file, compare_file, case=None):
     ###############################################################################
     """
@@ -824,6 +842,8 @@ def compare_namelist_files(gold_file, compare_file, case=None):
 
     if gold_file.endswith(".yaml") or gold_file.endswith(".yml"):
         comments = _compare_yamls(gold_file, compare_file, case)
+    elif gold_file.endswith("_toml"):
+        comments = _compare_tomls(gold_file, compare_file, case)
     else:
         gold_namelists = _parse_namelists(open(gold_file, "r").readlines(), gold_file)
         comp_namelists = _parse_namelists(
