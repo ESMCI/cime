@@ -570,10 +570,10 @@ class TestIsCompStandalone(unittest.TestCase):
         self.assertEqual(is_comp_standalone(case), (True, "atm"))
 
     def test_is_comp_standalone_single_data_component(self):
-        """A case with one data component and the rest stubs is standalone"""
+        """A case whose only non-stub component is a data component is not standalone"""
         case = self._make_case({"ATM": "datm"})
 
-        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+        self.assertEqual(is_comp_standalone(case), (False, None))
 
     def test_is_comp_standalone_fully_coupled(self):
         """A case with no stub components is not standalone"""

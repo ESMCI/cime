@@ -2783,18 +2783,22 @@ def is_comp_standalone(case):
     Test if the case is a single component standalone such as FKESSLER
 
     This is meant to agree with logic in CMEPS (in buildnml and buildexe) that has special
-    handling of these standalone configurations.
+    handling of these standalone configurations. In particular, to agree with that logic:
+    A case is not considered standalone if its one non-stub component is a data component.
     """
     stubcnt = 0
     classes = case.get_values("COMP_CLASSES")
     model = "cpl"
+    model_is_data = False
     for comp in classes:
-        if case.get_value("COMP_{}".format(comp)) == "s{}".format(comp.lower()):
+        comp_value = case.get_value("COMP_{}".format(comp))
+        if comp_value == "s{}".format(comp.lower()):
             stubcnt = stubcnt + 1
         else:
             model = comp.lower()
+            model_is_data = comp_value == "d{}".format(comp.lower())
     numclasses = len(classes)
-    if stubcnt >= numclasses - 2:
+    if stubcnt >= numclasses - 2 and not model_is_data:
         return True, model
     return False, None
 
