@@ -713,17 +713,7 @@ class Case(object):
 
         self.set_lookup_value("COMP_INTERFACE", self._comp_interface)
         if config.set_comp_root_dir_cpl:
-            if config.use_nems_comp_root_dir:
-                ufs_driver = os.environ.get("UFS_DRIVER")
-                attribute = None
-                if ufs_driver:
-                    attribute = {"component": "nems"}
-                comp_root_dir_cpl = files.get_value(
-                    "COMP_ROOT_DIR_CPL", attribute=attribute
-                )
-            else:
-                comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
-
+            comp_root_dir_cpl = files.get_value("COMP_ROOT_DIR_CPL")
             self.set_lookup_value("COMP_ROOT_DIR_CPL", comp_root_dir_cpl)
 
         # Loop through all of the files listed in COMPSETS_SPEC_FILE and find the file
@@ -808,10 +798,11 @@ class Case(object):
         ):
             primary_component = "allactive"
         elif progcomps["LND"] and progcomps["OCN"] and progcomps["ICE"]:
+            # prognostic lnd, ocn and ice without a prognostic atm
             # this is a "J" compset
             primary_component = "allactive"
         elif progcomps["ATM"] and progcomps["OCN"] and progcomps["ICE"]:
-            # this is a ufs s2s compset
+            # prognostic atm, ocn and ice without a prognostic land
             primary_component = "allactive"
         elif progcomps["ATM"]:
             if "DOCN%SOM" in self._compsetname and progcomps["LND"]:

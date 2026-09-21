@@ -417,22 +417,15 @@ def _build_model(
     if not buildlist:
         cime_model = get_model()
         file_build = os.path.join(exeroot, "{}.bldlog.{}".format(cime_model, lid))
-
-        ufs_driver = os.environ.get("UFS_DRIVER")
-        if config.ufs_alternative_config and ufs_driver == "nems":
+        files = Files(comp_interface=comp_interface)
+        if comp_interface == "nuopc":
             config_dir = os.path.join(
-                cimeroot, os.pardir, "src", "model", "NEMS", "cime", "cime_config"
+                os.path.dirname(files.get_value("BUILD_LIB_FILE", {"lib": "CMEPS"}))
             )
         else:
-            files = Files(comp_interface=comp_interface)
-            if comp_interface == "nuopc":
-                config_dir = os.path.join(
-                    os.path.dirname(files.get_value("BUILD_LIB_FILE", {"lib": "CMEPS"}))
-                )
-            else:
-                config_dir = os.path.join(
-                    files.get_value("COMP_ROOT_DIR_CPL"), "cime_config"
-                )
+            config_dir = os.path.join(
+                files.get_value("COMP_ROOT_DIR_CPL"), "cime_config"
+            )
 
         expect(
             os.path.exists(config_dir),
@@ -756,10 +749,6 @@ def _build_libraries(
     libs = list(dict.fromkeys(case.get_values("CASE_SUPPORT_LIBRARIES")))
     logger.info(f"libs from case_support_libraries {libs}")
     build_script = {}
-    cpl_in_complist = False
-    for l in complist:
-        if "cpl" in l:
-            cpl_in_complist = True
     # The libs variable should include a list of required support libraries.
     # The following block is provided for backward compatibility.
     if len(libs) < 1:
@@ -768,15 +757,10 @@ def _build_libraries(
             "libraries, please migrate to 'CASE_SUPPORT_LIBRARIES' variable."
         )
         mpilib = case.get_value("MPILIB")
-        ufs_driver = os.environ.get("UFS_DRIVER")
-        if ufs_driver:
-            logger.info("UFS_DRIVER is set to {}".format(ufs_driver))
 
         # This is a bit hacky. The host model should define whatever
         # shared libs it might need.
-        if ufs_driver and ufs_driver == "nems" and not cpl_in_complist:
-            libs = []
-        elif case.get_value("MODEL") in CESM_LIKE_MODELS:
+        if case.get_value("MODEL") in CESM_LIKE_MODELS:
             libs = ["gptl", "pio", "csm_share"]
         elif case.get_value("MODEL") == "e3sm":
             libs = ["gptl", "mct", "spio", "csm_share"]
@@ -792,7 +776,7 @@ def _build_libraries(
             libs.append("ekat")
 
         # Build shared code of CDEPS nuopc data models
-        if comp_interface == "nuopc" and (not ufs_driver or ufs_driver != "nems"):
+        if comp_interface == "nuopc":
             libs.append("CDEPS")
 
         ocn_model = case.get_value("COMP_OCN")
