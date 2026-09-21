@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.status.append\_status
-==========================
-
-.. currentmodule:: CIME.status
-
-.. autofunction:: append_status

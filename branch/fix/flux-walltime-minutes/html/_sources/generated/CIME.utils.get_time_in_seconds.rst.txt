@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_time\_in\_seconds
-=================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_time_in_seconds

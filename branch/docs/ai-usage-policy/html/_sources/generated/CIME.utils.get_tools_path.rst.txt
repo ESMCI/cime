@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_tools\_path
-===========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_tools_path

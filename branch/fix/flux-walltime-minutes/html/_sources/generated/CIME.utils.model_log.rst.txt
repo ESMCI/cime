@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.model\_log
-=====================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: model_log

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.copy\_local\_macros\_to\_dir
-=======================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: copy_local_macros_to_dir

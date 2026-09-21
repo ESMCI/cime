@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.find\_system\_test
-=============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: find_system_test

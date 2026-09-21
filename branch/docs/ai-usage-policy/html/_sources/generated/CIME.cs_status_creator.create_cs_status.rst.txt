@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.cs\_status\_creator.create\_cs\_status
-===========================================
-
-.. currentmodule:: CIME.cs_status_creator
-
-.. autofunction:: create_cs_status

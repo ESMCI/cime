@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.locked\_files.check\_lockedfiles
-=====================================
-
-.. currentmodule:: CIME.locked_files
-
-.. autofunction:: check_lockedfiles

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.hist\_utils.compare\_baseline
-==================================
-
-.. currentmodule:: CIME.hist_utils
-
-.. autofunction:: compare_baseline
