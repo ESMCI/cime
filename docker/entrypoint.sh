@@ -135,22 +135,21 @@ function download_input_data() {
     mkdir -p "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240"
     mkdir -p "${STORAGE_DIR}/inputdata/share/domains"
 
-    # wget with retries and timeout. Each file is downloaded fresh to a temp
-    # path (see below) and atomically renamed into place, so --continue
-    # would be meaningless here and is intentionally omitted.
+    # NERSC round-robins ~8 IPv4-only addresses. If the host is unreachable,
+    # wget sweeps all of them on every try; --connect-timeout bounds just the
+    # connect phase so an unreachable host fails fast instead of stalling for
+    # minutes, while a slow-but-reachable transfer is unaffected.
     local wget_opts=(
-        --tries=5
-        --timeout=30
-        --waitretry=10
+        --tries=2
+        --dns-timeout=10
+        --connect-timeout=10
+        --read-timeout=30
+        --waitretry=5
         --no-verbose
     )
 
-    # dest|url|min_bytes. min_bytes is a conservative lower bound (well below
-    # the real file size, comfortably above an HTML error/redirect page or a
-    # partial transfer) used to catch truncated-but-non-empty files that a
-    # plain non-empty check would miss -- e.g. a download interrupted after a
-    # few tens of KB, or a cache (GH Actions, bind-mounted volume, ...)
-    # restoring a stale/corrupt copy from before this validation existed.
+    # dest|url|min_bytes. min_bytes catches truncated-but-non-empty files
+    # (e.g. a corrupt cache restore) that a plain non-empty check would miss.
     local files=(
         "${STORAGE_DIR}/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/cpl/gridmaps/oQU240/map_oQU240_to_ne4np4_aave.160614.nc|1000000"
         "${STORAGE_DIR}/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|https://portal.nersc.gov/project/e3sm/inputdata/share/domains/domain.ocn.ne4np4_oQU240.160614.nc|95000"
@@ -162,11 +161,7 @@ function download_input_data() {
         local dest url min_bytes
         IFS='|' read -r dest url min_bytes <<< "$file_spec"
 
-        # Skip if a complete, correctly-sized file already exists. A
-        # previously interrupted download (container kill, CI timeout,
-        # network drop) or a stale/corrupt cache restore can leave a
-        # zero-byte or truncated file at $dest; treat that as absent so it
-        # gets retried instead of being silently accepted forever.
+        # Treat an undersized/missing file as absent so it gets retried.
         if [[ -f "$dest" ]] && [[ "$(stat -c%s "$dest" 2>/dev/null || echo 0)" -ge "$min_bytes" ]]; then
             echo "Already present: $(basename "$dest")"
             continue
@@ -175,14 +170,12 @@ function download_input_data() {
             rm -f "$dest"
         fi
 
-        # Clean up any stray temp files left behind by a prior crashed/killed
-        # invocation of this function targeting the same destination.
+        # Clean up any stray temp files left by a prior crashed invocation.
         rm -f "${dest}".??????
 
         echo "Downloading $(basename "$dest")..."
-        # Download to a temp file in the same directory and rename into place
-        # only on success, so a killed/interrupted download can never leave a
-        # partial file sitting at the final destination path.
+        # Download to a temp file, rename only on success -- avoids ever
+        # leaving a partial file at the final destination.
         local tmp_dest tmp_size
         tmp_dest="$(mktemp "${dest}.XXXXXX")"
         if wget "${wget_opts[@]}" -O "$tmp_dest" "$url"; then
@@ -249,18 +242,11 @@ fi
 
 link_config_machines
 
-# Attempt to download missing input data at runtime (if NERSC was unreachable
-# during build, or if user is mounting a fresh storage directory).
-# This runs silently in the background and does not block container startup.
-#
-# Deliberately not gated on a "download complete" marker file: such a marker
-# can go stale (e.g. written once when files looked complete but were later
-# found corrupt, or from before download_input_data() validated file
-# integrity), permanently skipping re-validation on every future container
-# start. download_input_data() already skips real, non-empty files cheaply
-# (a single stat check), so unconditionally invoking it here is nearly free
-# once inputs are actually present and correct, while still self-healing any
-# stale/corrupt cache.
+# Attempt to download missing input data at runtime, in the background so
+# it doesn't block container startup. Not gated on a "download complete"
+# marker: such a marker can go stale (e.g. saved once with corrupt data)
+# and then block re-validation forever. download_input_data() already
+# skips valid files cheaply, so calling it unconditionally is safe.
 if [[ "${SKIP_ENTRYPOINT}" == "false" ]]; then
     ( download_input_data >/dev/null 2>&1 || true ) &
 fi

@@ -145,28 +145,18 @@ docker run -it --hostname docker --shm-size=1g -e CIME_MODEL=e3sm \
 
 ### CI gotcha: `SKIP_ENTRYPOINT` and cached inputdata
 
-`entrypoint.sh`'s automatic background download of grid-generation input
-data (`download_input_data`, see [`entrypoint.sh`](./entrypoint.sh)) is
-only triggered when `SKIP_ENTRYPOINT` is unset/`false`. If you invoke the
-container with `--entrypoint bash` and `-e SKIP_ENTRYPOINT=true` (as CI
-does, to run a custom test script), that automatic download **never
-runs**, even though `source /entrypoint.sh` still works and defines the
-function. If your script also mounts an external `storage/inputdata`
-directory (e.g. via `actions/cache`) over the image's own baked-in copy,
-that directory can end up permanently empty/stale with nothing to ever
-populate or refresh it -- silently breaking grid-generation tests with a
-misleading downstream error, since a cache "hit" never gets re-validated.
+`--entrypoint bash -e SKIP_ENTRYPOINT=true` (used by CI to run a custom
+test script) skips entrypoint.sh's automatic background input-data
+download, even though `source /entrypoint.sh` still defines the function.
+If you also mount an external `storage/inputdata` over the image's
+baked-in copy (e.g. via `actions/cache`), it can end up permanently
+empty with nothing to populate it.
 
-If you need this input data with `SKIP_ENTRYPOINT=true`, call
-`download_input_data` explicitly after `source /entrypoint.sh`. It is
-idempotent and self-healing (re-downloads anything missing, empty, or
-suspiciously undersized), so calling it unconditionally on every run is
-safe and cheap once the data is actually present. Also avoid caching this
-directory under a cache key that never changes: if the cache is ever
-saved with bad/empty content, a fixed key will keep restoring that same
-bad content forever. Prefer bumping the key (or checking file
-sizes/logging `ls -la` after the call, as CI now does) if input data
-issues are ever suspected again.
+If you need this data with `SKIP_ENTRYPOINT=true`, call
+`download_input_data` explicitly after sourcing entrypoint.sh -- it's
+idempotent and safe to call unconditionally. Also avoid a cache key that
+never changes: a cache saved once with bad content will restore that
+same bad content forever. Bump the key if input data issues recur.
 
 ### Running without a shell
 
