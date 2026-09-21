@@ -17,6 +17,7 @@ from CIME.utils import (
     copy_globs,
     import_and_run_sub_or_cmd,
     distributed_dir_lock,
+    is_comp_standalone,
     _CIME_LOCK_DIR_NAME,
 )
 
@@ -506,6 +507,101 @@ class TestDistributedDirLock(unittest.TestCase):
         # Act / Assert — no error when lock dir is removed externally before release
         with distributed_dir_lock(self._workdir):
             os.rmdir(lock_dir)
+
+
+class TestIsCompStandalone(unittest.TestCase):
+    """Test the is_comp_standalone function."""
+
+    # A shortened stand-in for the production component classes. The logic
+    # under test only depends on the number of classes and which are stubs, so
+    # a short list keeps the "stubcnt >= numclasses - 2" arithmetic easy to
+    # follow.
+    COMP_CLASSES = ["CPL", "ATM", "LND", "OCN"]
+
+    def _make_case(self, active, classes=None):
+        """Build a mock case whose components are either active or stubs.
+
+        Components named in `active` take the given value; every other
+        component in `classes` is set to its stub, i.e. "s" followed by the
+        lowercased class name. CPL is always "cpl", since there is no stub
+        coupler.
+
+        Both accessors are backed by dicts, so querying a variable the case was
+        not set up to handle raises KeyError rather than silently returning a
+        mock.
+
+        Args:
+            active (dict): Maps component class (e.g. "ATM") to the value of
+                that component (e.g. "cam"). Classes absent from this dict are
+                stubbed.
+            classes (list of str): Component classes this case defines;
+                defaults to COMP_CLASSES.
+
+        Returns:
+            A mock case supporting the get_value and get_values calls made by
+            is_comp_standalone.
+        """
+        if classes is None:
+            classes = self.COMP_CLASSES
+
+        values = {}
+        for comp in classes:
+            if comp == "CPL":
+                values["COMP_CPL"] = "cpl"
+            else:
+                values["COMP_" + comp] = active.get(comp, "s" + comp.lower())
+
+        case = mock.MagicMock()
+
+        # For a call to case.get_values("COMP_CLASSES"), return classes; for anything
+        # else, raise an exception
+        case.get_values.side_effect = {"COMP_CLASSES": classes}.__getitem__
+
+        # For a call to case.get_value with one of the classes in the values dict, return
+        # the given value; for anything else, raise an exception
+        case.get_value.side_effect = values.__getitem__
+
+        return case
+
+    def test_is_comp_standalone_single_active_component(self):
+        """A case with one active component and the rest stubs is standalone"""
+        case = self._make_case({"ATM": "cam"})
+
+        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+
+    def test_is_comp_standalone_single_data_component(self):
+        """A case with one data component and the rest stubs is standalone"""
+        case = self._make_case({"ATM": "datm"})
+
+        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+
+    def test_is_comp_standalone_fully_coupled(self):
+        """A case with no stub components is not standalone"""
+        case = self._make_case({"ATM": "cam", "LND": "clm", "OCN": "mom"})
+
+        self.assertEqual(is_comp_standalone(case), (False, None))
+
+    def test_is_comp_standalone_two_active_components(self):
+        """Two active components are not standalone"""
+        case = self._make_case({"ATM": "cam", "LND": "clm"})
+
+        self.assertEqual(is_comp_standalone(case), (False, None))
+
+    def test_is_comp_standalone_one_active_and_one_data_component(self):
+        """One active plus one data component is not standalone"""
+        case = self._make_case({"ATM": "datm", "LND": "clm"})
+
+        self.assertEqual(is_comp_standalone(case), (False, None))
+
+    def test_is_comp_standalone_all_stubs(self):
+        """A case with no active component at all reports CPL as the model
+
+        This documents current behavior rather than endorsing it: with every
+        component stubbed, nothing overrides the initial model of "cpl".
+        """
+        case = self._make_case({})
+
+        self.assertEqual(is_comp_standalone(case), (True, "cpl"))
 
 
 if __name__ == "__main__":
