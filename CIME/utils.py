@@ -2780,8 +2780,10 @@ def add_flag_to_cmd(flag, val):
 
 def is_comp_standalone(case):
     """
-    Test if the case is a single component standalone
-    such as FKESSLER
+    Test if the case is a single component standalone such as FKESSLER
+
+    This is meant to agree with logic in CMEPS (in buildnml and buildexe) that has special
+    handling of these standalone configurations.
     """
     stubcnt = 0
     classes = case.get_values("COMP_CLASSES")
