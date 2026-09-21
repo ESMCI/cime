@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.get\_test\_data
+===============================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: get_test_data
