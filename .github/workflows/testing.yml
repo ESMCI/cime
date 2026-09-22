@@ -200,6 +200,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && needs.build-pr-image.result == 'success' && ! cancelled() }}
     needs: build-pr-image
+    permissions:
+      contents: read
+      packages: read
     strategy:
       # allow all jobs to finish
       fail-fast: false
@@ -261,6 +264,16 @@ jobs:
           submodules: 'true'
       - name: Create storage directory
         run: mkdir -p ${{ github.workspace }}/storage/inputdata
+      - name: Login to GHCR
+        # Needed to pull ghcr.io/esmci/cime-inputdata if it's private.
+        # Prefer making that package public instead (it's just public grid
+        # data, nothing sensitive) so this step -- and packages: read above
+        # -- become unnecessary; kept as a fallback either way.
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract input data image, if published
         # portal.nersc.gov is unreachable from GH Actions runners (see
         # docker/README.md), so real input data (cime_developer, gen_domain)
