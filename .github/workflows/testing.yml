@@ -261,14 +261,25 @@ jobs:
           submodules: 'true'
       - name: Create storage directory
         run: mkdir -p ${{ github.workspace }}/storage/inputdata
-      - name: Cache inputdata
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/storage/inputdata
-          # v3: bumped from inputdata-2, which was permanently stuck caching
-          # an empty directory (SKIP_ENTRYPOINT below skipped the download,
-          # and nothing populated the cache before it was first saved).
-          key: inputdata-3
+      - name: Extract input data image, if published
+        # portal.nersc.gov is unreachable from GH Actions runners (see
+        # docker/README.md), so real input data (cime_developer, gen_domain)
+        # is instead bundled into docker/Dockerfile.data, built and pushed
+        # locally/manually from a network that can reach the data servers
+        # (see docker/generate_inputdata.sh and docker/push_inputdata.sh).
+        # If that image hasn't been published (yet), "Run tests" below
+        # still attempts a best-effort, non-fatal live download as a
+        # fallback.
+        run: |
+          version="$(cat ${{ matrix.model.name }}/cime/docker/INPUTDATA_VERSION)"
+          image="ghcr.io/esmci/cime-inputdata:v${version}"
+          if docker pull "$image"; then
+            cid=$(docker create "$image" /nonexistent)
+            docker cp "${cid}":/inputdata/. ${{ github.workspace }}/storage/inputdata/
+            docker rm "${cid}"
+          else
+            echo "::warning::${image} not available; falling back to live download in Run tests"
+          fi
       - name: Extract cprnc from image
         # "Run tests" bind-mounts storage/ over /root/storage, shadowing the
         # image's baked-in /root/storage/tools/cprnc (CCSM_CPRNC). Without
@@ -296,7 +307,10 @@ jobs:
             -c "
               set -euxo pipefail
               source /entrypoint.sh
-              download_input_data
+              # Non-fatal: portal.nersc.gov is unreachable from GH Actions
+              # runners. Only test_gen_domain needs this data; don't fail
+              # the whole job over it.
+              DOWNLOAD_SKIP_ON_ERROR=1 download_input_data
               # Log sizes for diagnosability without pulling artifacts.
               ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
               uv python install 3.10
