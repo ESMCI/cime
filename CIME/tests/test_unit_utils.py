@@ -569,6 +569,19 @@ class TestIsCompStandalone(unittest.TestCase):
 
         self.assertEqual(is_comp_standalone(case), (True, "atm"))
 
+    def test_is_comp_standalone_single_active_component_no_cpl(self):
+        """A case with one active component and the rest stubs, with no cpl, is standalone"""
+        case = self._make_case({"ATM": "cam"}, classes=["ATM", "LND", "OCN"])
+
+        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+
+    def test_is_comp_standalone_single_active_component_reversed_classes(self):
+        """A case with one active component and the rest stubs, with the classes in reverse order, is standalone"""
+        # This makes sure there isn't an order dependence in the logic
+        case = self._make_case({"ATM": "cam"}, classes=self.COMP_CLASSES[::-1])
+
+        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+
     def test_is_comp_standalone_single_data_component(self):
         """A case whose only non-stub component is a data component is not standalone"""
         case = self._make_case({"ATM": "datm"})
