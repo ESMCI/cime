@@ -594,14 +594,10 @@ class TestIsCompStandalone(unittest.TestCase):
         self.assertEqual(is_comp_standalone(case), (False, None))
 
     def test_is_comp_standalone_all_stubs(self):
-        """A case with no active component at all reports CPL as the model
-
-        This documents current behavior rather than endorsing it: with every
-        component stubbed, nothing overrides the initial model of "cpl".
-        """
+        """A case whose only non-stub component is CPL is not standalone"""
         case = self._make_case({})
 
-        self.assertEqual(is_comp_standalone(case), (True, "cpl"))
+        self.assertEqual(is_comp_standalone(case), (False, None))
 
 
 if __name__ == "__main__":

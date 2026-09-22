@@ -2786,19 +2786,19 @@ def is_comp_standalone(case):
     handling of these standalone configurations. In particular, to agree with that logic:
     A case is not considered standalone if its one non-stub component is a data component.
     """
-    stubcnt = 0
     classes = case.get_values("COMP_CLASSES")
-    model = "cpl"
-    model_is_data = False
+    model = None
+    model_is_data_comp = False
+    non_stub_count = 0
     for comp in classes:
+        if comp == "CPL":
+            continue
         comp_value = case.get_value("COMP_{}".format(comp))
-        if comp_value == "s{}".format(comp.lower()):
-            stubcnt = stubcnt + 1
-        else:
+        if comp_value != "s{}".format(comp.lower()):
+            non_stub_count = non_stub_count + 1
             model = comp.lower()
-            model_is_data = comp_value == "d{}".format(comp.lower())
-    numclasses = len(classes)
-    if stubcnt >= numclasses - 2 and not model_is_data:
+            model_is_data_comp = comp_value == "d{}".format(comp.lower())
+    if non_stub_count == 1 and not model_is_data_comp:
         return True, model
     return False, None
 
