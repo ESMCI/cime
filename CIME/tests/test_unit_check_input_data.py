@@ -10,9 +10,16 @@ is treated as success instead of failing the underlying server export.
 """
 
 from unittest import mock
+import glob
 import os
 
 from CIME.case.check_input_data import _download_if_in_repo
+
+
+def _stray_tmp_paths(root):
+    """Any leftover ``*.tmp.<random>`` paths under root (see
+    _download_via_temp_path's unique-per-call temp naming)."""
+    return glob.glob(os.path.join(str(root), "**", "*.tmp.*"), recursive=True)
 
 
 def _make_server(getfile_side_effect):
@@ -38,7 +45,7 @@ def test_download_if_in_repo_file_missing_download_succeeds(tmp_path):
     dest = tmp_path / "foo.nc"
     assert dest.is_file()
     assert dest.read_text() == "data"
-    assert not (tmp_path / "foo.nc.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_file_already_present_skips_download(tmp_path):
@@ -53,6 +60,40 @@ def test_download_if_in_repo_file_already_present_skips_download(tmp_path):
     assert success is True
     server.getfile.assert_not_called()
     assert dest.read_text() == "already here"
+
+
+def test_download_if_in_repo_concurrent_calls_use_distinct_temp_paths(tmp_path):
+    """
+    Regression test: two concurrent downloads of the *same* file (e.g. two
+    test cases needing the same shared input file at once) must not
+    collide on the same temp path. If they did, one call's fetch could see
+    a stale/in-progress temp path left by the other and either refuse to
+    overwrite it or have it vanish out from under a later cleanup attempt
+    -- exactly the FileNotFoundError this reproduces if temp paths aren't
+    unique per call.
+    """
+    seen_tmp_paths = []
+
+    def getfile(rel_path, tmp_path_arg):
+        seen_tmp_paths.append(tmp_path_arg)
+        # Simulate the first call's fetch still being in-flight (temp path
+        # exists on disk, not yet renamed) when the second call starts.
+        with open(tmp_path_arg, "w") as fd:
+            fd.write("data")
+        return True
+
+    server = _make_server(getfile)
+
+    # Two calls "racing" for the same destination, one after another with
+    # the first call's temp file deliberately left in place beforehand.
+    success1 = _download_if_in_repo(server, str(tmp_path), "foo.nc")
+    (tmp_path / "foo.nc").unlink()
+    success2 = _download_if_in_repo(server, str(tmp_path), "foo.nc")
+
+    assert success1 is True
+    assert success2 is True
+    assert len(seen_tmp_paths) == 2
+    assert seen_tmp_paths[0] != seen_tmp_paths[1]
 
 
 def test_download_if_in_repo_concurrent_download_wins_race(tmp_path):
@@ -77,7 +118,7 @@ def test_download_if_in_repo_concurrent_download_wins_race(tmp_path):
 
     assert success is True
     assert dest.read_text() == "winner"
-    assert not (tmp_path / "foo.nc.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_download_fails_cleans_up_temp(tmp_path):
@@ -94,7 +135,7 @@ def test_download_if_in_repo_download_fails_cleans_up_temp(tmp_path):
 
     assert success is False
     assert not (tmp_path / "foo.nc").exists()
-    assert not (tmp_path / "foo.nc.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_download_fails_without_temp_file(tmp_path):
@@ -105,7 +146,7 @@ def test_download_if_in_repo_download_fails_without_temp_file(tmp_path):
 
     assert success is False
     assert not (tmp_path / "foo.nc").exists()
-    assert not (tmp_path / "foo.nc.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_file_creates_missing_parent_dir(tmp_path):
@@ -154,7 +195,7 @@ def test_download_if_in_repo_directory_missing_download_succeeds(tmp_path):
     dest = tmp_path / "somedir"
     assert dest.is_dir()
     assert (dest / "inner.txt").read_text() == "data"
-    assert not (tmp_path / "somedir.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_directory_already_present_skips_download(tmp_path):
@@ -193,7 +234,7 @@ def test_download_if_in_repo_directory_concurrent_download_wins_race(tmp_path):
     assert success is True
     assert (dest / "winner.txt").exists()
     assert not (dest / "loser.txt").exists()
-    assert not (tmp_path / "somedir.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_directory_download_fails_cleans_up_temp(tmp_path):
@@ -212,4 +253,4 @@ def test_download_if_in_repo_directory_download_fails_cleans_up_temp(tmp_path):
 
     assert success is False
     assert not (tmp_path / "somedir").exists()
-    assert not (tmp_path / "somedir.tmp").exists()
+    assert _stray_tmp_paths(tmp_path) == []
