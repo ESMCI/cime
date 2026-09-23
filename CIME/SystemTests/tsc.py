@@ -154,9 +154,7 @@ class TSC(SystemTestsCommon):
             self._run_with_specified_dtime(dtime=1)
 
     def compare_baseline_phase(self):
-        is_pass, short_comment, long_comment = super(
-            TSC, self
-        ).compare_baseline_phase()
+        is_pass, short_comment, long_comment = super(TSC, self).compare_baseline_phase()
 
         run_dir = self._case.get_value("RUNDIR")
         case_name = self._case.get_value("CASE")
