@@ -154,99 +154,99 @@ class TSC(SystemTestsCommon):
         if self._case.get_value("GENERATE_BASELINE"):
             self._run_with_specified_dtime(dtime=1)
 
-    def _compare_baseline_phase(self):
-        with self._test_status as ts:
-            ts.set_status(
-                CIME.test_status.BASELINE_PHASE, CIME.test_status.TEST_FAIL_STATUS
-            )
+    def compare_baseline_phase(self):
+        is_pass, short_comment, long_comment = super(TSC, self).generate_baseline_phase()
 
-            run_dir = self._case.get_value("RUNDIR")
-            case_name = self._case.get_value("CASE")
-            base_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"),
-                self._case.get_value("BASECMP_CASE"),
-            )
+        run_dir = self._case.get_value("RUNDIR")
+        case_name = self._case.get_value("CASE")
+        base_dir = os.path.join(
+            self._case.get_value("BASELINE_ROOT"),
+            self._case.get_value("BASECMP_CASE"),
+        )
 
-            test_name = "{}".format(case_name.split(".")[-1])
-            evv_config = {
-                test_name: {
-                    "module": os.path.join(evv_lib_dir, "extensions", "tsc.py"),
-                    "test-case": case_name,
-                    "test-dir": run_dir,
-                    "ref-case": "Baseline",
-                    "ref-dir": base_dir,
-                    "time-slice": [OUT_FREQ, SIM_LENGTH],
-                    "inspect-times": INSPECT_AT,
-                    "variables": VAR_LIST,
-                    "p-threshold": P_THRESHOLD,
-                    "component": self.atmmod,
-                }
+        test_name = "{}".format(case_name.split(".")[-1])
+        evv_config = {
+            test_name: {
+                "module": os.path.join(evv_lib_dir, "extensions", "tsc.py"),
+                "test-case": case_name,
+                "test-dir": run_dir,
+                "ref-case": "Baseline",
+                "ref-dir": base_dir,
+                "time-slice": [OUT_FREQ, SIM_LENGTH],
+                "inspect-times": INSPECT_AT,
+                "variables": VAR_LIST,
+                "p-threshold": P_THRESHOLD,
+                "component": self.atmmod,
             }
+        }
 
-            json_file = os.path.join(run_dir, ".".join([case_name, "json"]))
-            with open(json_file, "w") as config_file:
-                json.dump(evv_config, config_file, indent=4)
+        json_file = os.path.join(run_dir, ".".join([case_name, "json"]))
+        with open(json_file, "w") as config_file:
+            json.dump(evv_config, config_file, indent=4)
 
-            evv_out_dir = os.path.join(run_dir, ".".join([case_name, "evv"]))
-            evv(["-e", json_file, "-o", evv_out_dir])
+        evv_out_dir = os.path.join(run_dir, ".".join([case_name, "evv"]))
+        evv(["-e", json_file, "-o", evv_out_dir])
 
-            with open(os.path.join(evv_out_dir, "index.json"), "r") as evv_f:
-                evv_status = json.load(evv_f)
+        with open(os.path.join(evv_out_dir, "index.json"), "r") as evv_f:
+            evv_status = json.load(evv_f)
 
-            comments = ""
-            for evv_ele in evv_status["Page"]["elements"]:
-                if "Table" in evv_ele:
-                    comments = "; ".join(
-                        "{}: {}".format(key, val[0])
-                        for key, val in evv_ele["Table"]["data"].items()
-                    )
-                    if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
-                        self._test_status.set_status(
-                            CIME.test_status.BASELINE_PHASE,
-                            CIME.test_status.TEST_PASS_STATUS,
-                        )
-                    break
-
-            status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
-            mach_name = self._case.get_value("MACH")
-            mach_obj = Machines(machine=mach_name)
-            htmlroot = CIME.utils.get_htmlroot(mach_obj)
-            urlroot = CIME.utils.get_urlroot(mach_obj)
-            if htmlroot is not None:
-                with CIME.utils.SharedArea():
-                    copytree(
-                        evv_out_dir,
-                        os.path.join(htmlroot, "evv", case_name),
-                    )
-                if urlroot is None:
-                    urlroot = "[{}_URL]".format(mach_name.capitalize())
-                viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
-            else:
-                viewing = (
-                    "{}\n"
-                    "    EVV viewing instructions can be found at: "
-                    "        https://github.com/ESMCI/CIME/blob/master/scripts/"
-                    "climate_reproducibility/README.md#test-passfail-and-extended-output"
-                    "".format(evv_out_dir)
+        success = None
+        comments = ""
+        for evv_ele in evv_status["Page"]["elements"]:
+            if "Table" in evv_ele:
+                comments = "; ".join(
+                    "{}: {}".format(key, val[0])
+                    for key, val in evv_ele["Table"]["data"].items()
                 )
+                if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
+                    success = True
+                else:
+                    success = False
 
-            comments = (
-                "{} {} for test '{}'.\n"
-                "    {}\n"
-                "    EVV results can be viewed at:\n"
-                "        {}".format(
-                    CIME.test_status.BASELINE_PHASE,
-                    status,
-                    test_name,
-                    comments,
-                    viewing,
+                break
+
+        if success is None:
+            success = False
+            comments = "No Table in index.json"
+
+        mach_name = self._case.get_value("MACH")
+        mach_obj = Machines(machine=mach_name)
+        htmlroot = CIME.utils.get_htmlroot(mach_obj)
+        urlroot = CIME.utils.get_urlroot(mach_obj)
+        if htmlroot is not None:
+            with CIME.utils.SharedArea():
+                copytree(
+                    evv_out_dir,
+                    os.path.join(htmlroot, "evv", case_name),
                 )
+            if urlroot is None:
+                urlroot = "[{}_URL]".format(mach_name.capitalize())
+            viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
+        else:
+            viewing = (
+                "{}\n"
+                "    EVV viewing instructions can be found at: "
+                "        https://github.com/ESMCI/CIME/blob/master/scripts/"
+                "climate_reproducibility/README.md#test-passfail-and-extended-output"
+                "".format(evv_out_dir)
             )
 
-            append_testlog(comments, self._orig_caseroot)
+        comments = (
+            "{} for test '{}'.\n"
+            "    {}\n"
+            "    EVV results can be viewed at:\n"
+            "        {}".format(
+                CIME.test_status.BASELINE_PHASE,
+                test_name,
+                comments,
+                viewing,
+            )
+        )
 
-    def _generate_baseline_phase(self):
-        super(TSC, self)._generate_baseline_phase()
+        return is_pass and success, short_comment, long_comment + "\n" + comments
+
+    def generate_baseline_phase(self):
+        is_pass, short_comment, long_comment = super(TSC, self).generate_baseline_phase()
 
         with CIME.utils.SharedArea():
             basegen_dir = os.path.join(
@@ -274,3 +274,5 @@ class TSC(SystemTestsCommon):
                     os.remove(baseline)
 
                 CIME.utils.safe_copy(hist, baseline, preserve_meta=False)
+
+        return is_pass, short_comment, long_comment

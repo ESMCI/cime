@@ -152,108 +152,108 @@ class PGN(SystemTestsCommon):
 
         return list(map(str.strip, var_list))
 
-    def _compare_baseline_phase(self):
+    def compare_baseline_phase(self):
         """
         Compare baselines in the pergro test sense. That is,
         compare PGE from the test simulation with the baseline
         cloud
         """
-        with self._test_status:
-            self._test_status.set_status(
-                CIME.test_status.BASELINE_PHASE, CIME.test_status.TEST_FAIL_STATUS
-            )
+        logger.debug("PGN_INFO:BASELINE COMPARISON STARTS")
 
-            logger.debug("PGN_INFO:BASELINE COMPARISON STARTS")
+        is_pass, short_comment, long_comment = super(PGN, self).compare_baseline_phase()
 
-            run_dir = self._case.get_value("RUNDIR")
-            case_name = self._case.get_value("CASE")
-            base_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"),
-                self._case.get_value("BASECMP_CASE"),
-            )
+        run_dir = self._case.get_value("RUNDIR")
+        case_name = self._case.get_value("CASE")
+        base_dir = os.path.join(
+            self._case.get_value("BASELINE_ROOT"),
+            self._case.get_value("BASECMP_CASE"),
+        )
 
-            var_list = self.get_var_list()
+        var_list = self.get_var_list()
 
-            test_name = "{}".format(case_name.split(".")[-1])
-            evv_config = {
-                test_name: {
-                    "module": os.path.join(evv_lib_dir, "extensions", "pg.py"),
-                    "test-case": case_name,
-                    "test-name": "Test",
-                    "test-dir": run_dir,
-                    "ref-name": "Baseline",
-                    "ref-dir": base_dir,
-                    "variables": var_list,
-                    "perturbations": PERTURBATIONS,
-                    "pge-cld": FCLD_NC,
-                    "ninit": NUMBER_INITIAL_CONDITIONS,
-                    "init-file-template": INIT_COND_FILE_TEMPLATE,
-                    "instance-file-template": INSTANCE_FILE_TEMPLATE,
-                    "init-model": "cam",
-                    "component": self.atmmod,
-                }
+        test_name = "{}".format(case_name.split(".")[-1])
+        evv_config = {
+            test_name: {
+                "module": os.path.join(evv_lib_dir, "extensions", "pg.py"),
+                "test-case": case_name,
+                "test-name": "Test",
+                "test-dir": run_dir,
+                "ref-name": "Baseline",
+                "ref-dir": base_dir,
+                "variables": var_list,
+                "perturbations": PERTURBATIONS,
+                "pge-cld": FCLD_NC,
+                "ninit": NUMBER_INITIAL_CONDITIONS,
+                "init-file-template": INIT_COND_FILE_TEMPLATE,
+                "instance-file-template": INSTANCE_FILE_TEMPLATE,
+                "init-model": "cam",
+                "component": self.atmmod,
             }
+        }
 
-            json_file = os.path.join(run_dir, ".".join([case_name, "json"]))
-            with open(json_file, "w") as config_file:
-                json.dump(evv_config, config_file, indent=4)
+        json_file = os.path.join(run_dir, ".".join([case_name, "json"]))
+        with open(json_file, "w") as config_file:
+            json.dump(evv_config, config_file, indent=4)
 
-            evv_out_dir = os.path.join(run_dir, ".".join([case_name, "evv"]))
-            evv(["-e", json_file, "-o", evv_out_dir])
+        evv_out_dir = os.path.join(run_dir, ".".join([case_name, "evv"]))
+        evv(["-e", json_file, "-o", evv_out_dir])
 
-            with open(os.path.join(evv_out_dir, "index.json"), "r") as evv_f:
-                evv_status = json.load(evv_f)
+        with open(os.path.join(evv_out_dir, "index.json"), "r") as evv_f:
+            evv_status = json.load(evv_f)
 
-            comments = ""
-            for evv_ele in evv_status["Page"]["elements"]:
-                if "Table" in evv_ele:
-                    comments = "; ".join(
-                        "{}: {}".format(key, val[0])
-                        for key, val in evv_ele["Table"]["data"].items()
-                    )
-                    if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
-                        self._test_status.set_status(
-                            CIME.test_status.BASELINE_PHASE,
-                            CIME.test_status.TEST_PASS_STATUS,
-                        )
-                    break
-
-            status = self._test_status.get_status(CIME.test_status.BASELINE_PHASE)
-            mach_name = self._case.get_value("MACH")
-            mach_obj = Machines(machine=mach_name)
-            htmlroot = CIME.utils.get_htmlroot(mach_obj)
-            urlroot = CIME.utils.get_urlroot(mach_obj)
-            if htmlroot is not None:
-                with CIME.utils.SharedArea():
-                    copytree(
-                        evv_out_dir,
-                        os.path.join(htmlroot, "evv", case_name),
-                    )
-                if urlroot is None:
-                    urlroot = "[{}_URL]".format(mach_name.capitalize())
-                viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
-            else:
-                viewing = (
-                    "{}\n"
-                    "    EVV viewing instructions can be found at: "
-                    "        https://github.com/ESMCI/CIME/blob/master/scripts/"
-                    "climate_reproducibility/README.md#test-passfail-and-extended-output"
-                    "".format(evv_out_dir)
+        success = None
+        comments = ""
+        for evv_ele in evv_status["Page"]["elements"]:
+            if "Table" in evv_ele:
+                comments = "; ".join(
+                    "{}: {}".format(key, val[0])
+                    for key, val in evv_ele["Table"]["data"].items()
                 )
-            comments = (
-                "{} {} for test '{}'.\n"
-                "    {}\n"
-                "    EVV results can be viewed at:\n"
-                "        {}".format(
-                    CIME.test_status.BASELINE_PHASE,
-                    status,
-                    test_name,
-                    comments,
-                    viewing,
+                if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
+                    success = True
+                else:
+                    success = False
+
+                break
+
+        if success is None:
+            comments = "No Table in index.json"
+            success = False
+
+        mach_name = self._case.get_value("MACH")
+        mach_obj = Machines(machine=mach_name)
+        htmlroot = CIME.utils.get_htmlroot(mach_obj)
+        urlroot = CIME.utils.get_urlroot(mach_obj)
+        if htmlroot is not None:
+            with CIME.utils.SharedArea():
+                copytree(
+                    evv_out_dir,
+                    os.path.join(htmlroot, "evv", case_name),
                 )
+            if urlroot is None:
+                urlroot = "[{}_URL]".format(mach_name.capitalize())
+            viewing = "{}/evv/{}/index.html".format(urlroot, case_name)
+        else:
+            viewing = (
+                "{}\n"
+                "    EVV viewing instructions can be found at: "
+                "        https://github.com/ESMCI/CIME/blob/master/scripts/"
+                "climate_reproducibility/README.md#test-passfail-and-extended-output"
+                "".format(evv_out_dir)
             )
+        comments = (
+            "{} for test '{}'.\n"
+            "    {}\n"
+            "    EVV results can be viewed at:\n"
+            "        {}".format(
+                CIME.test_status.BASELINE_PHASE,
+                test_name,
+                comments,
+                viewing,
+            )
+        )
 
-            append_testlog(comments, self._orig_caseroot)
+        return success and is_pass, short_comment, long_comment + "\n" + comments
 
     def run_phase(self):
         logger.debug("PGN_INFO: RUN PHASE")
@@ -296,8 +296,8 @@ class PGN(SystemTestsCommon):
 
         logger.debug("PGN_INFO: RUN PHASE ENDS")
 
-    def _generate_baseline_phase(self):
-        super(PGN, self)._generate_baseline_phase()
+    def generate_baseline_phase(self):
+        is_pass, short_comment, long_comment = super(PGN, self).generate_baseline_phase()
 
         basegen_dir = os.path.join(
             self._case.get_value("BASELINE_ROOT"), self._case.get_value("BASEGEN_CASE")
@@ -351,3 +351,5 @@ class PGN(SystemTestsCommon):
 
         logger.debug("PGN_INFO:copy:{} to {}".format(FCLD_NC, basegen_dir))
         shutil.copy(os.path.join(rundir, FCLD_NC), basegen_dir)
+
+        return is_pass, short_comment, long_comment
