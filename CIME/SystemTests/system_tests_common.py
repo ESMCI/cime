@@ -867,9 +867,7 @@ for some of your components.
         expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
 
         try:
-            memleak, comment = config.perf_check_for_memory_leak(
-                self._case, tolerance
-            )
+            memleak, comment = config.perf_check_for_memory_leak(self._case, tolerance)
         except AttributeError:
             memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
 
