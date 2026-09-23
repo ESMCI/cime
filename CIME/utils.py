@@ -2780,11 +2780,15 @@ def add_flag_to_cmd(flag, val):
 
 def is_comp_standalone(case):
     """
-    Test if the case is a single component standalone such as FKESSLER
+    Test if the case is a single component standalone such as FKESSLER.
 
     This is meant to agree with logic in CMEPS (in buildnml and buildexe) that has special
-    handling of these standalone configurations. In particular, to agree with that logic:
-    A case is not considered standalone if its one non-stub component is a data component.
+    handling of these standalone configurations: the mediator (CPL component) is not
+    included in these standalone configurations, so we need some extra logic in CIME to
+    avoid looking for a mediator log file.
+
+    To agree with the CMEPS logic: A case is *not* considered standalone if its one
+    non-stub component is a data component.
     """
     classes = case.get_values("COMP_CLASSES")
     model = None
