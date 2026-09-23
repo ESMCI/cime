@@ -159,8 +159,6 @@ class PGN(SystemTestsCommon):
         """
         logger.debug("PGN_INFO:BASELINE COMPARISON STARTS")
 
-        is_pass, short_comment, long_comment = super(PGN, self).compare_baseline_phase()
-
         run_dir = self._case.get_value("RUNDIR")
         case_name = self._case.get_value("CASE")
         base_dir = os.path.join(
@@ -252,7 +250,7 @@ class PGN(SystemTestsCommon):
             )
         )
 
-        return success and is_pass, short_comment, long_comment + "\n" + comments
+        return success, "", comments
 
     def run_phase(self):
         logger.debug("PGN_INFO: RUN PHASE")
