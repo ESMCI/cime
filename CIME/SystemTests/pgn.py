@@ -24,7 +24,6 @@ import numpy as np
 
 import CIME.test_status
 import CIME.utils
-from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -297,7 +296,9 @@ class PGN(SystemTestsCommon):
         logger.debug("PGN_INFO: RUN PHASE ENDS")
 
     def generate_baseline_phase(self):
-        is_pass, short_comment, long_comment = super(PGN, self).generate_baseline_phase()
+        is_pass, short_comment, long_comment = super(
+            PGN, self
+        ).generate_baseline_phase()
 
         basegen_dir = os.path.join(
             self._case.get_value("BASELINE_ROOT"), self._case.get_value("BASEGEN_CASE")

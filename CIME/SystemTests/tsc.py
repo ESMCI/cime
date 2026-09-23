@@ -15,7 +15,6 @@ from shutil import copytree
 
 import CIME.test_status
 import CIME.utils
-from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.hist_utils import rename_all_hist_files
@@ -155,7 +154,9 @@ class TSC(SystemTestsCommon):
             self._run_with_specified_dtime(dtime=1)
 
     def compare_baseline_phase(self):
-        is_pass, short_comment, long_comment = super(TSC, self).generate_baseline_phase()
+        is_pass, short_comment, long_comment = super(
+            TSC, self
+        ).generate_baseline_phase()
 
         run_dir = self._case.get_value("RUNDIR")
         case_name = self._case.get_value("CASE")
@@ -246,7 +247,9 @@ class TSC(SystemTestsCommon):
         return is_pass and success, short_comment, long_comment + "\n" + comments
 
     def generate_baseline_phase(self):
-        is_pass, short_comment, long_comment = super(TSC, self).generate_baseline_phase()
+        is_pass, short_comment, long_comment = super(
+            TSC, self
+        ).generate_baseline_phase()
 
         with CIME.utils.SharedArea():
             basegen_dir = os.path.join(

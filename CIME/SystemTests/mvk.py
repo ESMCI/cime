@@ -13,7 +13,6 @@ from shutil import copytree
 
 from CIME import test_status
 from CIME import utils
-from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -184,7 +183,9 @@ class MVK(SystemTestsCommon):
         """
         generate a new baseline case based on the current test
         """
-        is_pass, short_comment, long_comment = super(MVK, self).generate_baseline_phase()
+        is_pass, short_comment, long_comment = super(
+            MVK, self
+        ).generate_baseline_phase()
 
         with utils.SharedArea():
             basegen_dir = os.path.join(
@@ -222,7 +223,9 @@ class MVK(SystemTestsCommon):
             # need to return a pass here to continue the submission process.
             return True, "skip", "skipped due to resubmit"
 
-        is_pass, short_comment, long_comment = super(MVK, self).generate_baseline_phase()
+        is_pass, short_comment, long_comment = super(
+            MVK, self
+        ).generate_baseline_phase()
 
         run_dir = self._case.get_value("RUNDIR")
         case_name = self._case.get_value("CASE")
@@ -253,10 +256,15 @@ class MVK(SystemTestsCommon):
         evv_out_dir = os.path.join(run_dir, f"{case_name}.evv")
         evv(["-e", json_file, "-o", evv_out_dir])
 
-        is_update_pass, update_short_comment, update_long_comment = \
-            self.update_testlog(test_name, case_name, evv_out_dir)
+        is_update_pass, update_long_comment = self.update_testlog(
+            test_name, case_name, evv_out_dir
+        )
 
-        return is_pass and is_update_pass, short_comment, long_comment + "\n" + update_long_comment
+        return (
+            is_pass and is_update_pass,
+            short_comment,
+            long_comment + "\n" + update_long_comment,
+        )
 
     def update_testlog(self, test_name, case_name, evv_out_dir):
         success, comments = self.process_evv_output(evv_out_dir)
