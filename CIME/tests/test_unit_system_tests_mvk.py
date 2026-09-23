@@ -39,7 +39,7 @@ def create_complex_case(
         False,  # DRV_RESTART_POINTER
     ]
 
-    # single extra call for _compare_baseline
+    # single extra call for compare_baseline_phase
     if compare_baseline:
         side_effect.append("e3sm")  # MODEL
 
@@ -176,7 +176,7 @@ def evv_test_config(case, config):
             stack.enter_context(mock.patch.object(test, "build_indv"))
 
             test.build_phase(False, True)
-            test._compare_baseline()
+            test.compare_baseline_phase()
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
@@ -378,7 +378,7 @@ test_case = "Default"
             stack.enter_context(mock.patch.object(test, "build_indv"))
 
             test.build_phase(False, True)
-            test._compare_baseline()
+            test.compare_baseline_phase()
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
@@ -472,11 +472,11 @@ test_case = "Default"
 
             case_setup.assert_any_call(case, test_mode=False, reset=True)
 
-    @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline")
+    @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon.generate_baseline_phase")
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test__generate_baseline(self, evv, append_testlog, _generate_baseline):
+    def test_generate_baseline_phase(self, evv, append_testlog, generate_baseline_phase):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -525,7 +525,7 @@ test_case = "Default"
 
             test = MVK(case)
 
-            test._generate_baseline()
+            test.generate_baseline_phase()
 
             files = os.listdir(case_baseline_dir)
 
@@ -537,7 +537,7 @@ test_case = "Default"
             test = MVK(case)
 
             # test baseline_dir already exists
-            test._generate_baseline()
+            test.generate_baseline_phase()
 
             files = os.listdir(case_baseline_dir)
 
@@ -546,7 +546,7 @@ test_case = "Default"
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test__compare_baseline_resubmit(self, evv, append_testlog):
+    def test_compare_baseline_phase_resubmit(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -572,14 +572,14 @@ test_case = "Default"
             test = MVK(case)
 
             with mock.patch.object(test, "_test_status") as _test_status:
-                test._compare_baseline()
+                test.compare_baseline_phase()
 
             _test_status.set_status.assert_any_call("BASELINE", "PASS")
 
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test__compare_baseline(self, evv, append_testlog):
+    def test_compare_baseline_phase(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -598,7 +598,7 @@ test_case = "Default"
 
             test = MVK(case)
 
-            test._compare_baseline()
+            test.compare_baseline_phase()
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
