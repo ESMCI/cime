@@ -160,10 +160,10 @@ class HommeBase(SystemTestsCommon):
     # Homme is a bit of an oddball test since it's not really running the E3SM model
     # We need to override some methods to make the core infrastructure work.
 
-    def _generate_baseline(self):
+    def _generate_baseline_phase(self):
         with self._test_status:
             self._test_status.set_status(GENERATE_PHASE, TEST_PASS_STATUS)
 
-    def _compare_baseline(self):
+    def _compare_baseline_phase(self):
         with self._test_status:
             self._test_status.set_status(BASELINE_PHASE, TEST_PASS_STATUS)

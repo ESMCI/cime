@@ -907,7 +907,18 @@ for some of your components.
 
     def _compare_memory(self):
         """
+        Do NOT override this method, this method is the framework that
+        controls the memory comparison phase. _compare_memory_phase is
+        the extension point that subclasses should use.
+        """
+        self._compare_memory_phase()
+
+    def _compare_memory_phase(self):
+        """
         Compares current test memory usage to baseline.
+
+        This is the subclass' extension point if they need to define a
+        custom memory comparison phase.
         """
         with self._test_status:
             try:
@@ -936,7 +947,18 @@ for some of your components.
 
     def _compare_throughput(self):
         """
+        Do NOT override this method, this method is the framework that
+        controls the throughput comparison phase. _compare_throughput_phase
+        is the extension point that subclasses should use.
+        """
+        self._compare_throughput_phase()
+
+    def _compare_throughput_phase(self):
+        """
         Compares current test throughput to baseline.
+
+        This is the subclass' extension point if they need to define a
+        custom throughput comparison phase.
         """
         with self._test_status:
             try:
@@ -966,7 +988,18 @@ for some of your components.
 
     def _compare_baseline(self):
         """
-        compare the current test output to a baseline result
+        Do NOT override this method, this method is the framework that
+        controls the baseline comparison phase. _compare_baseline_phase
+        is the extension point that subclasses should use.
+        """
+        self._compare_baseline_phase()
+
+    def _compare_baseline_phase(self):
+        """
+        Compare the current test output to a baseline result.
+
+        This is the subclass' extension point if they need to define a
+        custom baseline comparison phase.
         """
         with self._test_status:
             # compare baseline
@@ -991,8 +1024,20 @@ for some of your components.
 
     def _generate_baseline(self):
         """
-        If you find yourself wanting to override this method, check whether you can accomplish what
-        you want using additional_baseline_generation() instead.
+        Do NOT override this method, this method is the framework that
+        controls the baseline generation phase. _generate_baseline_phase
+        is the extension point that subclasses should use.
+        """
+        self._generate_baseline_phase()
+
+    def _generate_baseline_phase(self):
+        """
+        Generate a baseline result from the current test.
+
+        This is the subclass' extension point if they need to define a
+        custom baseline generation phase. If you find yourself wanting to
+        override this method, check whether you can accomplish what you
+        want using additional_baseline_generation() instead.
         """
         with self._test_status:
             # generate baseline

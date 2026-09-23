@@ -154,7 +154,7 @@ class TSC(SystemTestsCommon):
         if self._case.get_value("GENERATE_BASELINE"):
             self._run_with_specified_dtime(dtime=1)
 
-    def _compare_baseline(self):
+    def _compare_baseline_phase(self):
         with self._test_status as ts:
             ts.set_status(
                 CIME.test_status.BASELINE_PHASE, CIME.test_status.TEST_FAIL_STATUS
@@ -245,8 +245,8 @@ class TSC(SystemTestsCommon):
 
             append_testlog(comments, self._orig_caseroot)
 
-    def _generate_baseline(self):
-        super(TSC, self)._generate_baseline()
+    def _generate_baseline_phase(self):
+        super(TSC, self)._generate_baseline_phase()
 
         with CIME.utils.SharedArea():
             basegen_dir = os.path.join(
