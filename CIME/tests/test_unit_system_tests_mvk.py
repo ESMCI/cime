@@ -476,7 +476,9 @@ test_case = "Default"
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_generate_baseline_phase(self, evv, append_testlog, generate_baseline_phase):
+    def test_generate_baseline_phase(
+        self, evv, append_testlog, generate_baseline_phase
+    ):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
