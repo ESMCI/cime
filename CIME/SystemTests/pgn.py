@@ -152,7 +152,7 @@ class PGN(SystemTestsCommon):
 
         return list(map(str.strip, var_list))
 
-    def _compare_baseline(self):
+    def _compare_baseline_phase(self):
         """
         Compare baselines in the pergro test sense. That is,
         compare PGE from the test simulation with the baseline
@@ -296,8 +296,8 @@ class PGN(SystemTestsCommon):
 
         logger.debug("PGN_INFO: RUN PHASE ENDS")
 
-    def _generate_baseline(self):
-        super(PGN, self)._generate_baseline()
+    def _generate_baseline_phase(self):
+        super(PGN, self)._generate_baseline_phase()
 
         basegen_dir = os.path.join(
             self._case.get_value("BASELINE_ROOT"), self._case.get_value("BASEGEN_CASE")
