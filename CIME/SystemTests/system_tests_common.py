@@ -1003,11 +1003,8 @@ for some of your components.
 
         self._log_cprnc_output_tail(pattern)
 
-        status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         baseline_name = self._case.get_value("BASECMP_CASE")
-        ts_comments = (
-            os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
-        )
+        ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
         comments += "\n\n============ BASELINE COMPARE SYNOPSIS =============\n"
         comments += ts_comments + "\n"
         comments += "====================================================\n"
@@ -1040,7 +1037,6 @@ for some of your components.
         """
         # generate baseline
         success, comments = generate_baseline(self._case)
-        status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
         baseline_name = self._case.get_value("BASEGEN_CASE")
         basegen_dir = os.path.join(
             self._case.get_value("BASELINE_ROOT"),
@@ -1066,6 +1062,7 @@ for some of your components.
                     perf_write_baseline(self._case, basegen_dir, cpllog)
 
         return success, os.path.dirname(baseline_name), comments
+
 
 def perf_check_for_memory_leak(case, tolerance):
     leak = False
