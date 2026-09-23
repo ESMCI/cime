@@ -824,11 +824,7 @@ for some of your components.
 
     def _st_archive_case_test(self):
         result = self._case.test_env_archive()
-        with self._test_status:
-            if result:
-                self._test_status.set_status(STARCHIVE_PHASE, TEST_PASS_STATUS)
-            else:
-                self._test_status.set_status(STARCHIVE_PHASE, TEST_FAIL_STATUS)
+        return result, "", ""
 
     def _phase_modifying_call(self, phase, function):
         """
@@ -870,22 +866,14 @@ for some of your components.
 
         expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
 
-        with self._test_status:
-            try:
-                memleak, comment = config.perf_check_for_memory_leak(
-                    self._case, tolerance
-                )
-            except AttributeError:
-                memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
+        try:
+            memleak, comment = config.perf_check_for_memory_leak(
+                self._case, tolerance
+            )
+        except AttributeError:
+            memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
 
-            if memleak:
-                append_testlog(comment, self._orig_caseroot)
-
-                status = TEST_FAIL_STATUS
-            else:
-                status = TEST_PASS_STATUS
-
-            self._test_status.set_status(MEMLEAK_PHASE, status, comments=comment)
+        return not memleak, "", comment
 
     def compare_env_run(self, expected=None):
         """
