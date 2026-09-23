@@ -180,11 +180,11 @@ class MVK(SystemTestsCommon):
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
-    def _generate_baseline(self):
+    def _generate_baseline_phase(self):
         """
         generate a new baseline case based on the current test
         """
-        super(MVK, self)._generate_baseline()
+        super(MVK, self)._generate_baseline_phase()
 
         with utils.SharedArea():
             basegen_dir = os.path.join(
@@ -212,7 +212,7 @@ class MVK(SystemTestsCommon):
 
                 utils.safe_copy(hist, baseline, preserve_meta=False)
 
-    def _compare_baseline(self):
+    def _compare_baseline_phase(self):
         with self._test_status:
             if int(self._case.get_value("RESUBMIT")) > 0:
                 # This is here because the comparison is run for each submission
