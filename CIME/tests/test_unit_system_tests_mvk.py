@@ -472,7 +472,10 @@ test_case = "Default"
 
             case_setup.assert_any_call(case, test_mode=False, reset=True)
 
-    @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon.generate_baseline_phase")
+    @mock.patch(
+        "CIME.SystemTests.mvk.SystemTestsCommon.generate_baseline_phase",
+        return_value=(True, "", ""),
+    )
     @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
