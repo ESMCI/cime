@@ -102,7 +102,11 @@ def configure(
                 fd.write(output)
 
     copy_depends_files(
-        machobj.get_machine_name(), machobj.machines_dir, output_dir, compiler
+        machobj.get_machine_name(),
+        machobj.machines_dir,
+        output_dir,
+        compiler,
+        sysos,
     )
     generate_env_mach_specific(
         output_dir,
@@ -118,7 +122,7 @@ def configure(
     )
 
 
-def copy_depends_files(machine_name, machines_dir, output_dir, compiler):
+def copy_depends_files(machine_name, machines_dir, output_dir, compiler, os_name=None):
     """
     Copy any system or compiler Depends files if they do not exist in the output directory
     If there is a match for Depends.machine_name.compiler copy that and ignore the others
@@ -126,7 +130,12 @@ def copy_depends_files(machine_name, machines_dir, output_dir, compiler):
     # Note, the cmake build system does not stop if Depends.mach.compiler.cmake is found
     makefiles_done = False
     both = "{}.{}".format(machine_name, compiler)
-    for suffix in [both, machine_name, compiler]:
+    suffixes = [both, machine_name]
+    # Note: E3SM does not set OS, so os_name may be None or empty
+    if os_name:
+        suffixes.extend(["{}.{}".format(os_name, compiler), os_name])
+    suffixes.append(compiler)
+    for suffix in suffixes:
         for extra_suffix in ["", ".cmake"]:
             if extra_suffix == "" and makefiles_done:
                 continue
