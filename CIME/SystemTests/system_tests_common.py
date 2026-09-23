@@ -866,7 +866,7 @@ for some of your components.
                 self._test_status.set_status(phase, new_status, comments=short_comment)
 
             if long_comment:
-                append_testlog(long_comment)
+                append_testlog(long_comment, self._orig_caseroot)
 
     def _check_for_memleak(self):
         """
@@ -989,7 +989,7 @@ for some of your components.
         controls the baseline comparison phase. compare_baseline_phase
         is the extension point that subclasses should use.
         """
-        self.compare_baseline_phase()
+        return self.compare_baseline_phase()
 
     def compare_baseline_phase(self):
         """
@@ -1028,7 +1028,7 @@ for some of your components.
         controls the baseline generation phase. generate_baseline_phase
         is the extension point that subclasses should use.
         """
-        self.generate_baseline_phase()
+        return self.generate_baseline_phase()
 
     def generate_baseline_phase(self):
         """
