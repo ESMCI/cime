@@ -39,7 +39,7 @@ CPLLOG = """
 
 
 def setup_generate_baseline_mock(tempdir):
-    """Set up a mock case for _generate_baseline tests, returning (case, baseline_root)."""
+    """Set up a mock case for generate_baseline_phase tests, returning (case, baseline_root)."""
     case, caseroot, baseline_root, run_dir = create_mock_case(
         tempdir, cpllog_data=CPLLOG
     )
@@ -152,7 +152,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common.check_for_memleak_phase()
 
             common._test_status.set_status.assert_any_call(
                 "MEMLEAK", "PASS", comments="insufficient data for memleak test"
@@ -206,7 +206,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common.check_for_memleak_phase()
 
             common._test_status.set_status.assert_any_call(
                 "MEMLEAK", "PASS", comments="data for memleak test is insufficient"
@@ -262,7 +262,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common.check_for_memleak_phase()
 
             expected_comment = "memleak detected, memory went from 2000.000000 to 3000.000000 in 2 days"
 
@@ -320,7 +320,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common.check_for_memleak_phase()
 
             common._test_status.set_status.assert_any_call(
                 "MEMLEAK", "PASS", comments=""
@@ -350,7 +350,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_throughput()
+            common.compare_throughput_phase()
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -380,7 +380,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_throughput()
+            common.compare_throughput_phase()
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -410,7 +410,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_throughput()
+            common.compare_throughput_phase()
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -441,7 +441,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_memory()
+            common.compare_memory_phase()
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -471,7 +471,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_memory()
+            common.compare_memory_phase()
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -501,7 +501,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_memory()
+            common.compare_memory_phase()
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -520,7 +520,7 @@ class TestUnitSystemTests(unittest.TestCase):
             with mock.patch.object(
                 common, "additional_baseline_generation"
             ) as mock_generate_baseline_phase:
-                common._generate_baseline()
+                common.generate_baseline_phase()
 
             baseline_dir = baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             assert (baseline_dir / "cpl.log.gz").exists()
@@ -564,7 +564,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = _SubTest(case)
 
-            common._generate_baseline()
+            common.generate_baseline_phase()
 
             expected_basegen_dir = str(
                 baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
