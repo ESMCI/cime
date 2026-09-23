@@ -223,9 +223,7 @@ class MVK(SystemTestsCommon):
             # need to return a pass here to continue the submission process.
             return True, "skip", "skipped due to resubmit"
 
-        is_pass, short_comment, long_comment = super(
-            MVK, self
-        ).compare_baseline_phase()
+        is_pass, short_comment, long_comment = super(MVK, self).compare_baseline_phase()
 
         run_dir = self._case.get_value("RUNDIR")
         case_name = self._case.get_value("CASE")
