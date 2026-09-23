@@ -823,6 +823,20 @@ for some of your components.
         )
 
     def _st_archive_case_test(self):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the short-term archive phase. st_archive_case_test_phase
+        is the extension point that subclasses should use.
+        """
+        return self.st_archive_case_test_phase()
+
+    def st_archive_case_test_phase(self):
+        """
+        Run short-term archive for the test case.
+
+        This is the subclass' extension point if they need to define a
+        custom short-term archive phase.
+        """
         result = self._case.test_env_archive()
         return result, "", ""
 
@@ -856,8 +870,19 @@ for some of your components.
 
     def _check_for_memleak(self):
         """
+        Do NOT override this method, this method is the framework that
+        controls the memory leak check phase. check_for_memleak_phase is
+        the extension point that subclasses should use.
+        """
+        return self.check_for_memleak_phase()
+
+    def check_for_memleak_phase(self):
+        """
         Examine memory usage as recorded in the cpl log file and look for unexpected
         increases.
+
+        This is the subclass' extension point if they need to define a
+        custom memory leak check phase.
         """
         config = load_coupler_customization(self._case)
 
@@ -1314,7 +1339,7 @@ class TESTRUNFAILEXC(TESTRUNPASS):
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
-    def _st_archive_case_test(self):
+    def st_archive_case_test_phase(self):
         raise CIMEError("Exception from st archive")
 
 

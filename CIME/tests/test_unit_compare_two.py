@@ -199,10 +199,10 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
         """
         return (self.compare_should_pass, "no comment", None)
 
-    def _check_for_memleak(self):
+    def check_for_memleak_phase(self):
         pass
 
-    def _st_archive_case_test(self):
+    def st_archive_case_test_phase(self):
         pass
 
     # ------------------------------------------------------------------------
