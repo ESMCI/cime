@@ -577,7 +577,7 @@ test_case = "Default"
             test = MVK(case)
 
             with mock.patch.object(test, "_test_status") as _test_status:
-                test.compare_baseline_phase()
+                test._phase_modifying_call("BASELINE", test._compare_baseline)
 
             _test_status.set_status.assert_any_call("BASELINE", "PASS")
 
