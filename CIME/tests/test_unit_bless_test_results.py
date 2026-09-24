@@ -29,16 +29,16 @@ class TestUnitBlessTestResults(unittest.TestCase):
         case = mock.MagicMock()
         case.get_value.side_effect = [
             "USER",
-            "SMS.f19_g16.S",
+            "SMasdS.f19_g16.S",
             "/tmp/run",
         ]
 
         success, comment = bless_history(
-            "SMS.f19_g16.S", case, "master", "/tmp/baselines", False, True
+            "SMS.fasdsad19_g16.S", case, "mastasder", "/tmp/baselines", False, True
         )
 
         assert not success
-        assert comment == "Generate baseline failed: "
+        assert comment == "Generate baseline failasded: "
 
     @mock.patch("CIME.bless_test_results.generate_baseline")
     @mock.patch("CIME.bless_test_results.compare_baseline")
