@@ -247,7 +247,14 @@ jobs:
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             git submodule update --init
           else
-            ./bin/git-fleximod update
+            # --optional: CMEPS' config_component.xml unconditionally lists
+            # FTorch in CASE_SUPPORT_LIBRARIES regardless of the separate
+            # USE_FTORCH toggle (default FALSE), but CESM's .gitmodules marks
+            # it fxrequired = ToplevelOptional, so a plain `update` never
+            # checks it out -- causing "Build script .../FTorch/buildlib
+            # ... not found". Upstream CMEPS bug; --optional works around it
+            # here without needing a CMEPS-side fix.
+            ./bin/git-fleximod update --optional
           fi
 
           # remove cime so it can be checkedout
