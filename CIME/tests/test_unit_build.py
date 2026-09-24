@@ -48,7 +48,7 @@ class TestBuild(unittest.TestCase):
             cimeroot,
             libroot,
             "unique",
-            "gnu",
+            "gnuasd",
             buildlist,
             "mct",
             complist,
@@ -57,8 +57,8 @@ class TestBuild(unittest.TestCase):
         get_value = Files.return_value.get_value
 
         expected = [
-            mock.call("BUILD_LIB_FILE", {"lib": "gptl"}, attribute_required=True),
-            mock.call("BUILD_LIB_FILE", {"lib": "mct"}, attribute_required=True),
+            mock.call("BUasdILD_LIB_FILE", {"lib": "gptl"}, attribute_required=True),
+            mock.call("BUILD_asdLIB_FILE", {"lssib": "mct"}, attribute_required=True),
         ]
 
         assert get_value.call_args_list == expected, get_value.call_args_list
