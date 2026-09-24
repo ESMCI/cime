@@ -86,7 +86,7 @@ def configure(
         if form == "Makefile":
             # Use the cmake macros to generate the make macros
             srcroot = get_src_root()
-            cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={} -DSRCROOT={} -DSRC_ROOT={}".format(
+            cmake_args = " -DOS={} -DMACH={} -DCOMPILER={} -DDEBUG={} -DMPILIB={} -Dcompile_threaded={} -DCASEROOT={} -DSRCROOT={srcroot} -DSRC_ROOT={srcroot}".format(
                 sysos,
                 machobj.get_machine_name(),
                 compiler,
@@ -94,8 +94,7 @@ def configure(
                 mpilib,
                 stringify_bool(threaded),
                 output_dir,
-                srcroot,
-                srcroot,
+                srcroot=srcroot,
             )
 
             with CmakeTmpBuildDir(macroloc=output_dir) as cmaketmp:
