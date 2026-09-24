@@ -261,11 +261,17 @@ jobs:
             # AlwaysRequired there) doesn't reliably check out those
             # grandchild submodules, causing CMake configure failures like
             # "Cannot find source file: .../fox/fsys/fox_m_fsys_parse_input.F90".
-            # A plain recursive update as a follow-up fills that gap; rewrite
-            # any git@ URLs first since nested .gitmodules may use SSH too.
-            git submodule foreach --recursive \
+            # A plain recursive update as a follow-up fills that gap for
+            # components/cdeps specifically -- scoped to that path (not the
+            # whole tree): other components have their own broken/vestigial
+            # nested submodules (e.g. components/cism/libraries/mct has no
+            # url in .gitmodules) that abort an unscoped recursive update
+            # entirely. Rewrite git@ URLs to https first since nested
+            # .gitmodules may use SSH too.
+            sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" components/cdeps/.gitmodules
+            git -C components/cdeps submodule foreach --recursive \
               "sed -i'' 's/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g' .gitmodules 2>/dev/null || true"
-            git submodule update --init --recursive
+            git submodule update --init --recursive -- components/cdeps
           fi
 
           # remove cime so it can be checkedout
