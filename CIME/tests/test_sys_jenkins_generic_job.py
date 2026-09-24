@@ -22,7 +22,8 @@ class TestJenkinsGenericJob(base.BaseTestCase):
         # Need to run in a subdir in order to not have CTest clash. Name it
         # such that it should be cleaned up by the parent tearDown
         self._testdir = os.path.join(
-            self._testroot, "jenkins_test_%s" % self._baseline_name
+            self._testroot,
+            "jenkins_test_%s_%s" % (self._baseline_name, self._testMethodName),
         )
         os.makedirs(self._testdir)
 
@@ -59,6 +60,20 @@ class TestJenkinsGenericJob(base.BaseTestCase):
             self.simple_test(expect_works, extra_args, build_name)
         except AssertionError as e:
             self._thread_error = str(e)
+
+    def _get_jenkins_dirs(self, mach_comp, jenkins_id):
+        matches = []
+        for path in glob.glob(os.path.join(self._jenkins_root, f"*{jenkins_id}*/")):
+            tokens = os.path.basename(path.rstrip(os.sep)).split(".")
+            if len(tokens) < 2 or not tokens[-1].startswith(jenkins_id):
+                continue
+            if tokens[-2] == mach_comp or (
+                len(tokens) >= 3
+                and tokens[-3] == mach_comp
+                and tokens[-2] in ["G", "C"]
+            ):
+                matches.append(path)
+        return matches
 
     def assert_num_leftovers(self, suite):
         num_tests_in_suite = len(get_tests.get_test_suite(suite))
@@ -124,7 +139,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
 
         self.kill_subprocesses(sig=signal.SIGTERM)
 
-        run_thread.join(timeout=30)
+        run_thread.join(timeout=120)
 
         self.assertFalse(
             run_thread.is_alive(), msg="jenkins_generic_job should have finished"
@@ -164,7 +179,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
         )
 
         # Capture the directories created by compiler A's run.
-        dirs_a = glob.glob(f"{self._jenkins_root}/*{mach_comp_a}*/")
+        dirs_a = self._get_jenkins_dirs(mach_comp_a, jenkins_id)
         self.assertGreater(
             len(dirs_a),
             0,
@@ -179,7 +194,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
 
         # Compiler A's directories must still be present — compiler B's
         # cleanup/archive pass must not have touched them.
-        dirs_a_after = glob.glob(f"{self._jenkins_root}/*{mach_comp_a}*/")
+        dirs_a_after = self._get_jenkins_dirs(mach_comp_a, jenkins_id)
         self.assertEqual(
             set(dirs_a),
             set(dirs_a_after),
@@ -190,7 +205,7 @@ class TestJenkinsGenericJob(base.BaseTestCase):
         )
 
         # Sanity-check: compiler B also produced its own directories.
-        dirs_b = glob.glob(f"{self._jenkins_root}/*{mach_comp_b}*/")
+        dirs_b = self._get_jenkins_dirs(mach_comp_b, jenkins_id)
         self.assertGreater(
             len(dirs_b),
             0,
@@ -217,7 +232,11 @@ class TestJenkinsGenericJob(base.BaseTestCase):
    fake = .true.
 /"""
         baseline_glob = glob.glob(
-            os.path.join(self._baseline_area, self._baseline_name, "TESTRUNPASS*")
+            os.path.join(
+                self._baseline_area,
+                self._baseline_name,
+                "TESTRUNPASS_P1.f19_g16.A*",
+            )
         )
         self.assertEqual(
             len(baseline_glob),

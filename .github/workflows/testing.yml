@@ -53,6 +53,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           submodules: "true"
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -113,6 +115,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up python
         uses: actions/setup-python@v5
         with:
@@ -160,11 +165,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: cesm/cime
           submodules: "true"
       - name: Run tests
         run: |
           docker run --rm \
+            --entrypoint bash \
             -v ${{ github.workspace }}/cesm:/root/cesm \
             -w /root/cesm/cime \
             -e CIME_MODEL=cesm \
@@ -172,13 +180,14 @@ jobs:
             -e CIME_TEST_PLATFORM=ubuntu-latest \
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
-            bash -c "
+            -c "
+              set -euxo pipefail
               source /entrypoint.sh
               uv python install ${{ matrix.python-version }}
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
-              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker CIME/tests/test_unit*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
@@ -191,6 +200,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'pull_request' && needs.build-pr-image.result == 'success' && ! cancelled() }}
     needs: build-pr-image
+    permissions:
+      contents: read
+      packages: read
     strategy:
       # allow all jobs to finish
       fail-fast: false
@@ -235,7 +247,31 @@ jobs:
           if [[ "${{ matrix.model.name }}" == "e3sm" ]]; then
             git submodule update --init
           else
-            ./bin/git-fleximod update
+            # --optional: CMEPS' config_component.xml unconditionally lists
+            # FTorch in CASE_SUPPORT_LIBRARIES regardless of the separate
+            # USE_FTORCH toggle (default FALSE), but CESM's .gitmodules marks
+            # it fxrequired = ToplevelOptional, so a plain `update` never
+            # checks it out -- causing "Build script .../FTorch/buildlib
+            # ... not found". Upstream CMEPS bug; --optional works around it
+            # here without needing a CMEPS-side fix.
+            ./bin/git-fleximod update --optional
+
+            # git-fleximod's recursion into a submodule's own .gitmodules
+            # (e.g. components/cdeps's "fox"/"genf90", both fxrequired =
+            # AlwaysRequired there) doesn't reliably check out those
+            # grandchild submodules, causing CMake configure failures like
+            # "Cannot find source file: .../fox/fsys/fox_m_fsys_parse_input.F90".
+            # A plain recursive update as a follow-up fills that gap for
+            # components/cdeps specifically -- scoped to that path (not the
+            # whole tree): other components have their own broken/vestigial
+            # nested submodules (e.g. components/cism/libraries/mct has no
+            # url in .gitmodules) that abort an unscoped recursive update
+            # entirely. Rewrite git@ URLs to https first since nested
+            # .gitmodules may use SSH too.
+            sed -i"" "s/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g" components/cdeps/.gitmodules
+            git -C components/cdeps submodule foreach --recursive \
+              "sed -i'' 's/\(.*\)url = git@github.com:\(.*\)/\1url = https:\/\/github.com\/\2/g' .gitmodules 2>/dev/null || true"
+            git submodule update --init --recursive -- components/cdeps
           fi
 
           # remove cime so it can be checkedout
@@ -246,18 +282,55 @@ jobs:
       - name: Checkout CIME
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
           path: ${{ matrix.model.name }}/cime
           submodules: 'true'
       - name: Create storage directory
         run: mkdir -p ${{ github.workspace }}/storage/inputdata
-      - name: Cache inputdata
-        uses: actions/cache@v3
+      - name: Login to GHCR
+        # Needed to pull ghcr.io/esmci/cime-inputdata if it's private.
+        # Prefer making that package public instead (it's just public grid
+        # data, nothing sensitive) so this step -- and packages: read above
+        # -- become unnecessary; kept as a fallback either way.
+        uses: docker/login-action@v3
         with:
-          path: ${{ github.workspace }}/storage/inputdata
-          key: inputdata-2
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract input data image, if published
+        # portal.nersc.gov is unreachable from GH Actions runners (see
+        # docker/README.md), so real input data (cime_developer, gen_domain)
+        # is instead bundled into docker/Dockerfile.data, built and pushed
+        # locally/manually from a network that can reach the data servers
+        # (see docker/generate_inputdata.sh and docker/push_inputdata.sh).
+        # If that image hasn't been published (yet), "Run tests" below
+        # still attempts a best-effort, non-fatal live download as a
+        # fallback.
+        run: |
+          version="$(cat ${{ matrix.model.name }}/cime/docker/INPUTDATA_VERSION)"
+          image="ghcr.io/esmci/cime-inputdata:v${version}"
+          if docker pull "$image"; then
+            cid=$(docker create "$image" /nonexistent)
+            docker cp "${cid}":/inputdata/. ${{ github.workspace }}/storage/inputdata/
+            docker rm "${cid}"
+          else
+            echo "::warning::${image} not available; falling back to live download in Run tests"
+          fi
+      - name: Extract cprnc from image
+        # "Run tests" bind-mounts storage/ over /root/storage, shadowing the
+        # image's baked-in /root/storage/tools/cprnc (CCSM_CPRNC). Without
+        # this, baseline comparisons fail with "Could not interpret CPRNC
+        # output" since the binary is missing at runtime.
+        run: |
+          mkdir -p ${{ github.workspace }}/storage/tools
+          cid=$(docker create cime:pr-${{ github.event.pull_request.number }})
+          docker cp "${cid}":/root/storage/tools/cprnc ${{ github.workspace }}/storage/tools/cprnc
+          docker rm "${cid}"
       - name: Run tests
         run: |
           docker run --rm \
+            --entrypoint bash \
             --hostname docker \
             --shm-size=1g \
             -v ${{ github.workspace }}/${{ matrix.model.name }}:/root/model \
@@ -268,25 +341,34 @@ jobs:
             -e CIME_TEST_PLATFORM=ubuntu-latest \
             -e SKIP_ENTRYPOINT=true \
             cime:pr-${{ github.event.pull_request.number }} \
-            bash -c "
+            -c "
+              set -euxo pipefail
               source /entrypoint.sh
+              # Non-fatal: portal.nersc.gov is unreachable from GH Actions
+              # runners. Only test_gen_domain needs this data; don't fail
+              # the whole job over it.
+              DOWNLOAD_SKIP_ON_ERROR=1 download_input_data
+              # Log sizes for diagnosability without pulling artifacts.
+              ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
               uv python install 3.10
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              uv run pytest -vvv --cov=CIME --cov-branch --cov-report=xml --machine docker --pesfile /root/.cime/config_pes.xml --no-fortran-run --no-teardown CIME/tests/test_sys*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-      - uses: mxschmitt/action-tmate@v3
-        if: ${{ failure() && !cancelled() }}
-        with:
-          limit-access-to-actor: true
+      # Optional debugging step. Re-enable intentionally when interactive SSH
+      # access to a failed system-testing job is needed.
+      # - uses: mxschmitt/action-tmate@v3
+      #   if: ${{ failure() && !cancelled() }}
+      #   with:
+      #     limit-access-to-actor: true
       - name: Create testing log archive
         if: ${{ failure() }}
         shell: bash

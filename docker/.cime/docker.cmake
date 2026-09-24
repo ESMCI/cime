@@ -16,6 +16,17 @@ string(APPEND CMAKE_C_FLAGS " -I${PIXI_ENV}/include -O1 -g -fno-fast-math -froun
 string(APPEND CMAKE_Fortran_FLAGS " -I${PIXI_ENV}/include -O1 -g -fno-fast-math -frounding-math -fsignaling-nans -fno-inline -fno-aggressive-loop-optimizations")
 string(APPEND CMAKE_CXX_FLAGS " -I${PIXI_ENV}/include")
 
+# driver-mct/main/hdf5_init_workaround.c directly calls H5open() to force
+# early HDF5 initialization. That's a direct symbol reference, not just a
+# transitive dependency through netCDF/PnetCDF, so modern linkers (default
+# --as-needed behavior) need an explicit -lhdf5 on the final link line or
+# the build fails with "undefined reference to symbol 'H5open'" /
+# "libhdf5.so: DSO missing from command line". Appending to SLIBS has no
+# effect here: CIME_utils.cmake already computed CMAKE_EXE_LINKER_FLAGS
+# from SLIBS before this file runs, so the flag must be appended directly
+# to CMAKE_EXE_LINKER_FLAGS instead.
+string(APPEND CMAKE_EXE_LINKER_FLAGS " -L${PIXI_ENV}/lib -lhdf5")
+
 # required for grid generation tests that use make
 if (CMAKE_SOURCE_DIR MATCHES "^.*TestGridGeneration.*$")
     string(APPEND FFLAGS " -I${PIXI_ENV}/include")

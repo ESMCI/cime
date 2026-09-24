@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1
+#
+# Input data image for CI: bundles every file needed to run the
+# cime_developer test suite and tools/mapping/gen_domain_files/test_gen_domain.sh,
+# fetched from a network that can actually reach the input data servers
+# (see docker/generate_inputdata.sh -- notably NOT a GitHub Actions runner,
+# which cannot reach portal.nersc.gov).
+#
+# This is built and pushed manually/locally, not by CI:
+#
+#   ./docker/generate_inputdata.sh
+#
+# which generates the data, then builds and pushes
+# ghcr.io/esmci/cime-inputdata:v<N> (tag from docker/INPUTDATA_VERSION,
+# not "latest"). Pass --skip-push to only (re)generate docker/inputdata/.
+#
+# CI then extracts /inputdata from this image (docker create + docker cp,
+# same technique used for cprnc in .github/workflows/testing.yml) instead of
+# downloading it at test time.
+
+FROM scratch
+COPY inputdata/ /inputdata/

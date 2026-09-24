@@ -5,7 +5,7 @@
     <DESC>Docker</DESC>
     <OS>LINUX</OS>
     <PROXY />
-    <COMPILERS>gnu</COMPILERS>
+    <COMPILERS>gnu,gnuX</COMPILERS>
     <MPILIBS>mpich</MPILIBS>
     <PROJECT>CIME</PROJECT>
     <SAVE_TIMING_DIR>/root/storage/timings</SAVE_TIMING_DIR>

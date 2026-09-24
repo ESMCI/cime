@@ -35,8 +35,12 @@ moab = { version = "*", build = "mpi_mpich_tempest_*" }
 
 # CESM uses ESMF; conda-forge's esmf pulls parallelio (external PIO) as a
 # transitive dependency, which is harmless for the A/X/S compsets we test.
+# m4 is needed by CDEPS's bundled fox (Fortran XML) library, which generates
+# several .F90 sources from .F90.m4 templates at build time; without it,
+# CMake fails with "Cannot find source file" for those generated files.
 [feature.cesm.dependencies]
 esmf = { version = "*", build = "mpi_mpich_*" }
+m4 = "*"
 
 # Keep both environments on a single solve so their shared libraries
 # (hdf5, netcdf, pnetcdf, compilers) resolve to byte-identical builds.
