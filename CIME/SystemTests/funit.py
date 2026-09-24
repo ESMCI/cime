@@ -74,10 +74,8 @@ class FUNIT(SystemTestsCommon):
     # Funit is a bit of an oddball test since it's not really running the E3SM model
     # We need to override some methods to make the core infrastructure work.
 
-    def _generate_baseline(self):
-        with self._test_status:
-            self._test_status.set_status(GENERATE_PHASE, TEST_PASS_STATUS)
+    def generate_baseline_phase(self):
+        return True, "skip", "skip"
 
-    def _compare_baseline(self):
-        with self._test_status:
-            self._test_status.set_status(BASELINE_PHASE, TEST_PASS_STATUS)
+    def compare_baseline_phase(self):
+        return True, "skip", "skip"

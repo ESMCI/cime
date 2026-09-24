@@ -823,12 +823,22 @@ for some of your components.
         )
 
     def _st_archive_case_test(self):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the short-term archive phase. st_archive_case_test_phase
+        is the extension point that subclasses should use.
+        """
+        return self.st_archive_case_test_phase()
+
+    def st_archive_case_test_phase(self):
+        """
+        Run short-term archive for the test case.
+
+        This is the subclass' extension point if they need to define a
+        custom short-term archive phase.
+        """
         result = self._case.test_env_archive()
-        with self._test_status:
-            if result:
-                self._test_status.set_status(STARCHIVE_PHASE, TEST_PASS_STATUS)
-            else:
-                self._test_status.set_status(STARCHIVE_PHASE, TEST_FAIL_STATUS)
+        return result, "", ""
 
     def _phase_modifying_call(self, phase, function):
         """
@@ -836,7 +846,7 @@ for some of your components.
         in the TestStatus file for that phase.
         """
         try:
-            function()
+            is_pass, short_comment, long_comment = function()
         except Exception as e:  # Do NOT want to catch KeyboardInterrupt
             msg = e.__str__()
             excmsg = "Exception during {}:\n{}\n{}".format(
@@ -850,11 +860,29 @@ for some of your components.
                 self._test_status.set_status(
                     phase, TEST_FAIL_STATUS, comments="exception"
                 )
+        else:
+            new_status = TEST_PASS_STATUS if is_pass else TEST_FAIL_STATUS
+            with self._test_status:
+                self._test_status.set_status(phase, new_status, comments=short_comment)
+
+            if long_comment:
+                append_testlog(long_comment, self._orig_caseroot)
 
     def _check_for_memleak(self):
         """
+        Do NOT override this method, this method is the framework that
+        controls the memory leak check phase. check_for_memleak_phase is
+        the extension point that subclasses should use.
+        """
+        return self.check_for_memleak_phase()
+
+    def check_for_memleak_phase(self):
+        """
         Examine memory usage as recorded in the cpl log file and look for unexpected
         increases.
+
+        This is the subclass' extension point if they need to define a
+        custom memory leak check phase.
         """
         config = load_coupler_customization(self._case)
 
@@ -863,22 +891,12 @@ for some of your components.
 
         expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
 
-        with self._test_status:
-            try:
-                memleak, comment = config.perf_check_for_memory_leak(
-                    self._case, tolerance
-                )
-            except AttributeError:
-                memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
+        try:
+            memleak, comment = config.perf_check_for_memory_leak(self._case, tolerance)
+        except AttributeError:
+            memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
 
-            if memleak:
-                append_testlog(comment, self._orig_caseroot)
-
-                status = TEST_FAIL_STATUS
-            else:
-                status = TEST_PASS_STATUS
-
-            self._test_status.set_status(MEMLEAK_PHASE, status, comments=comment)
+        return not memleak, "", comment
 
     def compare_env_run(self, expected=None):
         """
@@ -907,136 +925,154 @@ for some of your components.
 
     def _compare_memory(self):
         """
-        Compares current test memory usage to baseline.
+        Do NOT override this method, this method is the framework that
+        controls the memory comparison phase. compare_memory_phase is
+        the extension point that subclasses should use.
         """
-        with self._test_status:
-            try:
-                below_tolerance, comment = perf_compare_memory_baseline(self._case)
-            except Exception as e:
-                logger.info("Failed to compare memory usage baseline: {!s}".format(e))
+        return self.compare_memory_phase()
 
-                self._test_status.set_status(
-                    MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=str(e)
-                )
-            else:
-                if below_tolerance is not None:
-                    append_testlog(comment, self._orig_caseroot)
+    def compare_memory_phase(self):
+        """
+        Compares current test memory usage to baseline.
 
-                    if (
-                        below_tolerance
-                        and self._test_status.get_status(MEMCOMP_PHASE) is None
-                    ):
-                        self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
-                    elif (
-                        self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS
-                    ):
-                        self._test_status.set_status(
-                            MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
+        This is the subclass' extension point if they need to define a
+        custom memory comparison phase.
+
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
+
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
+        """
+        below_tolerance, comment = perf_compare_memory_baseline(self._case)
+        if below_tolerance is None:
+            return True, "No compare value", comment
+        else:
+            return below_tolerance, "", comment
 
     def _compare_throughput(self):
         """
-        Compares current test throughput to baseline.
+        Do NOT override this method, this method is the framework that
+        controls the throughput comparison phase. compare_throughput_phase
+        is the extension point that subclasses should use.
         """
-        with self._test_status:
-            try:
-                below_tolerance, comment = perf_compare_throughput_baseline(self._case)
-            except Exception as e:
-                logger.info("Failed to compare throughput baseline: {!s}".format(e))
+        return self.compare_throughput_phase()
 
-                self._test_status.set_status(
-                    THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=str(e)
-                )
-            else:
-                if below_tolerance is not None:
-                    append_testlog(comment, self._orig_caseroot)
+    def compare_throughput_phase(self):
+        """
+        Compares current test throughput to baseline.
 
-                    if (
-                        below_tolerance
-                        and self._test_status.get_status(THROUGHPUT_PHASE) is None
-                    ):
-                        self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
-                    elif (
-                        self._test_status.get_status(THROUGHPUT_PHASE)
-                        != TEST_FAIL_STATUS
-                    ):
-                        self._test_status.set_status(
-                            THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
+        This is the subclass' extension point if they need to define a
+        custom throughput comparison phase.
+
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
+
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
+        """
+        below_tolerance, comment = perf_compare_throughput_baseline(self._case)
+        if below_tolerance is None:
+            return True, "No compare value", comment
+        else:
+            return below_tolerance, "", comment
 
     def _compare_baseline(self):
         """
-        compare the current test output to a baseline result
+        Do NOT override this method, this method is the framework that
+        controls the baseline comparison phase. compare_baseline_phase
+        is the extension point that subclasses should use.
         """
-        with self._test_status:
-            # compare baseline
-            success, comments = compare_baseline(self._case)
+        return self.compare_baseline_phase()
 
-            append_testlog(comments, self._orig_caseroot)
+    def compare_baseline_phase(self):
+        """
+        Compare the current test output to a baseline result.
 
-            pattern = "*.nc.cprnc.out"
+        This is the subclass' extension point if they need to define a
+        custom baseline comparison phase.
 
-            self._log_cprnc_output_tail(pattern)
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
 
-            status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
-            baseline_name = self._case.get_value("BASECMP_CASE")
-            ts_comments = (
-                os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
-            )
-            log_comments = "\n\n============ BASELINE COMPARE SYNOPSIS =============\n"
-            log_comments += ts_comments + "\n"
-            log_comments += "====================================================\n"
-            append_testlog(log_comments, self._orig_caseroot)
-            self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
+        """
+        # compare baseline
+        success, comments = compare_baseline(self._case)
+
+        pattern = "*.nc.cprnc.out"
+
+        self._log_cprnc_output_tail(pattern)
+
+        baseline_name = self._case.get_value("BASECMP_CASE")
+        ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
+        comments += "\n\n============ BASELINE COMPARE SYNOPSIS =============\n"
+        comments += ts_comments + "\n"
+        comments += "====================================================\n"
+
+        return success, ts_comments, comments
 
     def _generate_baseline(self):
         """
-        If you find yourself wanting to override this method, check whether you can accomplish what
-        you want using additional_baseline_generation() instead.
+        Do NOT override this method, this method is the framework that
+        controls the baseline generation phase. generate_baseline_phase
+        is the extension point that subclasses should use.
         """
-        with self._test_status:
-            # generate baseline
-            success, comments = generate_baseline(self._case)
-            append_testlog(comments, self._orig_caseroot)
-            status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
-            baseline_name = self._case.get_value("BASEGEN_CASE")
-            basegen_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"),
-                self._case.get_value("BASEGEN_CASE"),
-            )
-            # copy latest cpl log to baseline
-            # drop the date so that the name is generic
-            newestcpllogfiles = get_latest_cpl_logs(self._case)
-            with SharedArea():
-                # TODO ever actually more than one cpl log?
-                for cpllog in newestcpllogfiles:
-                    m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
+        return self.generate_baseline_phase()
 
-                    if m is not None:
-                        baselog = os.path.join(basegen_dir, m.group(1)) + ".gz"
-
-                        safe_copy(
-                            cpllog,
-                            os.path.join(basegen_dir, baselog),
-                            preserve_meta=False,
-                        )
-
-                        perf_write_baseline(self._case, basegen_dir, cpllog)
-
-                self.additional_baseline_generation(basegen_dir)
-
-            self._test_status.set_status(
-                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
-            )
-
-    def additional_baseline_generation(
-        self, basegen_dir
-    ):  # pylint: disable=unused-argument
+    def generate_baseline_phase(self):
         """
-        Extension point for subclasses to perform additional operations during baseline generation
-        phase.
+        Generate a baseline result from the current test.
+
+        This is the subclass' extension point if they need to define a
+        custom baseline generation phase.
+
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
+
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
         """
-        return
+        # generate baseline
+        success, comments = generate_baseline(self._case)
+        baseline_name = self._case.get_value("BASEGEN_CASE")
+        basegen_dir = os.path.join(
+            self._case.get_value("BASELINE_ROOT"),
+            self._case.get_value("BASEGEN_CASE"),
+        )
+        # copy latest cpl log to baseline
+        # drop the date so that the name is generic
+        newestcpllogfiles = get_latest_cpl_logs(self._case)
+        with SharedArea():
+            # TODO ever actually more than one cpl log?
+            for cpllog in newestcpllogfiles:
+                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
+
+                if m is not None:
+                    baselog = os.path.join(basegen_dir, m.group(1)) + ".gz"
+
+                    safe_copy(
+                        cpllog,
+                        os.path.join(basegen_dir, baselog),
+                        preserve_meta=False,
+                    )
+
+                    perf_write_baseline(self._case, basegen_dir, cpllog)
+
+        return success, os.path.dirname(baseline_name), comments
 
 
 def perf_check_for_memory_leak(case, tolerance):
@@ -1303,7 +1339,7 @@ class TESTRUNFAILEXC(TESTRUNPASS):
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
-    def _st_archive_case_test(self):
+    def st_archive_case_test_phase(self):
         raise CIMEError("Exception from st archive")
 
 
