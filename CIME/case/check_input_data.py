@@ -6,7 +6,7 @@ from CIME.utils import SharedArea, find_files, safe_copy, expect
 from CIME.XML.inputdata import Inputdata
 import CIME.Servers
 
-import glob, hashlib, shutil, uuid
+import errno, glob, hashlib, shutil, uuid
 
 logger = logging.getLogger(__name__)
 # The inputdata_checksum.dat file will be read into this hash if it's available
@@ -132,14 +132,54 @@ def _remove_path(path, is_dir):
         os.remove(path)
 
 
+def _publish_no_replace(full_path, tmp_path, is_dir):
+    """
+    Publish tmp_path as full_path without ever replacing an existing
+    full_path, even if it appears concurrently between our last check
+    and this call. Returns True if we won the race (full_path now holds
+    our data), False if we lost it (full_path was created by someone
+    else; tmp_path is left untouched for the caller to clean up).
+    """
+    if is_dir:
+        # os.rename() on POSIX only succeeds against an existing
+        # directory target if that target is empty, and fails outright
+        # if the target is a non-empty directory or a file -- so a
+        # concurrent winner's directory (which will have contents)
+        # causes this to raise rather than silently overwrite it.
+        try:
+            os.rename(tmp_path, full_path)
+        except OSError as e:
+            if e.errno in (errno.EEXIST, errno.ENOTEMPTY):
+                return False
+            raise
+        return True
+    else:
+        # os.link() atomically fails with FileExistsError if full_path
+        # already exists, so it never replaces a concurrent winner's
+        # file the way os.rename() would. The extra link is removed
+        # right after (we only wanted the atomic create-if-absent
+        # semantics), leaving the original tmp_path's data reachable
+        # only via full_path. tmp_path is removed either way so the
+        # caller doesn't need a separate cleanup for the lost-race
+        # branch.
+        try:
+            os.link(tmp_path, full_path)
+            published = True
+        except FileExistsError:
+            published = False
+        os.remove(tmp_path)
+        return published
+
+
 def _download_via_temp_path(full_path, fetch, is_dir):
     """
-    Download to a unique temp path via fetch(tmp_path), then atomically
-    rename into place on success. If full_path already exists (either
-    before we start, or because a concurrent download of the same path
-    -- e.g. another test case sharing DIN_LOC_ROOT -- wins the race),
-    treat that as success without overwriting it. Cleans up the temp
-    path on failure or when a race is lost.
+    Download to a unique temp path via fetch(tmp_path), then publish it
+    into place on success using a no-replace operation. If full_path
+    already exists (either before we start, or because a concurrent
+    download of the same path -- e.g. another test case sharing
+    DIN_LOC_ROOT -- wins the race), treat that as success without
+    overwriting it. Cleans up the temp path on failure or when a race
+    is lost.
 
     The temp path includes a random suffix so that two concurrent
     downloads of the *same* full_path (e.g. two test cases needing the
@@ -160,11 +200,12 @@ def _download_via_temp_path(full_path, fetch, is_dir):
     success = fetch(tmp_path)
 
     if success:
-        if os.path.exists(full_path):
-            # Lost the race to a concurrent download.
-            _remove_path(tmp_path, is_dir)
-        else:
-            os.rename(tmp_path, full_path)
+        if not _publish_no_replace(full_path, tmp_path, is_dir):
+            # Lost the race to a concurrent download. The file branch of
+            # _publish_no_replace already removed its tmp_path; only the
+            # directory branch leaves it behind for us to clean up.
+            if is_dir and os.path.exists(tmp_path):
+                _remove_path(tmp_path, is_dir)
     elif os.path.exists(tmp_path):
         _remove_path(tmp_path, is_dir)
 

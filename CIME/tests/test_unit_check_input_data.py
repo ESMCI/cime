@@ -3,10 +3,14 @@
 """Unit tests for ``check_input_data._download_if_in_repo``.
 
 These tests cover the file and directory download paths, which download
-to a temporary path and atomically rename it into place, so a
-destination already present (from a prior download, or a concurrent
+to a unique temporary path and publish it into place with a no-replace
+operation (``os.link`` for files, ``os.rename`` for directories, whose
+POSIX semantics both refuse to overwrite an existing non-empty target).
+A destination already present (from a prior download, or a concurrent
 test case sharing the same DIN_LOC_ROOT racing to fetch the same path)
-is treated as success instead of failing the underlying server export.
+is treated as success and the concurrent winner's data is preserved,
+instead of failing the underlying server export or clobbering the
+winner's file.
 """
 
 from unittest import mock
