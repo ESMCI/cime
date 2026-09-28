@@ -161,37 +161,50 @@ function download_input_data() {
         local dest url min_bytes
         IFS='|' read -r dest url min_bytes <<< "$file_spec"
 
-        # Treat an undersized/missing file as absent so it gets retried.
-        if [[ -f "$dest" ]] && [[ "$(stat -c%s "$dest" 2>/dev/null || echo 0)" -ge "$min_bytes" ]]; then
-            echo "Already present: $(basename "$dest")"
-            continue
-        elif [[ -f "$dest" ]]; then
-            echo "WARNING: Removing incomplete/undersized cached file: $(basename "$dest") ($(stat -c%s "$dest" 2>/dev/null || echo 0) bytes, expected >= ${min_bytes})" >&2
-            rm -f "$dest"
-        fi
+        # Serialize concurrent containers sharing STORAGE_DIR on the same
+        # destination. Without this, two containers can each see $dest as
+        # absent, both download in parallel, and race on the final mv --
+        # or one's stale-temp cleanup could delete the other's in-flight
+        # download. flock is released automatically on subshell exit.
+        (
+            exec 9>"${dest}.lock"
+            flock 9
 
-        # Clean up any stray temp files left by a prior crashed invocation.
-        rm -f "${dest}".??????
-
-        echo "Downloading $(basename "$dest")..."
-        # Download to a temp file, rename only on success -- avoids ever
-        # leaving a partial file at the final destination.
-        local tmp_dest tmp_size
-        tmp_dest="$(mktemp "${dest}.XXXXXX")"
-        if wget "${wget_opts[@]}" -O "$tmp_dest" "$url"; then
-            tmp_size="$(stat -c%s "$tmp_dest" 2>/dev/null || echo 0)"
-            if [[ "$tmp_size" -ge "$min_bytes" ]]; then
-                mv -f "$tmp_dest" "$dest"
-            else
-                echo "WARNING: Downloaded $url but result is too small (${tmp_size} bytes, expected >= ${min_bytes}); treating as failed" >&2
-                rm -f "$tmp_dest"
-                failed=1
+            # Treat an undersized/missing file as absent so it gets retried.
+            if [[ -f "$dest" ]] && [[ "$(stat -c%s "$dest" 2>/dev/null || echo 0)" -ge "$min_bytes" ]]; then
+                echo "Already present: $(basename "$dest")"
+                exit 0
+            elif [[ -f "$dest" ]]; then
+                echo "WARNING: Removing incomplete/undersized cached file: $(basename "$dest") ($(stat -c%s "$dest" 2>/dev/null || echo 0) bytes, expected >= ${min_bytes})" >&2
+                rm -f "$dest"
             fi
-        else
-            echo "WARNING: Failed to download $url after retries" >&2
-            rm -f "$tmp_dest"
-            failed=1
-        fi
+
+            echo "Downloading $(basename "$dest")..."
+            # Download to a temp file, rename only on success -- avoids
+            # ever leaving a partial file at the final destination. Only
+            # this invocation's temp file is ever removed; we deliberately
+            # do not glob-sweep sibling ${dest}.?????? paths, because a
+            # matching name may be another concurrent container's active
+            # mktemp target (see finding r4107023060). Stale temps from a
+            # crashed prior run are harmless (they never sit at $dest)
+            # and are swept out-of-band.
+            local tmp_dest tmp_size
+            tmp_dest="$(mktemp "${dest}.XXXXXX")"
+            if wget "${wget_opts[@]}" -O "$tmp_dest" "$url"; then
+                tmp_size="$(stat -c%s "$tmp_dest" 2>/dev/null || echo 0)"
+                if [[ "$tmp_size" -ge "$min_bytes" ]]; then
+                    mv -f "$tmp_dest" "$dest"
+                else
+                    echo "WARNING: Downloaded $url but result is too small (${tmp_size} bytes, expected >= ${min_bytes}); treating as failed" >&2
+                    rm -f "$tmp_dest"
+                    exit 1
+                fi
+            else
+                echo "WARNING: Failed to download $url after retries" >&2
+                rm -f "$tmp_dest"
+                exit 1
+            fi
+        ) || failed=1
     done
 
     if [[ $failed -eq 1 ]]; then
