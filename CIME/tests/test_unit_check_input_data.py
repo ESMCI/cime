@@ -16,6 +16,7 @@ winner's file.
 from unittest import mock
 import glob
 import os
+import threading
 
 from CIME.case.check_input_data import _download_if_in_repo
 
@@ -77,27 +78,41 @@ def test_download_if_in_repo_concurrent_calls_use_distinct_temp_paths(tmp_path):
     unique per call.
     """
     seen_tmp_paths = []
+    fetch_barrier = threading.Barrier(2)
 
     def getfile(rel_path, tmp_path_arg):
         seen_tmp_paths.append(tmp_path_arg)
-        # Simulate the first call's fetch still being in-flight (temp path
-        # exists on disk, not yet renamed) when the second call starts.
         with open(tmp_path_arg, "w") as fd:
             fd.write("data")
+        # Keep both fetches in flight until each has created its own temp
+        # file. This exercises the actual overlap that the regression test
+        # is intended to cover, rather than making two sequential calls.
+        fetch_barrier.wait(timeout=5)
         return True
 
     server = _make_server(getfile)
 
-    # Two calls "racing" for the same destination, one after another with
-    # the first call's temp file deliberately left in place beforehand.
-    success1 = _download_if_in_repo(server, str(tmp_path), "foo.nc")
-    (tmp_path / "foo.nc").unlink()
-    success2 = _download_if_in_repo(server, str(tmp_path), "foo.nc")
+    results = [None, None]
+    errors = []
 
-    assert success1 is True
-    assert success2 is True
+    def download(index):
+        try:
+            results[index] = _download_if_in_repo(server, str(tmp_path), "foo.nc")
+        except BaseException as error:  # pragma: no cover - reported below
+            errors.append(error)
+
+    threads = [threading.Thread(target=download, args=(index,)) for index in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+
+    assert not errors
+    assert all(result is True for result in results)
     assert len(seen_tmp_paths) == 2
     assert seen_tmp_paths[0] != seen_tmp_paths[1]
+    assert (tmp_path / "foo.nc").read_text() == "data"
+    assert _stray_tmp_paths(tmp_path) == []
 
 
 def test_download_if_in_repo_concurrent_download_wins_race(tmp_path):
