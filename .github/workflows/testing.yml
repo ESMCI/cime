@@ -347,19 +347,22 @@ jobs:
               command -v uv
               printf 'SYSTEM TEST FILES:\n'
               ls -l CIME/tests/test_sys*
-              echo 'STARTING PYTEST'
+              echo 'BEFORE INPUT DATA'
               # Input data is populated from ghcr.io/esmci/cime-inputdata
               # in the "Extract input data image" step above; this call
               # is a no-op fast path (size-check hits and skips) but is
               # kept so the container's environment is identical to the
               # non-CI docker workflow.
               DOWNLOAD_SKIP_ON_ERROR=1 download_input_data
+              echo 'AFTER INPUT DATA'
               # Log sizes for diagnosability without pulling artifacts.
               ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
+              echo 'BEFORE UV SETUP'
               uv python install 3.10
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
+              echo 'BEFORE PYTEST'
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
               time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
