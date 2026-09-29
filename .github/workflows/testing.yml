@@ -353,7 +353,11 @@ jobs:
               # is a no-op fast path (size-check hits and skips) but is
               # kept so the container's environment is identical to the
               # non-CI docker workflow.
-              DOWNLOAD_SKIP_ON_ERROR=1 download_input_data
+              declare -F download_input_data
+              export DOWNLOAD_SKIP_ON_ERROR=1
+              echo 'CALLING INPUT DATA'
+              download_input_data
+              echo 'RETURNED FROM INPUT DATA'
               echo 'AFTER INPUT DATA'
               # Log sizes for diagnosability without pulling artifacts.
               ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
