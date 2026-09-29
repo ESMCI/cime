@@ -120,7 +120,19 @@ gen_domain_files=(
 for f in "${gen_domain_files[@]}"; do
     dest="$OUT_DIR/$f"
     [[ -s "$dest" ]] && continue
-    wget -q -O "$dest" "https://portal.nersc.gov/project/e3sm/inputdata/$f"
+    # Download directly into the destination. Remove a failed or empty
+    # result and stop rather than allowing Dockerfile.data's COPY to bundle
+    # an unusable input file into the image.
+    if ! wget -q -O "$dest" "https://portal.nersc.gov/project/e3sm/inputdata/$f"; then
+        echo "ERROR: Failed to download $f" >&2
+        rm -f "$dest"
+        exit 1
+    fi
+    if [[ ! -s "$dest" ]]; then
+        echo "ERROR: Downloaded $f but the result is empty" >&2
+        rm -f "$dest"
+        exit 1
+    fi
 done
 
 rm -rf "$MACHINES_DIR"
