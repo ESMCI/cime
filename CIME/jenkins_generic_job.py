@@ -5,7 +5,27 @@ from CIME.case import Case
 import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
 
 
+_ARCHIVE_SUFFIX = ".tar.gz"
+
+
+def _strip_archive_suffix(name):
+    """Strip the ``.tar.gz`` suffix used by ``archive_old_test_data``.
+
+    Archived entries in ``old_test_archive/{old_cases,old_builds,old_runs,
+    old_archives}/`` are written as ``<case>.tar.gz`` (see
+    ``archive_old_test_data``). Callers that need to reason about the
+    underlying case name -- token-based matching or last-token test-id
+    extraction -- must strip that suffix first, otherwise the trailing
+    ``.tar`` and ``.gz`` tokens shadow the real case-name tokens.
+    """
+    if name.endswith(_ARCHIVE_SUFFIX):
+        return name[: -len(_ARCHIVE_SUFFIX)]
+    return name
+
+
 def _matches_test_name(name, mach_comp, test_id_root):
+    name = _strip_archive_suffix(name)
+
     tokens = name.split(".")
     if len(tokens) < 2 or not tokens[-1].startswith(test_id_root):
         return False
@@ -13,7 +33,11 @@ def _matches_test_name(name, mach_comp, test_id_root):
     if tokens[-2] == mach_comp:
         return True
 
-    return len(tokens) >= 3 and tokens[-3] == mach_comp and tokens[-2] in ["G", "C"]
+    # test_scheduler._get_case_id emits a ``.G.`` action when baseline
+    # generation is enabled and ``.C.`` when comparison is enabled. Both
+    # flags being set simultaneously is rejected by create_test's CLI
+    # validator, so ``.GC.`` is not a reachable case-name form here.
+    return len(tokens) >= 3 and tokens[-3] == mach_comp and tokens[-2] in ("G", "C")
 
 
 def _matching_test_paths(root, mach_comp, test_id_root):
@@ -82,7 +106,13 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     for item in _matching_test_paths(
         os.path.join(old_test_archive, "old_cases"), mach_comp, test_id_root
     ):
-        filename = os.path.basename(item)
+        # Archive entries here are always ``<case>.tar.gz``; strip that
+        # suffix so ``test_id_re`` extracts the trailing test-id token of
+        # the underlying case name rather than ``"gz"``. Without the
+        # strip, the retention loop below would iterate over the literal
+        # ``"gz"`` test-id and match nothing, so no archives would ever
+        # be reclaimed.
+        filename = _strip_archive_suffix(os.path.basename(item))
         the_match = test_id_re.match(filename)
         if the_match:
             test_id = the_match.groups()[0]
