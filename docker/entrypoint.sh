@@ -168,7 +168,9 @@ function download_input_data() {
         # download. flock is released automatically on subshell exit.
         (
             exec 9>"${dest}.lock"
+            echo "INPUTDATA: acquiring lock for $(basename "$dest")"
             flock 9
+            echo "INPUTDATA: acquired lock for $(basename "$dest")"
 
             # Treat an undersized/missing file as absent so it gets retried.
             if [[ -f "$dest" ]] && [[ "$(stat -c%s "$dest" 2>/dev/null || echo 0)" -ge "$min_bytes" ]]; then
@@ -179,7 +181,7 @@ function download_input_data() {
                 rm -f "$dest"
             fi
 
-            echo "Downloading $(basename "$dest")..."
+            echo "INPUTDATA: downloading $(basename "$dest")..."
             # Download to a temp file, rename only on success -- avoids
             # ever leaving a partial file at the final destination. Only
             # this invocation's temp file is ever removed; we deliberately
