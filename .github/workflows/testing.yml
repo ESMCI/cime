@@ -343,6 +343,11 @@ jobs:
             -c "
               set -euxo pipefail
               source /entrypoint.sh
+              echo 'AFTER ENTRYPOINT'
+              command -v uv
+              printf 'SYSTEM TEST FILES:\n'
+              ls -l CIME/tests/test_sys*
+              echo 'STARTING PYTEST'
               # Input data is populated from ghcr.io/esmci/cime-inputdata
               # in the "Extract input data image" step above; this call
               # is a no-op fast path (size-check hits and skips) but is
