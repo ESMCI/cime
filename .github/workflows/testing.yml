@@ -353,7 +353,8 @@ jobs:
               # is a no-op fast path (size-check hits and skips) but is
               # kept so the container's environment is identical to the
               # non-CI docker workflow.
-              declare -F download_input_data
+              declare -F download_input_data || echo 'download_input_data is NOT defined'
+              type download_input_data || true
               export DOWNLOAD_SKIP_ON_ERROR=1
               echo 'CALLING INPUT DATA'
               download_input_data
