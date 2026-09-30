@@ -72,7 +72,7 @@ def setup_generate_baseline_mock(tempdir):
     ]
 
     if Config.instance().create_bless_log:
-        get_value_calls.insert(12, os.getcwd())
+        get_value_calls.insert(14, Path.cwd().parent.as_posix())
 
     case.get_value.side_effect = get_value_calls
 
@@ -120,9 +120,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
-            AttributeError
-        )
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = AttributeError
 
         perf_get_memory_list.side_effect = RuntimeError
 
@@ -171,9 +169,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
-            AttributeError
-        )
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = AttributeError
 
         perf_get_memory_list.return_value = [
             (1, 1000.0),
@@ -225,9 +221,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
-            AttributeError
-        )
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = AttributeError
 
         perf_get_memory_list.return_value = [
             (1, 1000.0),
@@ -283,9 +277,7 @@ class TestUnitSystemTests(unittest.TestCase):
         append_testlog,
         load_coupler_customization,
     ):
-        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = (
-            AttributeError
-        )
+        load_coupler_customization.return_value.perf_check_for_memory_leak.side_effect = AttributeError
 
         perf_get_memory_list.return_value = [
             (1, 3040.0),
