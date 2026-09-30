@@ -1343,9 +1343,11 @@ def get_current_commit(short=False, repo=None, tag=False):
             )
         else:
             rc, output, _ = run_cmd(
-                "git rev-parse {} HEAD".format("--short" if short else ""), from_dir=repo
+                "git rev-parse {} HEAD".format("--short" if short else ""),
+                from_dir=repo,
             )
     except Exception:
+        output = None
         rc = 1
 
     return output if rc == 0 else "unknown"
