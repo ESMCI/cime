@@ -1812,7 +1812,7 @@ def test_flux_submit_args_do_not_change_other_batch_systems(monkeypatch):
     assert batch._remove_flux_partition_arg(" -p pbatch") == " -p pbatch"
 
 
-XML_FLUX_FINAL_SUBMIT = b'''<?xml version="1.0"?>
+XML_FLUX_FINAL_SUBMIT = b"""<?xml version="1.0"?>
 <file id="env_batch.xml" version="2.0">
   <header>Test Flux final submission.</header>
   <group id="config_batch">
@@ -1824,7 +1824,7 @@ XML_FLUX_FINAL_SUBMIT = b'''<?xml version="1.0"?>
   <batch_system type="flux">
     <batch_submit>flux submit</batch_submit>
   </batch_system>
-</file>'''
+</file>"""
 
 
 def _run_flux_final_submit(tmp_path, monkeypatch, in_job):
