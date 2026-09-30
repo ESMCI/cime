@@ -343,31 +343,16 @@ jobs:
             -c "
               set -euxo pipefail
               source /entrypoint.sh
-              echo 'AFTER ENTRYPOINT'
-              command -v uv
-              printf 'SYSTEM TEST FILES:\n'
-              ls -l CIME/tests/test_sys*
-              echo 'BEFORE INPUT DATA'
-              # Input data is populated from ghcr.io/esmci/cime-inputdata
-              # in the "Extract input data image" step above; this call
-              # is a no-op fast path (size-check hits and skips) but is
-              # kept so the container's environment is identical to the
-              # non-CI docker workflow.
-              declare -F download_input_data || echo 'download_input_data is NOT defined'
-              type download_input_data || true
-              export DOWNLOAD_SKIP_ON_ERROR=1
-              echo 'CALLING INPUT DATA'
-              download_input_data
-              echo 'RETURNED FROM INPUT DATA'
-              echo 'AFTER INPUT DATA'
-              # Log sizes for diagnosability without pulling artifacts.
-              ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/ || true
-              echo 'BEFORE UV SETUP'
+              # Input data was extracted from the required
+              # ghcr.io/esmci/cime-inputdata image before this container was
+              # started. Do not invoke the runtime downloader here: CI has
+              # already populated the mounted storage and GitHub runners
+              # cannot reach portal.nersc.gov.
+              ls -la /root/storage/inputdata/cpl/gridmaps/oQU240/ /root/storage/inputdata/share/domains/
               uv python install 3.10
               uv venv
               source .venv/bin/activate
               uv pip install -r test-requirements.txt
-              echo 'BEFORE PYTEST'
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
               time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
