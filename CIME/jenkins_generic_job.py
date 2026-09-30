@@ -4,6 +4,52 @@ from CIME.case import Case
 
 import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
 
+
+_ARCHIVE_SUFFIX = ".tar.gz"
+
+
+def _strip_archive_suffix(name):
+    """Strip the ``.tar.gz`` suffix used by ``archive_old_test_data``.
+
+    Archived entries in ``old_test_archive/{old_cases,old_builds,old_runs,
+    old_archives}/`` are written as ``<case>.tar.gz`` (see
+    ``archive_old_test_data``). Callers that need to reason about the
+    underlying case name -- token-based matching or last-token test-id
+    extraction -- must strip that suffix first, otherwise the trailing
+    ``.tar`` and ``.gz`` tokens shadow the real case-name tokens.
+    """
+    if name.endswith(_ARCHIVE_SUFFIX):
+        return name[: -len(_ARCHIVE_SUFFIX)]
+    return name
+
+
+def _matches_test_name(name, mach_comp, test_id_root):
+    name = _strip_archive_suffix(name)
+
+    tokens = name.split(".")
+    if len(tokens) < 2 or not tokens[-1].startswith(test_id_root):
+        return False
+
+    if tokens[-2] == mach_comp:
+        return True
+
+    # test_scheduler._get_case_id emits a ``.G.`` action when baseline
+    # generation is enabled and ``.C.`` when comparison is enabled. Both
+    # flags being set simultaneously is rejected by create_test's CLI
+    # validator, so ``.GC.`` is not a reachable case-name form here.
+    return len(tokens) >= 3 and tokens[-3] == mach_comp and tokens[-2] in ("G", "C")
+
+
+def _matching_test_paths(root, mach_comp, test_id_root):
+    return [
+        path
+        for path in glob.glob(os.path.join(root, f"*{test_id_root}*"))
+        if _matches_test_name(
+            os.path.basename(path.rstrip(os.sep)), mach_comp, test_id_root
+        )
+    ]
+
+
 ##############################################################################
 def cleanup_queue(test_root, test_id):
     ###############################################################################
@@ -38,7 +84,7 @@ def delete_old_test_data(
     ###############################################################################
     # Remove old dirs
     for clutter_area in [scratch_root, test_root, run_area, build_area, archive_area]:
-        for old_file in glob.glob(f"{clutter_area}/*{mach_comp}*{test_id_root}*"):
+        for old_file in _matching_test_paths(clutter_area, mach_comp, test_id_root):
             if avoid_test_id not in old_file:
                 logging.info(f"TEST ARCHIVER: removing {old_file}")
                 if os.path.isdir(old_file):
@@ -57,8 +103,16 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     ###############################################################################
     results = set([])
     test_id_re = re.compile(".+[.]([^.]+)")
-    for item in glob.glob(f"{old_test_archive}/old_cases/*{mach_comp}*{test_id_root}*"):
-        filename = os.path.basename(item)
+    for item in _matching_test_paths(
+        os.path.join(old_test_archive, "old_cases"), mach_comp, test_id_root
+    ):
+        # Archive entries here are always ``<case>.tar.gz``; strip that
+        # suffix so ``test_id_re`` extracts the trailing test-id token of
+        # the underlying case name rather than ``"gz"``. Without the
+        # strip, the retention loop below would iterate over the literal
+        # ``"gz"`` test-id and match nothing, so no archives would ever
+        # be reclaimed.
+        filename = _strip_archive_suffix(os.path.basename(item))
         the_match = test_id_re.match(filename)
         if the_match:
             test_id = the_match.groups()[0]
@@ -102,7 +156,7 @@ def archive_old_test_data(
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob(f"{test_root}/*{mach_comp}*{test_id_root}[0-9]*"):
+    for old_case in _matching_test_paths(test_root, mach_comp, test_id_root):
         if avoid_test_id not in old_case:
             logging.info(f"TEST ARCHIVER: archiving case {old_case}")
             exeroot, rundir, archdir = run_cmd_no_fail(
@@ -165,8 +219,8 @@ def archive_old_test_data(
         for old_test_id in sorted(old_test_ids):
             logging.info(f"TEST ARCHIVER:   Removing old data for test {old_test_id}")
             for item in ["old_cases", "old_builds", "old_runs", "old_archives"]:
-                for dir_to_rm in glob.glob(
-                    f"{old_test_archive}/{item}/*{mach_comp}*{old_test_id}*"
+                for dir_to_rm in _matching_test_paths(
+                    os.path.join(old_test_archive, item), mach_comp, old_test_id
                 ):
                     logging.info(f"TEST ARCHIVER:     Removing {dir_to_rm}")
                     if os.path.isdir(dir_to_rm):
@@ -388,14 +442,19 @@ def jenkins_generic_job(
     os.environ["CIME_MACHINE"] = machine.get_machine_name()
 
     mach_comp = f"{machine.get_machine_name()}_{compiler}"
-    globstr = f"{test_root}/*{mach_comp}*{test_id}/TestStatus"
+    teststatus_paths = [
+        os.path.join(path, "TestStatus")
+        for path in _matching_test_paths(test_root, mach_comp, test_id)
+    ]
     if submit_to_cdash:
         logging.info(
-            f"To resubmit to dashboard: wait_for_tests {globstr} --no-wait -b {cdash_build_name}"
+            "To resubmit to dashboard: wait_for_tests {} --no-wait -b {}".format(
+                " ".join(teststatus_paths), cdash_build_name
+            )
         )
 
     tests_passed = CIME.wait_for_tests.wait_for_tests(
-        glob.glob(globstr),
+        teststatus_paths,
         no_wait=not use_batch,  # wait if using queue
         check_throughput=check_throughput,
         check_memory=check_memory,

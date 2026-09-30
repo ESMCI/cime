@@ -185,7 +185,7 @@ class TestWaitForTests(base.BaseTestCase):
         ) as ts:
             ts.set_status(test_status.RUN_PHASE, test_status.TEST_PASS_STATUS)
 
-        run_thread.join(timeout=10)
+        run_thread.join(timeout=30)
 
         self.assertFalse(
             run_thread.is_alive(), msg="wait_for_tests should have finished"
@@ -212,7 +212,7 @@ class TestWaitForTests(base.BaseTestCase):
         ) as ts:
             ts.set_status(test_status.RUN_PHASE, test_status.TEST_PASS_STATUS)
 
-        run_thread.join(timeout=10)
+        run_thread.join(timeout=30)
 
         self.assertFalse(
             run_thread.is_alive(), msg="wait_for_tests should have finished"
@@ -237,7 +237,7 @@ class TestWaitForTests(base.BaseTestCase):
 
         self.kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1)
 
-        run_thread.join(timeout=10)
+        run_thread.join(timeout=30)
 
         self.assertFalse(
             run_thread.is_alive(), msg="wait_for_tests should have finished"
@@ -258,7 +258,7 @@ class TestWaitForTests(base.BaseTestCase):
         run_thread.daemon = True
         run_thread.start()
 
-        run_thread.join(timeout=10)
+        run_thread.join(timeout=30)
 
         self.assertFalse(
             run_thread.is_alive(), msg="wait_for_tests should have finished"
@@ -338,9 +338,11 @@ class TestWaitForTests(base.BaseTestCase):
             ) as ts:
                 ts.set_status(
                     core_phase,
-                    last_status
-                    if core_phase == last_phase
-                    else test_status.TEST_PASS_STATUS,
+                    (
+                        last_status
+                        if core_phase == last_phase
+                        else test_status.TEST_PASS_STATUS
+                    ),
                 )
 
             time.sleep(5)

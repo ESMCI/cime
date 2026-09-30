@@ -6,7 +6,7 @@ from CIME.utils import SharedArea, find_files, safe_copy, expect
 from CIME.XML.inputdata import Inputdata
 import CIME.Servers
 
-import glob, hashlib, shutil
+import errno, glob, hashlib, shutil, uuid
 
 logger = logging.getLogger(__name__)
 # The inputdata_checksum.dat file will be read into this hash if it's available
@@ -125,6 +125,93 @@ def _merge_chksum_files(new_file, old_file):
     os.remove(old_file)
 
 
+def _remove_path(path, is_dir):
+    if is_dir:
+        shutil.rmtree(path)
+    else:
+        os.remove(path)
+
+
+def _publish_no_replace(full_path, tmp_path, is_dir):
+    """
+    Publish tmp_path as full_path without ever replacing an existing
+    full_path, even if it appears concurrently between our last check
+    and this call. Returns True if we won the race (full_path now holds
+    our data), False if we lost it (full_path was created by someone
+    else; tmp_path is left untouched for the caller to clean up).
+    """
+    if is_dir:
+        # os.rename() on POSIX only succeeds against an existing
+        # directory target if that target is empty, and fails outright
+        # if the target is a non-empty directory or a file -- so a
+        # concurrent winner's directory (which will have contents)
+        # causes this to raise rather than silently overwrite it.
+        try:
+            os.rename(tmp_path, full_path)
+        except OSError as e:
+            if e.errno in (errno.EEXIST, errno.ENOTEMPTY):
+                return False
+            raise
+        return True
+    else:
+        # os.link() atomically fails with FileExistsError if full_path
+        # already exists, so it never replaces a concurrent winner's
+        # file the way os.rename() would. The extra link is removed
+        # right after (we only wanted the atomic create-if-absent
+        # semantics), leaving the original tmp_path's data reachable
+        # only via full_path. tmp_path is removed either way so the
+        # caller doesn't need a separate cleanup for the lost-race
+        # branch.
+        try:
+            os.link(tmp_path, full_path)
+            published = True
+        except FileExistsError:
+            published = False
+        os.remove(tmp_path)
+        return published
+
+
+def _download_via_temp_path(full_path, fetch, is_dir):
+    """
+    Download to a unique temp path via fetch(tmp_path), then publish it
+    into place on success using a no-replace operation. If full_path
+    already exists (either before we start, or because a concurrent
+    download of the same path -- e.g. another test case sharing
+    DIN_LOC_ROOT -- wins the race), treat that as success without
+    overwriting it. Cleans up the temp path on failure or when a race
+    is lost.
+
+    The temp path includes a random suffix so that two concurrent
+    downloads of the *same* full_path (e.g. two test cases needing the
+    same shared input file at once) never collide on the same temp path.
+
+    fetch is a callable(tmp_path) -> bool that performs the actual
+    file/directory transfer into tmp_path.
+    """
+    if os.path.exists(full_path):
+        return True
+
+    tmp_path = "{}.tmp.{}".format(full_path, uuid.uuid4().hex)
+    if is_dir:
+        # Some server backends (e.g. wget) cd into this directory before
+        # downloading, so it must exist beforehand.
+        os.makedirs(tmp_path, exist_ok=True)
+
+    success = fetch(tmp_path)
+
+    if success:
+        if not _publish_no_replace(full_path, tmp_path, is_dir):
+            # Lost the race to a concurrent download. The file branch of
+            # _publish_no_replace already removed its tmp_path; only the
+            # directory branch leaves it behind for us to clean up.
+            if is_dir and os.path.exists(tmp_path):
+                _remove_path(tmp_path, is_dir)
+    elif os.path.exists(tmp_path):
+        _remove_path(tmp_path, is_dir)
+
+    return success
+
+
 def _download_if_in_repo(
     server, input_data_root, rel_path, isdirectory=False, ic_filepath=None
 ):
@@ -148,26 +235,29 @@ def _download_if_in_repo(
     )
     # Make sure local path exists, create if it does not
     if isdirectory or full_path.endswith(os.sep):
-        if not os.path.exists(full_path):
-            logger.info("Creating directory {}".format(full_path))
-            os.makedirs(full_path + ".tmp")
         isdirectory = True
+        # Strip the trailing separator so ".tmp" produces a sibling path
+        # (e.g. "somedir.tmp") rather than nesting inside full_path itself
+        # (e.g. "somedir/.tmp"), which made the later os.rename fail with
+        # ENOTEMPTY since full_path would then contain its own tmp dir.
+        full_path = full_path.rstrip(os.sep)
     elif not os.path.exists(os.path.dirname(full_path)):
         os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
     # Use umask to make sure files are group read/writable. As long as parent directories
     # have +s, then everything should work.
     if isdirectory:
-        success = server.getdirectory(rel_path, full_path + ".tmp")
-        # this is intended to prevent a race condition in which
-        # one case attempts to use a refdir before another one has
-        # completed the download
-        if success:
-            os.rename(full_path + ".tmp", full_path)
-        else:
-            shutil.rmtree(full_path + ".tmp")
+        success = _download_via_temp_path(
+            full_path,
+            lambda tmp_path: server.getdirectory(rel_path, tmp_path),
+            is_dir=True,
+        )
     else:
-        success = server.getfile(rel_path, full_path)
+        success = _download_via_temp_path(
+            full_path,
+            lambda tmp_path: server.getfile(rel_path, tmp_path),
+            is_dir=False,
+        )
 
     return success
 
