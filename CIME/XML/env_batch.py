@@ -24,21 +24,7 @@ from itertools import zip_longest
 
 logger = logging.getLogger(__name__)
 
-# Static mapping of batch system type to the well-known environment
-# variable that indicates the current process is running inside an
-# active job for that scheduler. Batch schedulers change infrequently
-# so this is maintained in code rather than in per-machine config.
-IN_JOB_ENVIRONMENT_VARIABLES = {
-    "flux": "FLUX_JOB_ID",
-    "lsf": "LSB_JOBID",
-    "pbs": "PBS_JOBID",
-    "pbspro": "PBS_JOBID",
-    "moab": "PBS_JOBID",
-    "slurm": "SLURM_JOB_ID",
-    "slurm_single_node": "SLURM_JOB_ID",
-    "cobalt": "COBALT_JOBID",
-    "cobalt_theta": "COBALT_JOBID",
-}
+_FLUX_PARTITION_ARG = re.compile(r"(?<!\S)(?:-p|--partition)(?:\s+|=)\S+")
 
 # pragma pylint: disable=attribute-defined-outside-init
 
@@ -788,37 +774,31 @@ class EnvBatch(EnvBase):
 
         return submitargs
 
-    def is_in_batch_job(self, environ=None):
-        """Checks whether the current process is running inside a batch job.
+    def _remove_flux_partition_arg(self, submitargs, environ=None):
+        """Remove Flux's partition argument from nested submissions.
 
-        Detection is based on the presence of the scheduler specific
-        environment variable for the case's batch system, e.g.
-        ``FLUX_JOB_ID`` for flux or ``SLURM_JOB_ID`` for slurm. This is
-        used to drop submit args marked ``omit_in_job`` which are only
-        valid when submitting from outside a job, e.g. flux nested
-        instances define no partitions so ``-p`` must be omitted when
-        resubmitting from inside a job.
+        Flux jobs submit into the allocation of their parent job, so a
+        partition supplied to ``flux submit`` is invalid when CIME itself is
+        running under Flux. This is intentionally a Flux-specific
+        compatibility path; scheduler-specific submission policies should
+        move into ``CIME/core/batch/`` during the batch refactor.
 
         Args:
-            environ (dict, optional): Environment mapping to check,
-                defaults to ``os.environ``.
+            submitargs (str): Configured batch submission arguments.
+            environ (dict, optional): Environment mapping to inspect.
 
         Returns:
-            bool: True if inside an active batch job, otherwise False.
+            str: Submission arguments suitable for the current context.
         """
         if environ is None:
             environ = os.environ
 
-        env_var = IN_JOB_ENVIRONMENT_VARIABLES.get(self._batchtype)
+        if self._batchtype != "flux" or "FLUX_JOB_ID" not in environ:
+            return submitargs
 
-        return env_var is not None and env_var in environ
+        return _FLUX_PARTITION_ARG.sub("", submitargs).rstrip()
 
     def _get_argument(self, case, arg):
-        omit_in_job = self.get(arg, "omit_in_job", default="false")
-
-        if omit_in_job.lower() in ("true", "1") and self.is_in_batch_job():
-            raise ValueError()
-
         flag = self.get(arg, "flag")
 
         name = self.get(arg, "name")
@@ -1144,6 +1124,7 @@ class EnvBatch(EnvBase):
             return
 
         submitargs = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job, resolved=False)
+        submitargs = self._remove_flux_partition_arg(submitargs)
 
         project = case.get_value("PROJECT", subgroup=job)
 

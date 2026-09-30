@@ -1785,106 +1785,87 @@ class TestXMLEnvBatch(unittest.TestCase):
         return overrides
 
 
-XML_OMIT_IN_JOB = b"""<?xml version="1.0"?>
+def test_flux_final_submit_args_omit_partition_inside_flux_job(monkeypatch):
+    batch = EnvBatch()
+    batch.set_batch_system_type("flux")
+    monkeypatch.setenv("FLUX_JOB_ID", "fuzzybunny")
+
+    assert (
+        batch._remove_flux_partition_arg("  -o exit-timeout=none -p pbatch")
+        == "  -o exit-timeout=none"
+    )
+
+
+def test_flux_submit_args_keep_partition_outside_flux_job(monkeypatch):
+    batch = EnvBatch()
+    batch.set_batch_system_type("flux")
+    monkeypatch.delenv("FLUX_JOB_ID", raising=False)
+
+    assert batch._remove_flux_partition_arg(" -p pbatch") == " -p pbatch"
+
+
+def test_flux_submit_args_do_not_change_other_batch_systems(monkeypatch):
+    batch = EnvBatch()
+    batch.set_batch_system_type("slurm")
+    monkeypatch.setenv("FLUX_JOB_ID", "fuzzybunny")
+
+    assert batch._remove_flux_partition_arg(" -p pbatch") == " -p pbatch"
+
+
+XML_FLUX_FINAL_SUBMIT = b'''<?xml version="1.0"?>
 <file id="env_batch.xml" version="2.0">
-  <header>
-      These variables may be changed anytime during a run, they
-      control arguments to the batch submit command.
-    </header>
+  <header>Test Flux final submission.</header>
   <group id="config_batch">
     <entry id="BATCH_SYSTEM" value="flux">
       <type>char</type>
-      <valid_values>flux,slurm,pbs,lsf,none</valid_values>
-      <desc>The batch system type to use for this machine.</desc>
+      <valid_values>flux</valid_values>
     </entry>
   </group>
   <batch_system type="flux">
-    <submit_args>
-      <arg flag="--fixed" name="$PROJECT" omit_in_job="true"/>
-    </submit_args>
+    <batch_submit>flux submit</batch_submit>
   </batch_system>
-  <batch_system MACH="docker" type="flux">
-    <submit_args>
-      <argument>-o exit-timeout=none</argument>
-      <argument omit_in_job="true">-p pbatch</argument>
-    </submit_args>
-  </batch_system>
-</file>
-"""
+</file>'''
 
 
-def _create_omit_in_job_batch(tmp_path):
+def _run_flux_final_submit(tmp_path, monkeypatch, in_job):
     infile = tmp_path / "env_batch.xml"
-
-    infile.write_bytes(XML_OMIT_IN_JOB)
-
+    infile.write_bytes(XML_FLUX_FINAL_SUBMIT)
     batch = EnvBatch(infile=str(infile))
 
     case = mock.MagicMock()
-
-    case.get_value.side_effect = lambda *args, **kwargs: {
-        "BATCH_SPEC_FILE": str(infile),
+    case.get_value.side_effect = lambda name, **kwargs: {
+        "BATCH_COMMAND_FLAGS": "-p pbatch -o exit-timeout=none",
         "PROJECT": "CIME",
-        "JOB_QUEUE": "pbatch",
-    }.get(args[0])
+    }.get(name)
+    case.get_resolved_value.side_effect = lambda value, **kwargs: value
 
-    case.get_resolved_value.side_effect = lambda val: val
+    if in_job:
+        monkeypatch.setenv("FLUX_JOB_ID", "fuzzybunny")
+    else:
+        monkeypatch.delenv("FLUX_JOB_ID", raising=False)
 
-    return batch, case
-
-
-def test_get_submit_args_omit_in_job_not_in_job(tmp_path, monkeypatch):
-    # Context
-    batch, case = _create_omit_in_job_batch(tmp_path)
-
-    monkeypatch.delenv("FLUX_JOB_ID", raising=False)
-
-    # Act
-    submit_args = batch.get_submit_args(case, ".case.run")
-
-    # Assert
-    assert submit_args == "  --fixed CIME -o exit-timeout=none -p pbatch"
+    with mock.patch("CIME.XML.env_batch.get_cime_config") as get_cime_config:
+        get_cime_config.return_value.has_option.return_value = False
+        with mock.patch(
+            "CIME.XML.env_batch.get_batch_script_for_job", return_value="case.run"
+        ):
+            batch._env_workflow = mock.MagicMock()
+            batch._env_workflow.hidden_job.return_value = False
+            with mock.patch.object(batch, "_build_run_args_str", return_value=""):
+                return batch._submit_single_job(case, "case.run", dry_run=True)
 
 
-def test_get_submit_args_omit_in_job_in_job(tmp_path, monkeypatch):
-    # Context
-    batch, case = _create_omit_in_job_batch(tmp_path)
+def test_flux_final_submit_command_omits_partition_inside_job(tmp_path, monkeypatch):
+    submitcmd = _run_flux_final_submit(tmp_path, monkeypatch, in_job=True)
 
-    monkeypatch.setenv("FLUX_JOB_ID", "fuzzybunny")
-
-    # Act
-    submit_args = batch.get_submit_args(case, ".case.run")
-
-    # Assert
-    assert submit_args == "  -o exit-timeout=none"
+    assert "-p pbatch" not in submitcmd
+    assert "-o exit-timeout=none" in submitcmd
 
 
-def test_get_submit_args_omit_in_job_other_scheduler_env(tmp_path, monkeypatch):
-    # Context
-    batch, case = _create_omit_in_job_batch(tmp_path)
+def test_flux_final_submit_command_keeps_partition_outside_job(tmp_path, monkeypatch):
+    submitcmd = _run_flux_final_submit(tmp_path, monkeypatch, in_job=False)
 
-    monkeypatch.delenv("FLUX_JOB_ID", raising=False)
-
-    # Only the current batch system's env var is considered
-    monkeypatch.setenv("SLURM_JOB_ID", "1234")
-
-    # Act
-    submit_args = batch.get_submit_args(case, ".case.run")
-
-    # Assert
-    assert submit_args == "  --fixed CIME -o exit-timeout=none -p pbatch"
-
-
-def test_is_in_batch_job_unknown_batch_system(monkeypatch):
-    # Context
-    batch = EnvBatch()
-
-    batch._batchtype = "made_up_scheduler"
-
-    monkeypatch.setenv("SLURM_JOB_ID", "1234")
-
-    # Act/Assert
-    assert not batch.is_in_batch_job()
+    assert "-p pbatch" in submitcmd
 
 
 if __name__ == "__main__":
