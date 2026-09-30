@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.find\_files
-======================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: find_files

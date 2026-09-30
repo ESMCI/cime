@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.safe\_recursive\_copy
-================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: safe_recursive_copy

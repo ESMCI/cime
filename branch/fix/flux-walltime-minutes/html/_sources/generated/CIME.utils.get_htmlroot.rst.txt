@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_htmlroot
-========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_htmlroot

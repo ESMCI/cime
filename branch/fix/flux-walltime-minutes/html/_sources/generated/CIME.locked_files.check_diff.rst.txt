@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.locked\_files.check\_diff
-==============================
-
-.. currentmodule:: CIME.locked_files
-
-.. autofunction:: check_diff

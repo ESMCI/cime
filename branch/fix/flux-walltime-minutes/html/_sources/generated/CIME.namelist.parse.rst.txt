@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.namelist.parse
-===================
-
-.. currentmodule:: CIME.namelist
-
-.. autofunction:: parse

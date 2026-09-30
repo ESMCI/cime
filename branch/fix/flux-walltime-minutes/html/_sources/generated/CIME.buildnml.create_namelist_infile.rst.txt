@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.buildnml.create\_namelist\_infile
-======================================
-
-.. currentmodule:: CIME.buildnml
-
-.. autofunction:: create_namelist_infile

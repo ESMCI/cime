@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.uses\_kokkos
-=======================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: uses_kokkos

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.distributed\_dir\_lock
-=================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: distributed_dir_lock

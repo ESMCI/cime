@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.clean
-================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: clean

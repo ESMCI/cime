@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.symlink\_force
-=========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: symlink_force

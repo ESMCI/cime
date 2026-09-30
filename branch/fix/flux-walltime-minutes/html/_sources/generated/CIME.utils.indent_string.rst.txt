@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.indent\_string
-=========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: indent_string
