@@ -17,7 +17,7 @@ from CIME.utils import (
     copy_globs,
     import_and_run_sub_or_cmd,
     distributed_dir_lock,
-    is_comp_standalone,
+    compset_lacks_cpl_log,
     _CIME_LOCK_DIR_NAME,
 )
 
@@ -509,8 +509,8 @@ class TestDistributedDirLock(unittest.TestCase):
             os.rmdir(lock_dir)
 
 
-class TestIsCompStandalone(unittest.TestCase):
-    """Test the is_comp_standalone function."""
+class TestCompsetLacksCplLog(unittest.TestCase):
+    """Test the compset_lacks_cpl_log function."""
 
     # A shortened stand-in for the production component classes. The logic
     # under test only depends on the number of classes and which are stubs, so
@@ -539,7 +539,7 @@ class TestIsCompStandalone(unittest.TestCase):
 
         Returns:
             A mock case supporting the get_value and get_values calls made by
-            is_comp_standalone.
+            compset_lacks_cpl_log.
         """
         if classes is None:
             classes = self.COMP_CLASSES
@@ -563,54 +563,54 @@ class TestIsCompStandalone(unittest.TestCase):
 
         return case
 
-    def test_is_comp_standalone_single_active_component(self):
-        """A case with one active component and the rest stubs is standalone"""
+    def test_compset_lacks_cpl_log_single_active_component(self):
+        """A case with one active component and the rest stubs lacks a cpl log file"""
         case = self._make_case({"ATM": "cam"})
 
-        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
 
-    def test_is_comp_standalone_single_active_component_no_cpl(self):
-        """A case with one active component and the rest stubs, with no cpl, is standalone"""
+    def test_compset_lacks_cpl_log_single_active_component_no_cpl(self):
+        """A case with one active component and the rest stubs, with no cpl, lacks a cpl log file"""
         case = self._make_case({"ATM": "cam"}, classes=["ATM", "LND", "OCN"])
 
-        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
 
-    def test_is_comp_standalone_single_active_component_reversed_classes(self):
-        """A case with one active component and the rest stubs, with the classes in reverse order, is standalone"""
+    def test_compset_lacks_cpl_log_single_active_component_reversed_classes(self):
+        """A case with one active component and the rest stubs, with the classes in reverse order, lacks a cpl log file"""
         # This makes sure there isn't an order dependence in the logic
         case = self._make_case({"ATM": "cam"}, classes=self.COMP_CLASSES[::-1])
 
-        self.assertEqual(is_comp_standalone(case), (True, "atm"))
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
 
-    def test_is_comp_standalone_single_data_component(self):
-        """A case whose only non-stub component is a data component is not standalone"""
+    def test_compset_lacks_cpl_log_single_data_component(self):
+        """A case whose only non-stub component is a data component does not lack a cpl log file"""
         case = self._make_case({"ATM": "datm"})
 
-        self.assertEqual(is_comp_standalone(case), (False, None))
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
-    def test_is_comp_standalone_fully_coupled(self):
-        """A case with no stub components is not standalone"""
+    def test_compset_lacks_cpl_log_fully_coupled(self):
+        """A case with no stub components does not lack a cpl log file"""
         case = self._make_case({"ATM": "cam", "LND": "clm", "OCN": "mom"})
 
-        self.assertEqual(is_comp_standalone(case), (False, None))
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
-    def test_is_comp_standalone_two_active_components(self):
-        """Two active components are not standalone"""
+    def test_compset_lacks_cpl_log_two_active_components(self):
+        """Two active components do not lack a cpl log file"""
         case = self._make_case({"ATM": "cam", "LND": "clm"})
 
-        self.assertEqual(is_comp_standalone(case), (False, None))
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
-    def test_is_comp_standalone_one_active_and_one_data_component(self):
-        """One active plus one data component is not standalone"""
+    def test_compset_lacks_cpl_log_one_active_and_one_data_component(self):
+        """One active plus one data component does not lack a cpl log file"""
         case = self._make_case({"ATM": "datm", "LND": "clm"})
 
-        self.assertEqual(is_comp_standalone(case), (False, None))
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
-    def test_is_comp_standalone_all_stubs(self):
-        """A case whose only non-stub component is CPL is not standalone"""
+    def test_compset_lacks_cpl_log_all_stubs(self):
+        """A case whose only non-stub component is CPL does not lack a cpl log file"""
         case = self._make_case({})
 
-        self.assertEqual(is_comp_standalone(case), (False, None))
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
 
 if __name__ == "__main__":

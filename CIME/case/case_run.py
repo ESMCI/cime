@@ -7,7 +7,7 @@ from CIME.config import Config
 from CIME.utils import gzip_existing_file, new_lid
 from CIME.core.exceptions import CIMEError
 from CIME.utils import run_sub_or_cmd, safe_copy, model_log
-from CIME.utils import batch_jobid, is_comp_standalone
+from CIME.utils import batch_jobid, compset_lacks_cpl_log
 from CIME.status import append_status, run_and_log_case_status
 from CIME.get_timing import get_timing
 from CIME.locked_files import check_lockedfiles
@@ -306,10 +306,10 @@ def _post_run_check(case, lid):
 
     rundir = case.get_value("RUNDIR")
     driver = case.get_value("COMP_INTERFACE")
-    comp_standalone = False
+    no_cpl_log = False
     if driver == "nuopc":
-        comp_standalone, file_prefix = is_comp_standalone(case)
-        if not comp_standalone:
+        no_cpl_log, file_prefix = compset_lacks_cpl_log(case)
+        if not no_cpl_log:
             file_prefix = "med"
     else:
         file_prefix = "cpl"
@@ -325,17 +325,17 @@ def _post_run_check(case, lid):
             cpl_logs.append(
                 os.path.join(rundir, file_prefix + "_%04d.log." % (inst + 1) + lid)
             )
-            if driver == "nuopc" and comp_standalone:
+            if driver == "nuopc" and no_cpl_log:
                 cpl_logs.append(
                     os.path.join(rundir, "med_%04d.log." % (inst + 1) + lid)
                 )
     else:
         cpl_logs = [os.path.join(rundir, file_prefix + ".log." + lid)]
-        if driver == "nuopc" and comp_standalone:
+        if driver == "nuopc" and no_cpl_log:
             cpl_logs.append(os.path.join(rundir, "med.log." + lid))
     cpl_logfile = cpl_logs[0]
     # find the last model.log and cpl.log
-    if comp_standalone:
+    if no_cpl_log:
         model_logfile = os.path.join(rundir, file_prefix + ".log." + lid)
         if not os.path.isfile(model_logfile):
             expect(
@@ -346,7 +346,7 @@ def _post_run_check(case, lid):
         else:
             # The existence/size checks above pass even when the model aborts
             # mid-run, so also require a termination message in the component
-            # log. This comp_standalone logic is currently designed for CAM,
+            # log. This no_cpl_log logic is currently designed for CAM,
             # which writes "END OF MODEL RUN" on successful completion.
             with open(model_logfile, "r") as fd:
                 logfile = fd.read()

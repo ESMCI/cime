@@ -2778,9 +2778,10 @@ def add_flag_to_cmd(flag, val):
     return "{}{}{}".format(flag, separator, str(val).strip())
 
 
-def is_comp_standalone(case):
+def compset_lacks_cpl_log(case):
     """
-    Test if the case is a single component standalone such as FKESSLER.
+    Test if, based on the compset, this case lacks a cpl log file. For some models, this
+    is true for single component standalone configurations such as FKESSLER.
 
     This is meant to agree with logic in CMEPS (in buildnml and buildexe) that has special
     handling of these standalone configurations: the mediator (CPL component) is not
