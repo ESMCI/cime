@@ -10,6 +10,7 @@ import unittest
 from unittest import mock
 from CIME.config import Config
 from CIME.status import run_and_log_case_status
+from CIME.core.exceptions import CimeTimeoutError
 from CIME.utils import (
     indent_string,
     import_from_file,
@@ -477,7 +478,7 @@ class TestDistributedDirLock(unittest.TestCase):
         os.mkdir(lock_dir)
 
         # Act / Assert
-        with self.assertRaises(TimeoutError):
+        with self.assertRaises(CimeTimeoutError):
             with distributed_dir_lock(self._workdir, poll_interval=0.01, timeout=0.05):
                 pass
 

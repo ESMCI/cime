@@ -1,0 +1,11 @@
+[workspace]
+authors = ["Jason Boutte <boutte3@llnl.gov>"]
+channels = ["conda-forge"]
+name = "inputdata-env"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+subversion = ">=1.14.5,<2"
