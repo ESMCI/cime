@@ -316,16 +316,6 @@ jobs:
           cid=$(docker create "$image" /nonexistent)
           docker cp "${cid}":/inputdata/. ${{ github.workspace }}/storage/inputdata/
           docker rm "${cid}"
-      - name: Extract cprnc from image
-        # "Run tests" bind-mounts storage/ over /root/storage, shadowing the
-        # image's baked-in /root/storage/tools/cprnc (CCSM_CPRNC). Without
-        # this, baseline comparisons fail with "Could not interpret CPRNC
-        # output" since the binary is missing at runtime.
-        run: |
-          mkdir -p ${{ github.workspace }}/storage/tools
-          cid=$(docker create cime:pr-${{ github.event.pull_request.number }})
-          docker cp "${cid}":/root/storage/tools/cprnc ${{ github.workspace }}/storage/tools/cprnc
-          docker rm "${cid}"
       - name: Run tests
         run: |
           docker run --rm \

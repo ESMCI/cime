@@ -105,7 +105,7 @@ function activate_pixi_env() {
 # Build the cprnc tool from CIME sources
 function build_cprnc() {
     cprnc_dir="${CPRNC_DIR:-${PWD}/CIME/non_py/cprnc}"
-    tools_dir="${STORAGE_DIR}/tools"
+    tools_dir="${CIME_TOOLS_DIR:-${STORAGE_DIR}/tools}"
 
     if [[ ! -e "${cprnc_dir}" ]]; then
         echo "CPRNC path does not exist. Change to CIME's root directory."
