@@ -374,3 +374,8 @@ class Config(ConfigBase):
             "{srcroot}/libraries/mpi-serial",
             desc="Sets the path to the mpi-serial library.",
         )
+        self._set_attribute(
+            "standalone_compset_lacks_cpl_log",
+            True,
+            desc="If set to `True` then a standalone compset (a single non-stub, non-data component) is assumed to lack a cpl log file. Set to `False` for models whose driver always produces a cpl log.",
+        )

@@ -8,6 +8,7 @@ import tempfile
 
 import unittest
 from unittest import mock
+from CIME.config import Config
 from CIME.status import run_and_log_case_status
 from CIME.utils import (
     indent_string,
@@ -568,6 +569,15 @@ class TestCompsetLacksCplLog(unittest.TestCase):
         case = self._make_case({"ATM": "cam"})
 
         self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_config_false(self):
+        """If standalone_compset_lacks_cpl_log is False, a single active component has a cpl log"""
+        case = self._make_case({"ATM": "cam"})
+
+        with mock.patch.object(
+            Config.instance(), "standalone_compset_lacks_cpl_log", False
+        ):
+            self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
     def test_compset_lacks_cpl_log_single_active_component_no_cpl(self):
         """A case with one active component and the rest stubs, with no cpl, lacks a cpl log file"""

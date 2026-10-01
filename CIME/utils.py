@@ -2790,7 +2790,15 @@ def compset_lacks_cpl_log(case):
 
     To agree with the CMEPS logic: A case is *not* considered standalone if its one
     non-stub component is a data component.
+
+    If the standalone_compset_lacks_cpl_log config variable is False, this always returns
+    (False, None).
     """
+    from CIME.config import Config
+
+    if not Config.instance().standalone_compset_lacks_cpl_log:
+        return False, None
+
     classes = case.get_values("COMP_CLASSES")
     model = None
     model_is_data_comp = False
