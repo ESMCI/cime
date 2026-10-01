@@ -72,7 +72,7 @@ def setup_generate_baseline_mock(tempdir):
     ]
 
     if Config.instance().create_bless_log:
-        get_value_calls.insert(12, os.getcwd())
+        get_value_calls.insert(14, Path.cwd().parent.as_posix())
 
     case.get_value.side_effect = get_value_calls
 
