@@ -571,7 +571,9 @@ class TestCompsetLacksCplLog(unittest.TestCase):
         self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
 
     def test_compset_lacks_cpl_log_config_false(self):
-        """If standalone_compset_lacks_cpl_log is False, a single active component has a cpl log"""
+        """If standalone_compset_lacks_cpl_log is False, a case with a single active component has a cpl log file"""
+        # This is the same scenario as test_compset_lacks_cpl_log_single_active_component,
+        # but with the standalone_compsest_lacks_cpl_log config variable set to False.
         case = self._make_case({"ATM": "cam"})
 
         with mock.patch.object(
@@ -605,13 +607,13 @@ class TestCompsetLacksCplLog(unittest.TestCase):
         self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
     def test_compset_lacks_cpl_log_two_active_components(self):
-        """Two active components do not lack a cpl log file"""
+        """A case with two active components does not lack a cpl log file"""
         case = self._make_case({"ATM": "cam", "LND": "clm"})
 
         self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
     def test_compset_lacks_cpl_log_one_active_and_one_data_component(self):
-        """One active plus one data component does not lack a cpl log file"""
+        """A case with one active plus one data component does not lack a cpl log file"""
         case = self._make_case({"ATM": "datm", "LND": "clm"})
 
         self.assertEqual(compset_lacks_cpl_log(case), (False, None))
