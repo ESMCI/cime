@@ -2783,6 +2783,11 @@ def compset_lacks_cpl_log(case):
     Test if, based on the compset, this case lacks a cpl log file. For some models, this
     is true for single component standalone configurations such as FKESSLER.
 
+    Returns a 2-element tuple, where the first element is a boolean specifying whether
+    this case lacks a cpl log file, and the second element is the single active component
+    in this standalone configuration (for a return value of True) or None (for a return
+    value of False).
+
     This is meant to agree with logic in CMEPS (in buildnml and buildexe) that has special
     handling of these standalone configurations: the mediator (CPL component) is not
     included in these standalone configurations, so we need some extra logic in CIME to
