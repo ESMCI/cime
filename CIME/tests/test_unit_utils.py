@@ -8,6 +8,7 @@ import tempfile
 
 import unittest
 from unittest import mock
+from CIME.config import Config
 from CIME.status import run_and_log_case_status
 from CIME.core.exceptions import CimeTimeoutError
 from CIME.utils import (
@@ -18,6 +19,7 @@ from CIME.utils import (
     copy_globs,
     import_and_run_sub_or_cmd,
     distributed_dir_lock,
+    compset_lacks_cpl_log,
     _CIME_LOCK_DIR_NAME,
 )
 
@@ -507,6 +509,121 @@ class TestDistributedDirLock(unittest.TestCase):
         # Act / Assert — no error when lock dir is removed externally before release
         with distributed_dir_lock(self._workdir):
             os.rmdir(lock_dir)
+
+
+class TestCompsetLacksCplLog(unittest.TestCase):
+    """Test the compset_lacks_cpl_log function."""
+
+    # A shortened stand-in for the production component classes. The logic
+    # under test only depends on the number of classes and which are stubs, so
+    # a short list keeps the "stubcnt >= numclasses - 2" arithmetic easy to
+    # follow.
+    COMP_CLASSES = ["CPL", "ATM", "LND", "OCN"]
+
+    def _make_case(self, active, classes=None):
+        """Build a mock case whose components are either active or stubs.
+
+        Components named in `active` take the given value; every other
+        component in `classes` is set to its stub, i.e. "s" followed by the
+        lowercased class name. CPL is always "cpl", since there is no stub
+        coupler.
+
+        Both accessors are backed by dicts, so querying a variable the case was
+        not set up to handle raises KeyError rather than silently returning a
+        mock.
+
+        Args:
+            active (dict): Maps component class (e.g. "ATM") to the value of
+                that component (e.g. "cam"). Classes absent from this dict are
+                stubbed.
+            classes (list of str): Component classes this case defines;
+                defaults to COMP_CLASSES.
+
+        Returns:
+            A mock case supporting the get_value and get_values calls made by
+            compset_lacks_cpl_log.
+        """
+        if classes is None:
+            classes = self.COMP_CLASSES
+
+        values = {}
+        for comp in classes:
+            if comp == "CPL":
+                values["COMP_CPL"] = "cpl"
+            else:
+                values["COMP_" + comp] = active.get(comp, "s" + comp.lower())
+
+        case = mock.MagicMock()
+
+        # For a call to case.get_values("COMP_CLASSES"), return classes; for anything
+        # else, raise an exception
+        case.get_values.side_effect = {"COMP_CLASSES": classes}.__getitem__
+
+        # For a call to case.get_value with one of the classes in the values dict, return
+        # the given value; for anything else, raise an exception
+        case.get_value.side_effect = values.__getitem__
+
+        return case
+
+    def test_compset_lacks_cpl_log_single_active_component(self):
+        """A case with one active component and the rest stubs lacks a cpl log file"""
+        case = self._make_case({"ATM": "cam"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_config_false(self):
+        """If standalone_compset_lacks_cpl_log is False, a case with a single active component has a cpl log file"""
+        # This is the same scenario as test_compset_lacks_cpl_log_single_active_component,
+        # but with the standalone_compsest_lacks_cpl_log config variable set to False.
+        case = self._make_case({"ATM": "cam"})
+
+        with mock.patch.object(
+            Config.instance(), "standalone_compset_lacks_cpl_log", False
+        ):
+            self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_single_active_component_no_cpl(self):
+        """A case with one active component and the rest stubs, with no cpl, lacks a cpl log file"""
+        case = self._make_case({"ATM": "cam"}, classes=["ATM", "LND", "OCN"])
+
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_single_active_component_reversed_classes(self):
+        """A case with one active component and the rest stubs, with the classes in reverse order, lacks a cpl log file"""
+        # This makes sure there isn't an order dependence in the logic
+        case = self._make_case({"ATM": "cam"}, classes=self.COMP_CLASSES[::-1])
+
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_single_data_component(self):
+        """A case whose only non-stub component is a data component does not lack a cpl log file"""
+        case = self._make_case({"ATM": "datm"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_fully_coupled(self):
+        """A case with no stub components does not lack a cpl log file"""
+        case = self._make_case({"ATM": "cam", "LND": "clm", "OCN": "mom"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_two_active_components(self):
+        """A case with two active components does not lack a cpl log file"""
+        case = self._make_case({"ATM": "cam", "LND": "clm"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_one_active_and_one_data_component(self):
+        """A case with one active plus one data component does not lack a cpl log file"""
+        case = self._make_case({"ATM": "datm", "LND": "clm"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_all_stubs(self):
+        """A case whose only non-stub component is CPL does not lack a cpl log file"""
+        case = self._make_case({})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
 
 
 if __name__ == "__main__":
