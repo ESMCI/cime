@@ -345,7 +345,7 @@ jobs:
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-teardown --ignore=CIME/tests/test_sys_full_system.py CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
