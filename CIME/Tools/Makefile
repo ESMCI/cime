@@ -1074,7 +1074,8 @@ realclean: clean cleancsmshare cleanpio cleangptl
 ifneq ($(MAKECMDGOALS), db_files)
 ifneq ($(MAKECMDGOALS), db_flags)
 ifeq (,$(findstring clean,$(MAKECMDGOALS)))
-    -include Depends $(CASEROOT)/Depends.$(COMPILER) $(CASEROOT)/Depends.$(MACH) $(CASEROOT)/Depends.$(MACH).$(COMPILER)
+    # Note: OS may be unset in E3SM builds, so guard with $(if $(OS),...) to avoid malformed Depends. paths
+    -include Depends $(CASEROOT)/Depends.$(COMPILER) $(CASEROOT)/Depends.$(MACH) $(CASEROOT)/Depends.$(MACH).$(COMPILER) $(if $(OS),$(CASEROOT)/Depends.$(OS)) $(if $(OS),$(CASEROOT)/Depends.$(OS).$(COMPILER))
 endif
 endif
 endif
