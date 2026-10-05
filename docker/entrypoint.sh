@@ -11,12 +11,14 @@ export LOGNAME="${USER}"
 SKIP_ENTRYPOINT="${SKIP_ENTRYPOINT:-false}"
 STORAGE_DIR="${CONTAINER_HOME}/storage"
 
+# Bind mounts replace the image's /root/storage tree, so recreate the
+# directories needed by config_machines.xml after the mount is attached.
+mkdir -p "${STORAGE_DIR}"/{tools,inputdata,cases,timings,archive,baselines}
+
 # Make files in storage directory accessible from host in real-time
 # Set permissive umask so all new files are world-readable/writable
-if [[ -d "${STORAGE_DIR}" ]]; then
-    umask 000
-    chmod -R a+rwX "${STORAGE_DIR}" 2>/dev/null || true
-fi
+umask 000
+chmod -R a+rwX "${STORAGE_DIR}" 2>/dev/null || true
 
 # Root directory holding the per-model pixi environments (see docker/pixi.toml).
 # Each model gets its own conda prefix built from conda-forge: e3sm ships MOAB,
