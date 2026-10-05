@@ -27,6 +27,7 @@ set -Eeuo pipefail
 # file needed to:
 #   - run the cime_developer test suite (CIME.get_tests._CIME_TESTS),
 #     across every unique grid/compset pair it uses
+#   - run infrastructure system tests that are not part of cime_developer
 #   - run tools/mapping/gen_domain_files/test_gen_domain.sh
 #
 # Unit tests (CIME/tests/test_unit_*.py) are not included: they mock all
@@ -123,6 +124,29 @@ for f in "${gen_domain_files[@]}"; do
     # Download directly into the destination. Remove a failed or empty
     # result and stop rather than allowing Dockerfile.data's COPY to bundle
     # an unusable input file into the image.
+    if ! wget -q -O "$dest" "https://portal.nersc.gov/project/e3sm/inputdata/$f"; then
+        echo "ERROR: Failed to download $f" >&2
+        rm -f "$dest"
+        exit 1
+    fi
+    if [[ ! -s "$dest" ]]; then
+        echo "ERROR: Downloaded $f but the result is empty" >&2
+        rm -f "$dest"
+        exit 1
+    fi
+done
+
+# Infrastructure tests are not all represented in cime_developer. Keep their
+# input data explicit so the CI image remains self-contained; GitHub runners
+# cannot reach portal.nersc.gov after the image is extracted.
+additional_inputdata=(
+    "lnd/clm2/mappingdata/maps/1.9x2.5/map_0.5x0.5_nomask_to_1.9x2.5_nomask_aave_da_c120709.nc"
+)
+for f in "${additional_inputdata[@]}"; do
+    dest="$OUT_DIR/$f"
+    [[ -s "$dest" ]] && continue
+    echo "--- Downloading additional test input data: $f ---"
+    mkdir -p "$(dirname "$dest")"
     if ! wget -q -O "$dest" "https://portal.nersc.gov/project/e3sm/inputdata/$f"; then
         echo "ERROR: Failed to download $f" >&2
         rm -f "$dest"
