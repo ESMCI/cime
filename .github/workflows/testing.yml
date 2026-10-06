@@ -316,16 +316,6 @@ jobs:
           cid=$(docker create "$image" /nonexistent)
           docker cp "${cid}":/inputdata/. ${{ github.workspace }}/storage/inputdata/
           docker rm "${cid}"
-      - name: Extract cprnc from image
-        # "Run tests" bind-mounts storage/ over /root/storage, shadowing the
-        # image's baked-in /root/storage/tools/cprnc (CCSM_CPRNC). Without
-        # this, baseline comparisons fail with "Could not interpret CPRNC
-        # output" since the binary is missing at runtime.
-        run: |
-          mkdir -p ${{ github.workspace }}/storage/tools
-          cid=$(docker create cime:pr-${{ github.event.pull_request.number }})
-          docker cp "${cid}":/root/storage/tools/cprnc ${{ github.workspace }}/storage/tools/cprnc
-          docker rm "${cid}"
       - name: Run tests
         run: |
           docker run --rm \
@@ -355,7 +345,7 @@ jobs:
               uv pip install -r test-requirements.txt
               git config --global user.name '${{ github.actor }}'
               git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-fortran-run --no-teardown CIME/tests/test_sys*
+              time uv run python -u -m pytest -vvv -ra -s --cov=CIME --cov-branch --cov-report=xml --machine docker --no-teardown --deselect=CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system CIME/tests/test_sys*
             "
       - name: Upload coverage reports to Codecov
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}

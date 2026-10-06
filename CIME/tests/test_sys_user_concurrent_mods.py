@@ -14,7 +14,7 @@ class TestUserConcurrentMods(base.BaseTestCase):
             self.skipTest("Skipping slow test")
 
         casedir = self._create_test(
-            ["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Mmpi-serial.f19_g16.X"],
+            ["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Ln144_Mmpi-serial.f19_g16.X"],
             test_id=self._baseline_name,
         )
 

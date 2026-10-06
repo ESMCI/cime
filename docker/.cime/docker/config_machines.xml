@@ -15,7 +15,7 @@
     <DIN_LOC_ROOT_CLMFORC>/root/storage/inputdata-clmforc</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>/root/storage/archive/$CASE</DOUT_S_ROOT>
     <BASELINE_ROOT>/root/storage/baselines/$COMPILER</BASELINE_ROOT>
-    <CCSM_CPRNC>/root/storage/tools/cprnc</CCSM_CPRNC>
+    <CCSM_CPRNC>/opt/cime-tools/cprnc</CCSM_CPRNC>
     <GMAKE>make</GMAKE>
     <GMAKE_J>4</GMAKE_J>
     <TESTS>e3sm_developer</TESTS>

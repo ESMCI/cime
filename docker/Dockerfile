@@ -74,7 +74,7 @@ COPY CIME/non_py/cprnc /src/cprnc
 COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN SKIP_ENTRYPOINT=true source /entrypoint.sh \
-  && CPRNC_DIR=/src/cprnc build_cprnc
+  && CIME_TOOLS_DIR=/opt/cime-tools CPRNC_DIR=/src/cprnc build_cprnc
 
 ################################
 # Final CI/development image.  #
@@ -121,7 +121,7 @@ RUN --mount=type=cache,target=/tmp/inputdata-cache \
   && STORAGE_DIR=/tmp/inputdata-cache DOWNLOAD_SKIP_ON_ERROR=1 download_input_data \
   && cp -r /tmp/inputdata-cache/inputdata/* /root/storage/inputdata/ || true
 
-COPY --from=cprnc /root/storage/tools/cprnc /root/storage/tools/cprnc
+COPY --from=cprnc /opt/cime-tools/cprnc /opt/cime-tools/cprnc
 COPY docker/.cime /root/.cime
 
 ENTRYPOINT ["/entrypoint.sh"]
