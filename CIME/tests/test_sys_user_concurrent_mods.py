@@ -14,7 +14,7 @@ class TestUserConcurrentMods(base.BaseTestCase):
             self.skipTest("Skipping slow test")
 
         casedir = self._create_test(
-            ["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Ln144_Mmpi-serial.f19_g16.X"],
+            ["--walltime=0:30:00", "TESTRUNUSERXMLCHANGE_Ln3.f19_g16.X"],
             test_id=self._baseline_name,
         )
 
@@ -29,6 +29,10 @@ class TestUserConcurrentMods(base.BaseTestCase):
                 time.sleep(5)
 
         rundir = utils.run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
+        fake_runs = os.path.join(rundir, "user_xml_change_fake_runs")
+        with open(fake_runs, "r") as fd:
+            self.assertEqual(len(fd.read().splitlines()), 2)
+
         if utils.get_cime_default_driver() == "nuopc":
             chk_file = "nuopc.runconfig"
         else:
