@@ -214,14 +214,14 @@ jobs:
           - name: "cesm"
             repo: ESCOMP/CESM
             branch: cesm3.0-alphabranch
-        driver: ["mct", "nuopc"]
+        driver: ["moab", "nuopc"]
         exclude:
           # exclude nuopc driver when running e3sm tests
           - model: { name: "e3sm" }
             driver: "nuopc"
-          # exclude mct driver when running cesm tests
+          # exclude moab driver when running cesm tests
           - model: { name: "cesm" }
-            driver: "mct"
+            driver: "moab"
     steps:
       - name: Download image artifact
         uses: actions/download-artifact@v4
