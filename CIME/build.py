@@ -1067,18 +1067,19 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
 
         for clean_item in things_to_clean:
             logging.info("Cleaning {}".format(clean_item))
-            cmake_path = os.path.join(cmake_comp_root, clean_item)
-            if os.path.exists(cmake_path):
-                # Item was created by cmake build system
-                clean_cmd = f"cd {cmake_path} && cmake --build . -t clean -v"
-            elif os.path.exists(cmake_comp_root):
-                # This was a cmake build but not for a component
-                shared_dir_p = Path(sharedlibroot)
-                clean_cmd = "echo removing "
-                for subdir in shared_dir_p.rglob(clean_item):
-                    if subdir.is_dir():
-                       shutil.rmtree(subdir)
-                       clean_cmd += f" {subdir}"
+            if config.build_model_use_cmake:
+                cmake_path = os.path.join(cmake_comp_root, clean_item)
+                if os.path.exists(cmake_path):
+                    # Item was created by cmake build system
+                    clean_cmd = f"cd {cmake_path} && cmake --build . -t clean -v"
+                else:
+                    # This was a cmake build but not for a component
+                    shared_dir_p = Path(sharedlibroot)
+                    clean_cmd = "echo removing "
+                    for subdir in shared_dir_p.rglob(clean_item):
+                        if subdir.is_dir():
+                            shutil.rmtree(subdir)
+                            clean_cmd += f" {subdir}"
 
             else:
                 # Item was created by classic build system
