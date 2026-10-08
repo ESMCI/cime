@@ -67,7 +67,7 @@
   <xs:element name="model_grid">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="grid" maxOccurs="unbounded"/>
+        <xs:element ref="grid" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="support" minOccurs="0"/>
         <xs:element ref="mask" minOccurs="0"/>
       </xs:sequence>
