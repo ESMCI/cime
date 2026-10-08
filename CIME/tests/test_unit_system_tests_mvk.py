@@ -216,10 +216,9 @@ def evv_test_config(case, config):
 
             assert lines == ["var2 = value2\n"]
 
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_update_testlog(self, machines, append_testlog):
+    def test_update_testlog(self, machines):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -244,21 +243,21 @@ def evv_test_config(case, config):
 
             test = MVK(case)
 
-            test.update_testlog("test1", case_name, str(run_dir))
+            success, comments = test.update_testlog("test1", case_name, str(run_dir))
 
-            append_testlog.assert_any_call(
-                """BASELINE PASS for test 'test1'.
+            assert success
+            assert (
+                comments
+                == """BASELINE for test 'test1'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
-        docker/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html""",
-                str(temp_dir),
+        docker/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html"""
             )
 
     @mock.patch("CIME.SystemTests.mvk.utils.get_urlroot")
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_update_testlog_urlroot_None(self, machines, append_testlog, get_urlroot):
+    def test_update_testlog_urlroot_None(self, machines, get_urlroot):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -285,22 +284,21 @@ def evv_test_config(case, config):
 
             test = MVK(case)
 
-            test.update_testlog("test1", case_name, str(run_dir))
+            success, comments = test.update_testlog("test1", case_name, str(run_dir))
 
-            print(append_testlog.call_args_list)
-            append_testlog.assert_any_call(
-                f"""BASELINE PASS for test 'test1'.
+            assert success
+            assert (
+                comments
+                == f"""BASELINE for test 'test1'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
-        [{run_dir!s}_URL]/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html""",
-                str(temp_dir),
+        [{run_dir!s}_URL]/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html"""
             )
 
     @mock.patch("CIME.SystemTests.mvk.utils.get_htmlroot")
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_update_testlog_htmlroot(self, machines, append_testlog, get_htmlroot):
+    def test_update_testlog_htmlroot(self, machines, get_htmlroot):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -327,15 +325,16 @@ def evv_test_config(case, config):
 
             test = MVK(case)
 
-            test.update_testlog("test1", case_name, str(run_dir))
+            success, comments = test.update_testlog("test1", case_name, str(run_dir))
 
-            append_testlog.assert_any_call(
-                f"""BASELINE PASS for test 'test1'.
+            assert success
+            assert (
+                comments
+                == f"""BASELINE for test 'test1'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
         {run_dir!s}
-    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output""",
-                str(temp_dir),
+    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output"""
             )
 
     @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
@@ -476,12 +475,9 @@ test_case = "Default"
         "CIME.SystemTests.mvk.SystemTestsCommon.generate_baseline_phase",
         return_value=(True, "", ""),
     )
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_generate_baseline_phase(
-        self, evv, append_testlog, generate_baseline_phase
-    ):
+    def test_generate_baseline_phase(self, evv, generate_baseline_phase):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
