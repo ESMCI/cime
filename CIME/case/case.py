@@ -1541,7 +1541,10 @@ class Case(object):
         if project is not None:
             self.set_value("PROJECT", project)
         elif machobj.get_value("PROJECT_REQUIRED"):
-            expect(project is not None, "PROJECT_REQUIRED is true but no project found")
+            expect(
+                project is not None,
+                "This machine requires a project / account key, but none was set. Set one via the `--project` option to create_newcase/create_test or by setting the PROJECT environment variable.",
+            )
         # Get charge_account id if it exists
         charge_account = get_charge_account(machobj, project)
         if charge_account is not None:
