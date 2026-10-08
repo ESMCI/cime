@@ -39,7 +39,7 @@ CPLLOG = """
 
 
 def setup_generate_baseline_mock(tempdir):
-    """Set up a mock case for _generate_baseline tests, returning (case, baseline_root)."""
+    """Set up a mock case for generate_baseline_phase tests, returning (case, baseline_root)."""
     case, caseroot, baseline_root, run_dir = create_mock_case(
         tempdir, cpllog_data=CPLLOG
     )
@@ -152,13 +152,15 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common._phase_modifying_call("MEMLEAK", common._check_for_memleak)
 
             common._test_status.set_status.assert_any_call(
-                "MEMLEAK", "PASS", comments="insufficient data for memleak test"
+                "MEMLEAK", "PASS", comments=""
             )
 
-            append_testlog.assert_not_called()
+            append_testlog.assert_any_call(
+                "insufficient data for memleak test", str(caseroot)
+            )
 
     @mock.patch("CIME.SystemTests.system_tests_common.load_coupler_customization")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
@@ -206,13 +208,15 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common._phase_modifying_call("MEMLEAK", common._check_for_memleak)
 
             common._test_status.set_status.assert_any_call(
-                "MEMLEAK", "PASS", comments="data for memleak test is insufficient"
+                "MEMLEAK", "PASS", comments=""
             )
 
-            append_testlog.assert_not_called()
+            append_testlog.assert_any_call(
+                "data for memleak test is insufficient", str(caseroot)
+            )
 
     @mock.patch("CIME.SystemTests.system_tests_common.load_coupler_customization")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
@@ -262,12 +266,12 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common._phase_modifying_call("MEMLEAK", common._check_for_memleak)
 
             expected_comment = "memleak detected, memory went from 2000.000000 to 3000.000000 in 2 days"
 
             common._test_status.set_status.assert_any_call(
-                "MEMLEAK", "FAIL", comments=expected_comment
+                "MEMLEAK", "FAIL", comments=""
             )
 
             append_testlog.assert_any_call(expected_comment, str(caseroot))
@@ -320,7 +324,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common._test_status = mock.MagicMock()
 
-            common._check_for_memleak()
+            common._phase_modifying_call("MEMLEAK", common._check_for_memleak)
 
             common._test_status.set_status.assert_any_call(
                 "MEMLEAK", "PASS", comments=""
@@ -350,7 +354,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_throughput()
+            common._phase_modifying_call("TPUTCOMP", common._compare_throughput)
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -380,11 +384,11 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_throughput()
+            common._phase_modifying_call("TPUTCOMP", common._compare_throughput)
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
-        append_testlog.assert_not_called()
+        append_testlog.assert_any_call("Error diff value", str(caseroot))
 
     @mock.patch("CIME.SystemTests.system_tests_common.perf_compare_throughput_baseline")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
@@ -410,7 +414,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_throughput()
+            common._phase_modifying_call("TPUTCOMP", common._compare_throughput)
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -441,7 +445,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_memory()
+            common._phase_modifying_call("MEMCOMP", common._compare_memory)
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -471,11 +475,11 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_memory()
+            common._phase_modifying_call("MEMCOMP", common._compare_memory)
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
-        append_testlog.assert_not_called()
+        append_testlog.assert_any_call("Error diff value", str(caseroot))
 
     @mock.patch("CIME.SystemTests.system_tests_common.perf_compare_memory_baseline")
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
@@ -501,7 +505,7 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            common._compare_memory()
+            common._phase_modifying_call("MEMCOMP", common._compare_memory)
 
         assert common._test_status.get_overall_test_status() == ("PASS", None)
 
@@ -516,11 +520,10 @@ class TestUnitSystemTests(unittest.TestCase):
 
             common = SystemTestsCommon(case)
 
-            # Patch additional_baseline_generation() so we can check it was called
-            with mock.patch.object(
-                common, "additional_baseline_generation"
-            ) as mock_generate_baseline_phase:
-                common._generate_baseline()
+            success, short_comment, _ = common.generate_baseline_phase()
+
+            assert success
+            assert short_comment == "master"
 
             baseline_dir = baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
             assert (baseline_dir / "cpl.log.gz").exists()
@@ -540,36 +543,30 @@ class TestUnitSystemTests(unittest.TestCase):
             assert len(lines) == 1
             assert re.match(r"sha:.* date:.* (\d+\.\d+)", lines[0])
 
-            # Check that additional_baseline_generation() was called
-            expected_basegen_dir = str(
-                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
-            )
-            mock_generate_baseline_phase.assert_called_once_with(expected_basegen_dir)
-
     def test_generate_baseline_phase_subclass_called(self):
-        """Check that child classes can extend additional_baseline_generation() such that it gets called"""
+        """Check that child classes can extend generate_baseline_phase() such that it gets called"""
 
         class _SubTest(SystemTestsCommon):
             def __init__(self, case):
                 super().__init__(case)
-                self.phase_called_with = None
+                self.phase_called = False
                 self.abc123 = None
 
-            def additional_baseline_generation(self, basegen_dir):
-                self.phase_called_with = basegen_dir
+            def generate_baseline_phase(self):
+                result = super().generate_baseline_phase()
+                self.phase_called = True
                 self.abc123 = 1987
+                return result
 
         with tempfile.TemporaryDirectory() as tempdir:
             case, baseline_root = setup_generate_baseline_mock(tempdir)
 
             common = _SubTest(case)
 
-            common._generate_baseline()
+            success, _, _ = common.generate_baseline_phase()
 
-            expected_basegen_dir = str(
-                baseline_root / "master" / "ERIO.ne30_g16.A.docker_gnu"
-            )
-            assert common.phase_called_with == expected_basegen_dir
+            assert success
+            assert common.phase_called
             assert common.abc123 == 1987
 
     def test_kwargs(self):

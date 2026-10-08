@@ -13,7 +13,6 @@ from shutil import copytree
 
 from CIME import test_status
 from CIME import utils
-from CIME.status import append_testlog
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case.case_setup import case_setup
 from CIME.XML.machines import Machines
@@ -180,11 +179,13 @@ class MVK(SystemTestsCommon):
 
         self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
 
-    def _generate_baseline(self):
+    def generate_baseline_phase(self):
         """
         generate a new baseline case based on the current test
         """
-        super(MVK, self)._generate_baseline()
+        is_pass, short_comment, long_comment = super(
+            MVK, self
+        ).generate_baseline_phase()
 
         with utils.SharedArea():
             basegen_dir = os.path.join(
@@ -210,58 +211,53 @@ class MVK(SystemTestsCommon):
                 if os.path.exists(baseline):
                     os.remove(baseline)
 
+                long_comment += f"Copying {hist} to {baseline}"
                 utils.safe_copy(hist, baseline, preserve_meta=False)
 
-    def _compare_baseline(self):
-        with self._test_status:
-            if int(self._case.get_value("RESUBMIT")) > 0:
-                # This is here because the comparison is run for each submission
-                # and we only want to compare once the whole run is finished. We
-                # need to return a pass here to continue the submission process.
-                self._test_status.set_status(
-                    test_status.BASELINE_PHASE, test_status.TEST_PASS_STATUS
-                )
-                return
+        return is_pass, short_comment, long_comment
 
-            self._test_status.set_status(
-                test_status.BASELINE_PHASE, test_status.TEST_FAIL_STATUS
-            )
+    def compare_baseline_phase(self):
+        if int(self._case.get_value("RESUBMIT")) > 0:
+            # This is here because the comparison is run for each submission
+            # and we only want to compare once the whole run is finished. We
+            # need to return a pass here to continue the submission process.
+            return True, "skip", "skipped due to resubmit"
 
-            run_dir = self._case.get_value("RUNDIR")
-            case_name = self._case.get_value("CASE")
-            base_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"),
-                self._case.get_value("BASECMP_CASE"),
-            )
+        run_dir = self._case.get_value("RUNDIR")
+        case_name = self._case.get_value("CASE")
+        base_dir = os.path.join(
+            self._case.get_value("BASELINE_ROOT"),
+            self._case.get_value("BASECMP_CASE"),
+        )
 
-            test_name = "{}".format(case_name.split(".")[-1])
+        test_name = "{}".format(case_name.split(".")[-1])
 
-            default_config = self._config._default_evv_test_config(
-                run_dir,
-                base_dir,
-                EVV_LIB_DIR,
-            )
+        default_config = self._config._default_evv_test_config(
+            run_dir,
+            base_dir,
+            EVV_LIB_DIR,
+        )
 
-            test_config = self._config.evv_test_config(
-                self._case,
-                default_config,
-            )
+        test_config = self._config.evv_test_config(
+            self._case,
+            default_config,
+        )
 
-            evv_config = {test_name: test_config}
+        evv_config = {test_name: test_config}
 
-            json_file = os.path.join(run_dir, f"{case_name}.json")
-            with open(json_file, "w") as config_file:
-                json.dump(evv_config, config_file, indent=4)
+        json_file = os.path.join(run_dir, f"{case_name}.json")
+        with open(json_file, "w") as config_file:
+            json.dump(evv_config, config_file, indent=4)
 
-            evv_out_dir = os.path.join(run_dir, f"{case_name}.evv")
-            evv(["-e", json_file, "-o", evv_out_dir])
+        evv_out_dir = os.path.join(run_dir, f"{case_name}.evv")
+        evv(["-e", json_file, "-o", evv_out_dir])
 
-            self.update_testlog(test_name, case_name, evv_out_dir)
+        is_pass, long_comment = self.update_testlog(test_name, case_name, evv_out_dir)
+
+        return is_pass, "", long_comment
 
     def update_testlog(self, test_name, case_name, evv_out_dir):
-        comments = self.process_evv_output(evv_out_dir)
-
-        status = self._test_status.get_status(test_status.BASELINE_PHASE)
+        success, comments = self.process_evv_output(evv_out_dir)
 
         mach_name = self._case.get_value("MACH")
 
@@ -292,25 +288,22 @@ class MVK(SystemTestsCommon):
             )
 
         comments = (
-            "{} {} for test '{}'.\n"
+            "{} for test '{}'.\n"
             "    {}\n"
             "    EVV results can be viewed at:\n"
             "        {}".format(
                 test_status.BASELINE_PHASE,
-                status,
                 test_name,
                 comments,
                 viewing,
             )
         )
 
-        append_testlog(comments, self._orig_caseroot)
+        return success, comments
 
     def process_evv_output(self, evv_out_dir):
         with open(os.path.join(evv_out_dir, "index.json")) as evv_f:
             evv_status = json.load(evv_f)
-
-        comments = ""
 
         for evv_ele in evv_status["Page"]["elements"]:
             if "Table" in evv_ele:
@@ -320,15 +313,11 @@ class MVK(SystemTestsCommon):
                 )
 
                 if evv_ele["Table"]["data"]["Test status"][0].lower() == "pass":
-                    with self._test_status:
-                        self._test_status.set_status(
-                            test_status.BASELINE_PHASE,
-                            test_status.TEST_PASS_STATUS,
-                        )
+                    return True, comments
+                else:
+                    return False, comments
 
-                break
-
-        return comments
+        return False, "No Table found in index.json"
 
 
 if __name__ == "__main__":

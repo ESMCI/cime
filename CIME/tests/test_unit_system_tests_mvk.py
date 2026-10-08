@@ -39,7 +39,7 @@ def create_complex_case(
         False,  # DRV_RESTART_POINTER
     ]
 
-    # single extra call for _compare_baseline
+    # single extra call for compare_baseline_phase
     if compare_baseline:
         side_effect.append("e3sm")  # MODEL
 
@@ -176,7 +176,7 @@ def evv_test_config(case, config):
             stack.enter_context(mock.patch.object(test, "build_indv"))
 
             test.build_phase(False, True)
-            test._compare_baseline()
+            test.compare_baseline_phase()
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
@@ -216,10 +216,9 @@ def evv_test_config(case, config):
 
             assert lines == ["var2 = value2\n"]
 
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_update_testlog(self, machines, append_testlog):
+    def test_update_testlog(self, machines):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -244,21 +243,21 @@ def evv_test_config(case, config):
 
             test = MVK(case)
 
-            test.update_testlog("test1", case_name, str(run_dir))
+            success, comments = test.update_testlog("test1", case_name, str(run_dir))
 
-            append_testlog.assert_any_call(
-                """BASELINE PASS for test 'test1'.
+            assert success
+            assert (
+                comments
+                == """BASELINE for test 'test1'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
-        docker/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html""",
-                str(temp_dir),
+        docker/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html"""
             )
 
     @mock.patch("CIME.SystemTests.mvk.utils.get_urlroot")
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_update_testlog_urlroot_None(self, machines, append_testlog, get_urlroot):
+    def test_update_testlog_urlroot_None(self, machines, get_urlroot):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -285,22 +284,21 @@ def evv_test_config(case, config):
 
             test = MVK(case)
 
-            test.update_testlog("test1", case_name, str(run_dir))
+            success, comments = test.update_testlog("test1", case_name, str(run_dir))
 
-            print(append_testlog.call_args_list)
-            append_testlog.assert_any_call(
-                f"""BASELINE PASS for test 'test1'.
+            assert success
+            assert (
+                comments
+                == f"""BASELINE for test 'test1'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
-        [{run_dir!s}_URL]/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html""",
-                str(temp_dir),
+        [{run_dir!s}_URL]/evv/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2/index.html"""
             )
 
     @mock.patch("CIME.SystemTests.mvk.utils.get_htmlroot")
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.Machines")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test_update_testlog_htmlroot(self, machines, append_testlog, get_htmlroot):
+    def test_update_testlog_htmlroot(self, machines, get_htmlroot):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -327,15 +325,16 @@ def evv_test_config(case, config):
 
             test = MVK(case)
 
-            test.update_testlog("test1", case_name, str(run_dir))
+            success, comments = test.update_testlog("test1", case_name, str(run_dir))
 
-            append_testlog.assert_any_call(
-                f"""BASELINE PASS for test 'test1'.
+            assert success
+            assert (
+                comments
+                == f"""BASELINE for test 'test1'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
         {run_dir!s}
-    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output""",
-                str(temp_dir),
+    EVV viewing instructions can be found at:         https://github.com/E3SM-Project/E3SM/blob/master/cime/scripts/climate_reproducibility/README.md#test-passfail-and-extended-output"""
             )
 
     @mock.patch("CIME.SystemTests.mvk.test_mods.find_test_mods")
@@ -378,7 +377,7 @@ test_case = "Default"
             stack.enter_context(mock.patch.object(test, "build_indv"))
 
             test.build_phase(False, True)
-            test._compare_baseline()
+            test.compare_baseline_phase()
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
@@ -472,11 +471,13 @@ test_case = "Default"
 
             case_setup.assert_any_call(case, test_mode=False, reset=True)
 
-    @mock.patch("CIME.SystemTests.mvk.SystemTestsCommon._generate_baseline")
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
+    @mock.patch(
+        "CIME.SystemTests.mvk.SystemTestsCommon.generate_baseline_phase",
+        return_value=(True, "", ""),
+    )
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test__generate_baseline(self, evv, append_testlog, _generate_baseline):
+    def test_generate_baseline_phase(self, evv, generate_baseline_phase):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -525,7 +526,7 @@ test_case = "Default"
 
             test = MVK(case)
 
-            test._generate_baseline()
+            test.generate_baseline_phase()
 
             files = os.listdir(case_baseline_dir)
 
@@ -537,16 +538,16 @@ test_case = "Default"
             test = MVK(case)
 
             # test baseline_dir already exists
-            test._generate_baseline()
+            test.generate_baseline_phase()
 
             files = os.listdir(case_baseline_dir)
 
             assert sorted(files) == sorted(["test1.nc", "test2.nc"])
 
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test__compare_baseline_resubmit(self, evv, append_testlog):
+    def test_compare_baseline_phase_resubmit(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -572,14 +573,14 @@ test_case = "Default"
             test = MVK(case)
 
             with mock.patch.object(test, "_test_status") as _test_status:
-                test._compare_baseline()
+                test._phase_modifying_call("BASELINE", test._compare_baseline)
 
-            _test_status.set_status.assert_any_call("BASELINE", "PASS")
+            _test_status.set_status.assert_any_call("BASELINE", "PASS", comments="skip")
 
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
-    def test__compare_baseline(self, evv, append_testlog):
+    def test_compare_baseline_phase(self, evv, append_testlog):
         with contextlib.ExitStack() as stack:
             temp_dir = stack.enter_context(tempfile.TemporaryDirectory())
 
@@ -598,7 +599,8 @@ test_case = "Default"
 
             test = MVK(case)
 
-            test._compare_baseline()
+            with mock.patch.object(test, "_test_status"):
+                test._phase_modifying_call("BASELINE", test._compare_baseline)
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
@@ -623,7 +625,7 @@ test_case = "Default"
 
             assert config == expected_config
 
-            expected_comments = f"""BASELINE PASS for test '20240515_212034_41b5u2'.
+            expected_comments = f"""BASELINE for test '20240515_212034_41b5u2'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
         {run_dir}/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2.evv
