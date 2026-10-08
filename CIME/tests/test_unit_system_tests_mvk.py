@@ -548,7 +548,7 @@ test_case = "Default"
 
             assert sorted(files) == sorted(["test1.nc", "test2.nc"])
 
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_compare_baseline_phase_resubmit(self, evv, append_testlog):
@@ -579,7 +579,7 @@ test_case = "Default"
             with mock.patch.object(test, "_test_status") as _test_status:
                 test._phase_modifying_call("BASELINE", test._compare_baseline)
 
-            _test_status.set_status.assert_any_call("BASELINE", "PASS")
+            _test_status.set_status.assert_any_call("BASELINE", "PASS", comments="skip")
 
     @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
