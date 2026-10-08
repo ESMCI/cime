@@ -581,7 +581,7 @@ test_case = "Default"
 
             _test_status.set_status.assert_any_call("BASELINE", "PASS")
 
-    @mock.patch("CIME.SystemTests.mvk.append_testlog")
+    @mock.patch("CIME.SystemTests.system_tests_common.append_testlog")
     @mock.patch("CIME.SystemTests.mvk.evv")
     @unittest.skipUnless(evv4esm, "evv4esm module not found")
     def test_compare_baseline_phase(self, evv, append_testlog):
@@ -603,7 +603,8 @@ test_case = "Default"
 
             test = MVK(case)
 
-            test.compare_baseline_phase()
+            with mock.patch.object(test, "_test_status"):
+                test._phase_modifying_call("BASELINE", test._compare_baseline)
 
             with open(run_dir / f"{case_name}.json", "r") as fd:
                 config = json.load(fd)
@@ -628,7 +629,7 @@ test_case = "Default"
 
             assert config == expected_config
 
-            expected_comments = f"""BASELINE PASS for test '20240515_212034_41b5u2'.
+            expected_comments = f"""BASELINE for test '20240515_212034_41b5u2'.
     Test status: pass; Variables analyzed: v1; Rejecting: 2; Critical value: 12
     EVV results can be viewed at:
         {run_dir}/MVK.f19_g16.S.docker_gnu.20240515_212034_41b5u2.evv
