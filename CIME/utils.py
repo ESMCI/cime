@@ -1400,7 +1400,12 @@ def match_any(item, re_counts):
     match.
     """
     for regex_str in re_counts:
-        regex = re.compile(regex_str)
+        # Translate regex errors into CIMEErrors
+        try:
+            regex = re.compile(regex_str)
+        except re.error as e:
+            raise CIMEError(f"BAD REGEX: '{regex_str}', error: {e}") from None
+
         if regex.search(item):
             re_counts[regex_str] += 1
             return True

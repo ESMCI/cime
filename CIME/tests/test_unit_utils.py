@@ -10,7 +10,7 @@ import unittest
 from unittest import mock
 from CIME.config import Config
 from CIME.status import run_and_log_case_status
-from CIME.core.exceptions import CimeTimeoutError
+from CIME.core.exceptions import CimeTimeoutError, CIMEError
 from CIME.utils import (
     indent_string,
     import_from_file,
@@ -21,6 +21,7 @@ from CIME.utils import (
     distributed_dir_lock,
     compset_lacks_cpl_log,
     _CIME_LOCK_DIR_NAME,
+    match_any,
 )
 
 
@@ -624,6 +625,96 @@ class TestCompsetLacksCplLog(unittest.TestCase):
         case = self._make_case({})
 
         self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+
+class TestMatchAny(unittest.TestCase):
+    """Test the match_any function."""
+
+    def test_match_any_valid_match(self):
+        """Test match_any with a valid regex that matches the item"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("hello there", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["hello"], 1)
+        self.assertEqual(re_counts["world"], 0)
+
+    def test_match_any_no_match(self):
+        """Test match_any with a valid regex that does not match"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("goodbye", re_counts)
+        self.assertFalse(result)
+        self.assertEqual(re_counts["hello"], 0)
+        self.assertEqual(re_counts["world"], 0)
+
+    def test_match_any_multiple_regex_first_matches(self):
+        """Test match_any with multiple regex patterns, first one matches"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("hello there", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["hello"], 1)
+        self.assertEqual(re_counts["world"], 0)
+
+    def test_match_any_multiple_regex_second_matches(self):
+        """Test match_any with multiple regex patterns, second one matches"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("world peace", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["hello"], 0)
+        self.assertEqual(re_counts["world"], 1)
+
+    def test_match_any_increments_counter(self):
+        """Test that match_any increments the counter on repeated matches"""
+        re_counts = {"test": 0}
+        match_any("test", re_counts)
+        match_any("test", re_counts)
+        match_any("no match", re_counts)
+        match_any("test", re_counts)
+        self.assertEqual(re_counts["test"], 3)
+
+    def test_match_any_regex_search_not_match(self):
+        """Test that match_any uses regex search (substring match) not full match"""
+        re_counts = {"ing$": 0}
+        result = match_any("testing", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["ing$"], 1)
+
+    def test_match_any_complex_regex(self):
+        """Test match_any with a more complex regex pattern"""
+        re_counts = {r"^test_.*\.py$": 0}
+        result = match_any("test_utils.py", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts[r"^test_.*\.py$"], 1)
+
+    def test_match_any_invalid_regex_raises_cime_error(self):
+        """Test that match_any raises CIMEError for invalid regex"""
+        re_counts = {"(invalid": 0}
+        with self.assertRaises(CIMEError) as context:
+            match_any("test", re_counts)
+        self.assertIn("BAD REGEX", str(context.exception))
+        self.assertIn("(invalid", str(context.exception))
+
+    def test_match_any_invalid_regex_error_message(self):
+        """Test that CIMEError contains both the regex and the error details"""
+        re_counts = {"[invalid": 0}
+        with self.assertRaises(CIMEError) as context:
+            match_any("test", re_counts)
+        error_message = str(context.exception)
+        self.assertIn("BAD REGEX", error_message)
+        self.assertIn("[invalid", error_message)
+        self.assertIn("error", error_message)
+
+    def test_match_any_case_sensitive(self):
+        """Test that match_any regex is case-sensitive by default"""
+        re_counts = {"HELLO": 0}
+        result = match_any("hello", re_counts)
+        self.assertFalse(result)
+
+    def test_match_any_case_insensitive_flag(self):
+        """Test match_any with case-insensitive regex flag"""
+        re_counts = {"(?i)HELLO": 0}
+        result = match_any("hello", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["(?i)HELLO"], 1)
 
 
 if __name__ == "__main__":
