@@ -22,6 +22,9 @@ from CIME.utils import (
     compset_lacks_cpl_log,
     _CIME_LOCK_DIR_NAME,
     match_any,
+    get_current_commit,
+    get_current_branch,
+    get_current_submodule_status
 )
 
 
@@ -715,6 +718,24 @@ class TestMatchAny(unittest.TestCase):
         result = match_any("hello", re_counts)
         self.assertTrue(result)
         self.assertEqual(re_counts["(?i)HELLO"], 1)
+
+
+class TestGitWrappers(unittest.TestCase):
+
+    def test_get_current_commit_no_dir(self):
+        """Test get_current_commit handles invalid dir"""
+        result = get_current_commit(repo="tgw_not_exist")
+        self.assertEqual(result, None)
+
+    def test_get_current_branch_no_dir(self):
+        """Test get_current_branch handles invalid dir"""
+        result = get_current_branch(repo="tgw_not_exist")
+        self.assertEqual(result, None)
+
+    def test_get_current_submodule_status_no_dir(self):
+        """Test get_current_submodule_status handles invalid dir"""
+        result = get_current_submodule_status(repo="tgw_not_exist")
+        self.assertEqual(result, None)
 
 
 if __name__ == "__main__":
