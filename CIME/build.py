@@ -1030,6 +1030,7 @@ def _clean_cache_impl(case):
 def _clean_impl(case, cleanlist, clean_all, clean_depends):
     ###############################################################################
     exeroot = os.path.abspath(case.get_value("EXEROOT"))
+    sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     case.load_env()
     if clean_all:
         # If cleanlist is empty just remove the bld directory
@@ -1039,7 +1040,6 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
             shutil.rmtree(exeroot)
 
         # if clean_all is True also remove the sharedlibpath
-        sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
         expect(sharedlibroot is not None, "No SHAREDLIBROOT defined in case")
         if sharedlibroot != exeroot and os.path.isdir(sharedlibroot):
             logging.warning("cleaning directory {}".format(sharedlibroot))
@@ -1067,10 +1067,20 @@ def _clean_impl(case, cleanlist, clean_all, clean_depends):
 
         for clean_item in things_to_clean:
             logging.info("Cleaning {}".format(clean_item))
-            cmake_path = os.path.join(cmake_comp_root, clean_item)
-            if os.path.exists(cmake_path):
-                # Item was created by cmake build system
-                clean_cmd = f"cd {cmake_path} && cmake --build . -t clean -v"
+            if config.build_model_use_cmake:
+                cmake_path = os.path.join(cmake_comp_root, clean_item)
+                if os.path.exists(cmake_path):
+                    # Item was created by cmake build system
+                    clean_cmd = f"cd {cmake_path} && cmake --build . -t clean -v"
+                else:
+                    # This was a cmake build but not for a component
+                    shared_dir_p = Path(sharedlibroot)
+                    clean_cmd = "echo removing "
+                    for subdir in shared_dir_p.rglob(clean_item):
+                        if subdir.is_dir():
+                            shutil.rmtree(subdir)
+                            clean_cmd += f" {subdir}"
+
             else:
                 # Item was created by classic build system
                 # do I need this? generate_makefile_macro(case, caseroot, clean_item)
