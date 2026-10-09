@@ -1,5 +1,5 @@
 """
-Common functions used by cime python scripts
+Common functions used by cime python scripts.
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
 
