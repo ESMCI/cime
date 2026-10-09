@@ -1304,7 +1304,8 @@ def get_full_test_name(
 
 def get_current_branch(repo=None):
     """
-    Return the name of the current branch for a repository
+    Return the name of the current branch for a repository.
+    Returns None if there's any problem.
 
     >>> if "GIT_BRANCH" in os.environ:
     ...     get_current_branch() is not None
@@ -1322,7 +1323,12 @@ def get_current_branch(repo=None):
             branch = branch.replace("origin/", "", 1)
         return branch
     else:
-        stat, output, _ = run_cmd("git symbolic-ref HEAD", from_dir=repo)
+        try:
+            stat, output, _ = run_cmd("git symbolic-ref HEAD", from_dir=repo)
+        except Exception:
+            output = None
+            stat = 1
+
         if stat != 0:
             return None
         else:
@@ -1332,20 +1338,26 @@ def get_current_branch(repo=None):
 def get_current_commit(short=False, repo=None, tag=False):
     """
     Return the sha1 of the current HEAD commit
+    Returns None if there's any problem.
 
     >>> get_current_commit() is not None
     True
     """
-    if tag:
-        rc, output, _ = run_cmd(
-            "git describe --tags $(git log -n1 --pretty='%h')", from_dir=repo
-        )
-    else:
-        rc, output, _ = run_cmd(
-            "git rev-parse {} HEAD".format("--short" if short else ""), from_dir=repo
-        )
+    try:
+        if tag:
+            rc, output, _ = run_cmd(
+                "git describe --tags $(git log -n1 --pretty='%h')", from_dir=repo
+            )
+        else:
+            rc, output, _ = run_cmd(
+                "git rev-parse {} HEAD".format("--short" if short else ""),
+                from_dir=repo,
+            )
+    except Exception:
+        output = None
+        rc = 1
 
-    return output if rc == 0 else "unknown"
+    return output if rc == 0 else None
 
 
 def get_model_config_location_within_cime(model=None):
@@ -1417,16 +1429,21 @@ def get_current_submodule_status(recursive=False, repo=None):
     """
     Return the sha1s of the current currently checked out commit for each submodule,
     along with the submodule path and the output of git describe for the SHA-1.
+    Returns None if there's any problem.
 
     >>> get_current_submodule_status() is not None
     True
     """
-    rc, output, _ = run_cmd(
-        "git submodule status {}".format("--recursive" if recursive else ""),
-        from_dir=repo,
-    )
+    try:
+        rc, output, _ = run_cmd(
+            "git submodule status {}".format("--recursive" if recursive else ""),
+            from_dir=repo,
+        )
+    except Exception:
+        rc = 1
+        output = None
 
-    return output if rc == 0 else "unknown"
+    return output if rc == 0 else None
 
 
 def copy_globs(globs_to_copy, output_directory, lid=None):

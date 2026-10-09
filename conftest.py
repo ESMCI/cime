@@ -191,7 +191,7 @@ def configure_tests(
 
 def write_provenance_info(machine, test_compiler, test_mpilib, test_root):
     curr_commit = get_current_commit(repo=CIMEROOT)
-    logging.info("Testing commit %s" % curr_commit)
+    logging.info("Testing commit %s" % ("unknown" if curr_commit is None else curr_commit))
     cime_model = get_model()
     logging.info("Using cime_model = %s" % cime_model)
     logging.info("Testing machine = %s" % machine.get_machine_name())
