@@ -1304,7 +1304,8 @@ def get_full_test_name(
 
 def get_current_branch(repo=None):
     """
-    Return the name of the current branch for a repository
+    Return the name of the current branch for a repository.
+    Returns None if there's any problem.
 
     >>> if "GIT_BRANCH" in os.environ:
     ...     get_current_branch() is not None
@@ -1337,6 +1338,7 @@ def get_current_branch(repo=None):
 def get_current_commit(short=False, repo=None, tag=False):
     """
     Return the sha1 of the current HEAD commit
+    Returns None if there's any problem.
 
     >>> get_current_commit() is not None
     True
@@ -1427,6 +1429,7 @@ def get_current_submodule_status(recursive=False, repo=None):
     """
     Return the sha1s of the current currently checked out commit for each submodule,
     along with the submodule path and the output of git describe for the SHA-1.
+    Returns None if there's any problem.
 
     >>> get_current_submodule_status() is not None
     True
