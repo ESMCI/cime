@@ -1368,29 +1368,43 @@ class TESTBUILDFAILEXC(FakeTest):
 class TESTRUNUSERXMLCHANGE(FakeTest):
     def build_phase(self, sharedlib_only=False, model_only=False):
         caseroot = self._case.get_value("CASEROOT")
-        modelexe = self._case.get_value("run_exe")
+        rundir = self._case.get_value("RUNDIR")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
+        if not sharedlib_only:
+            for filename in (
+                "user_xml_change_fake_first_run",
+                "user_xml_change_fake_runs",
+            ):
+                filepath = os.path.join(rundir, filename)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+
+        # Exercise the case's XML reload/resubmit behavior without launching
+        # the real model from inside an MPI-launched wrapper.
         script = """
-cd {caseroot}
-./xmlchange --file env_test.xml STOP_N={stopn}
-./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
-cd -
-{originalexe} "$@"
-cd {caseroot}
-./xmlchange run_exe={modelexe}
-sleep 5
+set -e
+if [ ! -f "{rundir}/user_xml_change_fake_first_run" ]; then
+  cd "{caseroot}"
+  ./xmlchange --file env_test.xml STOP_N={stopn}
+  ./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
+  cd - >/dev/null
+  touch "{rundir}/user_xml_change_fake_first_run"
+  sleep 5
+fi
+printf '%s\\n' "$LID" >> "{rundir}/user_xml_change_fake_runs"
+echo SUCCESSFUL TERMINATION > "{rundir}/{log}.log.$LID"
 """.format(
-            originalexe=self._original_exe,
             caseroot=caseroot,
-            modelexe=modelexe,
+            rundir=rundir,
+            log=self._cpllog,
             stopn=str(new_stop_n),
         )
-        self._set_script(script, requires_exe=True)
+        self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run_phase(self):
-        self.run_indv(submit_resubmits=True)
+        self.run_indv(suffix=None, submit_resubmits=True)
 
 
 class TESTRUNSLOWPASS(FakeTest):
