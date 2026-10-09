@@ -2157,11 +2157,11 @@ directory, NOT in this subdirectory."""
         srcroot = self.get_value("SRCROOT")
         version = get_current_commit(True, srcroot, tag=(model in CESM_LIKE_MODELS))
 
-        self.set_value("MODEL_VERSION", version)
-
         if version is not None:
+            self.set_value("MODEL_VERSION", version)
             logger.info("{} model version found: {}".format(model, version))
         else:
+            self.set_value("MODEL_VERSION", "unknown")
             logger.warning("WARNING: No {} Model version found.".format(model))
 
     def load_env(self, reset=False, job=None, verbose=False):
