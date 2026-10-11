@@ -3,6 +3,7 @@ ERIO tests restart with different PIO methods
 
 This class inherits from SystemTestsCommon
 """
+
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 
@@ -17,6 +18,14 @@ class ERIO(SystemTestsCommon):
         SystemTestsCommon.__init__(self, case, expected=["TEST"], **kwargs)
 
         self._pio_types = self._case.get_env("run").get_valid_values("PIO_TYPENAME")
+        pio_netcdf_formats = self._case.get_env("run").get_values("PIO_NETCDF_FORMAT")
+        if any("64bit_data" in fmt for fmt in pio_netcdf_formats):
+            incompatible_pio_types = ("netcdf4p", "netcdf4c")
+            self._pio_types = [
+                pio_type
+                for pio_type in self._pio_types
+                if pio_type not in incompatible_pio_types
+            ]
         self._stop_n = self._case.get_value("STOP_N")
 
     def _full_run(self, pio_type):
