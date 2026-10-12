@@ -58,7 +58,9 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     ###############################################################################
     results = set([])
     test_id_re = re.compile(".+[.]([^.]+)")
-    for item in glob.glob(f"{old_test_archive}/old_cases/*.{mach_comp}.*{test_id_root}*"):
+    for item in glob.glob(
+        f"{old_test_archive}/old_cases/*.{mach_comp}.*{test_id_root}*"
+    ):
         filename = os.path.basename(item)
         if filename.endswith(".tar.gz"):
             filename = filename[: -len(".tar.gz")]
