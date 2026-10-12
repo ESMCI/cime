@@ -60,8 +60,8 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     test_id_re = re.compile(".+[.]([^.]+)")
     for item in glob.glob(f"{old_test_archive}/old_cases/*.{mach_comp}.*{test_id_root}*"):
         filename = os.path.basename(item)
-         if filename.endswith(".tar.gz"):
-             filename = filename[: -len(".tar.gz")]
+        if filename.endswith(".tar.gz"):
+            filename = filename[: -len(".tar.gz")]
 
         the_match = test_id_re.match(filename)
         if the_match:
@@ -413,6 +413,8 @@ def jenkins_generic_job(
             f"To resubmit to dashboard: wait_for_tests {globstr} --no-wait -b {cdash_build_name}"
         )
 
+    glob_matches = glob.glob(globstr)
+    expect(glob_matches, f"{globstr didn't match anything?")
     tests_passed = CIME.wait_for_tests.wait_for_tests(
         glob.glob(globstr),
         no_wait=not use_batch,  # wait if using queue
