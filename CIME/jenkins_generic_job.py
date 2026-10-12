@@ -414,7 +414,7 @@ def jenkins_generic_job(
         )
 
     glob_matches = glob.glob(globstr)
-    expect(glob_matches, f"{globstr didn't match anything?")
+    expect(glob_matches, f"{globstr} didn't match anything?")
     tests_passed = CIME.wait_for_tests.wait_for_tests(
         glob.glob(globstr),
         no_wait=not use_batch,  # wait if using queue
