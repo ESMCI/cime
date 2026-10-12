@@ -168,7 +168,7 @@ def archive_old_test_data(
             for item in ["old_cases", "old_builds", "old_runs", "old_archives"]:
                 for dir_to_rm in glob.glob(
                     f"{old_test_archive}/{item}/*{mach_comp}*{old_test_id}*"
-                    ):
+                ):
                     logging.info(f"TEST ARCHIVER:     Removing {dir_to_rm}")
                     if os.path.isdir(dir_to_rm):
                         shutil.rmtree(dir_to_rm)
