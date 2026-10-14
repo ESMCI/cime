@@ -24,3 +24,6 @@
 
 ## Commits and PRs
 - Use Conventional Commits standard for PR titles, and commit messages.
+- Commit or push changes only when the user explicitly asks.
+- Submit jobs to batch systems only with the user's approval.
+- Clearly report which validation checks were run and their results; identify checks that were not run.
