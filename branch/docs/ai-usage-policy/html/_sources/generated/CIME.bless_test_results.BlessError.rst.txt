@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.bless\_test\_results.BlessError
+====================================
+
+.. currentmodule:: CIME.bless_test_results
+
+.. autoexception:: BlessError
