@@ -17,7 +17,7 @@ class TestRunRestart(base.BaseTestCase):
             walltime = "00:30:00"
 
         casedir = self._create_test(
-            ["--walltime " + walltime, "NODEFAIL_P1.f09_g16.X"],
+            ["--walltime " + walltime, "NODEFAIL_Ln144_P1.f09_g16.A"],
             test_id=self._baseline_name,
         )
         rundir = utils.run_cmd_no_fail("./xmlquery RUNDIR --value", from_dir=casedir)
@@ -36,7 +36,7 @@ class TestRunRestart(base.BaseTestCase):
             walltime = "00:30:00"
 
         casedir = self._create_test(
-            ["--walltime " + walltime, "NODEFAIL_P1.f09_g16.X"],
+            ["--walltime " + walltime, "NODEFAIL_Ln144_P1.f09_g16.A"],
             test_id=self._baseline_name,
             env_changes="NODEFAIL_NUM_FAILS=5",
             run_errors=True,

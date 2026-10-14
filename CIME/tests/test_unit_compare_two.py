@@ -199,11 +199,11 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
         """
         return (self.compare_should_pass, "no comment", None)
 
-    def _check_for_memleak(self):
-        pass
+    def check_for_memleak_phase(self):
+        return True, "", ""
 
-    def _st_archive_case_test(self):
-        pass
+    def st_archive_case_test_phase(self):
+        return True, "", ""
 
     # ------------------------------------------------------------------------
     # Fake implementations of methods that are typically provided by

@@ -209,6 +209,8 @@ class BaseTestCase(unittest.TestCase):
         Convenience wrapper around create_test. Returns list of full paths to created cases. If multiple cases,
         the order of the returned list is not guaranteed to match the order of the arguments.
         """
+        extra_args = list(extra_args)
+
         # All stub model not supported in nuopc driver
         if self._driver == "nuopc" and "cime_developer" in extra_args:
             extra_args.append(

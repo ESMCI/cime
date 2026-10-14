@@ -766,7 +766,7 @@ class TestCimeCase(base.BaseTestCase):
         if self.TEST_COMPILER and "gpu" in self.TEST_COMPILER:
             self.skipTest("Skipping cprnc test for gpu compiler")
 
-        testname = "ERS_Ln7.f19_g16.A"
+        testname = "ERS_Ln144.f19_g16.A"
         casedir = self._create_test(
             [testname, "--no-build"], test_id=self._baseline_name
         )

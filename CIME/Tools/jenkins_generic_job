@@ -220,6 +220,13 @@ OR
         help="Override the coupler driver used by create_test (e.g. mct, nuopc).",
     )
 
+    parser.add_argument(
+        "--use-existing-test-id",
+        help="Process the pre-existing test results identified by this test-id "
+        "instead of running create_test. The results must already exist under "
+        "the scratch-root test area.",
+    )
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     if args.no_submit:
@@ -296,6 +303,7 @@ OR
         args.jenkins_id,
         args.queue,
         args.driver,
+        args.use_existing_test_id,
     )
 
 
@@ -331,6 +339,7 @@ def _main_func(description):
         jenkins_id,
         queue,
         driver,
+        use_existing_test_id,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -364,6 +373,7 @@ def _main_func(description):
             jenkins_id,
             queue,
             driver,
+            use_existing_test_id,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )

@@ -7,7 +7,7 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.compare_namelists import is_namelist_file, compare_namelist_files
 from CIME.simple_compare import compare_files, compare_runconfigfiles
-from CIME.utils import safe_copy, SharedArea
+from CIME.utils import safe_copy, SharedArea, get_umask
 from CIME.status import append_status
 from CIME.test_status import *
 
@@ -93,7 +93,22 @@ def _do_full_nl_gen_impl(case, test, generate_name, baseline_root=None):
     if os.path.isdir(baseline_casedocs):
         shutil.rmtree(baseline_casedocs)
 
-    shutil.copytree(casedoc_dir, baseline_casedocs)
+    # Do not preserve file metadata from the case tree. The baseline is a
+    # shared area, so its permissions must be determined by the active umask.
+    shutil.copytree(
+        casedoc_dir,
+        baseline_casedocs,
+        copy_function=shutil.copyfile,
+    )
+
+    # copytree still preserves directory metadata independently of its file
+    # copy function. Restore the permissions that newly-created directories
+    # would have under the current umask.
+    directory_mode = 0o777 & ~get_umask()
+    for root, dirs, _ in os.walk(baseline_casedocs):
+        for dirname in dirs:
+            os.chmod(os.path.join(root, dirname), directory_mode)
+    os.chmod(baseline_casedocs, directory_mode)
 
     # Note: If it is ever the case that nml cmp/gen affects more files than
     # just user_nl* and CaseDocs, this will break assumptions all across CIME.

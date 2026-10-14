@@ -8,7 +8,9 @@ import tempfile
 
 import unittest
 from unittest import mock
+from CIME.config import Config
 from CIME.status import run_and_log_case_status
+from CIME.core.exceptions import CimeTimeoutError, CIMEError
 from CIME.utils import (
     indent_string,
     import_from_file,
@@ -17,7 +19,12 @@ from CIME.utils import (
     copy_globs,
     import_and_run_sub_or_cmd,
     distributed_dir_lock,
+    compset_lacks_cpl_log,
     _CIME_LOCK_DIR_NAME,
+    match_any,
+    get_current_commit,
+    get_current_branch,
+    get_current_submodule_status,
 )
 
 
@@ -475,7 +482,7 @@ class TestDistributedDirLock(unittest.TestCase):
         os.mkdir(lock_dir)
 
         # Act / Assert
-        with self.assertRaises(TimeoutError):
+        with self.assertRaises(CimeTimeoutError):
             with distributed_dir_lock(self._workdir, poll_interval=0.01, timeout=0.05):
                 pass
 
@@ -506,6 +513,228 @@ class TestDistributedDirLock(unittest.TestCase):
         # Act / Assert — no error when lock dir is removed externally before release
         with distributed_dir_lock(self._workdir):
             os.rmdir(lock_dir)
+
+
+class TestCompsetLacksCplLog(unittest.TestCase):
+    """Test the compset_lacks_cpl_log function."""
+
+    # A shortened stand-in for the production component classes. The logic
+    # under test only depends on the number of classes and which are stubs, so
+    # a short list keeps the "stubcnt >= numclasses - 2" arithmetic easy to
+    # follow.
+    COMP_CLASSES = ["CPL", "ATM", "LND", "OCN"]
+
+    def _make_case(self, active, classes=None):
+        """Build a mock case whose components are either active or stubs.
+
+        Components named in `active` take the given value; every other
+        component in `classes` is set to its stub, i.e. "s" followed by the
+        lowercased class name. CPL is always "cpl", since there is no stub
+        coupler.
+
+        Both accessors are backed by dicts, so querying a variable the case was
+        not set up to handle raises KeyError rather than silently returning a
+        mock.
+
+        Args:
+            active (dict): Maps component class (e.g. "ATM") to the value of
+                that component (e.g. "cam"). Classes absent from this dict are
+                stubbed.
+            classes (list of str): Component classes this case defines;
+                defaults to COMP_CLASSES.
+
+        Returns:
+            A mock case supporting the get_value and get_values calls made by
+            compset_lacks_cpl_log.
+        """
+        if classes is None:
+            classes = self.COMP_CLASSES
+
+        values = {}
+        for comp in classes:
+            if comp == "CPL":
+                values["COMP_CPL"] = "cpl"
+            else:
+                values["COMP_" + comp] = active.get(comp, "s" + comp.lower())
+
+        case = mock.MagicMock()
+
+        # For a call to case.get_values("COMP_CLASSES"), return classes; for anything
+        # else, raise an exception
+        case.get_values.side_effect = {"COMP_CLASSES": classes}.__getitem__
+
+        # For a call to case.get_value with one of the classes in the values dict, return
+        # the given value; for anything else, raise an exception
+        case.get_value.side_effect = values.__getitem__
+
+        return case
+
+    def test_compset_lacks_cpl_log_single_active_component(self):
+        """A case with one active component and the rest stubs lacks a cpl log file"""
+        case = self._make_case({"ATM": "cam"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_config_false(self):
+        """If standalone_compset_lacks_cpl_log is False, a case with a single active component has a cpl log file"""
+        # This is the same scenario as test_compset_lacks_cpl_log_single_active_component,
+        # but with the standalone_compsest_lacks_cpl_log config variable set to False.
+        case = self._make_case({"ATM": "cam"})
+
+        with mock.patch.object(
+            Config.instance(), "standalone_compset_lacks_cpl_log", False
+        ):
+            self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_single_active_component_no_cpl(self):
+        """A case with one active component and the rest stubs, with no cpl, lacks a cpl log file"""
+        case = self._make_case({"ATM": "cam"}, classes=["ATM", "LND", "OCN"])
+
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_single_active_component_reversed_classes(self):
+        """A case with one active component and the rest stubs, with the classes in reverse order, lacks a cpl log file"""
+        # This makes sure there isn't an order dependence in the logic
+        case = self._make_case({"ATM": "cam"}, classes=self.COMP_CLASSES[::-1])
+
+        self.assertEqual(compset_lacks_cpl_log(case), (True, "atm"))
+
+    def test_compset_lacks_cpl_log_single_data_component(self):
+        """A case whose only non-stub component is a data component does not lack a cpl log file"""
+        case = self._make_case({"ATM": "datm"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_fully_coupled(self):
+        """A case with no stub components does not lack a cpl log file"""
+        case = self._make_case({"ATM": "cam", "LND": "clm", "OCN": "mom"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_two_active_components(self):
+        """A case with two active components does not lack a cpl log file"""
+        case = self._make_case({"ATM": "cam", "LND": "clm"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_one_active_and_one_data_component(self):
+        """A case with one active plus one data component does not lack a cpl log file"""
+        case = self._make_case({"ATM": "datm", "LND": "clm"})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+    def test_compset_lacks_cpl_log_all_stubs(self):
+        """A case whose only non-stub component is CPL does not lack a cpl log file"""
+        case = self._make_case({})
+
+        self.assertEqual(compset_lacks_cpl_log(case), (False, None))
+
+
+class TestMatchAny(unittest.TestCase):
+    """Test the match_any function."""
+
+    def test_match_any_valid_match(self):
+        """Test match_any with a valid regex that matches the item"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("hello there", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["hello"], 1)
+        self.assertEqual(re_counts["world"], 0)
+
+    def test_match_any_no_match(self):
+        """Test match_any with a valid regex that does not match"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("goodbye", re_counts)
+        self.assertFalse(result)
+        self.assertEqual(re_counts["hello"], 0)
+        self.assertEqual(re_counts["world"], 0)
+
+    def test_match_any_multiple_regex_first_matches(self):
+        """Test match_any with multiple regex patterns, first one matches"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("hello there", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["hello"], 1)
+        self.assertEqual(re_counts["world"], 0)
+
+    def test_match_any_multiple_regex_second_matches(self):
+        """Test match_any with multiple regex patterns, second one matches"""
+        re_counts = {"hello": 0, "world": 0}
+        result = match_any("world peace", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["hello"], 0)
+        self.assertEqual(re_counts["world"], 1)
+
+    def test_match_any_increments_counter(self):
+        """Test that match_any increments the counter on repeated matches"""
+        re_counts = {"test": 0}
+        match_any("test", re_counts)
+        match_any("test", re_counts)
+        match_any("no match", re_counts)
+        match_any("test", re_counts)
+        self.assertEqual(re_counts["test"], 3)
+
+    def test_match_any_regex_search_not_match(self):
+        """Test that match_any uses regex search (substring match) not full match"""
+        re_counts = {"ing$": 0}
+        result = match_any("testing", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["ing$"], 1)
+
+    def test_match_any_complex_regex(self):
+        """Test match_any with a more complex regex pattern"""
+        re_counts = {r"^test_.*\.py$": 0}
+        result = match_any("test_utils.py", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts[r"^test_.*\.py$"], 1)
+
+    def test_match_any_invalid_regex_raises_cime_error(self):
+        """Test that match_any raises CIMEError for invalid regex"""
+        re_counts = {"(invalid": 0}
+        with self.assertRaises(CIMEError) as context:
+            match_any("test", re_counts)
+        self.assertIn("BAD REGEX", str(context.exception))
+        self.assertIn("(invalid", str(context.exception))
+
+    def test_match_any_invalid_regex_error_message(self):
+        """Test that CIMEError contains both the regex and the error details"""
+        re_counts = {"[invalid": 0}
+        with self.assertRaises(CIMEError) as context:
+            match_any("test", re_counts)
+        error_message = str(context.exception)
+        self.assertIn("BAD REGEX", error_message)
+        self.assertIn("[invalid", error_message)
+        self.assertIn("error", error_message)
+
+    def test_match_any_case_sensitive(self):
+        """Test that match_any regex is case-sensitive by default"""
+        re_counts = {"HELLO": 0}
+        result = match_any("hello", re_counts)
+        self.assertFalse(result)
+
+    def test_match_any_case_insensitive_flag(self):
+        """Test match_any with case-insensitive regex flag"""
+        re_counts = {"(?i)HELLO": 0}
+        result = match_any("hello", re_counts)
+        self.assertTrue(result)
+        self.assertEqual(re_counts["(?i)HELLO"], 1)
+
+
+class TestGitWrappers(unittest.TestCase):
+    def test_get_current_commit_no_dir(self):
+        """Test get_current_commit handles invalid dir"""
+        result = get_current_commit(repo="tgw_not_exist")
+        self.assertEqual(result, None)
+
+    def test_get_current_branch_no_dir(self):
+        """Test get_current_branch handles invalid dir"""
+        result = get_current_branch(repo="tgw_not_exist")
+        self.assertEqual(result, None)
+
+    def test_get_current_submodule_status_no_dir(self):
+        """Test get_current_submodule_status handles invalid dir"""
+        result = get_current_submodule_status(repo="tgw_not_exist")
+        self.assertEqual(result, None)
 
 
 if __name__ == "__main__":

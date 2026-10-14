@@ -578,6 +578,7 @@ def _format_baseline(value):
         Baseline entry.
     """
     commit_hash = get_current_commit(repo=get_src_root())
+    commit_hash = "unknown" if commit_hash is None else commit_hash
 
     timestamp = get_timestamp(timestamp_format="%Y-%m-%d_%H:%M:%S")
 

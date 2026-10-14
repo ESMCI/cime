@@ -230,7 +230,7 @@ def _read_cime_config_file():
     """
     READ the config file in ~/.cime, this file may contain
     [main]
-    CIME_MODEL=e3sm,cesm,noresm,ufs
+    CIME_MODEL=e3sm,cesm,noresm
     PROJECT=someprojectnumber
     """
     allowed_sections = ("main", "create_test")
@@ -625,10 +625,6 @@ def get_model():
             model = "cesm"
         elif os.path.isfile(os.path.join(srcroot, "Externals.cfg")):
             model = "cesm"
-            with open(os.path.join(srcroot, "Externals.cfg")) as fd:
-                for line in fd:
-                    if re.search("ufs", line):
-                        model = "ufs"
         else:
             model = "e3sm"
         # This message interfers with the correct operation of xmlquery
@@ -1308,7 +1304,8 @@ def get_full_test_name(
 
 def get_current_branch(repo=None):
     """
-    Return the name of the current branch for a repository
+    Return the name of the current branch for a repository.
+    Returns None if there's any problem.
 
     >>> if "GIT_BRANCH" in os.environ:
     ...     get_current_branch() is not None
@@ -1326,7 +1323,12 @@ def get_current_branch(repo=None):
             branch = branch.replace("origin/", "", 1)
         return branch
     else:
-        stat, output, _ = run_cmd("git symbolic-ref HEAD", from_dir=repo)
+        try:
+            stat, output, _ = run_cmd("git symbolic-ref HEAD", from_dir=repo)
+        except Exception:
+            output = None
+            stat = 1
+
         if stat != 0:
             return None
         else:
@@ -1336,20 +1338,26 @@ def get_current_branch(repo=None):
 def get_current_commit(short=False, repo=None, tag=False):
     """
     Return the sha1 of the current HEAD commit
+    Returns None if there's any problem.
 
     >>> get_current_commit() is not None
     True
     """
-    if tag:
-        rc, output, _ = run_cmd(
-            "git describe --tags $(git log -n1 --pretty='%h')", from_dir=repo
-        )
-    else:
-        rc, output, _ = run_cmd(
-            "git rev-parse {} HEAD".format("--short" if short else ""), from_dir=repo
-        )
+    try:
+        if tag:
+            rc, output, _ = run_cmd(
+                "git describe --tags $(git log -n1 --pretty='%h')", from_dir=repo
+            )
+        else:
+            rc, output, _ = run_cmd(
+                "git rev-parse {} HEAD".format("--short" if short else ""),
+                from_dir=repo,
+            )
+    except Exception:
+        output = None
+        rc = 1
 
-    return output if rc == 0 else "unknown"
+    return output if rc == 0 else None
 
 
 def get_model_config_location_within_cime(model=None):
@@ -1404,7 +1412,12 @@ def match_any(item, re_counts):
     match.
     """
     for regex_str in re_counts:
-        regex = re.compile(regex_str)
+        # Translate regex errors into CIMEErrors
+        try:
+            regex = re.compile(regex_str)
+        except re.error as e:
+            raise CIMEError(f"BAD REGEX: '{regex_str}', error: {e}") from None
+
         if regex.search(item):
             re_counts[regex_str] += 1
             return True
@@ -1416,16 +1429,21 @@ def get_current_submodule_status(recursive=False, repo=None):
     """
     Return the sha1s of the current currently checked out commit for each submodule,
     along with the submodule path and the output of git describe for the SHA-1.
+    Returns None if there's any problem.
 
     >>> get_current_submodule_status() is not None
     True
     """
-    rc, output, _ = run_cmd(
-        "git submodule status {}".format("--recursive" if recursive else ""),
-        from_dir=repo,
-    )
+    try:
+        rc, output, _ = run_cmd(
+            "git submodule status {}".format("--recursive" if recursive else ""),
+            from_dir=repo,
+        )
+    except Exception:
+        rc = 1
+        output = None
 
-    return output if rc == 0 else "unknown"
+    return output if rc == 0 else None
 
 
 def copy_globs(globs_to_copy, output_directory, lid=None):
@@ -2782,21 +2800,45 @@ def add_flag_to_cmd(flag, val):
     return "{}{}{}".format(flag, separator, str(val).strip())
 
 
-def is_comp_standalone(case):
+def compset_lacks_cpl_log(case):
     """
-    Test if the case is a single component standalone
-    such as FKESSLER
+    Test if, based on the compset, this case lacks a cpl log file. For some models, this
+    is true for single component standalone configurations such as FKESSLER.
+
+    Returns a 2-element tuple, where the first element is a boolean specifying whether
+    this case lacks a cpl log file, and the second element is the single active component
+    in this standalone configuration (for a return value of True) or None (for a return
+    value of False).
+
+    This is meant to agree with logic in CMEPS (in buildnml and buildexe) that has special
+    handling of these standalone configurations: the mediator (CPL component) is not
+    included in these standalone configurations, so we need some extra logic in CIME to
+    avoid looking for a mediator log file.
+
+    To agree with the CMEPS logic: A case is *not* considered standalone if its one
+    non-stub component is a data component.
+
+    If the standalone_compset_lacks_cpl_log config variable is False, this always returns
+    (False, None).
     """
-    stubcnt = 0
+    from CIME.config import Config
+
+    if not Config.instance().standalone_compset_lacks_cpl_log:
+        return False, None
+
     classes = case.get_values("COMP_CLASSES")
-    model = "cpl"
+    model = None
+    model_is_data_comp = False
+    non_stub_count = 0
     for comp in classes:
-        if case.get_value("COMP_{}".format(comp)) == "s{}".format(comp.lower()):
-            stubcnt = stubcnt + 1
-        else:
+        if comp == "CPL":
+            continue
+        comp_value = case.get_value("COMP_{}".format(comp))
+        if comp_value != "s{}".format(comp.lower()):
+            non_stub_count = non_stub_count + 1
             model = comp.lower()
-    numclasses = len(classes)
-    if stubcnt >= numclasses - 2:
+            model_is_data_comp = comp_value == "d{}".format(comp.lower())
+    if non_stub_count == 1 and not model_is_data_comp:
         return True, model
     return False, None
 

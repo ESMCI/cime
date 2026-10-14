@@ -162,7 +162,7 @@ Setting up your environment for CCS
 After you've cloned the model repository, you'll need to set up your environment to use the CCS.
 
 First you'll need to let CIME know which model configuration to use by setting the ``CIME_MODEL`` environment variable. In bash, use **export** as shown and replace
-**<your-model>** with the appropriate text. Current possibilities are "e3sm", "cesm", "noresm", or "ufs".
+**<your-model>** with the appropriate text. Current possibilities are "e3sm", "cesm" or "noresm"".
 
 ::
 

@@ -4,6 +4,7 @@ from CIME.case import Case
 
 import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
 
+
 ##############################################################################
 def cleanup_queue(test_root, test_id):
     ###############################################################################
@@ -38,7 +39,7 @@ def delete_old_test_data(
     ###############################################################################
     # Remove old dirs
     for clutter_area in [scratch_root, test_root, run_area, build_area, archive_area]:
-        for old_file in glob.glob(f"{clutter_area}/*{mach_comp}*{test_id_root}*"):
+        for old_file in glob.glob(f"{clutter_area}/*.{mach_comp}.*{test_id_root}*"):
             if avoid_test_id not in old_file:
                 logging.info(f"TEST ARCHIVER: removing {old_file}")
                 if os.path.isdir(old_file):
@@ -57,8 +58,13 @@ def scan_for_test_ids(old_test_archive, mach_comp, test_id_root):
     ###############################################################################
     results = set([])
     test_id_re = re.compile(".+[.]([^.]+)")
-    for item in glob.glob(f"{old_test_archive}/old_cases/*{mach_comp}*{test_id_root}*"):
+    for item in glob.glob(
+        f"{old_test_archive}/old_cases/*.{mach_comp}.*{test_id_root}*"
+    ):
         filename = os.path.basename(item)
+        if filename.endswith(".tar.gz"):
+            filename = filename[: -len(".tar.gz")]
+
         the_match = test_id_re.match(filename)
         if the_match:
             test_id = the_match.groups()[0]
@@ -102,7 +108,7 @@ def archive_old_test_data(
         os.mkdir(old_test_archive)
 
     # Archive old data by looking at old test cases
-    for old_case in glob.glob(f"{test_root}/*{mach_comp}*{test_id_root}[0-9]*"):
+    for old_case in glob.glob(f"{test_root}/*.{mach_comp}.*{test_id_root}[0-9]*"):
         if avoid_test_id not in old_case:
             logging.info(f"TEST ARCHIVER: archiving case {old_case}")
             exeroot, rundir, archdir = run_cmd_no_fail(
@@ -166,7 +172,7 @@ def archive_old_test_data(
             logging.info(f"TEST ARCHIVER:   Removing old data for test {old_test_id}")
             for item in ["old_cases", "old_builds", "old_runs", "old_archives"]:
                 for dir_to_rm in glob.glob(
-                    f"{old_test_archive}/{item}/*{mach_comp}*{old_test_id}*"
+                    f"{old_test_archive}/{item}/*.{mach_comp}.*{old_test_id}*"
                 ):
                     logging.info(f"TEST ARCHIVER:     Removing {dir_to_rm}")
                     if os.path.isdir(dir_to_rm):
@@ -259,10 +265,15 @@ def jenkins_generic_job(
     jenkins_id,
     queue,
     driver,
+    use_existing_test_id,
 ):
     ###############################################################################
     """
     Return True if all tests passed
+
+    If ``use_existing_test_id`` is provided, create_test is not run. Instead,
+    the pre-existing test results identified by that test-id are located under
+    the test root and processed (waited on and optionally submitted to CDash).
     """
     use_batch = machine.has_batch_system() and not no_batch
     test_suite = machine.get_value("TESTS")
@@ -304,73 +315,83 @@ def jenkins_generic_job(
     else:
         test_id_root = f"J{baseline_name.capitalize()}{test_suite.replace('e3sm_', '').capitalize()}"
         test_id = f"{test_id_root}{CIME.utils.get_timestamp()}"
-    archiver_thread = threading.Thread(
-        target=handle_old_test_data,
-        args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
-    )
-    archiver_thread.start()
+
+    # In use-existing mode we process pre-existing results identified by the
+    # provided test-id, so we must neither invent a new test-id nor disturb any
+    # on-disk data via the archiver.
+    if use_existing_test_id is not None:
+        test_id = use_existing_test_id
+        archiver_thread = None
+    else:
+        archiver_thread = threading.Thread(
+            target=handle_old_test_data,
+            args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
+        )
+        archiver_thread.start()
 
     #
     # Set up create_test command and run it
     #
 
-    create_test_args = [
-        test_suite,
-        f"--test-root {test_root}",
-        f"-t {test_id}",
-        f"--machine {machine.get_machine_name()}",
-        f"--compiler {compiler}",
-    ]
-    if generate_baselines:
-        create_test_args.append("-g -b " + real_baseline_name)
-    elif baseline_compare:
-        create_test_args.append("-c -b " + real_baseline_name)
+    if use_existing_test_id is None:
+        create_test_args = [
+            test_suite,
+            f"--test-root {test_root}",
+            f"-t {test_id}",
+            f"--machine {machine.get_machine_name()}",
+            f"--compiler {compiler}",
+        ]
+        if generate_baselines:
+            create_test_args.append("-g -b " + real_baseline_name)
+        elif baseline_compare:
+            create_test_args.append("-c -b " + real_baseline_name)
 
-    if scratch_root != machine.get_value("CIME_OUTPUT_ROOT"):
-        create_test_args.append("--output-root=" + scratch_root)
+        if scratch_root != machine.get_value("CIME_OUTPUT_ROOT"):
+            create_test_args.append("--output-root=" + scratch_root)
 
-    if no_batch:
-        create_test_args.append("--no-batch")
+        if no_batch:
+            create_test_args.append("--no-batch")
 
-    if batch_build:
-        create_test_args.append("--batch-build")
+        if batch_build:
+            create_test_args.append("--batch-build")
 
-    if parallel_jobs is not None:
-        create_test_args.append(f"-j {parallel_jobs:d}")
+        if parallel_jobs is not None:
+            create_test_args.append(f"-j {parallel_jobs:d}")
 
-    if walltime is not None:
-        create_test_args.append("--walltime " + walltime)
+        if walltime is not None:
+            create_test_args.append("--walltime " + walltime)
 
-    if baseline_root is not None:
-        create_test_args.append("--baseline-root " + baseline_root)
+        if baseline_root is not None:
+            create_test_args.append("--baseline-root " + baseline_root)
 
-    if pes_file is not None:
-        create_test_args.append("--pesfile " + pes_file)
+        if pes_file is not None:
+            create_test_args.append("--pesfile " + pes_file)
 
-    if queue is not None:
-        create_test_args.append("--queue " + queue)
+        if queue is not None:
+            create_test_args.append("--queue " + queue)
 
-    if save_timing:
-        create_test_args.append("--save-timing")
+        if save_timing:
+            create_test_args.append("--save-timing")
 
-    if driver is not None:
-        create_test_args.append("--driver " + driver)
+        if driver is not None:
+            create_test_args.append("--driver " + driver)
 
-    create_test_cmd = "./create_test " + " ".join(create_test_args)
+        create_test_cmd = "./create_test " + " ".join(create_test_args)
 
-    if not CIME.wait_for_tests.SIGNAL_RECEIVED:
-        create_test_stat = CIME.utils.run_cmd(
-            create_test_cmd,
-            from_dir=CIME.utils.get_scripts_root(),
-            verbose=True,
-            arg_stdout=None,
-            arg_stderr=None,
-        )[0]
-        # Create_test should have either passed, detected failing tests, or timed out
-        expect(
-            create_test_stat in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
-            f"Create_test script FAILED with error code '{create_test_stat:d}'!",
-        )
+        if not CIME.wait_for_tests.SIGNAL_RECEIVED:
+            create_test_stat = CIME.utils.run_cmd(
+                create_test_cmd,
+                from_dir=CIME.utils.get_scripts_root(),
+                verbose=True,
+                arg_stdout=None,
+                arg_stderr=None,
+            )[0]
+            # Create_test should have either passed, detected failing tests, or timed out
+            expect(
+                create_test_stat
+                in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
+                f"Create_test script FAILED with error code '{create_test_stat:d}'!",
+            )
 
     #
     # Wait for tests
@@ -388,12 +409,14 @@ def jenkins_generic_job(
     os.environ["CIME_MACHINE"] = machine.get_machine_name()
 
     mach_comp = f"{machine.get_machine_name()}_{compiler}"
-    globstr = f"{test_root}/*{mach_comp}*{test_id}/TestStatus"
+    globstr = f"{test_root}/*.{mach_comp}.*{test_id}/TestStatus"
     if submit_to_cdash:
         logging.info(
             f"To resubmit to dashboard: wait_for_tests {globstr} --no-wait -b {cdash_build_name}"
         )
 
+    glob_matches = glob.glob(globstr)
+    expect(glob_matches, f"{globstr} didn't match anything?")
     tests_passed = CIME.wait_for_tests.wait_for_tests(
         glob.glob(globstr),
         no_wait=not use_batch,  # wait if using queue
@@ -412,7 +435,7 @@ def jenkins_generic_job(
         # Cleanup
         cleanup_queue(test_root, test_id)
 
-    if not CIME.wait_for_tests.SIGNAL_RECEIVED:
+    if archiver_thread is not None and not CIME.wait_for_tests.SIGNAL_RECEIVED:
         logging.info("TEST ARCHIVER: Waiting for archiver thread")
         archiver_thread.join()
         logging.info("TEST ARCHIVER: Waiting for archiver finished")

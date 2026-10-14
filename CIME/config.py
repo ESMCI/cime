@@ -243,11 +243,6 @@ class Config(ConfigBase):
             desc="If set to `True` and then the `clm` land component is built as a shared lib.",
         )
         self._set_attribute(
-            "ufs_alternative_config",
-            False,
-            desc="If set to `True` and UFS_DRIVER is set to `nems` then model config dir is set to `$CIMEROOT/../src/model/NEMS/cime/cime_config`.",
-        )
-        self._set_attribute(
             "enable_smp",
             True,
             desc="If set to `True` then `SMP=` is added to model compile command.",
@@ -303,7 +298,6 @@ class Config(ConfigBase):
             True,
             desc="If set to `True` then unsupported compsets and resolutions are allowed.",
         )
-        # set for ufs
         self._set_attribute(
             "check_machine_name_from_test_name",
             True,
@@ -358,11 +352,6 @@ class Config(ConfigBase):
             desc="If set to `True` then COMP_ROOT_DIR_CPL is set for the case.",
         )
         self._set_attribute(
-            "use_nems_comp_root_dir",
-            False,
-            desc="If set to `True` then COMP_ROOT_DIR_CPL is set using UFS_DRIVER if defined.",
-        )
-        self._set_attribute(
             "test_custom_project_machine",
             "melvin",
             desc="Sets the machine name to use when testing a machine with no PROJECT.",
@@ -384,4 +373,9 @@ class Config(ConfigBase):
             "mpi_serial_path",
             "{srcroot}/libraries/mpi-serial",
             desc="Sets the path to the mpi-serial library.",
+        )
+        self._set_attribute(
+            "standalone_compset_lacks_cpl_log",
+            True,
+            desc="If set to `True` then a standalone compset (a single non-stub, non-data component) is assumed to lack a cpl log file. Set to `False` for models whose driver always produces a cpl log.",
         )

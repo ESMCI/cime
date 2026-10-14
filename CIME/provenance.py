@@ -55,6 +55,7 @@ def get_recommended_test_time_based_on_past(baseline_root, test, raw=False):
 
 
 def save_test_time(baseline_root, test, time_seconds, commit):
+    commit = "unknown" if commit is None else commit
     if baseline_root is not None:
         try:
             with SharedArea():

@@ -81,8 +81,8 @@ fi
 # Build the cprnc executable (for comparison of netcdf files)
 echo "" >> ${test_log}
 echo "Building cprnc in ${PWD}/builds ..." >> ${test_log}
-mkdir ${PWD}/builds/cprnc
-cd  ${PWD}/builds/cprnc
+mkdir -p cprnc
+cd cprnc
 cmake -DCMAKE_INSTALL_PREFIX=${PWD} ${cime_root}/CIME/non_py/cprnc
 make install
 if [ ! -f bin/cprnc ]; then
@@ -109,7 +109,7 @@ for baseline in ${ocn_baseline} ${lnd_baseline}; do
     fi
     # Compare against baseline and print report from cprnc comparison
     echo "Comparing $testfile against ${baseline}..."
-    (. builds/.env_mach_specific.sh && ./builds/bin/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
+    (. builds/.env_mach_specific.sh && ./builds/cprnc/bin/cprnc -m ${testfile} ${baseline}) >> ${test_log} 2>&1
 
     # Check results
     last=`tail -n3 ${test_log}`

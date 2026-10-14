@@ -135,9 +135,7 @@
       <value component="datm"  >$SRCROOT/components/cdeps/datm</value>
       <value component="satm"  >$CIMEROOT/CIME/non_py/src/components/stub_comps_$COMP_INTERFACE/satm</value>
       <value component="xatm"  >$SRCROOT/components/cmeps/med_test_comps/xatm</value>
-
-      <value component="cam"                         >$SRCROOT/components/cam/</value>
-      <value component="ufsatm"                      >$SRCROOT/components/fv3/</value>
+      <value component="cam"   >$SRCROOT/components/cam/</value>
     </values>
     <group>case_comps</group>
     <file>env_case.xml</file>
@@ -290,7 +288,6 @@
       <value component="allactive" >$SRCROOT/cime_config/config_compsets.xml</value>
       <value component="drv"       >$COMP_ROOT_DIR_CPL/cime_config/config_compsets.xml</value>
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
-      <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_compsets.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_compsets.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_compsets.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_compsets.xml</value>
@@ -315,7 +312,6 @@
       <value component="allactive" >$SRCROOT/cime_config/config_pes.xml</value>
       <value component="drv"       >$COMP_ROOT_DIR_CPL/cime_config/config_pes.xml</value>
       <value component="cam"       >$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml</value>
-      <value component="ufsatm"    >$COMP_ROOT_DIR_ATM/cime_config/config_pes.xml</value>
       <value component="cism"      >$COMP_ROOT_DIR_GLC/cime_config/config_pes.xml</value>
       <value component="clm"       >$COMP_ROOT_DIR_LND/cime_config/config_pes.xml</value>
       <value component="cice"      >$COMP_ROOT_DIR_ICE/cime_config/config_pes.xml</value>

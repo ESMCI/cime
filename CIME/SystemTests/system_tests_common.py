@@ -15,7 +15,7 @@ from CIME.utils import (
     expect,
     get_current_commit,
     SharedArea,
-    is_comp_standalone,
+    compset_lacks_cpl_log,
 )
 from CIME.test_status import *
 from CIME.hist_utils import (
@@ -42,6 +42,7 @@ from datetime import datetime, timedelta
 import glob, gzip, time, traceback, os, math, calendar
 
 from contextlib import ExitStack
+from typing import List, Tuple, Union
 
 logger = logging.getLogger(__name__)
 
@@ -566,8 +567,8 @@ class SystemTestsCommon(object):
             if self._case.get_value("COMPARE_BASELINE"):
                 if do_baseline_ops:
                     self._phase_modifying_call(BASELINE_PHASE, self._compare_baseline)
-                    comp_standalone, _ = is_comp_standalone(self._case)
-                    if not comp_standalone:
+                    no_cpl_log, _ = compset_lacks_cpl_log(self._case)
+                    if not no_cpl_log:
                         self._phase_modifying_call(MEMCOMP_PHASE, self._compare_memory)
                         self._phase_modifying_call(
                             THROUGHPUT_PHASE, self._compare_throughput
@@ -823,12 +824,22 @@ for some of your components.
         )
 
     def _st_archive_case_test(self):
+        """
+        Do NOT override this method, this method is the framework that
+        controls the short-term archive phase. st_archive_case_test_phase
+        is the extension point that subclasses should use.
+        """
+        return self.st_archive_case_test_phase()
+
+    def st_archive_case_test_phase(self):
+        """
+        Run short-term archive for the test case.
+
+        This is the subclass' extension point if they need to define a
+        custom short-term archive phase.
+        """
         result = self._case.test_env_archive()
-        with self._test_status:
-            if result:
-                self._test_status.set_status(STARCHIVE_PHASE, TEST_PASS_STATUS)
-            else:
-                self._test_status.set_status(STARCHIVE_PHASE, TEST_FAIL_STATUS)
+        return result, "", ""
 
     def _phase_modifying_call(self, phase, function):
         """
@@ -836,7 +847,7 @@ for some of your components.
         in the TestStatus file for that phase.
         """
         try:
-            function()
+            is_pass, short_comment, long_comment = function()
         except Exception as e:  # Do NOT want to catch KeyboardInterrupt
             msg = e.__str__()
             excmsg = "Exception during {}:\n{}\n{}".format(
@@ -850,11 +861,29 @@ for some of your components.
                 self._test_status.set_status(
                     phase, TEST_FAIL_STATUS, comments="exception"
                 )
+        else:
+            new_status = TEST_PASS_STATUS if is_pass else TEST_FAIL_STATUS
+            with self._test_status:
+                self._test_status.set_status(phase, new_status, comments=short_comment)
+
+            if long_comment:
+                append_testlog(long_comment, self._orig_caseroot)
 
     def _check_for_memleak(self):
         """
+        Do NOT override this method, this method is the framework that
+        controls the memory leak check phase. check_for_memleak_phase is
+        the extension point that subclasses should use.
+        """
+        return self.check_for_memleak_phase()
+
+    def check_for_memleak_phase(self):
+        """
         Examine memory usage as recorded in the cpl log file and look for unexpected
         increases.
+
+        This is the subclass' extension point if they need to define a
+        custom memory leak check phase.
         """
         config = load_coupler_customization(self._case)
 
@@ -863,22 +892,12 @@ for some of your components.
 
         expect(tolerance > 0.0, "Bad value for memleak tolerance in test")
 
-        with self._test_status:
-            try:
-                memleak, comment = config.perf_check_for_memory_leak(
-                    self._case, tolerance
-                )
-            except AttributeError:
-                memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
+        try:
+            memleak, comment = config.perf_check_for_memory_leak(self._case, tolerance)
+        except AttributeError:
+            memleak, comment = perf_check_for_memory_leak(self._case, tolerance)
 
-            if memleak:
-                append_testlog(comment, self._orig_caseroot)
-
-                status = TEST_FAIL_STATUS
-            else:
-                status = TEST_PASS_STATUS
-
-            self._test_status.set_status(MEMLEAK_PHASE, status, comments=comment)
+        return not memleak, "", comment
 
     def compare_env_run(self, expected=None):
         """
@@ -907,136 +926,289 @@ for some of your components.
 
     def _compare_memory(self):
         """
-        Compares current test memory usage to baseline.
+        Do NOT override this method, this method is the framework that
+        controls the memory comparison phase. compare_memory_phase is
+        the extension point that subclasses should use.
         """
-        with self._test_status:
-            try:
-                below_tolerance, comment = perf_compare_memory_baseline(self._case)
-            except Exception as e:
-                logger.info("Failed to compare memory usage baseline: {!s}".format(e))
+        return self.compare_memory_phase()
 
-                self._test_status.set_status(
-                    MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=str(e)
-                )
-            else:
-                if below_tolerance is not None:
-                    append_testlog(comment, self._orig_caseroot)
+    def compare_memory_phase(self):
+        """
+        Compares current test memory usage to baseline.
 
-                    if (
-                        below_tolerance
-                        and self._test_status.get_status(MEMCOMP_PHASE) is None
-                    ):
-                        self._test_status.set_status(MEMCOMP_PHASE, TEST_PASS_STATUS)
-                    elif (
-                        self._test_status.get_status(MEMCOMP_PHASE) != TEST_FAIL_STATUS
-                    ):
-                        self._test_status.set_status(
-                            MEMCOMP_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
+        This is the subclass' extension point if they need to define a
+        custom memory comparison phase.
+
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
+
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
+        """
+        below_tolerance, comment = perf_compare_memory_baseline(self._case)
+        if below_tolerance is None:
+            return True, "No compare value", comment
+        else:
+            return below_tolerance, "", comment
 
     def _compare_throughput(self):
         """
-        Compares current test throughput to baseline.
+        Do NOT override this method, this method is the framework that
+        controls the throughput comparison phase. compare_throughput_phase
+        is the extension point that subclasses should use.
         """
-        with self._test_status:
-            try:
-                below_tolerance, comment = perf_compare_throughput_baseline(self._case)
-            except Exception as e:
-                logger.info("Failed to compare throughput baseline: {!s}".format(e))
+        return self.compare_throughput_phase()
 
-                self._test_status.set_status(
-                    THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=str(e)
-                )
-            else:
-                if below_tolerance is not None:
-                    append_testlog(comment, self._orig_caseroot)
+    def compare_throughput_phase(self):
+        """
+        Compares current test throughput to baseline.
 
-                    if (
-                        below_tolerance
-                        and self._test_status.get_status(THROUGHPUT_PHASE) is None
-                    ):
-                        self._test_status.set_status(THROUGHPUT_PHASE, TEST_PASS_STATUS)
-                    elif (
-                        self._test_status.get_status(THROUGHPUT_PHASE)
-                        != TEST_FAIL_STATUS
-                    ):
-                        self._test_status.set_status(
-                            THROUGHPUT_PHASE, TEST_FAIL_STATUS, comments=comment
-                        )
+        This is the subclass' extension point if they need to define a
+        custom throughput comparison phase.
+
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
+
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
+        """
+        below_tolerance, comment = perf_compare_throughput_baseline(self._case)
+        if below_tolerance is None:
+            return True, "No compare value", comment
+        else:
+            return below_tolerance, "", comment
 
     def _compare_baseline(self):
         """
-        compare the current test output to a baseline result
+        Do NOT override this method, this method is the framework that
+        controls the baseline comparison phase. compare_baseline_phase
+        is the extension point that subclasses should use.
         """
-        with self._test_status:
-            # compare baseline
-            success, comments = compare_baseline(self._case)
+        return self.compare_baseline_phase()
 
-            append_testlog(comments, self._orig_caseroot)
+    def compare_baseline_phase(self):
+        """
+        Compare the current test output to a baseline result.
 
-            pattern = "*.nc.cprnc.out"
+        This is the subclass' extension point if they need to define a
+        custom baseline comparison phase.
 
-            self._log_cprnc_output_tail(pattern)
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
 
-            status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
-            baseline_name = self._case.get_value("BASECMP_CASE")
-            ts_comments = (
-                os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
-            )
-            log_comments = "\n\n============ BASELINE COMPARE SYNOPSIS =============\n"
-            log_comments += ts_comments + "\n"
-            log_comments += "====================================================\n"
-            append_testlog(log_comments, self._orig_caseroot)
-            self._test_status.set_status(BASELINE_PHASE, status, comments=ts_comments)
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
+        """
+        # compare baseline
+        success, comments = compare_baseline(self._case)
+
+        pattern = "*.nc.cprnc.out"
+
+        self._log_cprnc_output_tail(pattern)
+
+        baseline_name = self._case.get_value("BASECMP_CASE")
+        ts_comments = os.path.dirname(baseline_name) + ": " + get_ts_synopsis(comments)
+        comments += "\n\n============ BASELINE COMPARE SYNOPSIS =============\n"
+        comments += ts_comments + "\n"
+        comments += "====================================================\n"
+
+        return success, ts_comments, comments
 
     def _generate_baseline(self):
         """
-        If you find yourself wanting to override this method, check whether you can accomplish what
-        you want using additional_baseline_generation() instead.
+        Do NOT override this method, this method is the framework that
+        controls the baseline generation phase. generate_baseline_phase
+        is the extension point that subclasses should use.
         """
-        with self._test_status:
-            # generate baseline
-            success, comments = generate_baseline(self._case)
-            append_testlog(comments, self._orig_caseroot)
-            status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
-            baseline_name = self._case.get_value("BASEGEN_CASE")
-            basegen_dir = os.path.join(
-                self._case.get_value("BASELINE_ROOT"),
-                self._case.get_value("BASEGEN_CASE"),
-            )
-            # copy latest cpl log to baseline
-            # drop the date so that the name is generic
-            newestcpllogfiles = get_latest_cpl_logs(self._case)
-            with SharedArea():
-                # TODO ever actually more than one cpl log?
-                for cpllog in newestcpllogfiles:
-                    m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
+        return self.generate_baseline_phase()
 
-                    if m is not None:
-                        baselog = os.path.join(basegen_dir, m.group(1)) + ".gz"
-
-                        safe_copy(
-                            cpllog,
-                            os.path.join(basegen_dir, baselog),
-                            preserve_meta=False,
-                        )
-
-                        perf_write_baseline(self._case, basegen_dir, cpllog)
-
-                self.additional_baseline_generation(basegen_dir)
-
-            self._test_status.set_status(
-                GENERATE_PHASE, status, comments=os.path.dirname(baseline_name)
-            )
-
-    def additional_baseline_generation(
-        self, basegen_dir
-    ):  # pylint: disable=unused-argument
+    def generate_baseline_phase(self):
         """
-        Extension point for subclasses to perform additional operations during baseline generation
-        phase.
+        Generate a baseline result from the current test.
+
+        This is the subclass' extension point if they need to define a
+        custom baseline generation phase.
+
+        Returns (pass, short_comment, long_comment). Short comments go directly in
+        TestStatus, long comments go into the logs.
+
+        Raise exception on fail. Clients do NOT need to manage
+        phase/test_status directly.
+
+        Clients who override will likely want to call this method in addition
+        to extra functionality they want.
         """
-        return
+        # generate baseline
+        success, comments = generate_baseline(self._case)
+        baseline_name = self._case.get_value("BASEGEN_CASE")
+        basegen_dir = os.path.join(
+            self._case.get_value("BASELINE_ROOT"),
+            self._case.get_value("BASEGEN_CASE"),
+        )
+        # copy latest cpl log to baseline
+        # drop the date so that the name is generic
+        newestcpllogfiles = get_latest_cpl_logs(self._case)
+        with SharedArea():
+            # TODO ever actually more than one cpl log?
+            for cpllog in newestcpllogfiles:
+                m = re.search(r"/({}.*.log).*.gz".format(self._cpllog), cpllog)
+
+                if m is not None:
+                    baselog = os.path.join(basegen_dir, m.group(1)) + ".gz"
+
+                    safe_copy(
+                        cpllog,
+                        os.path.join(basegen_dir, baselog),
+                        preserve_meta=False,
+                    )
+
+                    perf_write_baseline(self._case, basegen_dir, cpllog)
+
+        return success, os.path.dirname(baseline_name), comments
+
+
+def _days_in_month(year: int, month: int, calendar_type: str = "NO_LEAP") -> int:
+    """Return the number of days in a model calendar month.
+
+    CIME cases run with one of two calendars, which share the standard
+    twelve-month Gregorian month lengths and differ only in whether February
+    gains a leap day:
+
+    * ``NO_LEAP`` (a.k.a. 365-day): every February has 28 days.
+    * ``GREGORIAN``: February has 29 days in leap years, following the
+      proleptic Gregorian leap rule.
+
+    Args:
+        year: Gregorian year the month belongs to.  Only consulted for
+            ``GREGORIAN`` February.
+        month: Month number in ``1..12``.
+        calendar_type: Model calendar name (case-insensitive).  Any value
+            other than ``GREGORIAN`` is treated as a no-leap calendar.
+
+    Returns:
+        int: Number of days in the requested month.
+
+    Examples:
+        >>> _days_in_month(1, 2, "NO_LEAP")
+        28
+        >>> _days_in_month(2000, 2, "GREGORIAN")
+        29
+        >>> _days_in_month(2001, 2, "GREGORIAN")
+        28
+    """
+    days_per_month = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    days = days_per_month[month - 1]
+
+    if (
+        month == 2
+        and str(calendar_type).upper() == "GREGORIAN"
+        and calendar.isleap(year)
+    ):
+        days = 29
+
+    return days
+
+
+def _format_elapsed_model_time(
+    start: Union[int, float],
+    end: Union[int, float],
+    calendar_type: str = "NO_LEAP",
+) -> str:
+    """Format elapsed model time from two YYYYMMDD-encoded date stamps.
+
+    Coupler log lines record model dates as ``YYYYMMDD`` integers (e.g.
+    ``51231`` for year 5, December 31).  Subtracting these raw integers
+    produces a nonsensical result because the encoding mixes year, month, and
+    day-of-month fields.  This function decodes both stamps and returns a
+    human-readable elapsed-time string with only the non-zero components.
+
+    ``datetime`` is intentionally not used here.  CIME cases run with a
+    ``NO_LEAP`` (365-day) or ``GREGORIAN`` calendar, and ``datetime`` only
+    understands the Gregorian calendar — it raises ``ValueError`` on
+    ``NO_LEAP`` dates such as ``YYYY0229`` in a non-leap year.  Even on a
+    Gregorian run, ``datetime`` subtraction yields a ``timedelta`` whose only
+    field is ``days``; decomposing that back into years/months/days still
+    requires the per-month day counts.  Both needs are met directly by
+    :func:`_days_in_month`, which is calendar-aware, so the elapsed value is
+    exact for the case's calendar rather than an approximation.
+
+    Day borrows walk backwards through months until ``days >= 0``; a single
+    borrow is not always sufficient (e.g. Jan 31 → Mar 1 crosses a short
+    February, requiring two borrows).
+
+    Args:
+        start: Model date stamp at run start encoded as ``YYYYMMDD``
+            (int or float).
+        end: Model date stamp at run end encoded as ``YYYYMMDD``
+            (int or float).
+        calendar_type: Model calendar name (case-insensitive), typically the
+            value of the case ``CALENDAR`` variable.  Controls February's
+            length when a day-borrow crosses it.  Defaults to ``NO_LEAP``.
+
+    Returns:
+        str: Human-readable elapsed time, e.g.
+            ``"4 years, 11 months, 29 days"``.  Returns ``"0 days"`` when
+            start and end are identical or the decoded difference is zero.
+
+    Examples:
+        >>> _format_elapsed_model_time(10102, 51231)
+        '4 years, 11 months, 29 days'
+        >>> _format_elapsed_model_time(10101, 20101)
+        '1 year'
+        >>> _format_elapsed_model_time(10101, 10101)
+        '0 days'
+        >>> _format_elapsed_model_time(10205, 10301, "NO_LEAP")
+        '24 days'
+        >>> _format_elapsed_model_time(20000205, 20000301, "GREGORIAN")
+        '25 days'
+        >>> _format_elapsed_model_time(10131, 10301)
+        '29 days'
+    """
+
+    def _decode(stamp: Union[int, float]) -> Tuple[int, int, int]:
+        s = int(stamp)
+        return s // 10000, (s // 100) % 100, s % 100
+
+    y0, m0, d0 = _decode(start)
+    y1, m1, d1 = _decode(end)
+
+    years = y1 - y0
+    months = m1 - m0
+    days = d1 - d0
+
+    if days < 0:
+        # Walk backwards through months, borrowing each month's true length,
+        # until days is non-negative.  A single borrow is not always enough
+        # (e.g. Jan 31 → Mar 1 requires borrowing both Feb and Jan).
+        borrow_year, borrow_month = y1, m1 - 1
+        if borrow_month == 0:
+            borrow_year, borrow_month = y1 - 1, 12
+        while days < 0:
+            days += _days_in_month(borrow_year, borrow_month, calendar_type)
+            months -= 1
+            borrow_month -= 1
+            if borrow_month == 0:
+                borrow_year, borrow_month = borrow_year - 1, 12
+    while months < 0:
+        months += 12
+        years -= 1
+
+    parts: List[str] = []
+    for val, unit in ((years, "year"), (months, "month"), (days, "day")):
+        if val > 0:
+            label = unit if val == 1 else f"{unit}s"
+            parts.append(f"{val} {label}")
+
+    return ", ".join(parts) if parts else "0 days"
 
 
 def perf_check_for_memory_leak(case, tolerance):
@@ -1051,9 +1223,6 @@ def perf_check_for_memory_leak(case, tolerance):
         except RuntimeError:
             return False, "insufficient data for memleak test"
 
-        # last day - second day, skip first day, can be too low while initializing
-        elapsed_days = int(memlist[-1][0]) - int(memlist[1][0])
-
         finalmem, originalmem = float(memlist[-1][1]), float(memlist[1][1])
 
         memdiff = -1 if originalmem <= 0 else (finalmem - originalmem) / originalmem
@@ -1065,11 +1234,16 @@ def perf_check_for_memory_leak(case, tolerance):
             leak = False
             comment = ""
         else:
+            # Skip the first sample (can be artificially low during init);
+            # report elapsed time between the second and last samples using
+            # the case's calendar so month/year borrows are exact.
+            calendar_type = case.get_value("CALENDAR") or "NO_LEAP"
+            elapsed = _format_elapsed_model_time(
+                memlist[1][0], memlist[-1][0], calendar_type
+            )
             leak = True
-            comment = (
-                "memleak detected, memory went from {:f} to {:f} in {:d} days".format(
-                    originalmem, finalmem, elapsed_days
-                )
+            comment = "memleak detected, memory went from {:f} to {:f} in {:s}".format(
+                originalmem, finalmem, elapsed
             )
 
     return leak, comment
@@ -1303,7 +1477,7 @@ class TESTRUNFAILEXC(TESTRUNPASS):
 
 
 class TESTRUNSTARCFAIL(TESTRUNPASS):
-    def _st_archive_case_test(self):
+    def st_archive_case_test_phase(self):
         raise CIMEError("Exception from st archive")
 
 
@@ -1332,29 +1506,43 @@ class TESTBUILDFAILEXC(FakeTest):
 class TESTRUNUSERXMLCHANGE(FakeTest):
     def build_phase(self, sharedlib_only=False, model_only=False):
         caseroot = self._case.get_value("CASEROOT")
-        modelexe = self._case.get_value("run_exe")
+        rundir = self._case.get_value("RUNDIR")
         new_stop_n = self._case.get_value("STOP_N") * 2
 
+        if not sharedlib_only:
+            for filename in (
+                "user_xml_change_fake_first_run",
+                "user_xml_change_fake_runs",
+            ):
+                filepath = os.path.join(rundir, filename)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+
+        # Exercise the case's XML reload/resubmit behavior without launching
+        # the real model from inside an MPI-launched wrapper.
         script = """
-cd {caseroot}
-./xmlchange --file env_test.xml STOP_N={stopn}
-./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
-cd -
-{originalexe} "$@"
-cd {caseroot}
-./xmlchange run_exe={modelexe}
-sleep 5
+set -e
+if [ ! -f "{rundir}/user_xml_change_fake_first_run" ]; then
+  cd "{caseroot}"
+  ./xmlchange --file env_test.xml STOP_N={stopn}
+  ./xmlchange RESUBMIT=1,STOP_N={stopn},CONTINUE_RUN=FALSE,RESUBMIT_SETS_CONTINUE_RUN=FALSE
+  cd - >/dev/null
+  touch "{rundir}/user_xml_change_fake_first_run"
+  sleep 5
+fi
+printf '%s\\n' "$LID" >> "{rundir}/user_xml_change_fake_runs"
+echo SUCCESSFUL TERMINATION > "{rundir}/{log}.log.$LID"
 """.format(
-            originalexe=self._original_exe,
             caseroot=caseroot,
-            modelexe=modelexe,
+            rundir=rundir,
+            log=self._cpllog,
             stopn=str(new_stop_n),
         )
-        self._set_script(script, requires_exe=True)
+        self._set_script(script)
         FakeTest.build_phase(self, sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run_phase(self):
-        self.run_indv(submit_resubmits=True)
+        self.run_indv(suffix=None, submit_resubmits=True)
 
 
 class TESTRUNSLOWPASS(FakeTest):

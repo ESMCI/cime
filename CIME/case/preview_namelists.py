@@ -91,7 +91,7 @@ def create_namelists(self, component=None):
             compname = "drv"
         else:
             compname = self.get_value("COMP_{}".format(model_str.upper()))
-        if component is None or component == model_str or compname == "ufsatm":
+        if component is None or component == model_str:
             cmd = os.path.join(config_dir, "buildnml")
             logger.info("Create namelist for component {}".format(compname))
             import_and_run_sub_or_cmd(
