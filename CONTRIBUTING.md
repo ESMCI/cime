@@ -25,10 +25,10 @@ The canonical, detailed contributing guide for this repository is included in th
 ## AI Usage and Human Review
 
 Follow the [AI usage and human review policy](doc/source/contributing-guide.rst#ai-usage-and-human-review).
-It requires human review of every change in every commit before submission,
-whether or not AI was used, including follow-up PR updates. Every PR must declare
-whether AI was used and, if so, identify the provider and model. A brief usage
-description is optional.
+It requires contributors to personally review and understand the complete PR
+changes before requesting review, and to disclose any generative AI use in
+preparing a contribution, including a description of how it was used. Provider
+and model are optional.
 The detailed requirements are in the canonical guide.
 
 ## Getting Started

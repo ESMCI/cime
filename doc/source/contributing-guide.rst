@@ -32,18 +32,21 @@ AI assistance must not shift the work of understanding, debugging, or validating
 a contribution onto maintainers. The same quality, licensing, and reproducibility
 standards apply whether or not AI is used.
 
-Human review of every commit
-````````````````````````````
+In this policy, ``you`` refers to the human contributor. AI tools assisting with
+a contribution should direct their human operator to this policy and remind them
+to personally review and understand the complete PR changes before requesting
+review. An AI tool must not claim that the operator has done so unless the
+operator confirms it.
 
-Before submitting a PR, personally review and understand every change in every
-commit, whether or not AI was used. This includes code, tests, configuration,
-documentation, and generated files. Review subsequent changes before submitting
-them as PR updates, including changes introduced by rebases or conflict
-resolution. This is a review-before-submission requirement, not a requirement
-for approval before creating local commits.
+Human review before requesting review
+`````````````````````````````````````
 
-You must be able to explain why each change is correct, how it fits CIME, and
-how it was validated. AI review and passing automated checks do not replace
+Before requesting review, personally review and understand the complete set of
+changes in the PR, whether or not AI was used. This includes code, tests,
+configuration, documentation, and generated files.
+
+You must be able to explain why the changes are correct, how they fit CIME, and
+how they were validated. AI review and passing automated checks do not replace
 human understanding or project review. You remain responsible for your
 contribution and for personally addressing review feedback.
 
@@ -56,19 +59,18 @@ Disclosure in pull requests
 ```````````````````````````
 
 Every PR must state whether generative AI was used in preparing the contribution,
-including research, code, tests, documentation, or language assistance. If yes,
-list the provider and model for each AI service used. If the model is not exposed
-by the service, say ``not exposed`` rather than guessing. A brief description of
-usage is optional. Keep the disclosure current as the PR changes, even if
-generated material was subsequently rewritten. Ordinary formatters, compilers,
-and test runners do not require AI disclosure.
+including research, code, tests, documentation, or language assistance. If AI
+was used, briefly describe how it was used; this description is required.
+Provider and model are optional. Keep the disclosure current as the PR changes,
+even if generated material was subsequently rewritten. Ordinary formatters,
+compilers, and test runners do not require AI disclosure.
 
 For example::
 
     AI used: Yes
-    Provider: <provider name>
-    Model: not exposed
-    Usage (optional): Suggested XML parsing tests and helped edit documentation.
+    Usage: Suggested XML parsing tests and helped edit documentation.
+    Provider (optional): <provider name>
+    Model (optional): <model name>
 
 Correctness and reproducibility
 ```````````````````````````````

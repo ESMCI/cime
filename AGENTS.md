@@ -19,6 +19,8 @@
 - Write documentation using Sphinx ReStructuredText.
 - User documentation should answer what and how.
 - Developer documentation should answer why and how.
+- Follow the AI usage and human review policy in `doc/source/contributing-guide.rst` when assisting with contributions.
+- Remind the human operator to review and understand the complete PR changes before requesting review; do not claim they have done so unless they confirm it.
 
 ## Commits and PRs
 - Use Conventional Commits standard for PR titles, and commit messages.
