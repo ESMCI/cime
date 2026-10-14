@@ -293,5 +293,9 @@ class TestCaseSetup(unittest.TestCase):
             )
 
             copy_depends_files.assert_called_with(
-                "test", machines_path, case_path, "gnu-test"
+                "test",
+                machines_path,
+                case_path,
+                "gnu-test",
+                machine_mock.get_value.return_value,
             )
