@@ -6,13 +6,13 @@
 ## Coding Standards
 - Follow `PEP8` style guide.
 - Always prefer dependency injection.
-- Always prefer generalized implementation; avoid split logic that depends on a specific model.
+- Prefer implementations that work across Earth system models that use CIME. If model-specific logic seems necessary, ask the user how to proceed before adding it.
 - Always lint and format files after creating or modifying.
 
 ## Testing Standards
 - Always follow TDD principals.
 - Cover success, failure, and edge cases.
-- Always follow pytest patterns, not `unittest.TestCase`.
+- Use pytest for new test modules. When adding tests to an existing module, follow that module's established style, including `unittest.TestCase` if it already uses it. Don't convert an existing module or mix styles just to follow this preference. If the appropriate style is unclear, ask the user how to proceed.
 
 ## Documentation Standards
 - Follow `Google Python Style Guide` for docstrings.
