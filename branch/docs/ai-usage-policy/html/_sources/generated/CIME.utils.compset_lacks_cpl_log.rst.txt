@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.compset\_lacks\_cpl\_log
-===================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: compset_lacks_cpl_log

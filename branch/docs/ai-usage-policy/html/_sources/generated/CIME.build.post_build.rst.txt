@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.post\_build
-======================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: post_build
