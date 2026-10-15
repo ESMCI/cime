@@ -152,13 +152,13 @@ Running Python tests
 Use the repository test helper to run the complete Python unit- or system-test
 suite in a suitable environment::
 
-    ./scripts/run_tests unit
-    ./scripts/run_tests system
+    ./devtools/run_tests unit
+    ./devtools/run_tests system
 
 Pass one or more pytest paths or node IDs after ``--`` to run selected tests
 instead of the complete suite::
 
-    ./scripts/run_tests unit -- CIME/tests/test_unit_utils.py CIME/tests/test_unit_machines.py::TestMachines::test_machine_name
+    ./devtools/run_tests unit -- CIME/tests/test_unit_utils.py CIME/tests/test_unit_machines.py::TestMachines::test_machine_name
 
 The helper prefers a host machine recognized by ``query_config``. Otherwise,
 it uses Docker or Podman when available; unit tests can fall back to the
@@ -166,7 +166,7 @@ it uses Docker or Podman when available; unit tests can fall back to the
 require a full E3SM or CESM source checkout and either a matching host machine
 or a container runtime. The default container image is
 ``ghcr.io/esmci/cime:latest``; use ``--build-image`` to build the local test
-image with Docker BuildKit instead (for example, ``./scripts/run_tests system
+image with Docker BuildKit instead (for example, ``./devtools/run_tests system
 --backend docker --build-image``).
 
 System tests populate a versioned input-data cache under the user's cache
