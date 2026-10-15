@@ -1,0 +1,26 @@
+﻿..
+  module.rst
+
+CIME.case
+=========
+
+.. automodule:: CIME.case
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.safe\_copy
+=====================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: safe_copy

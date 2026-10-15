@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.provenance.save\_test\_success
+===================================
+
+.. currentmodule:: CIME.provenance
+
+.. autofunction:: save_test_success

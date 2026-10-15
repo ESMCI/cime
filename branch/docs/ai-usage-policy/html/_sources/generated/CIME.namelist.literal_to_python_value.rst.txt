@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.literal\_to\_python\_value
+========================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: literal_to_python_value

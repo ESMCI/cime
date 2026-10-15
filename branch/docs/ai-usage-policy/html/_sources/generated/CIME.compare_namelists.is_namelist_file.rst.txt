@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.compare\_namelists.is\_namelist\_file
+==========================================
+
+.. currentmodule:: CIME.compare_namelists
+
+.. autofunction:: is_namelist_file

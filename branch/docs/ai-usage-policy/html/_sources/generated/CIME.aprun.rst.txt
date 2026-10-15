@@ -1,0 +1,35 @@
+﻿..
+  module.rst
+
+CIME.aprun
+==========
+
+.. automodule:: CIME.aprun
+
+    
+        
+    
+
+    
+        
+            .. rubric:: Functions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    get_aprun_cmd_for_case
+        
+    
+
+    
+        
+    
+
+    
+        
+    
+
+
+    
