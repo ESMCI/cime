@@ -40,5 +40,11 @@ data/
 # Special for Claude Code user config
 .claude/*
 !.claude/CLAUDE.md
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/cime-unit-testing/
+!.claude/skills/cime-unit-testing/**
+!.claude/skills/cime-sys-testing/
+!.claude/skills/cime-sys-testing/**
 CLAUDE.md
 CLAUDE.local.md
