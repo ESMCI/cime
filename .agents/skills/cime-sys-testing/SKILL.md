@@ -75,8 +75,8 @@ pass `--allow-batch` after approval. Otherwise, choose a container backend or
 allow the runner to stop with its batch-safety message.
 
 ```bash
-./scripts/run_tests system
-./scripts/run_tests system -- CIME/tests/test_sys_<target>.py
+./devtools/run_tests system
+./devtools/run_tests system -- CIME/tests/test_sys_<target>.py
 ```
 
 Multiple pytest paths or node IDs can be passed after `--`. The runner excludes

@@ -12,13 +12,13 @@ structure, placement, and style.
 Run the full unit-test suite with:
 
 ```bash
-./scripts/run_tests unit
+./devtools/run_tests unit
 ```
 
 Pass one or more pytest paths or node IDs after ``--`` to target tests:
 
 ```bash
-./scripts/run_tests unit -- CIME/tests/test_unit_example.py CIME/tests/test_unit_other.py::TestOther::test_case
+./devtools/run_tests unit -- CIME/tests/test_unit_example.py CIME/tests/test_unit_other.py::TestOther::test_case
 ```
 
 Pytest prints its test summary and terminal coverage table. Report validation

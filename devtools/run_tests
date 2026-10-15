@@ -1,5 +1,44 @@
 #!/usr/bin/env python3
-"""Select a suitable environment and run CIME's Python pytest suites."""
+"""Run CIME's Python pytest unit or system test suite.
+
+This developer utility runs from a complete E3SM or CESM checkout containing
+the ``cime`` directory, ``cime_config``, and ``components``. It selects a
+suitable host or container backend, prepares test dependencies as needed, and
+retains test artifacts.
+
+Examples::
+
+    ./devtools/run_tests unit
+    ./devtools/run_tests system
+    ./devtools/run_tests unit -- CIME/tests/test_unit_utils.py
+    ./devtools/run_tests system -- \
+        CIME/tests/test_sys_query_config.py::TestQueryConfig::test_query_machines
+    ./devtools/run_tests system --backend docker --build-image
+
+Without explicit targets, the helper runs ``CIME/tests/test_unit*`` or
+``CIME/tests/test_sys*``. The default system suite deselects
+``CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system``.
+This deselection is not added for explicit targets.
+
+By default, the helper prefers a current host recognized by ``query_config``;
+otherwise it tries Docker and then Podman. Unit tests can fall back to the
+``linux-generic`` machine. Host runs require Python 3.9 or newer and use a
+cached virtual environment. Container runs use
+``ghcr.io/esmci/cime:latest`` by default; use ``--image`` to select another
+image or ``--build-image`` to build the local Docker image (requires Docker
+with BuildKit).
+
+Container system tests use the input-data image version in
+``docker/INPUTDATA_VERSION``. Host virtual environments and container input
+data are cached under ``~/.cache/cime`` or ``$XDG_CACHE_HOME/cime``; use
+``--cache-dir`` to change the cache location.
+
+Host system tests do not submit batch jobs unless ``--allow-batch`` is passed.
+Obtain user approval before using that option. Artifacts are retained in a new
+temporary directory by default; ``--artifact-dir`` selects a specific new
+directory. System-test cases and logs are retained for inspection. The helper
+prints pytest's summary and coverage report and returns pytest's exit status.
+"""
 
 import argparse
 import glob
@@ -25,7 +64,9 @@ class RunnerError(Exception):
 
 def parse_command_line(args=None):
     """Parse test-runner arguments."""
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("suite", choices=("unit", "system"))
     parser.add_argument(
         "targets",
