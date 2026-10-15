@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.user\_mod\_support.build\_include\_dirs\_list
-==================================================
-
-.. currentmodule:: CIME.user_mod_support
-
-.. autofunction:: build_include_dirs_list

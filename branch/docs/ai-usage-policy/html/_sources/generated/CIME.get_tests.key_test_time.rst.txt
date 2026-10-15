@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.get\_tests.key\_test\_time
-===============================
-
-.. currentmodule:: CIME.get_tests
-
-.. autofunction:: key_test_time

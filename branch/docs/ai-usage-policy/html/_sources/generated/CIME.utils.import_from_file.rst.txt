@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.import\_from\_file
-=============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: import_from_file
