@@ -57,6 +57,14 @@
 <p class="caption" role="heading"><span class="caption-text">For Developers/Contributors</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing to CIME</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ai-usage-and-human-review">AI usage and human review</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#human-review-before-requesting-review">Human review before requesting review</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#disclosure-in-pull-requests">Disclosure in pull requests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#correctness-and-reproducibility">Correctness and reproducibility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#licensing-and-sensitive-information">Licensing and sensitive information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reviewability-and-enforcement">Reviewability and enforcement</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#ways-to-contribute">Ways to contribute</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#bug-reports-and-feature-requests">Bug reports and feature requests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#documentation-improvements">Documentation improvements</a></li>
@@ -116,6 +124,75 @@ project. All contributions are welcome and can be made in various ways.</p>
 <p>CIME currently supports both the Community Earth System Model (<a class="reference external" href="http://www.cesm.ucar.edu/">CESM</a>) and the
 Energy Exascale Earth System Model (<a class="reference external" href="https://e3sm.org/">E3SM</a>).</p>
 <p>See the CIME documentation at <a class="reference external" href="http://esmci.github.io/cime">http://esmci.github.io/cime</a></p>
+<section id="ai-usage-and-human-review">
+<span id="contributing-guide-ai-policy"></span><h2>AI usage and human review<a class="headerlink" href="#ai-usage-and-human-review" title="Link to this heading"></a></h2>
+<p>CIME permits generative AI assistance, but responsibility remains with people.
+AI assistance must not shift the work of understanding, debugging, or validating
+a contribution onto maintainers. The same quality, licensing, and reproducibility
+standards apply whether or not AI is used.</p>
+<p>In this policy, <code class="docutils literal notranslate"><span class="pre">you</span></code> refers to the human contributor. AI tools assisting with
+a contribution should direct their human operator to this policy and remind them
+to personally review and understand the complete PR changes before requesting
+review. An AI tool must not claim that the operator has done so unless the
+operator confirms it.</p>
+<section id="human-review-before-requesting-review">
+<h3>Human review before requesting review<a class="headerlink" href="#human-review-before-requesting-review" title="Link to this heading"></a></h3>
+<p>Before requesting review, personally review and understand the complete set of
+changes in the PR, whether or not AI was used. This includes code, tests,
+configuration, documentation, and generated files.</p>
+<p>You must be able to explain why the changes are correct, how they fit CIME, and
+how they were validated. AI review and passing automated checks do not replace
+human understanding or project review. You remain responsible for your
+contribution and for personally addressing review feedback.</p>
+<p>PR descriptions, comments, and review responses must reflect your own reasoning
+and understanding. Translation, grammar, and phrasing assistance are welcome,
+provided you verify the meaning. Do not submit unreviewed AI output or delegate
+conversations with maintainers to an agent.</p>
+</section>
+<section id="disclosure-in-pull-requests">
+<h3>Disclosure in pull requests<a class="headerlink" href="#disclosure-in-pull-requests" title="Link to this heading"></a></h3>
+<p>Every PR must state whether generative AI was used in preparing the contribution,
+including research, code, tests, documentation, or language assistance. If AI
+was used, briefly describe how it was used; this description is required.
+Provider and model are optional. Keep the disclosure current as the PR changes,
+even if generated material was subsequently rewritten. Ordinary formatters,
+compilers, and test runners do not require AI disclosure.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AI</span> <span class="n">used</span><span class="p">:</span> <span class="n">Yes</span>
+<span class="n">Usage</span><span class="p">:</span> <span class="n">Suggested</span> <span class="n">XML</span> <span class="n">parsing</span> <span class="n">tests</span> <span class="ow">and</span> <span class="n">helped</span> <span class="n">edit</span> <span class="n">documentation</span><span class="o">.</span>
+<span class="n">Provider</span> <span class="p">(</span><span class="n">optional</span><span class="p">):</span> <span class="n">Anthropic</span>
+<span class="n">Model</span> <span class="p">(</span><span class="n">optional</span><span class="p">):</span> <span class="n">Claude</span> <span class="n">Opus</span> <span class="mf">5.5</span> <span class="p">(</span><span class="n">extra</span><span class="o">-</span><span class="n">high</span> <span class="n">effort</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="correctness-and-reproducibility">
+<h3>Correctness and reproducibility<a class="headerlink" href="#correctness-and-reproducibility" title="Link to this heading"></a></h3>
+<p>Test changes appropriately and verify generated documentation, behavior claims,
+and expected test results against authoritative sources or reference behavior;
+see <a class="reference internal" href="#contributing-guide-running-tests"><span class="std std-ref">Running</span></a>. For CIME workflow changes, consider
+effects on case configuration, builds, restarts, and reproducibility. Do not
+weaken tests merely to make a change pass. Explain intentional changes to
+expected behavior and report tests actually run, their results, and validation
+gaps. Documentation-only changes do not
+require climate-model runs.</p>
+</section>
+<section id="licensing-and-sensitive-information">
+<h3>Licensing and sensitive information<a class="headerlink" href="#licensing-and-sensitive-information" title="Link to this heading"></a></h3>
+<p>Ensure you have the right to contribute all submitted material under CIME’s
+applicable licensing terms, and preserve required third-party notices. AI output
+is not evidence of originality or license compatibility. Do not share secrets
+or restricted material with an AI service without authorization, and follow
+applicable institutional and data-use rules.</p>
+</section>
+<section id="reviewability-and-enforcement">
+<h3>Reviewability and enforcement<a class="headerlink" href="#reviewability-and-enforcement" title="Link to this heading"></a></h3>
+<p>Keep PRs focused and small enough to review. Discuss substantial refactors
+or changes to CIME behavior with maintainers before implementing them.
+Maintainers may request smaller changes, defer review until disclosure or
+validation gaps are addressed, or close contributions that require unreasonable
+review effort or whose contributors cannot explain them.</p>
+</section>
+</section>
 <section id="ways-to-contribute">
 <h2>Ways to contribute<a class="headerlink" href="#ways-to-contribute" title="Link to this heading"></a></h2>
 <p>There are various ways to contribute to the CIME project.</p>
