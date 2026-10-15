@@ -24,6 +24,8 @@ from itertools import zip_longest
 
 logger = logging.getLogger(__name__)
 
+_FLUX_PARTITION_ARG = re.compile(r"(?<!\S)(?:-p|--partition)(?:\s+|=)\S+")
+
 # pragma pylint: disable=attribute-defined-outside-init
 
 
@@ -772,6 +774,30 @@ class EnvBatch(EnvBase):
 
         return submitargs
 
+    def _remove_flux_partition_arg(self, submitargs, environ=None):
+        """Remove Flux's partition argument from nested submissions.
+
+        Flux jobs submit into the allocation of their parent job, so a
+        partition supplied to ``flux submit`` is invalid when CIME itself is
+        running under Flux. This is intentionally a Flux-specific
+        compatibility path; scheduler-specific submission policies should
+        move into ``CIME/core/batch/`` during the batch refactor.
+
+        Args:
+            submitargs (str): Configured batch submission arguments.
+            environ (dict, optional): Environment mapping to inspect.
+
+        Returns:
+            str: Submission arguments suitable for the current context.
+        """
+        if environ is None:
+            environ = os.environ
+
+        if self._batchtype != "flux" or "FLUX_JOB_ID" not in environ:
+            return submitargs
+
+        return _FLUX_PARTITION_ARG.sub("", submitargs).rstrip()
+
     def _get_argument(self, case, arg):
         flag = self.get(arg, "flag")
 
@@ -1098,6 +1124,7 @@ class EnvBatch(EnvBase):
             return
 
         submitargs = case.get_value("BATCH_COMMAND_FLAGS", subgroup=job, resolved=False)
+        submitargs = self._remove_flux_partition_arg(submitargs)
 
         project = case.get_value("PROJECT", subgroup=job)
 
