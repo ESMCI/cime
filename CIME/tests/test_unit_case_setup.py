@@ -65,6 +65,9 @@ class TestCaseSetup(unittest.TestCase):
     def test_create_macros_cmake(self, copy_depends_files):
         machine_mock = mock.MagicMock()
         machine_mock.get_machine_name.return_value = "test"
+        # For a call to machine_mock.get_value("OS"), return "LINUX"; for anything else,
+        # raise an exception
+        machine_mock.get_value.side_effect = {"OS": "LINUX"}.__getitem__
 
         # create context stack to cleanup after test
         with contextlib.ExitStack() as stack:
@@ -91,7 +94,11 @@ class TestCaseSetup(unittest.TestCase):
             assert os.path.exists(os.path.join(case_path, "cmake_macros", "test.cmake"))
 
             copy_depends_files.assert_called_with(
-                "test", machines_path, case_path, "gnu-test"
+                "test",
+                machines_path,
+                case_path,
+                "gnu-test",
+                "LINUX",
             )
 
     @mock.patch("CIME.case.case_setup._create_macros_cmake")
@@ -243,6 +250,9 @@ class TestCaseSetup(unittest.TestCase):
         """Test that cmake includes are recursively copied"""
         machine_mock = mock.MagicMock()
         machine_mock.get_machine_name.return_value = "test"
+        # For a call to machine_mock.get_value("OS"), return "LINUX"; for anything else,
+        # raise an exception
+        machine_mock.get_value.side_effect = {"OS": "LINUX"}.__getitem__
 
         # create context stack to cleanup after test
         with contextlib.ExitStack() as stack:
@@ -289,5 +299,9 @@ class TestCaseSetup(unittest.TestCase):
             )
 
             copy_depends_files.assert_called_with(
-                "test", machines_path, case_path, "gnu-test"
+                "test",
+                machines_path,
+                case_path,
+                "gnu-test",
+                "LINUX",
             )
