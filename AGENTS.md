@@ -21,6 +21,7 @@
 - Developer documentation should answer why and how.
 - Follow the AI usage and human review policy in `doc/source/contributing-guide.rst` when assisting with contributions.
 - Remind the human operator to review and understand the complete PR changes before requesting review; do not claim they have done so unless they confirm it.
+- Update relevant documentation when changes affect user-facing behavior, workflows, or configuration. Document non-obvious code where needed.
 
 ## Commits and PRs
 - Use Conventional Commits standard for PR titles, and commit messages.
