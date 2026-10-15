@@ -17,13 +17,13 @@ caches the versioned input data for container runs.
 Run the full system-test suite with:
 
 ```bash
-./scripts/run_tests system
+./devtools/run_tests system
 ```
 
 Pass one or more pytest paths or node IDs after ``--`` to target tests:
 
 ```bash
-./scripts/run_tests system -- CIME/tests/test_sys_example.py CIME/tests/test_sys_other.py::TestOther::test_case
+./devtools/run_tests system -- CIME/tests/test_sys_example.py CIME/tests/test_sys_other.py::TestOther::test_case
 ```
 
 Pytest prints its test summary and terminal coverage table. Report validation

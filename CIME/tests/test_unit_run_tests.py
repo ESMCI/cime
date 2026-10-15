@@ -9,7 +9,7 @@ from importlib.machinery import SourceFileLoader
 
 import pytest
 
-RUNNER_PATH = Path(__file__).resolve().parents[2] / "scripts" / "run_tests"
+RUNNER_PATH = Path(__file__).resolve().parents[2] / "devtools" / "run_tests"
 RUNNER_LOADER = SourceFileLoader("cime_test_runner", str(RUNNER_PATH))
 RUNNER_SPEC = importlib.util.spec_from_loader(RUNNER_LOADER.name, RUNNER_LOADER)
 run_tests = importlib.util.module_from_spec(RUNNER_SPEC)

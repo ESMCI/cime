@@ -92,8 +92,8 @@ Prefer the repository runner, which selects a suitable host or container and
 prepares the test Python environment:
 
 ```bash
-./scripts/run_tests unit
-./scripts/run_tests unit -- CIME/tests/test_unit_<class>.py
+./devtools/run_tests unit
+./devtools/run_tests unit -- CIME/tests/test_unit_<class>.py
 ```
 
 Multiple pytest paths or node IDs can be passed after `--`. For manual runs:
