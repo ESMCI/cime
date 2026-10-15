@@ -25,6 +25,7 @@ CIME.utils
                     batch_jobid
                     check_name
                     clear_folder
+                    compset_lacks_cpl_log
                     compute_total_time
                     configure_logging
                     convert_to_babylonian_time
@@ -81,7 +82,6 @@ CIME.utils
                     import_and_run_sub_or_cmd
                     import_from_file
                     indent_string
-                    is_comp_standalone
                     is_last_process_complete
                     is_python_executable
                     ls_sorted_by_fname

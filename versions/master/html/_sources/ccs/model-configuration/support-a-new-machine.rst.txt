@@ -75,6 +75,11 @@ Your model distribution may include generic machine definitions in the model's `
 The location of this file is model-dependent and is set by the ``MACHINES_SPEC_FILE`` entry in the model's ``config_files.xml`` (see :ref:`MACHINES_SPEC_FILE <model_config_machines>`); refer to your model repository for the exact path.
 Please see the instructions in the file to create the directory structure and use these generic machine definitions.
 
+Additionally, the CESM repository automatically supports macOS (**Darwin**) out of the box for both Apple Silicon (M1/M2/M3/M4) and Intel Macs using Homebrew or MacPorts:
+
+- **OS-Level Macro Resolution:** When running on macOS (``OS=Darwin``), CIME automatically detects your package manager prefix (``/opt/homebrew`` or ``/usr/local``), sets up GCC/gfortran compiler flags (``gnu_Darwin.cmake``), and applies necessary bounds-checking workarounds (``Depends.Darwin.gnu``).
+- **Zero-Config Case Setup:** Mac users can run ``create_newcase`` or ``create_test`` without passing ``--machine homebrew`` or maintaining custom XML files in ``~/.cime/config_machines.xml``.
+
 .. _config-machines-schema-versions:
 
 About config_machines.xml
