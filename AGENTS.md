@@ -26,5 +26,8 @@
 ## Commits and PRs
 - Use Conventional Commits standard for PR titles, and commit messages.
 - Commit or push changes only when the user explicitly asks.
+- When asked to open a PR or create an issue, first read and follow the repository templates: `.github/pull_request_template.md` for PRs and the relevant template under `.github/ISSUE_TEMPLATE/` for issues. Preserve the template's sections and checklist, filling in or adapting placeholders as needed.
+- Before opening a PR or creating an issue, draft the title and body using the applicable template and present them to the user for review. Do not submit until the user approves the draft.
+- Before creating an approved PR, inspect the working-tree status, base branch, remote tracking, all commits in the PR, and the complete diff from the base. Confirm relevant validation results.
 - Submit jobs to batch systems only with the user's approval.
 - Clearly report which validation checks were run and their results; identify checks that were not run.
