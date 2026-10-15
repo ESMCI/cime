@@ -22,6 +22,15 @@ for some guiding principles on how to create high quality scientific software co
 
 The canonical, detailed contributing guide for this repository is included in the source tree at `doc/source/contributing-guide.rst`; please consult that file as the single source of truth for developer workflows, testing, container usage, and code quality.
 
+## AI Usage and Human Review
+
+Follow the [AI usage and human review policy](doc/source/contributing-guide.rst#ai-usage-and-human-review).
+It requires contributors to personally review and understand the complete PR
+changes before requesting review, and to disclose any generative AI use in
+preparing a contribution, including a description of how it was used. Provider
+and model are optional.
+The detailed requirements are in the canonical guide.
+
 ## Getting Started
 
 Interested in helping extend CIME? Have code from your research that you believe others will
