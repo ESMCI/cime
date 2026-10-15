@@ -147,8 +147,9 @@ def _get_case_env(case, caseroot, locked_file, env_name):
 def check_diff(case, filename, env_name, diff, quiet=False):
     logger.warning("Detected diff in locked file {!r}".format(filename))
 
-    # Remove BUILD_COMPLETE, invalid entry in diff
+    # Remove BUILD_COMPLETE and BUILD_STATUS, invalid entries in diff
     diff.pop("BUILD_COMPLETE", None)
+    diff.pop("BUILD_STATUS", None)
 
     # Nothing to process
     if not diff:

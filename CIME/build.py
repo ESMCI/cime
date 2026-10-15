@@ -630,7 +630,6 @@ def _build_checks(
     returns the relative sharedpath directory for sharedlibraries
     """
     smp_build = case.get_value("SMP_BUILD")
-    build_status = case.get_value("BUILD_STATUS")
     expect(
         comp_interface in ("mct", "moab", "nuopc"),
         "Only supporting mct nuopc, or moab comp_interfaces at this time, found {}".format(
@@ -698,16 +697,6 @@ ERROR, SMP VALUES HAVE CHANGED
 """.format(
             smp_build, smp_value, smpstr
         ),
-    )
-
-    expect(
-        build_status == 0,
-        """
-ERROR env_build HAS CHANGED
-  A manual clean of your obj directories is required
-  You should execute the following:
-    ./case.build --clean-all
-""",
     )
 
     case.set_value("BUILD_COMPLETE", False)
