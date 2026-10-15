@@ -1,6 +1,6 @@
 ---
 name: cime-sys-testing
-description: Use when writing or modifying CIME sys (end-to-end) tests.
+description: Use when writing or modifying CIME system tests or running the CIME pytest system-test suite.
 ---
 
 # CIME System Tests
@@ -69,10 +69,19 @@ env.assert_called_with()
 5. Check for regression.
 
 # Run Testing
-Try to determine `<model>`, ask user if unable.
+Use the repository runner for CIME's pytest system suite. If it selects a
+batch-enabled host, ask the user whether batch submission is approved; only
+pass `--allow-batch` after approval. Otherwise, choose a container backend or
+allow the runner to stop with its batch-safety message.
 
 ```bash
-docker run -it --rm -e CIME_MODEL=<model> -e CIME_MACHINE=docker -v ${PWD}/..:/root/model -v ${PWD}/storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest pytest --no-teardown --no-fortran CIME/tests/test_sys_<target>.py
+./scripts/run_tests system
+./scripts/run_tests system -- CIME/tests/test_sys_<target>.py
 ```
+
+Multiple pytest paths or node IDs can be passed after `--`. The runner excludes
+the intentionally failing full-system test and retains case artifacts for
+inspection. Use `--backend docker` or `--backend podman` to explicitly select a
+container; the runner caches input data in the user's cache directory.
 
 ## Common Mistakes

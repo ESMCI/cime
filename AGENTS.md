@@ -13,6 +13,8 @@
 - Always follow TDD principals.
 - Cover success, failure, and edge cases.
 - Use pytest for new test modules. When adding tests to an existing module, follow that module's established style, including `unittest.TestCase` if it already uses it. Don't convert an existing module or mix styles just to follow this preference. If the appropriate style is unclear, ask the user how to proceed.
+- Run CIME pytest tests with `./scripts/run_tests unit` or `./scripts/run_tests system`; pass multiple pytest targets after `--` to run a subset.
+- Before running system tests on a batch-enabled host, ask the user whether batch submission is approved. Use `--allow-batch` only after approval.
 
 ## Documentation Standards
 - Follow `Google Python Style Guide` for docstrings.

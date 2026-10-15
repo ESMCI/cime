@@ -1,6 +1,6 @@
 ---
 name: cime-unit-test
-description: Use when writing/modifying CIME unit tests.
+description: Use when writing/modifying CIME unit tests or running the CIME pytest unit-test suite.
 ---
 
 # CIME Unit Tests
@@ -87,6 +87,17 @@ env.assert_called_with()
 ```
 
 ### Run tests
+
+Prefer the repository runner, which selects a suitable host or container and
+prepares the test Python environment:
+
+```bash
+./scripts/run_tests unit
+./scripts/run_tests unit -- CIME/tests/test_unit_<class>.py
+```
+
+Multiple pytest paths or node IDs can be passed after `--`. For manual runs:
+
 ```bash
 pytest --machine <machine>  CIME/tests/test_unit_<class>.py --cov=<module> --cov-report term-missing
 ```
