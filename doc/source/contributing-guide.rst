@@ -66,6 +66,43 @@ Development process
 6. Push your changes to your fork
 7. Open a pull request
 
+Running Python tests
+--------------------
+
+Use the repository test helper to run the complete Python unit- or system-test
+suite in a suitable environment::
+
+    ./scripts/run_tests unit
+    ./scripts/run_tests system
+
+Pass one or more pytest paths or node IDs after ``--`` to run selected tests
+instead of the complete suite::
+
+    ./scripts/run_tests unit -- CIME/tests/test_unit_utils.py CIME/tests/test_unit_machines.py::TestMachines::test_machine_name
+
+The helper prefers a host machine recognized by ``query_config``. Otherwise,
+it uses Docker or Podman when available; unit tests can fall back to the
+``linux-generic`` machine and a local Python virtual environment. System tests
+require a full E3SM or CESM source checkout and either a matching host machine
+or a container runtime. The default container image is
+``ghcr.io/esmci/cime:latest``; use ``--build-image`` to build the local test
+image with Docker BuildKit instead (for example, ``./scripts/run_tests system
+--backend docker --build-image``).
+
+System tests populate a versioned input-data cache under the user's cache
+directory from the image tagged in ``docker/INPUTDATA_VERSION``. Test artifacts
+are written to a temporary directory, and ``--no-teardown`` is enabled so the
+cases and logs remain available for inspection. The helper prints the artifact
+directory and retains it after the run. Use ``--artifact-dir`` to choose a
+specific new directory, or ``--cache-dir`` to override the cache location.
+Pytest's native output includes the test status summary and a terminal coverage
+table with missing lines.
+
+On a batch-enabled host, system tests stop unless ``--allow-batch`` is passed.
+Ask the user for approval before using that option; the helper does not submit
+batch jobs without it. Container tests use the container's non-batch machine
+configuration.
+
 Code style
 ----------
 
