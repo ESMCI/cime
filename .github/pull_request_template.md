@@ -22,8 +22,8 @@ If generative AI was used, briefly describe how it was used. Provider and model
 are optional:
 
 - AI usage description (required):
-- Provider (optional):
-- Model (optional):
+- Provider (optional, e.g., Anthropic):
+- Model (optional, e.g., Claude Opus 5.5 extra-high effort):
 
 ## Checklist
 - [ ] My code follows the style guidelines of this project (black formatting)

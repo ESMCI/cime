@@ -69,8 +69,8 @@ For example::
 
     AI used: Yes
     Usage: Suggested XML parsing tests and helped edit documentation.
-    Provider (optional): <provider name>
-    Model (optional): <model name>
+    Provider (optional): Anthropic
+    Model (optional): Claude Opus 5.5 (extra-high effort)
 
 Correctness and reproducibility
 ```````````````````````````````
