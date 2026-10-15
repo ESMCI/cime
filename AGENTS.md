@@ -19,6 +19,7 @@
 - Write documentation using Sphinx ReStructuredText.
 - User documentation should answer what and how.
 - Developer documentation should answer why and how.
+- Update relevant documentation when changes affect user-facing behavior, workflows, or configuration. Document non-obvious code where needed.
 
 ## Commits and PRs
 - Use Conventional Commits standard for PR titles, and commit messages.
