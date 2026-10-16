@@ -77,6 +77,7 @@ allow the runner to stop with its batch-safety message.
 ```bash
 ./devtools/run_tests system
 ./devtools/run_tests system -- CIME/tests/test_sys_<target>.py
+./devtools/run_tests all  # Combined unit/system run with aggregate coverage
 ```
 
 Multiple pytest paths or node IDs can be passed after `--`. The runner excludes

@@ -154,11 +154,18 @@ suite in a suitable environment::
 
     ./devtools/run_tests unit
     ./devtools/run_tests system
+    ./devtools/run_tests all
 
 Pass one or more pytest paths or node IDs after ``--`` to run selected tests
 instead of the complete suite::
 
     ./devtools/run_tests unit -- CIME/tests/test_unit_utils.py CIME/tests/test_unit_machines.py::TestMachines::test_machine_name
+
+The ``all`` suite runs unit and system tests in one pytest process and reports
+their aggregate coverage together. Coverage measures the ``CIME`` package;
+test modules are excluded from the report. As with the system suite, running
+``all`` on a batch-enabled host requires user approval before passing
+``--allow-batch``.
 
 The helper prefers a host machine recognized by ``query_config``. Otherwise,
 it uses Docker or Podman when available; unit tests can fall back to the

@@ -94,6 +94,7 @@ prepares the test Python environment:
 ```bash
 ./devtools/run_tests unit
 ./devtools/run_tests unit -- CIME/tests/test_unit_<class>.py
+./devtools/run_tests all  # Combined unit and system suite; may require batch approval
 ```
 
 Multiple pytest paths or node IDs can be passed after `--`. For manual runs:
