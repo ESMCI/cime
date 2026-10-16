@@ -20,6 +20,7 @@ def create_machines_dir():
         Path(cmake_path).mkdir(parents=True)
         Path(os.path.join(cmake_path, "Macros.cmake")).touch()
         Path(os.path.join(cmake_path, "test.cmake")).touch()
+        Path(os.path.join(cmake_path, "LINUX_gnu-test.cmake")).touch()
 
         yield temp_path
 
@@ -63,6 +64,7 @@ def create_machines_dir_with_includes():
 class TestCaseSetup(unittest.TestCase):
     @mock.patch("CIME.case.case_setup.copy_depends_files")
     def test_create_macros_cmake(self, copy_depends_files):
+        """Test that _create_macros_cmake copies machine and os_compiler cmake macros and depends files"""
         machine_mock = mock.MagicMock()
         machine_mock.get_machine_name.return_value = "test"
         # For a call to machine_mock.get_value("OS"), return "LINUX"; for anything else,
@@ -92,6 +94,9 @@ class TestCaseSetup(unittest.TestCase):
 
             assert os.path.exists(os.path.join(case_path, "Macros.cmake"))
             assert os.path.exists(os.path.join(case_path, "cmake_macros", "test.cmake"))
+            assert os.path.exists(
+                os.path.join(case_path, "cmake_macros", "LINUX_gnu-test.cmake")
+            )
 
             copy_depends_files.assert_called_with(
                 "test",
