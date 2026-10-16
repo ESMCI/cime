@@ -256,7 +256,7 @@ def _create_macros_cmake(
         "universal.cmake",
         os_ + ".cmake",
         compiler + ".cmake",
-        "{}_{}.cmake".format(compiler, os_),
+        "{}_{}.cmake".format(os_, compiler),
         mach + ".cmake",
         "{}_{}.cmake".format(mach, compiler),
         deprecated,
