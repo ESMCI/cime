@@ -13,8 +13,10 @@ setup(
     include_package_data=True,
     name="CIME",
     packages=find_packages(),
+    # Python 3.10 will end-of-life in Oct 2026; tomli is required for python_version < '3.11'
+    install_requires=["tomli; python_version < '3.11'"],
     test_suite="CIME.tests",
     tests_requires=["pytest"],
     url="https://github.com/ESMCI/cime",
-    version="0.1.0"
+    version="0.1.0",
 )
