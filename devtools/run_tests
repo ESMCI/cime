@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run CIME's Python pytest unit or system test suite.
+"""Run CIME's Python pytest unit, system, or combined test suites.
 
 This developer utility runs from a complete E3SM or CESM checkout containing
 the ``cime`` directory, ``cime_config``, and ``components``. It selects a
@@ -10,19 +10,20 @@ Examples::
 
     ./devtools/run_tests unit
     ./devtools/run_tests system
+    ./devtools/run_tests all
     ./devtools/run_tests unit -- CIME/tests/test_unit_utils.py
     ./devtools/run_tests system -- \
         CIME/tests/test_sys_query_config.py::TestQueryConfig::test_query_machines
     ./devtools/run_tests system --backend docker --build-image
 
-Without explicit targets, the helper runs ``CIME/tests/test_unit*`` or
-``CIME/tests/test_sys*``. The default system suite deselects
-``CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system``.
+Without explicit targets, the helper runs ``CIME/tests/test_unit*``,
+``CIME/tests/test_sys*``, or both for ``all``. The default system and combined
+suites deselect ``CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system``.
 This deselection is not added for explicit targets.
 
 By default, the helper prefers a current host recognized by ``query_config``;
 otherwise it tries Docker and then Podman. Unit tests can fall back to the
-``linux-generic`` machine. Host runs require Python 3.9 or newer and use a
+``linux-generic`` machine. Host runs require Python 3.10 or newer and use a
 cached virtual environment. Container runs use
 ``ghcr.io/esmci/cime:latest`` by default; use ``--image`` to select another
 image or ``--build-image`` to build the local Docker image (requires Docker
@@ -52,22 +53,25 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from typing import Callable, List, Mapping, Optional, Sequence, Set, Tuple
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 CIME_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(CIME_ROOT))
+
+RunCommand = Callable[..., subprocess.CompletedProcess[str]]
 
 
 class RunnerError(Exception):
     """Expected error while preparing or running tests."""
 
 
-def parse_command_line(args=None):
+def parse_command_line(args: Optional[Sequence[str]] = None) -> argparse.Namespace:
     """Parse test-runner arguments."""
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("suite", choices=("unit", "system"))
+    parser.add_argument("suite", choices=("unit", "system", "all"))
     parser.add_argument(
         "targets",
         nargs="*",
@@ -111,7 +115,12 @@ def parse_command_line(args=None):
     return parser.parse_intermixed_args(args)
 
 
-def _run(command, cwd, capture_output=False, env=None):
+def _run(
+    command: Sequence[str],
+    cwd: Path,
+    capture_output: bool = False,
+    env: Optional[Mapping[str, str]] = None,
+) -> subprocess.CompletedProcess[str]:
     """Run a subprocess, returning its completed-process result."""
     return subprocess.run(
         command,
@@ -123,7 +132,7 @@ def _run(command, cwd, capture_output=False, env=None):
     )
 
 
-def _model_checkout(cime_root):
+def _model_checkout(cime_root: Path) -> Tuple[Path, str]:
     """Return the E3SM/CESM source root and model for this CIME checkout."""
     model_root = cime_root.parent
     if model_root.name.lower() == "cime":
@@ -164,7 +173,9 @@ def _model_checkout(cime_root):
     return model_root, model
 
 
-def _machine_list(cime_root, run=_run):
+def _machine_list(
+    cime_root: Path, run: RunCommand = _run
+) -> Tuple[Set[str], Optional[str]]:
     """Return query_config's machine listing and its current-host match."""
     result = run(
         [str(cime_root / "scripts" / "query_config"), "--machines"],
@@ -175,12 +186,27 @@ def _machine_list(cime_root, run=_run):
         details = (result.stderr or result.stdout).strip()
         raise RunnerError(f"Could not query CIME machine configuration: {details}")
 
-    names = set(re.findall(r"^\s+([\w.-]+)(?:\s+\(current\))?\s*:", result.stdout, re.M))
-    current = re.search(r"^\s+([\w.-]+)\s+\(current\)\s*:", result.stdout, re.M)
+    names = set(
+        re.findall(r"^\s+([\w.-]+)(?:\s+\(current\))?\s*:", result.stdout, re.M)
+    )
+    current_result = run(
+        [str(cime_root / "scripts" / "query_config"), "--machines", "current"],
+        cwd=cime_root,
+        capture_output=True,
+    )
+    current = (
+        re.search(r"^\s+([\w.-]+)\s+\(current\)\s*:", current_result.stdout, re.M)
+        if current_result.returncode == 0
+        else None
+    )
+    if current_result.returncode != 0:
+        details = (current_result.stderr or current_result.stdout).strip()
+        if "No machine None found" not in details:
+            raise RunnerError(f"Could not query the current CIME machine: {details}")
     return names, current.group(1) if current else None
 
 
-def _host_has_batch(cime_root, machine, run=_run):
+def _host_has_batch(cime_root: Path, machine: str, run: RunCommand = _run) -> bool:
     """Query whether the selected host machine uses a batch system."""
     query = (
         "from CIME.XML.machines import Machines; "
@@ -197,7 +223,7 @@ def _host_has_batch(cime_root, machine, run=_run):
     return result.stdout.strip() == "1"
 
 
-def _find_host_python(requested=None):
+def _find_host_python(requested: Optional[str] = None) -> str:
     """Find a local Python interpreter supported by CIME."""
     configured = requested or os.environ.get("PYTHON")
     candidates = [configured] if configured else ["python3", "python"]
@@ -217,12 +243,12 @@ def _find_host_python(requested=None):
         )
         if result.returncode == 0:
             match = re.match(r"(\d+)\.(\d+)$", result.stdout.strip())
-            if match and tuple(map(int, match.groups())) >= (3, 9):
+            if match and tuple(map(int, match.groups())) >= (3, 10):
                 return executable
-    raise RunnerError("Python 3.9 or newer is required for host test runs.")
+    raise RunnerError("Python 3.10 or newer is required for host test runs.")
 
 
-def _cache_root(override=None):
+def _cache_root(override: Optional[Path] = None) -> Path:
     if override is not None:
         return override.expanduser().resolve()
     cache_home = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
@@ -230,7 +256,7 @@ def _cache_root(override=None):
     return cache_home / "cime"
 
 
-def _artifact_dir(override=None):
+def _artifact_dir(override: Optional[Path] = None) -> Path:
     if override is None:
         return Path(tempfile.mkdtemp(prefix="cime-test-artifacts-"))
     path = override.expanduser().resolve()
@@ -241,7 +267,12 @@ def _artifact_dir(override=None):
     return path
 
 
-def _host_environment(cime_root, python, cache_root, run=_run):
+def _host_environment(
+    cime_root: Path,
+    python: Optional[str],
+    cache_root: Path,
+    run: RunCommand = _run,
+) -> str:
     """Create or update a cached isolated Python test environment."""
     base_python = _find_host_python(python)
     version = subprocess.run(
@@ -323,18 +354,22 @@ def _host_environment(cime_root, python, cache_root, run=_run):
     return str(venv_python)
 
 
-def _inputdata_version(cime_root):
+def _inputdata_version(cime_root: Path) -> str:
     version = (cime_root / "docker" / "INPUTDATA_VERSION").read_text().strip()
     if not version.isdigit():
         raise RunnerError("docker/INPUTDATA_VERSION must contain an integer.")
     return version
 
 
-def _suite_pattern(suite):
-    return "unit" if suite == "unit" else "sys"
+def _suite_patterns(suite: str) -> Tuple[str, ...]:
+    if suite == "all":
+        return "unit", "sys"
+    return ("unit" if suite == "unit" else "sys",)
 
 
-def _populate_inputdata(runtime, cime_root, cache_root, run=_run):
+def _populate_inputdata(
+    runtime: str, cime_root: Path, cache_root: Path, run: RunCommand = _run
+) -> Path:
     """Populate the versioned user cache from CIME's input-data image."""
     version = _inputdata_version(cime_root)
     cache = cache_root / "inputdata" / f"v{version}"
@@ -384,14 +419,15 @@ def _populate_inputdata(runtime, cime_root, cache_root, run=_run):
     return cache
 
 
-def _container_targets(cime_root, targets, suite):
+def _container_targets(
+    cime_root: Path, targets: Sequence[str], suite: str
+) -> List[str]:
     """Convert test targets to paths available inside the container."""
     if not targets:
         selected = sorted(
             str(Path(path).relative_to(cime_root))
-            for path in glob.glob(
-                str(cime_root / f"CIME/tests/test_{_suite_pattern(suite)}*")
-            )
+            for pattern in _suite_patterns(suite)
+            for path in glob.glob(str(cime_root / f"CIME/tests/test_{pattern}*"))
         )
     else:
         selected = []
@@ -414,16 +450,16 @@ def _container_targets(cime_root, targets, suite):
 
 
 def _container_command(
-    runtime,
-    image,
-    model,
-    model_root,
-    cime_root,
-    artifact_dir,
-    inputdata,
-    suite,
-    targets,
-):
+    runtime: str,
+    image: str,
+    model: str,
+    model_root: Path,
+    cime_root: Path,
+    artifact_dir: Path,
+    inputdata: Optional[Path],
+    suite: str,
+    targets: Sequence[str],
+) -> List[str]:
     relative_cime = cime_root.relative_to(model_root)
     selected = _container_targets(cime_root, targets, suite)
 
@@ -438,7 +474,7 @@ def _container_command(
     ]
     if Path(runtime).name == "podman":
         command.append("--userns=keep-id")
-    if suite == "system":
+    if suite in ("system", "all"):
         command.extend(["--shm-size=1g"])
     model_mount = f"{model_root}:/root/model"
     artifact_mount = f"{artifact_dir}:/root/storage"
@@ -455,7 +491,7 @@ def _container_command(
             artifact_mount,
         ]
     )
-    if suite == "system":
+    if suite in ("system", "all"):
         inputdata_mount = f"{inputdata}:/root/storage/inputdata"
         if Path(runtime).name == "podman":
             inputdata_mount += ":Z"
@@ -481,7 +517,7 @@ def _container_command(
             "--cov-report=term-missing",
         ]
     )
-    if suite == "system" and not targets:
+    if suite in ("system", "all") and not targets:
         command.append(
             "--deselect=CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system"
         )
@@ -489,7 +525,9 @@ def _container_command(
     return command
 
 
-def _choose_backend(args, cime_root, run=_run):
+def _choose_backend(
+    args: argparse.Namespace, cime_root: Path, run: RunCommand = _run
+) -> Tuple[str, Optional[str], Set[str]]:
     """Select an execution backend according to the requested preference."""
     machines, current_machine = _machine_list(cime_root, run=run)
     supported_host = current_machine is not None
@@ -538,7 +576,7 @@ def _choose_backend(args, cime_root, run=_run):
         ):
             return runtime_name, current_machine, machines
 
-    if args.suite == "system":
+    if args.suite in ("system", "all"):
         raise RunnerError(
             "System tests require a matching host machine or Docker/Podman. "
             "No supported execution backend was found."
@@ -551,7 +589,7 @@ def _choose_backend(args, cime_root, run=_run):
     return "host", "linux-generic", machines
 
 
-def _run_pytest(command, cime_root, run):
+def _run_pytest(command: Sequence[str], cime_root: Path, run: RunCommand) -> int:
     """Run pytest, preserving its native output and exit status."""
     print("Command:", shlex.join(command))
     result = run(command, cwd=cime_root)
@@ -559,7 +597,11 @@ def _run_pytest(command, cime_root, run):
     return result.returncode
 
 
-def run_tests(args, cime_root=None, run=_run):
+def run_tests(
+    args: argparse.Namespace,
+    cime_root: Optional[Path] = None,
+    run: RunCommand = _run,
+) -> int:
     """Run the selected pytest suite, returning its exit status."""
     cime_root = Path(cime_root or CIME_ROOT).resolve()
     model_root, model = _model_checkout(cime_root)
@@ -568,15 +610,17 @@ def run_tests(args, cime_root=None, run=_run):
         raise RunnerError("--allow-batch applies only to host execution.")
     has_batch = False
     if backend == "host":
+        if machine is None:
+            raise RunnerError("Host execution selected without a matching machine.")
         has_batch = _host_has_batch(cime_root, machine, run=run)
-        if args.suite == "system" and has_batch and not args.allow_batch:
+        if args.suite in ("system", "all") and has_batch and not args.allow_batch:
             raise RunnerError(
                 f"Host machine {machine!r} uses a batch system. Ask the user for "
                 "approval, then rerun with --allow-batch."
             )
-        if args.suite == "system" and not has_batch:
+        if args.suite in ("system", "all") and not has_batch:
             print(f"Batch: machine {machine} has no batch system; running locally.")
-        elif args.suite == "system" and args.allow_batch:
+        elif args.suite in ("system", "all") and args.allow_batch:
             print(f"Batch: approved by user for host machine {machine}.")
 
     artifacts = _artifact_dir(args.artifact_dir)
@@ -585,14 +629,15 @@ def run_tests(args, cime_root=None, run=_run):
     print(f"Artifacts: {artifacts}")
 
     if backend == "host":
+        if machine is None:
+            raise RunnerError("Host execution selected without a matching machine.")
         python = _host_environment(
             cime_root, args.python, _cache_root(args.cache_dir), run=run
         )
         selected = args.targets or sorted(
             str(Path(path).relative_to(cime_root))
-            for path in glob.glob(
-                str(cime_root / f"CIME/tests/test_{_suite_pattern(args.suite)}*")
-            )
+            for pattern in _suite_patterns(args.suite)
+            for path in glob.glob(str(cime_root / f"CIME/tests/test_{pattern}*"))
         )
         if not selected:
             raise RunnerError(f"No pytest targets found for the {args.suite} suite.")
@@ -609,9 +654,9 @@ def run_tests(args, cime_root=None, run=_run):
             f"--test-root={artifacts}",
         ]
         command.extend(["--cov=CIME", "--cov-branch", "--cov-report=term-missing"])
-        if not (args.suite == "system" and has_batch and args.allow_batch):
+        if not (args.suite in ("system", "all") and has_batch and args.allow_batch):
             command.append("--no-batch")
-        if args.suite == "system" and not args.targets:
+        if args.suite in ("system", "all") and not args.targets:
             command.append(
                 "--deselect=CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system"
             )
@@ -619,6 +664,8 @@ def run_tests(args, cime_root=None, run=_run):
         return _run_pytest(command, cime_root, run)
 
     runtime = shutil.which(backend)
+    if runtime is None:
+        raise RunnerError(f"Requested container runtime not found: {backend}.")
     if args.build_image:
         if backend != "docker":
             raise RunnerError(
@@ -655,7 +702,7 @@ def run_tests(args, cime_root=None, run=_run):
             raise RunnerError(f"Could not pull CIME test image {image}.")
 
     inputdata = None
-    if args.suite == "system":
+    if args.suite in ("system", "all"):
         inputdata = _populate_inputdata(
             runtime, cime_root, _cache_root(args.cache_dir), run=run
         )
@@ -675,10 +722,10 @@ def run_tests(args, cime_root=None, run=_run):
     return _run_pytest(command, cime_root, run)
 
 
-def main(args=None):
+def main(args: Optional[Sequence[str]] = None) -> int:
     """Run the command-line test helper."""
     parsed = parse_command_line(args)
-    if parsed.allow_batch and parsed.suite != "system":
+    if parsed.allow_batch and parsed.suite not in ("system", "all"):
         print("ERROR: --allow-batch applies only to system tests.", file=sys.stderr)
         return 2
     try:
