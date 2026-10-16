@@ -1,0 +1,739 @@
+#!/usr/bin/env python3
+"""Run CIME's Python pytest unit, system, or combined test suites.
+
+This developer utility runs from a complete E3SM or CESM checkout containing
+the ``cime`` directory, ``cime_config``, and ``components``. It selects a
+suitable host or container backend, prepares test dependencies as needed, and
+retains test artifacts.
+
+Examples::
+
+    ./devtools/run_tests unit
+    ./devtools/run_tests system
+    ./devtools/run_tests all
+    ./devtools/run_tests unit -- CIME/tests/test_unit_utils.py
+    ./devtools/run_tests system -- \
+        CIME/tests/test_sys_query_config.py::TestQueryConfig::test_query_machines
+    ./devtools/run_tests system --backend docker --build-image
+
+Without explicit targets, the helper runs ``CIME/tests/test_unit*``,
+``CIME/tests/test_sys*``, or both for ``all``. The default system and combined
+suites deselect ``CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system``.
+This deselection is not added for explicit targets.
+
+By default, the helper prefers a current host recognized by ``query_config``;
+otherwise it tries Docker and then Podman. Unit tests can fall back to the
+``linux-generic`` machine. Host runs require Python 3.10 or newer and use a
+cached virtual environment. Container runs use
+``ghcr.io/esmci/cime:latest`` by default; use ``--image`` to select another
+image or ``--build-image`` to build the local Docker image (requires Docker
+with BuildKit).
+
+Container system tests use the input-data image version in
+``docker/INPUTDATA_VERSION``. Host virtual environments and container input
+data are cached under ``~/.cache/cime`` or ``$XDG_CACHE_HOME/cime``; use
+``--cache-dir`` to change the cache location.
+
+Host system tests do not submit batch jobs unless ``--allow-batch`` is passed.
+Obtain user approval before using that option. Artifacts are retained in a new
+temporary directory by default; ``--artifact-dir`` selects a specific new
+directory. System-test cases and logs are retained for inspection. The helper
+prints pytest's summary and coverage report and returns pytest's exit status.
+"""
+
+import argparse
+import glob
+import hashlib
+import os
+import platform
+from pathlib import Path
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from typing import Callable, List, Mapping, Optional, Sequence, Set, Tuple
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+CIME_ROOT = SCRIPT_DIR.parent
+sys.path.insert(0, str(CIME_ROOT))
+
+RunCommand = Callable[..., subprocess.CompletedProcess[str]]
+
+
+class RunnerError(Exception):
+    """Expected error while preparing or running tests."""
+
+
+def parse_command_line(args: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    """Parse test-runner arguments."""
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("suite", choices=("unit", "system", "all"))
+    parser.add_argument(
+        "targets",
+        nargs="*",
+        help="pytest paths or node IDs (default: the full selected suite)",
+    )
+    parser.add_argument(
+        "--backend",
+        choices=("auto", "host", "docker", "podman"),
+        default="auto",
+        help="test execution environment (default: auto-detect)",
+    )
+    parser.add_argument(
+        "--image",
+        default="ghcr.io/esmci/cime:latest",
+        help="container image to use (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--build-image",
+        action="store_true",
+        help="build the local Dockerfile before running tests",
+    )
+    parser.add_argument(
+        "--allow-batch",
+        action="store_true",
+        help="allow system tests to submit jobs on a batch-enabled host; use only after user approval",
+    )
+    parser.add_argument(
+        "--python",
+        help="Python executable for a host run (defaults to PYTHON, then python3)",
+    )
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        help="base directory for cached test environments and input data",
+    )
+    parser.add_argument(
+        "--artifact-dir",
+        type=Path,
+        help="directory for test artifacts (created if it does not already exist)",
+    )
+    return parser.parse_intermixed_args(args)
+
+
+def _run(
+    command: Sequence[str],
+    cwd: Path,
+    capture_output: bool = False,
+    env: Optional[Mapping[str, str]] = None,
+) -> subprocess.CompletedProcess[str]:
+    """Run a subprocess, returning its completed-process result."""
+    return subprocess.run(
+        command,
+        cwd=str(cwd),
+        env=env,
+        check=False,
+        text=True,
+        capture_output=capture_output,
+    )
+
+
+def _model_checkout(cime_root: Path) -> Tuple[Path, str]:
+    """Return the E3SM/CESM source root and model for this CIME checkout."""
+    model_root = cime_root.parent
+    if model_root.name.lower() == "cime":
+        model_root = model_root.parent
+    if (
+        not (model_root / "cime_config").is_dir()
+        or not (model_root / "components").is_dir()
+    ):
+        raise RunnerError(
+            "A full E3SM or CESM checkout is required; expected cime_config and "
+            f"components beside {cime_root}."
+        )
+
+    model_id = model_root / ".cime_model_id"
+    if model_id.is_file():
+        model = next(
+            (
+                line.split("#", 1)[0].strip()
+                for line in model_id.read_text().splitlines()
+                if line.split("#", 1)[0].strip()
+            ),
+            None,
+        )
+    elif (model_root / "bin" / "git-fleximod").is_file() or (
+        model_root / "Externals.cfg"
+    ).is_file():
+        model = "cesm"
+    else:
+        model = "e3sm"
+
+    if model is None:
+        raise RunnerError("Could not determine the model from .cime_model_id.")
+
+    if model not in ("e3sm", "cesm"):
+        raise RunnerError(
+            f"This runner supports E3SM and CESM checkouts, not {model!r}."
+        )
+    return model_root, model
+
+
+def _machine_list(
+    cime_root: Path, run: RunCommand = _run
+) -> Tuple[Set[str], Optional[str]]:
+    """Return query_config's machine listing and its current-host match."""
+    result = run(
+        [str(cime_root / "scripts" / "query_config"), "--machines"],
+        cwd=cime_root,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        details = (result.stderr or result.stdout).strip()
+        raise RunnerError(f"Could not query CIME machine configuration: {details}")
+
+    names = set(
+        re.findall(r"^\s+([\w.-]+)(?:\s+\(current\))?\s*:", result.stdout, re.M)
+    )
+    current_result = run(
+        [str(cime_root / "scripts" / "query_config"), "--machines", "current"],
+        cwd=cime_root,
+        capture_output=True,
+    )
+    current = (
+        re.search(r"^\s+([\w.-]+)\s+\(current\)\s*:", current_result.stdout, re.M)
+        if current_result.returncode == 0
+        else None
+    )
+    if current_result.returncode != 0:
+        details = (current_result.stderr or current_result.stdout).strip()
+        if "No machine None found" not in details:
+            raise RunnerError(f"Could not query the current CIME machine: {details}")
+    return names, current.group(1) if current else None
+
+
+def _host_has_batch(cime_root: Path, machine: str, run: RunCommand = _run) -> bool:
+    """Query whether the selected host machine uses a batch system."""
+    query = (
+        "from CIME.XML.machines import Machines; "
+        "import sys; print(int(Machines(machine=sys.argv[1]).has_batch_system()))"
+    )
+    result = run(
+        [sys.executable, "-c", query, machine],
+        cwd=cime_root,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        details = (result.stderr or result.stdout).strip()
+        raise RunnerError(f"Could not inspect batch settings for {machine}: {details}")
+    return result.stdout.strip() == "1"
+
+
+def _find_host_python(requested: Optional[str] = None) -> str:
+    """Find a local Python interpreter supported by CIME."""
+    configured = requested or os.environ.get("PYTHON")
+    candidates = [configured] if configured else ["python3", "python"]
+    for candidate in candidates:
+        if not candidate:
+            continue
+        executable = shutil.which(candidate) or (
+            candidate if Path(candidate).is_file() else None
+        )
+        if executable is None:
+            continue
+        result = subprocess.run(
+            [executable, "-c", "import sys; print('%d.%d' % sys.version_info[:2])"],
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+        if result.returncode == 0:
+            match = re.match(r"(\d+)\.(\d+)$", result.stdout.strip())
+            if match and tuple(map(int, match.groups())) >= (3, 10):
+                return executable
+    raise RunnerError("Python 3.10 or newer is required for host test runs.")
+
+
+def _cache_root(override: Optional[Path] = None) -> Path:
+    if override is not None:
+        return override.expanduser().resolve()
+    cache_home = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    cache_home = cache_home.expanduser().resolve()
+    return cache_home / "cime"
+
+
+def _artifact_dir(override: Optional[Path] = None) -> Path:
+    if override is None:
+        return Path(tempfile.mkdtemp(prefix="cime-test-artifacts-"))
+    path = override.expanduser().resolve()
+    try:
+        path.mkdir(parents=True, exist_ok=False)
+    except FileExistsError as error:
+        raise RunnerError(f"Artifact directory already exists: {path}") from error
+    return path
+
+
+def _host_environment(
+    cime_root: Path,
+    python: Optional[str],
+    cache_root: Path,
+    run: RunCommand = _run,
+) -> str:
+    """Create or update a cached isolated Python test environment."""
+    base_python = _find_host_python(python)
+    version = subprocess.run(
+        [base_python, "-c", "import sys; print('%d.%d.%d' % sys.version_info[:3])"],
+        check=True,
+        text=True,
+        capture_output=True,
+    ).stdout.strip()
+    requirements = cime_root / "test-requirements.txt"
+    fingerprint = hashlib.sha256(
+        (
+            str(Path(base_python).resolve())
+            + version
+            + platform.system()
+            + platform.machine()
+        ).encode("utf-8")
+        + requirements.read_bytes()
+    ).hexdigest()[:12]
+    env_key = fingerprint
+    env_dir = cache_root / "test-envs" / f"{env_key}-py{version}"
+    env_dir.parent.mkdir(parents=True, exist_ok=True)
+    venv_python = env_dir / "bin" / "python"
+
+    if not venv_python.is_file():
+        uv = shutil.which("uv")
+        if uv:
+            create = run(
+                [
+                    uv,
+                    "venv",
+                    "--python",
+                    base_python,
+                    "--no-managed-python",
+                    str(env_dir),
+                ],
+                cwd=cime_root,
+                capture_output=True,
+            )
+            if create.returncode != 0:
+                raise RunnerError(
+                    "Could not create the test virtual environment with uv: "
+                    + (create.stderr or create.stdout).strip()
+                )
+        else:
+            create = run(
+                [base_python, "-m", "venv", str(env_dir)],
+                cwd=cime_root,
+                capture_output=True,
+            )
+            if create.returncode != 0:
+                raise RunnerError(
+                    "Could not create a test virtual environment: "
+                    + (create.stderr or create.stdout).strip()
+                )
+
+    uv = shutil.which("uv")
+    if uv:
+        install_command = [
+            uv,
+            "pip",
+            "install",
+            "--python",
+            str(venv_python),
+            "-r",
+            str(requirements),
+        ]
+    else:
+        install_command = [
+            str(venv_python),
+            "-m",
+            "pip",
+            "install",
+            "-r",
+            str(cime_root / "test-requirements.txt"),
+        ]
+    install = run(install_command, cwd=cime_root)
+    if install.returncode != 0:
+        raise RunnerError("Installing test requirements failed.")
+    return str(venv_python)
+
+
+def _inputdata_version(cime_root: Path) -> str:
+    version = (cime_root / "docker" / "INPUTDATA_VERSION").read_text().strip()
+    if not version.isdigit():
+        raise RunnerError("docker/INPUTDATA_VERSION must contain an integer.")
+    return version
+
+
+def _suite_patterns(suite: str) -> Tuple[str, ...]:
+    if suite == "all":
+        return "unit", "sys"
+    return ("unit" if suite == "unit" else "sys",)
+
+
+def _populate_inputdata(
+    runtime: str, cime_root: Path, cache_root: Path, run: RunCommand = _run
+) -> Path:
+    """Populate the versioned user cache from CIME's input-data image."""
+    version = _inputdata_version(cime_root)
+    cache = cache_root / "inputdata" / f"v{version}"
+    marker = cache / ".cime-inputdata-complete"
+    if marker.is_file() and any(
+        path.is_file() and path != marker for path in cache.rglob("*")
+    ):
+        return cache
+
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    temp_cache = Path(tempfile.mkdtemp(prefix=f"{cache.name}.tmp-", dir=cache.parent))
+    image = f"ghcr.io/esmci/cime-inputdata:v{version}"
+    try:
+        pull = run([runtime, "pull", image], cwd=cime_root)
+        if pull.returncode != 0:
+            raise RunnerError(f"Could not pull required input-data image {image}.")
+
+        created = run(
+            [runtime, "create", image, "/nonexistent"],
+            cwd=cime_root,
+            capture_output=True,
+        )
+        if created.returncode != 0:
+            raise RunnerError(f"Could not create a container from {image}.")
+        container_id = created.stdout.strip()
+        if not container_id:
+            raise RunnerError(f"{runtime} create returned no container ID for {image}.")
+        try:
+            copied = run(
+                [runtime, "cp", f"{container_id}:/inputdata/.", str(temp_cache)],
+                cwd=cime_root,
+            )
+            if copied.returncode != 0:
+                raise RunnerError(f"Could not extract input data from {image}.")
+        finally:
+            run([runtime, "rm", container_id], cwd=cime_root, capture_output=True)
+
+        if not any(path.is_file() for path in temp_cache.rglob("*")):
+            raise RunnerError(f"Input-data image {image} contained no files.")
+        (temp_cache / marker.name).write_text(f"image={image}\n")
+        if cache.exists():
+            shutil.rmtree(cache)
+        temp_cache.rename(cache)
+    finally:
+        if temp_cache.exists():
+            shutil.rmtree(temp_cache)
+    return cache
+
+
+def _container_targets(
+    cime_root: Path, targets: Sequence[str], suite: str
+) -> List[str]:
+    """Convert test targets to paths available inside the container."""
+    if not targets:
+        selected = sorted(
+            str(Path(path).relative_to(cime_root))
+            for pattern in _suite_patterns(suite)
+            for path in glob.glob(str(cime_root / f"CIME/tests/test_{pattern}*"))
+        )
+    else:
+        selected = []
+        for target in targets:
+            path_part, separator, node = target.partition("::")
+            path = Path(path_part)
+            target_path = path if path.is_absolute() else cime_root / path
+            try:
+                relative_path = target_path.resolve().relative_to(cime_root)
+            except ValueError as error:
+                raise RunnerError(
+                    f"Container test target must be inside the CIME checkout: {target}"
+                ) from error
+            selected.append(
+                str(relative_path) + (separator + node if separator else "")
+            )
+    if not selected:
+        raise RunnerError(f"No pytest targets found for the {suite} suite.")
+    return selected
+
+
+def _container_command(
+    runtime: str,
+    image: str,
+    model: str,
+    model_root: Path,
+    cime_root: Path,
+    artifact_dir: Path,
+    inputdata: Optional[Path],
+    suite: str,
+    targets: Sequence[str],
+) -> List[str]:
+    relative_cime = cime_root.relative_to(model_root)
+    selected = _container_targets(cime_root, targets, suite)
+
+    command = [
+        runtime,
+        "run",
+        "--rm",
+        "--platform",
+        "linux/amd64",
+        "--hostname",
+        "docker",
+    ]
+    if Path(runtime).name == "podman":
+        command.append("--userns=keep-id")
+    if suite in ("system", "all"):
+        command.extend(["--shm-size=1g"])
+    model_mount = f"{model_root}:/root/model"
+    artifact_mount = f"{artifact_dir}:/root/storage"
+    if Path(runtime).name == "podman":
+        model_mount += ":Z"
+        artifact_mount += ":Z"
+    command.extend(
+        [
+            "-e",
+            f"CIME_MODEL={model}",
+            "-v",
+            model_mount,
+            "-v",
+            artifact_mount,
+        ]
+    )
+    if suite in ("system", "all"):
+        inputdata_mount = f"{inputdata}:/root/storage/inputdata"
+        if Path(runtime).name == "podman":
+            inputdata_mount += ":Z"
+        command.extend(["-v", inputdata_mount])
+    command.extend(
+        [
+            "-w",
+            f"/root/model/{relative_cime.as_posix()}",
+            image,
+            "python",
+            "-m",
+            "pytest",
+            "-vvv",
+            "-ra",
+            "-s",
+            "--machine",
+            "docker",
+            "--no-batch",
+            "--no-teardown",
+            "--test-root=/root/storage/cases",
+            "--cov=CIME",
+            "--cov-branch",
+            "--cov-report=term-missing",
+        ]
+    )
+    if suite in ("system", "all") and not targets:
+        command.append(
+            "--deselect=CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system"
+        )
+    command.extend(selected)
+    return command
+
+
+def _choose_backend(
+    args: argparse.Namespace, cime_root: Path, run: RunCommand = _run
+) -> Tuple[str, Optional[str], Set[str]]:
+    """Select an execution backend according to the requested preference."""
+    machines, current_machine = _machine_list(cime_root, run=run)
+    supported_host = current_machine is not None
+
+    if args.backend == "host":
+        if args.build_image:
+            raise RunnerError("--build-image cannot be used with --backend host.")
+        if not supported_host:
+            raise RunnerError(
+                "The current host did not match a machine in query_config; "
+                "host execution is unavailable."
+            )
+        return "host", current_machine, machines
+
+    if args.backend in ("docker", "podman"):
+        if args.build_image and args.backend != "docker":
+            raise RunnerError("--build-image currently requires Docker BuildKit.")
+        runtime = shutil.which(args.backend)
+        if runtime is None:
+            raise RunnerError(f"Requested container runtime not found: {args.backend}.")
+        available = run([runtime, "info"], cwd=cime_root, capture_output=True)
+        if available.returncode != 0:
+            raise RunnerError(
+                f"{args.backend} is installed but unavailable: {available.stderr}"
+            )
+        return args.backend, current_machine, machines
+
+    if args.build_image:
+        docker = shutil.which("docker")
+        if docker is None:
+            raise RunnerError("--build-image requires Docker with BuildKit support.")
+        available = run([docker, "info"], cwd=cime_root, capture_output=True)
+        if available.returncode != 0:
+            raise RunnerError("--build-image requires an available Docker daemon.")
+        return "docker", current_machine, machines
+
+    if supported_host:
+        return "host", current_machine, machines
+
+    for runtime_name in ("docker", "podman"):
+        runtime = shutil.which(runtime_name)
+        if (
+            runtime
+            and run([runtime, "info"], cwd=cime_root, capture_output=True).returncode
+            == 0
+        ):
+            return runtime_name, current_machine, machines
+
+    if args.suite in ("system", "all"):
+        raise RunnerError(
+            "System tests require a matching host machine or Docker/Podman. "
+            "No supported execution backend was found."
+        )
+    if "linux-generic" not in machines:
+        raise RunnerError(
+            "No matching host machine, container runtime, or linux-generic "
+            "machine configuration is available for unit tests."
+        )
+    return "host", "linux-generic", machines
+
+
+def _run_pytest(command: Sequence[str], cime_root: Path, run: RunCommand) -> int:
+    """Run pytest, preserving its native output and exit status."""
+    print("Command:", shlex.join(command))
+    result = run(command, cwd=cime_root)
+    print(f"pytest exit code: {result.returncode}")
+    return result.returncode
+
+
+def run_tests(
+    args: argparse.Namespace,
+    cime_root: Optional[Path] = None,
+    run: RunCommand = _run,
+) -> int:
+    """Run the selected pytest suite, returning its exit status."""
+    cime_root = Path(cime_root or CIME_ROOT).resolve()
+    model_root, model = _model_checkout(cime_root)
+    backend, machine, _ = _choose_backend(args, cime_root, run=run)
+    if args.allow_batch and backend != "host":
+        raise RunnerError("--allow-batch applies only to host execution.")
+    has_batch = False
+    if backend == "host":
+        if machine is None:
+            raise RunnerError("Host execution selected without a matching machine.")
+        has_batch = _host_has_batch(cime_root, machine, run=run)
+        if args.suite in ("system", "all") and has_batch and not args.allow_batch:
+            raise RunnerError(
+                f"Host machine {machine!r} uses a batch system. Ask the user for "
+                "approval, then rerun with --allow-batch."
+            )
+        if args.suite in ("system", "all") and not has_batch:
+            print(f"Batch: machine {machine} has no batch system; running locally.")
+        elif args.suite in ("system", "all") and args.allow_batch:
+            print(f"Batch: approved by user for host machine {machine}.")
+
+    artifacts = _artifact_dir(args.artifact_dir)
+    print(f"Model: {model}")
+    print(f"Backend: {backend}" + (f" (machine {machine})" if machine else ""))
+    print(f"Artifacts: {artifacts}")
+
+    if backend == "host":
+        if machine is None:
+            raise RunnerError("Host execution selected without a matching machine.")
+        python = _host_environment(
+            cime_root, args.python, _cache_root(args.cache_dir), run=run
+        )
+        selected = args.targets or sorted(
+            str(Path(path).relative_to(cime_root))
+            for pattern in _suite_patterns(args.suite)
+            for path in glob.glob(str(cime_root / f"CIME/tests/test_{pattern}*"))
+        )
+        if not selected:
+            raise RunnerError(f"No pytest targets found for the {args.suite} suite.")
+        command = [
+            python,
+            "-m",
+            "pytest",
+            "-vvv",
+            "-ra",
+            "-s",
+            "--machine",
+            machine,
+            "--no-teardown",
+            f"--test-root={artifacts}",
+        ]
+        command.extend(["--cov=CIME", "--cov-branch", "--cov-report=term-missing"])
+        if not (args.suite in ("system", "all") and has_batch and args.allow_batch):
+            command.append("--no-batch")
+        if args.suite in ("system", "all") and not args.targets:
+            command.append(
+                "--deselect=CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system"
+            )
+        command.extend(selected)
+        return _run_pytest(command, cime_root, run)
+
+    runtime = shutil.which(backend)
+    if runtime is None:
+        raise RunnerError(f"Requested container runtime not found: {backend}.")
+    if args.build_image:
+        if backend != "docker":
+            raise RunnerError(
+                "Building the CIME test image currently requires Docker BuildKit."
+            )
+        image = (
+            args.image
+            if args.image != "ghcr.io/esmci/cime:latest"
+            else "cime:agent-tests"
+        )
+        build_env = os.environ.copy()
+        build_env["DOCKER_BUILDKIT"] = "1"
+        build = run(
+            [
+                runtime,
+                "build",
+                "--platform",
+                "linux/amd64",
+                "-f",
+                "docker/Dockerfile",
+                "-t",
+                image,
+                ".",
+            ],
+            cwd=cime_root,
+            env=build_env,
+        )
+        if build.returncode != 0:
+            raise RunnerError(f"Building the CIME test image with {backend} failed.")
+    else:
+        image = args.image
+        pulled = run([runtime, "pull", image], cwd=cime_root)
+        if pulled.returncode != 0:
+            raise RunnerError(f"Could not pull CIME test image {image}.")
+
+    inputdata = None
+    if args.suite in ("system", "all"):
+        inputdata = _populate_inputdata(
+            runtime, cime_root, _cache_root(args.cache_dir), run=run
+        )
+    command = _container_command(
+        runtime,
+        image,
+        model,
+        model_root,
+        cime_root,
+        artifacts,
+        inputdata,
+        args.suite,
+        args.targets,
+    )
+    if inputdata is not None:
+        print(f"Input data cache: {inputdata}")
+    return _run_pytest(command, cime_root, run)
+
+
+def main(args: Optional[Sequence[str]] = None) -> int:
+    """Run the command-line test helper."""
+    parsed = parse_command_line(args)
+    if parsed.allow_batch and parsed.suite not in ("system", "all"):
+        print("ERROR: --allow-batch applies only to system tests.", file=sys.stderr)
+        return 2
+    try:
+        return run_tests(parsed)
+    except RunnerError as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

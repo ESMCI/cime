@@ -1,6 +1,6 @@
 ---
 name: cime-sys-testing
-description: Use when writing or modifying CIME sys (end-to-end) tests.
+description: Use when writing or modifying CIME system tests or running the CIME pytest system-test suite.
 ---
 
 # CIME System Tests
@@ -59,20 +59,32 @@ env.assert_called_with()
 - Test file: `test_sys_<feature>.py`
 - Test method: `test_<feature>_<condition>`
 
-## Unit test workflow
-1. Identify the feature and conditions for end-to-end test.
-2. Place test in matching `CIME/tests/test_sys_<feature>.py`.
-3. Write tests for target feature.
-4. Run tests.
-6. Test outputs are located in `${PWD}/storage`. If you cannot access, ask user to fix permissions, then continue.
-7. If tests failed, return to step 3 and adjust the test.
-5. Check for regression.
+## System-test workflow
+1. Identify the feature and conditions for an end-to-end test.
+2. Place the test in the matching `CIME/tests/test_sys_<feature>.py` file.
+3. Write tests for the target feature.
+4. Run the tests and check for regressions.
+5. Test outputs are located in `${PWD}/storage`. If you cannot access them,
+   ask the user to fix permissions.
+
+When a test fails, follow the shared failure-handling guidance in the root
+`AGENTS.md` rather than changing tests simply to make them pass.
 
 # Run Testing
-Try to determine `<model>`, ask user if unable.
+Use the repository runner for CIME's pytest system suite. If it selects a
+batch-enabled host, ask the user whether batch submission is approved; only
+pass `--allow-batch` after approval. Otherwise, choose a container backend or
+allow the runner to stop with its batch-safety message.
 
 ```bash
-docker run -it --rm -e CIME_MODEL=<model> -e CIME_MACHINE=docker -v ${PWD}/..:/root/model -v ${PWD}/storage:/root/storage -w /root/model/cime ghcr.io/esmci/cime:latest pytest --no-teardown --no-fortran CIME/tests/test_sys_<target>.py
+./devtools/run_tests system
+./devtools/run_tests system -- CIME/tests/test_sys_<target>.py
+./devtools/run_tests all  # Combined unit/system run with aggregate coverage
 ```
+
+Multiple pytest paths or node IDs can be passed after `--`. The runner excludes
+the intentionally failing full-system test and retains case artifacts for
+inspection. Use `--backend docker` or `--backend podman` to explicitly select a
+container; the runner caches input data in the user's cache directory.
 
 ## Common Mistakes
