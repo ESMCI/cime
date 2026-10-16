@@ -64,7 +64,8 @@ env.assert_called_with()
 2. Analyze function implementation.
 3. Write test checking for all combinations of input/output, errors, and edge cases.
 4. Run tests and check for adaquate coverage.
-5. If failing go back to step 2, continue until tests pass.
+5. If tests fail, follow the shared failure-handling guidance in the root
+   `AGENTS.md` before changing code or tests.
 
 ## Adding new test for new unit following TDD
 1. Identify target unit required inputs/outputs.
@@ -72,7 +73,8 @@ env.assert_called_with()
 3. Run tests, should fail.
 4. Implement unit.
 5. Run tests and check for adaquate coverage.
-6. If failing go back to step 4, continue until tests pass.
+6. If tests fail, follow the shared failure-handling guidance in the root
+   `AGENTS.md` before changing code or tests.
 
 # Run Testing
 - Identify a supported machine (exclude linux-generic), does not need to be the host.

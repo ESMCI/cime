@@ -59,14 +59,16 @@ env.assert_called_with()
 - Test file: `test_sys_<feature>.py`
 - Test method: `test_<feature>_<condition>`
 
-## Unit test workflow
-1. Identify the feature and conditions for end-to-end test.
-2. Place test in matching `CIME/tests/test_sys_<feature>.py`.
-3. Write tests for target feature.
-4. Run tests.
-6. Test outputs are located in `${PWD}/storage`. If you cannot access, ask user to fix permissions, then continue.
-7. If tests failed, return to step 3 and adjust the test.
-5. Check for regression.
+## System-test workflow
+1. Identify the feature and conditions for an end-to-end test.
+2. Place the test in the matching `CIME/tests/test_sys_<feature>.py` file.
+3. Write tests for the target feature.
+4. Run the tests and check for regressions.
+5. Test outputs are located in `${PWD}/storage`. If you cannot access them,
+   ask the user to fix permissions.
+
+When a test fails, follow the shared failure-handling guidance in the root
+`AGENTS.md` rather than changing tests simply to make them pass.
 
 # Run Testing
 Use the repository runner for CIME's pytest system suite. If it selects a
