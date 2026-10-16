@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.match\_any
+=====================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: match_any

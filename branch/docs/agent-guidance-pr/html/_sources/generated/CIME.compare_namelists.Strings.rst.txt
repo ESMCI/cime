@@ -1,0 +1,34 @@
+..
+  class.rst
+
+CIME.compare\_namelists.Strings
+===============================
+
+.. currentmodule:: CIME.compare_namelists
+
+.. autoclass:: Strings
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~Strings.__init__
+                    ~Strings.append
+                    ~Strings.clear
+                    ~Strings.copy
+                    ~Strings.count
+                    ~Strings.extend
+                    ~Strings.index
+                    ~Strings.insert
+                    ~Strings.pop
+                    ~Strings.remove
+                    ~Strings.reverse
+                    ~Strings.sort
+        
+    

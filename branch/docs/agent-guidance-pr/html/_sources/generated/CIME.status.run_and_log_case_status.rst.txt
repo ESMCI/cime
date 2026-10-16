@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.status.run\_and\_log\_case\_status
+=======================================
+
+.. currentmodule:: CIME.status
+
+.. autofunction:: run_and_log_case_status

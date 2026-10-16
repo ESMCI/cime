@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_timing.get\_timing
+============================
+
+.. currentmodule:: CIME.get_timing
+
+.. autofunction:: get_timing
