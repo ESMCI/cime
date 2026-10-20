@@ -1352,6 +1352,12 @@ class EnvBatch(EnvBase):
             )
         )
 
+        # Use the queue for the workflow
+        if job is not None and self._env_workflow is not None:
+            workflow_queue = self._env_workflow.get_queue(job)
+            if workflow_queue and name is None:
+                name = workflow_queue
+
         # Make sure to check default queue first.
         qnodes = self.get_all_queues(name=name)
         for qnode in qnodes:
