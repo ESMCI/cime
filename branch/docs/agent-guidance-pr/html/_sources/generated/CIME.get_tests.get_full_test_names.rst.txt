@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.get\_tests.get\_full\_test\_names
+======================================
+
+.. currentmodule:: CIME.get_tests
+
+.. autofunction:: get_full_test_names

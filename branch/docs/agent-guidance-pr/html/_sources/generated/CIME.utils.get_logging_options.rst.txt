@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_logging\_options
+================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_logging_options
