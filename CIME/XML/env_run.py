@@ -1,13 +1,14 @@
 """
 Interface to the env_run.xml file.  This class inherits from EnvBase
 """
+import logging
+import os
 from itertools import zip_longest
-from CIME.XML.standard_module_setup import *
 
 from CIME.XML.env_base import EnvBase
 
 from CIME import utils
-from CIME.utils import convert_to_type
+from CIME.utils import convert_to_type, expect
 
 logger = logging.getLogger(__name__)
 

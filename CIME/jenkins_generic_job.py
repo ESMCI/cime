@@ -14,7 +14,6 @@ from CIME.case import Case
 from CIME.utils import expect, run_cmd_no_fail
 
 
-
 ##############################################################################
 def cleanup_queue(test_root, test_id):
     ###############################################################################

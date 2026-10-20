@@ -50,7 +50,9 @@ class MVKConfig(ConfigBase):
         self._set_attribute("ref_case", "Baseline", "Name of the reference case.")
         self._set_attribute("test_case", "Test", "Name of the test case.")
 
-    def generate_namelist(self, case, component, i, filename):  # pylint: disable=unused-argument
+    def generate_namelist(
+        self, case, component, i, filename
+    ):  # pylint: disable=unused-argument
         """Generate per instance namelist.
 
         This method is called for each instance to generate the desired
