@@ -1,6 +1,7 @@
 """Unit tests for the pytest runner CLI."""
 
 from argparse import Namespace
+from contextlib import contextmanager
 import importlib.util
 from pathlib import Path
 from subprocess import CompletedProcess
@@ -459,6 +460,41 @@ def test_inputdata_cache_is_populated_and_reused(tmp_path):
     assert (cache / "share" / "domain.nc").read_text() == "data"
     assert len(calls) == 4
     assert calls[-1] == ["docker", "rm", "container-id"]
+
+
+def test_inputdata_cache_reuses_cache_published_while_waiting_for_lock(
+    monkeypatch, tmp_path
+):
+    # Context
+    cime_root = tmp_path / "cime"
+    (cime_root / "docker").mkdir(parents=True)
+    (cime_root / "docker" / "INPUTDATA_VERSION").write_text("2\n")
+    cache = tmp_path / "cache" / "inputdata" / "v2"
+    calls = []
+
+    @contextmanager
+    def publish_cache_before_lock(_cache):
+        cache.mkdir(parents=True)
+        (cache / "share").mkdir()
+        (cache / "share" / "domain.nc").write_text("data")
+        (cache / ".cime-inputdata-complete").write_text("image=test\n")
+        yield
+
+    def fake_run(command, cwd, capture_output=False, env=None):
+        calls.append(command)
+        return CompletedProcess(command, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(run_tests, "_inputdata_cache_lock", publish_cache_before_lock)
+
+    # Act
+    result = run_tests._populate_inputdata(
+        "docker", cime_root, tmp_path / "cache", run=fake_run
+    )
+
+    # Assert
+    assert result == cache
+    assert (cache / "share" / "domain.nc").read_text() == "data"
+    assert calls == []
 
 
 def test_inputdata_cache_extraction_failure_preserves_existing_cache(tmp_path):
