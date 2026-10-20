@@ -298,13 +298,11 @@ You can also specify different queues for different machines using runtime_param
 <p><strong>Integration with config_batch.xml:</strong>
 Once a queue is specified for a job, the batch system configuration (<code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code>) can use queue-specific settings:</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- In config_batch.xml --&gt;</span>
-<span class="nt">&lt;directives&gt;</span>
-<span class="w">  </span><span class="nt">&lt;directive</span><span class="w"> </span><span class="na">queue=</span><span class="s">"debug"</span><span class="nt">&gt;</span>
-<span class="w">    </span>#SBATCH<span class="w"> </span>--gpu=none
-<span class="w">  </span><span class="nt">&lt;/directive&gt;</span>
-<span class="w">  </span><span class="nt">&lt;directive</span><span class="w"> </span><span class="na">queue=</span><span class="s">"gpu"</span><span class="nt">&gt;</span>
-<span class="w">    </span>#SBATCH<span class="w"> </span>--gres=gpu:1
-<span class="w">  </span><span class="nt">&lt;/directive&gt;</span>
+<span class="nt">&lt;directives</span><span class="w"> </span><span class="na">queue=</span><span class="s">"debug"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;directive&gt;</span>--gres=none<span class="nt">&lt;/directive&gt;</span>
+<span class="nt">&lt;/directives&gt;</span>
+<span class="nt">&lt;directives</span><span class="w"> </span><span class="na">queue=</span><span class="s">"gpu"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;directive&gt;</span>--gres=gpu:1<span class="nt">&lt;/directive&gt;</span>
 <span class="nt">&lt;/directives&gt;</span>
 </pre></div>
 </div>
