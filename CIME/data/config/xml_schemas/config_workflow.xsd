@@ -63,10 +63,8 @@
       <xs:sequence>
         <xs:element ref="template"/>
         <xs:element minOccurs="0" ref="hidden"/>
-        <xs:element minOccurs="0" ref="queue"/>
         <xs:element minOccurs="0" ref="dependency"/>
         <xs:element ref="prereq"/>
-        <xs:element minOccurs="0" ref="queue"/>
 	<xs:element ref="runtime_parameters" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute ref="name" use="required"/>
