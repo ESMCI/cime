@@ -137,13 +137,11 @@ Once a queue is specified for a job, the batch system configuration (``config_ba
 .. code-block:: xml
 
     <!-- In config_batch.xml -->
-    <directives>
-      <directive queue="debug">
-        #SBATCH --gpu=none
-      </directive>
-      <directive queue="gpu">
-        #SBATCH --gres=gpu:1
-      </directive>
+    <directives queue="debug">
+      <directive>--gres=none</directive>
+    </directives>
+    <directives queue="gpu">
+      <directive>--gres=gpu:1</directive>
     </directives>
 
 This allows you to:
