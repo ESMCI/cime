@@ -500,8 +500,6 @@ def _container_command(
         "--hostname",
         "docker",
     ]
-    if Path(runtime).name == "podman":
-        command.append("--userns=keep-id")
     if suite in ("system", "all"):
         command.extend(["--shm-size=1g"])
     model_mount = f"{model_root}:/root/model"
