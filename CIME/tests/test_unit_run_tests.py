@@ -261,6 +261,32 @@ def test_choose_backend_rejects_system_without_host_or_runtime(monkeypatch, tmp_
         )
 
 
+def test_choose_backend_explicit_container_skips_machine_queries(monkeypatch, tmp_path):
+    # Context
+    args = Namespace(backend="docker", suite="system", build_image=False)
+    commands = []
+    monkeypatch.setattr(run_tests.shutil, "which", lambda _: "/usr/bin/docker")
+
+    def fake_run(command, **kwargs):
+        commands.append(command)
+        return CompletedProcess(command, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(
+        run_tests,
+        "_machine_list",
+        lambda *args, **kwargs: pytest.fail("machine detection should not run"),
+    )
+
+    # Act
+    backend, machine, machines = run_tests._choose_backend(
+        args, tmp_path / "cime", run=fake_run
+    )
+
+    # Assert
+    assert (backend, machine, machines) == ("docker", None, set())
+    assert commands == [["/usr/bin/docker", "info"]]
+
+
 def test_choose_backend_build_image_requires_docker(monkeypatch, tmp_path):
     # Context
     args = Namespace(backend="auto", suite="unit", build_image=True)

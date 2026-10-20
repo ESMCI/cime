@@ -555,6 +555,19 @@ def _choose_backend(
     args: argparse.Namespace, cime_root: Path, run: RunCommand = _run
 ) -> Tuple[str, Optional[str], Set[str]]:
     """Select an execution backend according to the requested preference."""
+    if args.backend in ("docker", "podman"):
+        if args.build_image and args.backend != "docker":
+            raise RunnerError("--build-image currently requires Docker BuildKit.")
+        runtime = shutil.which(args.backend)
+        if runtime is None:
+            raise RunnerError(f"Requested container runtime not found: {args.backend}.")
+        available = run([runtime, "info"], cwd=cime_root, capture_output=True)
+        if available.returncode != 0:
+            raise RunnerError(
+                f"{args.backend} is installed but unavailable: {available.stderr}"
+            )
+        return args.backend, None, set()
+
     machines, current_machine = _machine_list(cime_root, run=run)
     supported_host = current_machine is not None
 
@@ -567,19 +580,6 @@ def _choose_backend(
                 "host execution is unavailable."
             )
         return "host", current_machine, machines
-
-    if args.backend in ("docker", "podman"):
-        if args.build_image and args.backend != "docker":
-            raise RunnerError("--build-image currently requires Docker BuildKit.")
-        runtime = shutil.which(args.backend)
-        if runtime is None:
-            raise RunnerError(f"Requested container runtime not found: {args.backend}.")
-        available = run([runtime, "info"], cwd=cime_root, capture_output=True)
-        if available.returncode != 0:
-            raise RunnerError(
-                f"{args.backend} is installed but unavailable: {available.stderr}"
-            )
-        return args.backend, current_machine, machines
 
     if args.build_image:
         docker = shutil.which("docker")
