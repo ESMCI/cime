@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.add\_flag\_to\_cmd
-=============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: add_flag_to_cmd
