@@ -105,12 +105,12 @@ To specify a debug queue for the ``case.build`` job while other jobs use their d
 
     <workflow_jobs id="default">
         <job name="case.build">
-            <template>$CIMEROOT/CIME/Templates/case.build.template</template>
+            <template>template.case.build</template>
             <prereq>TRUE</prereq>
             <queue>debug</queue>
         </job>
         <job name="case.run">
-            <template>$CIMEROOT/CIME/Templates/case.run.template</template>
+            <template>template.case.run</template>
             <prereq>TRUE</prereq>
         </job>
     </workflow_jobs>
@@ -121,7 +121,7 @@ You can also specify different queues for different machines using runtime_param
 .. code-block:: xml
 
     <job name="case.build">
-        <template>$CIMEROOT/CIME/Templates/case.build.template</template>
+        <template>template.case.build</template>
         <prereq>TRUE</prereq>
         <runtime_parameters MACH="machine1">
             <queue>debug</queue>

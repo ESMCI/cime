@@ -270,12 +270,12 @@
 To specify a debug queue for the <code class="docutils literal notranslate"><span class="pre">case.build</span></code> job while other jobs use their default queues:</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;workflow_jobs</span><span class="w"> </span><span class="na">id=</span><span class="s">"default"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">"case.build"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;template&gt;</span>$CIMEROOT/CIME/Templates/case.build.template<span class="nt">&lt;/template&gt;</span>
+<span class="w">    </span><span class="nt">&lt;template&gt;</span>template.case.build<span class="nt">&lt;/template&gt;</span>
 <span class="w">    </span><span class="nt">&lt;prereq&gt;</span>TRUE<span class="nt">&lt;/prereq&gt;</span>
 <span class="w">    </span><span class="nt">&lt;queue&gt;</span>debug<span class="nt">&lt;/queue&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/job&gt;</span>
 <span class="w">    </span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">"case.run"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;template&gt;</span>$CIMEROOT/CIME/Templates/case.run.template<span class="nt">&lt;/template&gt;</span>
+<span class="w">    </span><span class="nt">&lt;template&gt;</span>template.case.run<span class="nt">&lt;/template&gt;</span>
 <span class="w">    </span><span class="nt">&lt;prereq&gt;</span>TRUE<span class="nt">&lt;/prereq&gt;</span>
 <span class="w">    </span><span class="nt">&lt;/job&gt;</span>
 <span class="nt">&lt;/workflow_jobs&gt;</span>
@@ -284,7 +284,7 @@ To specify a debug queue for the <code class="docutils literal notranslate"><spa
 <p><strong>Machine-specific queues:</strong>
 You can also specify different queues for different machines using runtime_parameters:</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;job</span><span class="w"> </span><span class="na">name=</span><span class="s">"case.build"</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;template&gt;</span>$CIMEROOT/CIME/Templates/case.build.template<span class="nt">&lt;/template&gt;</span>
+<span class="w">    </span><span class="nt">&lt;template&gt;</span>template.case.build<span class="nt">&lt;/template&gt;</span>
 <span class="w">    </span><span class="nt">&lt;prereq&gt;</span>TRUE<span class="nt">&lt;/prereq&gt;</span>
 <span class="w">    </span><span class="nt">&lt;runtime_parameters</span><span class="w"> </span><span class="na">MACH=</span><span class="s">"machine1"</span><span class="nt">&gt;</span>
 <span class="w">    </span><span class="nt">&lt;queue&gt;</span>debug<span class="nt">&lt;/queue&gt;</span>
