@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.is\_valid\_fortran\_namelist\_literal
+===================================================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: is_valid_fortran_namelist_literal
