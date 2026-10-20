@@ -42,6 +42,8 @@ prints pytest's summary and coverage report and returns pytest's exit status.
 """
 
 import argparse
+from contextlib import contextmanager
+import fcntl
 import glob
 import hashlib
 import os
@@ -367,6 +369,26 @@ def _suite_patterns(suite: str) -> Tuple[str, ...]:
     return ("unit" if suite == "unit" else "sys",)
 
 
+def _inputdata_cache_is_complete(cache: Path) -> bool:
+    """Return whether an input-data cache has a completion marker and data."""
+    marker = cache / ".cime-inputdata-complete"
+    return marker.is_file() and any(
+        path.is_file() and path != marker for path in cache.rglob("*")
+    )
+
+
+@contextmanager
+def _inputdata_cache_lock(cache: Path):
+    """Serialize input-data cache publication for one cache version."""
+    lock_path = cache.parent / f".{cache.name}.lock"
+    with lock_path.open("w", encoding="utf-8") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+
 def _populate_inputdata(
     runtime: str, cime_root: Path, cache_root: Path, run: RunCommand = _run
 ) -> Path:
@@ -374,48 +396,54 @@ def _populate_inputdata(
     version = _inputdata_version(cime_root)
     cache = cache_root / "inputdata" / f"v{version}"
     marker = cache / ".cime-inputdata-complete"
-    if marker.is_file() and any(
-        path.is_file() and path != marker for path in cache.rglob("*")
-    ):
+    if _inputdata_cache_is_complete(cache):
         return cache
 
     cache.parent.mkdir(parents=True, exist_ok=True)
-    temp_cache = Path(tempfile.mkdtemp(prefix=f"{cache.name}.tmp-", dir=cache.parent))
-    image = f"ghcr.io/esmci/cime-inputdata:v{version}"
-    try:
-        pull = run([runtime, "pull", image], cwd=cime_root)
-        if pull.returncode != 0:
-            raise RunnerError(f"Could not pull required input-data image {image}.")
+    with _inputdata_cache_lock(cache):
+        if _inputdata_cache_is_complete(cache):
+            return cache
 
-        created = run(
-            [runtime, "create", image, "/nonexistent"],
-            cwd=cime_root,
-            capture_output=True,
+        temp_cache = Path(
+            tempfile.mkdtemp(prefix=f"{cache.name}.tmp-", dir=cache.parent)
         )
-        if created.returncode != 0:
-            raise RunnerError(f"Could not create a container from {image}.")
-        container_id = created.stdout.strip()
-        if not container_id:
-            raise RunnerError(f"{runtime} create returned no container ID for {image}.")
+        image = f"ghcr.io/esmci/cime-inputdata:v{version}"
         try:
-            copied = run(
-                [runtime, "cp", f"{container_id}:/inputdata/.", str(temp_cache)],
-                cwd=cime_root,
-            )
-            if copied.returncode != 0:
-                raise RunnerError(f"Could not extract input data from {image}.")
-        finally:
-            run([runtime, "rm", container_id], cwd=cime_root, capture_output=True)
+            pull = run([runtime, "pull", image], cwd=cime_root)
+            if pull.returncode != 0:
+                raise RunnerError(f"Could not pull required input-data image {image}.")
 
-        if not any(path.is_file() for path in temp_cache.rglob("*")):
-            raise RunnerError(f"Input-data image {image} contained no files.")
-        (temp_cache / marker.name).write_text(f"image={image}\n")
-        if cache.exists():
-            shutil.rmtree(cache)
-        temp_cache.rename(cache)
-    finally:
-        if temp_cache.exists():
-            shutil.rmtree(temp_cache)
+            created = run(
+                [runtime, "create", image, "/nonexistent"],
+                cwd=cime_root,
+                capture_output=True,
+            )
+            if created.returncode != 0:
+                raise RunnerError(f"Could not create a container from {image}.")
+            container_id = created.stdout.strip()
+            if not container_id:
+                raise RunnerError(
+                    f"{runtime} create returned no container ID for {image}."
+                )
+            try:
+                copied = run(
+                    [runtime, "cp", f"{container_id}:/inputdata/.", str(temp_cache)],
+                    cwd=cime_root,
+                )
+                if copied.returncode != 0:
+                    raise RunnerError(f"Could not extract input data from {image}.")
+            finally:
+                run([runtime, "rm", container_id], cwd=cime_root, capture_output=True)
+
+            if not any(path.is_file() for path in temp_cache.rglob("*")):
+                raise RunnerError(f"Input-data image {image} contained no files.")
+            (temp_cache / marker.name).write_text(f"image={image}\n")
+            if cache.exists():
+                shutil.rmtree(cache)
+            temp_cache.rename(cache)
+        finally:
+            if temp_cache.exists():
+                shutil.rmtree(temp_cache)
     return cache
 
 
