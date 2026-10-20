@@ -67,7 +67,10 @@ class TestEnvWorkflowQueue(unittest.TestCase):
         xml = """<?xml version="1.0" encoding="UTF-8"?>
 <env_workflow>
   <group id="case.build">
-    <entry id="queue" value="debug">
+    <entry id="queue" value="$QUEUE_NAME">
+      <type>char</type>
+    </entry>
+    <entry id="QUEUE_NAME" value="debug">
       <type>char</type>
     </entry>
   </group>
