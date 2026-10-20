@@ -430,6 +430,30 @@ def test_container_command_does_not_mount_input_data_for_unit_suite(tmp_path):
     assert f"{inputdata}:/root/storage/inputdata" not in command
 
 
+def test_podman_command_preserves_container_root_user(tmp_path):
+    # Context
+    model_root = tmp_path / "model"
+    cime_root = model_root / "cime"
+    cime_root.mkdir(parents=True)
+
+    # Act
+    command = run_tests._container_command(
+        "podman",
+        "cime:test",
+        "e3sm",
+        model_root,
+        cime_root,
+        tmp_path / "artifacts",
+        None,
+        "unit",
+        ["CIME/tests/test_unit_a.py"],
+    )
+
+    # Assert
+    assert "--userns=keep-id" not in command
+    assert f"{model_root}:/root/model:Z" in command
+
+
 def test_inputdata_cache_is_populated_and_reused(tmp_path):
     # Context
     cime_root = tmp_path / "cime"
