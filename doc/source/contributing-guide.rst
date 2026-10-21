@@ -190,6 +190,25 @@ Ask the user for approval before using that option; the helper does not submit
 batch jobs without it. Container tests use the container's non-batch machine
 configuration.
 
+Podman storage on an NFS-backed home directory can fail while unpacking an
+image because the filesystem lacks extended-attribute support. Configure Podman
+storage on a site-provided local scratch filesystem, then pass its configuration
+to the helper. For example, when ``$TMPDIR`` is xattr-capable::
+
+    mkdir -p "$TMPDIR/podman"/{graphroot,runroot}
+    cat > "$TMPDIR/podman-storage.conf" <<'EOF'
+    [storage]
+    driver = "overlay"
+    graphroot = "$TMPDIR/podman/graphroot"
+    runroot = "$TMPDIR/podman/runroot"
+    EOF
+    ./devtools/run_tests unit --backend podman \
+        --podman-storage-conf "$TMPDIR/podman-storage.conf"
+
+The storage location must remain available for the complete test run. Consult
+your site's container documentation when ``$TMPDIR`` is unavailable or is not
+node-local storage.
+
 Code style
 ----------
 
