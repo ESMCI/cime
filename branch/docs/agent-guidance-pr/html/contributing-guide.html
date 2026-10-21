@@ -272,6 +272,24 @@ table with missing lines.</p>
 Ask the user for approval before using that option; the helper does not submit
 batch jobs without it. Container tests use the container’s non-batch machine
 configuration.</p>
+<p>Podman storage on an NFS-backed home directory can fail while unpacking an
+image because the filesystem lacks extended-attribute support. Configure Podman
+storage on a site-provided local scratch filesystem, then pass its configuration
+to the helper. For example, when <code class="docutils literal notranslate"><span class="pre">$TMPDIR</span></code> is xattr-capable:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="s2">"$TMPDIR/podman"</span><span class="o">/</span><span class="p">{</span><span class="n">graphroot</span><span class="p">,</span><span class="n">runroot</span><span class="p">}</span>
+<span class="n">cat</span> <span class="o">&gt;</span> <span class="s2">"$TMPDIR/podman-storage.conf"</span> <span class="o">&lt;&lt;</span><span class="s1">'EOF'</span>
+<span class="p">[</span><span class="n">storage</span><span class="p">]</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="s2">"overlay"</span>
+<span class="n">graphroot</span> <span class="o">=</span> <span class="s2">"$TMPDIR/podman/graphroot"</span>
+<span class="n">runroot</span> <span class="o">=</span> <span class="s2">"$TMPDIR/podman/runroot"</span>
+<span class="n">EOF</span>
+<span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">run_tests</span> <span class="n">unit</span> <span class="o">--</span><span class="n">backend</span> <span class="n">podman</span> \
+    <span class="o">--</span><span class="n">podman</span><span class="o">-</span><span class="n">storage</span><span class="o">-</span><span class="n">conf</span> <span class="s2">"$TMPDIR/podman-storage.conf"</span>
+</pre></div>
+</div>
+<p>The storage location must remain available for the complete test run. Consult
+your site’s container documentation when <code class="docutils literal notranslate"><span class="pre">$TMPDIR</span></code> is unavailable or is not
+node-local storage.</p>
 </section>
 <section id="code-style">
 <h2>Code style<a class="headerlink" href="#code-style" title="Link to this heading"></a></h2>
