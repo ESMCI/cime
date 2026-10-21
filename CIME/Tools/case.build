@@ -56,7 +56,7 @@ from CIME.test_status import (
     TEST_FAIL_STATUS,
     TestStatus,
 )
-from CIME.utils import find_system_test, get_model
+from CIME.utils import expect, find_system_test, get_model
 
 
 ###############################################################################
