@@ -53,6 +53,42 @@ def test_parse_command_line_accepts_all_suite():
     assert args.suite == "all"
 
 
+def test_parse_command_line_accepts_podman_storage_conf(tmp_path):
+    # Context
+    storage_conf = tmp_path / "storage.conf"
+
+    # Act
+    args = run_tests.parse_command_line(
+        ["unit", "--backend", "podman", "--podman-storage-conf", str(storage_conf)]
+    )
+
+    # Assert
+    assert args.podman_storage_conf == storage_conf
+
+
+def test_runtime_environment_sets_podman_storage_conf(tmp_path):
+    # Context
+    storage_conf = tmp_path / "storage.conf"
+
+    # Act
+    environment = run_tests._runtime_environment("/usr/bin/podman", storage_conf)
+
+    # Assert
+    assert environment is not None
+    assert environment["CONTAINERS_STORAGE_CONF"] == str(storage_conf.resolve())
+
+
+def test_runtime_environment_ignores_storage_conf_for_docker(tmp_path):
+    # Context
+    storage_conf = tmp_path / "storage.conf"
+
+    # Act
+    environment = run_tests._runtime_environment("/usr/bin/docker", storage_conf)
+
+    # Assert
+    assert environment is None
+
+
 def test_suite_patterns_select_unit_and_system_tests_for_all():
     # Context
     suite = "all"
@@ -598,6 +634,7 @@ def test_system_host_batch_requires_approval(monkeypatch, tmp_path):
         targets=[],
         build_image=False,
         image="ghcr.io/esmci/cime:latest",
+        podman_storage_conf=None,
     )
     monkeypatch.setattr(
         run_tests, "_model_checkout", lambda root: (root.parent, "e3sm")
@@ -624,6 +661,7 @@ def test_system_host_batch_runs_after_approval(monkeypatch, tmp_path):
         targets=["CIME/tests/test_sys_a.py"],
         build_image=False,
         image="ghcr.io/esmci/cime:latest",
+        podman_storage_conf=None,
     )
     monkeypatch.setattr(
         run_tests, "_model_checkout", lambda root: (root.parent, "e3sm")
@@ -637,7 +675,7 @@ def test_system_host_batch_runs_after_approval(monkeypatch, tmp_path):
     )
     commands = []
 
-    def fake_run(command, cwd):
+    def fake_run(command, cwd, env=None):
         commands.append(command)
         return CompletedProcess(command, 0)
 
@@ -648,3 +686,38 @@ def test_system_host_batch_runs_after_approval(monkeypatch, tmp_path):
     assert status == 0
     assert len(commands) == 1
     assert "--no-batch" not in commands[0]
+
+
+def test_podman_pull_reports_xattr_storage_failure(monkeypatch, tmp_path):
+    # Context
+    args = Namespace(
+        suite="unit",
+        backend="podman",
+        artifact_dir=tmp_path / "artifacts",
+        allow_batch=False,
+        python=None,
+        cache_dir=tmp_path / "cache",
+        targets=["CIME/tests/test_unit_a.py"],
+        build_image=False,
+        image="ghcr.io/esmci/cime:latest",
+        podman_storage_conf=tmp_path / "storage.conf",
+    )
+    monkeypatch.setattr(
+        run_tests, "_model_checkout", lambda root: (root.parent, "e3sm")
+    )
+    monkeypatch.setattr(
+        run_tests, "_choose_backend", lambda *a, **k: ("podman", None, set())
+    )
+    monkeypatch.setattr(run_tests.shutil, "which", lambda _: "/usr/bin/podman")
+
+    def failed_pull(command, cwd, capture_output=False, env=None):
+        return CompletedProcess(
+            command,
+            1,
+            stdout="",
+            stderr="lsetxattr /boot: operation not supported",
+        )
+
+    # Act / Assert
+    with pytest.raises(run_tests.RunnerError, match="--podman-storage-conf PATH"):
+        run_tests.run_tests(args, cime_root=tmp_path / "cime", run=failed_pull)

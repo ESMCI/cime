@@ -15,6 +15,8 @@ Examples::
     ./devtools/run_tests system -- \
         CIME/tests/test_sys_query_config.py::TestQueryConfig::test_query_machines
     ./devtools/run_tests system --backend docker --build-image
+    ./devtools/run_tests unit --backend podman \
+        --podman-storage-conf "$TMPDIR/podman-storage.conf"
 
 Without explicit targets, the helper runs ``CIME/tests/test_unit*``,
 ``CIME/tests/test_sys*``, or both for ``all``. The default system and combined
@@ -33,6 +35,9 @@ Container system tests use the input-data image version in
 ``docker/INPUTDATA_VERSION``. Host virtual environments and container input
 data are cached under ``~/.cache/cime`` or ``$XDG_CACHE_HOME/cime``; use
 ``--cache-dir`` to change the cache location.
+
+If Podman storage is on a filesystem without extended-attribute support, use
+``--podman-storage-conf`` to select a site-appropriate storage configuration.
 
 Host system tests do not submit batch jobs unless ``--allow-batch`` is passed.
 Obtain user approval before using that option. Artifacts are retained in a new
@@ -114,6 +119,11 @@ def parse_command_line(args: Optional[Sequence[str]] = None) -> argparse.Namespa
         type=Path,
         help="directory for test artifacts (created if it does not already exist)",
     )
+    parser.add_argument(
+        "--podman-storage-conf",
+        type=Path,
+        help="Podman storage.conf to use for Podman commands",
+    )
     return parser.parse_intermixed_args(args)
 
 
@@ -132,6 +142,19 @@ def _run(
         text=True,
         capture_output=capture_output,
     )
+
+
+def _runtime_environment(
+    runtime: str, podman_storage_conf: Optional[Path]
+) -> Optional[Mapping[str, str]]:
+    """Return environment overrides required by the selected container runtime."""
+    if Path(runtime).name != "podman" or podman_storage_conf is None:
+        return None
+    environment = os.environ.copy()
+    environment["CONTAINERS_STORAGE_CONF"] = str(
+        podman_storage_conf.expanduser().resolve()
+    )
+    return environment
 
 
 def _model_checkout(cime_root: Path) -> Tuple[Path, str]:
@@ -390,7 +413,11 @@ def _inputdata_cache_lock(cache: Path):
 
 
 def _populate_inputdata(
-    runtime: str, cime_root: Path, cache_root: Path, run: RunCommand = _run
+    runtime: str,
+    cime_root: Path,
+    cache_root: Path,
+    run: RunCommand = _run,
+    runtime_env: Optional[Mapping[str, str]] = None,
 ) -> Path:
     """Populate the versioned user cache from CIME's input-data image."""
     version = _inputdata_version(cime_root)
@@ -409,7 +436,7 @@ def _populate_inputdata(
         )
         image = f"ghcr.io/esmci/cime-inputdata:v{version}"
         try:
-            pull = run([runtime, "pull", image], cwd=cime_root)
+            pull = run([runtime, "pull", image], cwd=cime_root, env=runtime_env)
             if pull.returncode != 0:
                 raise RunnerError(f"Could not pull required input-data image {image}.")
 
@@ -417,6 +444,7 @@ def _populate_inputdata(
                 [runtime, "create", image, "/nonexistent"],
                 cwd=cime_root,
                 capture_output=True,
+                env=runtime_env,
             )
             if created.returncode != 0:
                 raise RunnerError(f"Could not create a container from {image}.")
@@ -429,11 +457,17 @@ def _populate_inputdata(
                 copied = run(
                     [runtime, "cp", f"{container_id}:/inputdata/.", str(temp_cache)],
                     cwd=cime_root,
+                    env=runtime_env,
                 )
                 if copied.returncode != 0:
                     raise RunnerError(f"Could not extract input data from {image}.")
             finally:
-                run([runtime, "rm", container_id], cwd=cime_root, capture_output=True)
+                run(
+                    [runtime, "rm", container_id],
+                    cwd=cime_root,
+                    capture_output=True,
+                    env=runtime_env,
+                )
 
             if not any(path.is_file() for path in temp_cache.rglob("*")):
                 raise RunnerError(f"Input-data image {image} contained no files.")
@@ -615,10 +649,15 @@ def _choose_backend(
     return "host", "linux-generic", machines
 
 
-def _run_pytest(command: Sequence[str], cime_root: Path, run: RunCommand) -> int:
+def _run_pytest(
+    command: Sequence[str],
+    cime_root: Path,
+    run: RunCommand,
+    env: Optional[Mapping[str, str]] = None,
+) -> int:
     """Run pytest, preserving its native output and exit status."""
     print("Command:", shlex.join(command))
-    result = run(command, cwd=cime_root)
+    result = run(command, cwd=cime_root, env=env)
     print(f"pytest exit code: {result.returncode}")
     return result.returncode
 
@@ -692,6 +731,7 @@ def run_tests(
     runtime = shutil.which(backend)
     if runtime is None:
         raise RunnerError(f"Requested container runtime not found: {backend}.")
+    runtime_env = _runtime_environment(runtime, args.podman_storage_conf)
     if args.build_image:
         if backend != "docker":
             raise RunnerError(
@@ -723,14 +763,34 @@ def run_tests(
             raise RunnerError(f"Building the CIME test image with {backend} failed.")
     else:
         image = args.image
-        pulled = run([runtime, "pull", image], cwd=cime_root)
+        pulled = run(
+            [runtime, "pull", image],
+            cwd=cime_root,
+            capture_output=True,
+            env=runtime_env,
+        )
         if pulled.returncode != 0:
+            details = (pulled.stderr or pulled.stdout).strip()
+            if (
+                backend == "podman"
+                and "lsetxattr" in details
+                and "operation not supported" in details
+            ):
+                raise RunnerError(
+                    "Podman storage does not support extended attributes. Configure "
+                    "Podman storage on an xattr-capable local filesystem, then pass "
+                    "--podman-storage-conf PATH."
+                )
             raise RunnerError(f"Could not pull CIME test image {image}.")
 
     inputdata = None
     if args.suite in ("system", "all"):
         inputdata = _populate_inputdata(
-            runtime, cime_root, _cache_root(args.cache_dir), run=run
+            runtime,
+            cime_root,
+            _cache_root(args.cache_dir),
+            run=run,
+            runtime_env=runtime_env,
         )
     command = _container_command(
         runtime,
@@ -745,7 +805,7 @@ def run_tests(
     )
     if inputdata is not None:
         print(f"Input data cache: {inputdata}")
-    return _run_pytest(command, cime_root, run)
+    return _run_pytest(command, cime_root, run, env=runtime_env)
 
 
 def main(args: Optional[Sequence[str]] = None) -> int:
