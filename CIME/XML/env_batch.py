@@ -793,9 +793,8 @@ class EnvBatch(EnvBase):
                 and job_queue_restriction != case.get_value("JOB_QUEUE")
             ):
                 raise ValueError()
-            if (
-                workflow_restriction is not None
-                and not self._match(job, workflow_restriction)
+            if workflow_restriction is not None and not self._match(
+                job, workflow_restriction
             ):
                 raise ValueError()
 
