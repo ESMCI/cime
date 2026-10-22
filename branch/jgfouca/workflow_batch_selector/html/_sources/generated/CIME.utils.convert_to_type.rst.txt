@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.convert\_to\_type
+============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: convert_to_type

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.file\_contains\_python\_function
+===========================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: file_contains_python_function
