@@ -176,6 +176,7 @@ flag                    Name of the argument.
 name                    Value of the argument.
 argument                Batch submision argument.
 job_queue               If set the argument is only used when submitted to the queue.
+workflow                If set, only applies when the workflow job name matches (for example ``case.build``).
 directive               Batch directive to add to submission script.
 default                 Default value is directive value cannot be resolved.
 prefix                  Value to prefix directives.
@@ -240,9 +241,9 @@ walltimedef             Default walltime.
                             <!-- Occurrences min: 1 max: Unlimited-->
                             <arg flag="" name="">
                             </arg>
-                            <!-- Attributes 'job_queue' is optional-->
+                            <!-- Attributes 'job_queue' and 'workflow' are optional-->
                             <!-- Occurrences min: 1 max: Unlimited-->
-                            <argument job_queue="">
+                            <argument job_queue="" workflow="">
                             </argument>
                     </submit_args>
                     <!-- Attributes 'None' is None-->

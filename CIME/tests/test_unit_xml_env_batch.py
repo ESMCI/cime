@@ -632,6 +632,55 @@ class TestXMLEnvBatch(unittest.TestCase):
             expected_args = "  -w default -w long"
             assert submit_args == expected_args
 
+    def test_get_submit_args_workflow(self):
+        with tempfile.NamedTemporaryFile() as tfile:
+            tfile.write(
+                b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system MACH="docker" type="slurm">
+    <submit_args>
+      <argument>-w default</argument>
+      <argument workflow="case.build">-w build</argument>
+      <argument workflow="case.run">-w run</argument>
+    </submit_args>
+    <queues>
+      <queue walltimemax="01:00:00" nodemax="1" default="true">short</queue>
+    </queues>
+  </batch_system>
+</file>
+"""
+            )
+
+            tfile.seek(0)
+
+            batch = EnvBatch(infile=tfile.name)
+
+            case = mock.MagicMock()
+            case.filename = mock.PropertyMock(return_value=tfile.name)
+
+            submit_args = batch.get_submit_args(case, "case.build")
+
+            expected_args = "  -w default -w build"
+            assert submit_args == expected_args
+
     @mock.patch.dict(os.environ, {"TEST": "GOOD"})
     def test_get_submit_args(self):
         with tempfile.NamedTemporaryFile() as tfile:
@@ -723,6 +772,60 @@ class TestXMLEnvBatch(unittest.TestCase):
             expected_args = "  --time 00:30:00 -p long --account CIME --no-arg --path /test -w docker"
 
             assert submit_args == expected_args
+
+    def test_get_batch_directives_workflow(self):
+        with tempfile.NamedTemporaryFile() as tfile:
+            tfile.write(
+                b"""<?xml version="1.0"?>
+<file id="env_batch.xml" version="2.0">
+  <header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header>
+  <group id="config_batch">
+    <entry id="BATCH_SYSTEM" value="slurm">
+      <type>char</type>
+      <valid_values>miller_slurm,nersc_slurm,lc_slurm,moab,pbs,lsf,slurm,cobalt,cobalt_theta,none</valid_values>
+      <desc>The batch system type to use for this machine.</desc>
+    </entry>
+  </group>
+  <group id="job_submission">
+    <entry id="PROJECT_REQUIRED" value="FALSE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <desc>whether the PROJECT value is required on this machine</desc>
+    </entry>
+  </group>
+  <batch_system MACH="docker" type="slurm">
+    <batch_directive>#SBATCH</batch_directive>
+    <directives>
+      <directive>--all-jobs</directive>
+    </directives>
+    <directives workflow="case.build">
+      <directive>--build-only</directive>
+    </directives>
+    <directives workflow="case.run">
+      <directive>--run-only</directive>
+    </directives>
+    <queues>
+      <queue walltimemax="01:00:00" nodemax="1" default="true">short</queue>
+    </queues>
+  </batch_system>
+</file>
+"""
+            )
+
+            tfile.seek(0)
+
+            batch = EnvBatch(infile=tfile.name)
+            case = mock.MagicMock()
+            case.get_value.return_value = "short"
+
+            directives = batch.get_batch_directives(case, "case.build")
+
+            assert "--all-jobs" in directives
+            assert "--build-only" in directives
+            assert "--run-only" not in directives
 
     @mock.patch("CIME.XML.env_batch.EnvBatch.get")
     def test_get_queue_specs(self, get):

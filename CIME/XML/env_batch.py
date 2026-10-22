@@ -565,7 +565,7 @@ class EnvBatch(EnvBase):
 
         return re.sub(r"%([HMSD])", _total, walltime_format)
 
-    def _match_attribs(self, attribs, case, queue):
+    def _match_attribs(self, attribs, case, queue, workflow=None):
         # check for matches with case-vars
         for attrib in attribs:
             if attrib in ["default", "prefix"]:
@@ -574,6 +574,9 @@ class EnvBatch(EnvBase):
 
             elif attrib == "queue":
                 if not self._match(queue, attribs["queue"]):
+                    return False
+            elif attrib == "workflow":
+                if not self._match(workflow, attribs["workflow"]):
                     return False
 
             else:
@@ -640,7 +643,9 @@ class EnvBatch(EnvBase):
                 dnodes = self.get_children("directives", root=root)
                 for dnode in dnodes:
                     nodes = self.get_children("directive", root=dnode)
-                    if self._match_attribs(self.attrib(dnode), case, queue):
+                    if self._match_attribs(
+                        self.attrib(dnode), case, queue, workflow=job
+                    ):
                         for node in nodes:
                             directive = self.get_resolved_value(
                                 "" if self.text(node) is None else self.text(node)
@@ -735,7 +740,7 @@ class EnvBatch(EnvBase):
             name = None
             flag = None
             try:
-                flag, name = self._get_argument(case, arg)
+                flag, name = self._get_argument(case, arg, job)
             except ValueError:
                 continue
 
@@ -772,7 +777,7 @@ class EnvBatch(EnvBase):
 
         return submitargs
 
-    def _get_argument(self, case, arg):
+    def _get_argument(self, case, arg, job):
         flag = self.get(arg, "flag")
 
         name = self.get(arg, "name")
@@ -781,10 +786,16 @@ class EnvBatch(EnvBase):
         if flag is None:
             flag = self.text(arg)
             job_queue_restriction = self.get(arg, "job_queue")
+            workflow_restriction = self.get(arg, "workflow")
 
             if (
                 job_queue_restriction is not None
                 and job_queue_restriction != case.get_value("JOB_QUEUE")
+            ):
+                raise ValueError()
+            if (
+                workflow_restriction is not None
+                and not self._match(job, workflow_restriction)
             ):
                 raise ValueError()
 

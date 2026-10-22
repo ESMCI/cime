@@ -137,6 +137,7 @@
         <xs:element name="argument" maxOccurs="unbounded">
           <xs:complexType mixed="true">
             <xs:attribute name="job_queue"/>
+            <xs:attribute name="workflow"/>
           </xs:complexType>
         </xs:element>
       </xs:choice>
