@@ -8,6 +8,8 @@ for the RUN phase specifically and will not terminate if the
 RUN phase didn't happen.
 """
 
+from standard_script_setup import *
+
 import argparse
 import os
 import sys
