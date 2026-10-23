@@ -751,7 +751,7 @@ def normalized_dict_compare(keyname, data1, data2, case):
     comments = ""
     if isinstance(data1, dict):
         keys1 = set(data1.keys())
-        keys2 = set(data1.keys())
+        keys2 = set(data2.keys())
         one_not_two = keys1.difference(keys2)
         two_not_one = keys2.difference(keys1)
         if one_not_two:
@@ -760,7 +760,8 @@ def normalized_dict_compare(keyname, data1, data2, case):
             comments += f"{keyname} case has keys not in baseline: {two_not_one}\n"
 
         for key in data1:
-            comments += normalized_dict_compare(key, data1[key], data2[key], case)
+            if key in data2:
+                comments += normalized_dict_compare(key, data1[key], data2[key], case)
 
     elif isinstance(data1, list):
         list1 = set(
