@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_template\_path
-==============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_template_path

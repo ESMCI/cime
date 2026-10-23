@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.provenance.save\_test\_time
-================================
-
-.. currentmodule:: CIME.provenance
-
-.. autofunction:: save_test_time

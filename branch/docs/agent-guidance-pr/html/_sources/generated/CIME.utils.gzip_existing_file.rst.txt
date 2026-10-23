@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.gzip\_existing\_file
-===============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: gzip_existing_file

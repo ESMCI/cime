@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.does\_file\_have\_string
-===================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: does_file_have_string
