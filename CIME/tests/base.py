@@ -55,7 +55,9 @@ class BaseTestCase(unittest.TestCase):
             if self.TEST_COMPILER is None
             else self.TEST_COMPILER
         )
-        self._baseline_name = "fake_testing_only_%s" % utils.get_timestamp()
+        self._baseline_name = (
+            f"fake_testing_only_{utils.get_timestamp()}_{utils.id_generator()}"
+        )
         self._baseline_area = os.path.join(self.TEST_ROOT, "baselines")
         self._testroot = self.TEST_ROOT
         self._hasbatch = self.MACHINE.has_batch_system() and not self.NO_BATCH
