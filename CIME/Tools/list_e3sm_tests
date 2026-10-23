@@ -5,6 +5,8 @@ List e3sm test suites. Can be used to show what's being tested. Can just
 list tested grids, compsets, etc.
 """
 
+from standard_script_setup import *
+
 import argparse
 import logging
 

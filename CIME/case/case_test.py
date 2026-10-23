@@ -9,8 +9,10 @@ import signal
 import sys
 
 from CIME.status import append_testlog
-from CIME.SystemTests.system_tests_common import *
+from CIME.test_status import RUN_PHASE, TEST_FAIL_STATUS, TestStatus
 from CIME.utils import expect, find_proc_id, find_system_test
+
+logger = logging.getLogger(__name__)
 
 
 def _iter_signal_names():

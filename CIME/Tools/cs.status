@@ -8,6 +8,8 @@ Typical usage:
 Returns True if no errors occured (not based on test statuses).
 """
 
+from standard_script_setup import *
+
 import argparse
 import glob
 import os
