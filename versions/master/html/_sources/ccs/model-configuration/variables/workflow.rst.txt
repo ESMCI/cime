@@ -143,6 +143,9 @@ Once a queue is specified for a job, the batch system configuration (``config_ba
     <directives queue="gpu">
       <directive>--gres=gpu:1</directive>
     </directives>
+    <directives workflow="case.build">
+      <directive>--hint=nomultithread</directive>
+    </directives>
 
 This allows you to:
 1. Specify in the workflow that ``case.build`` uses the ``debug`` queue
@@ -154,3 +157,4 @@ This allows you to:
 - Queue names vary by machine and batch system (e.g., slurm, PBS, LSF).
 - The queue element is optional and defaults to the regular queue selection process if not specified.
 - Queue-specific batch directives and arguments in ``config_batch.xml`` (using ``queue`` attribute) apply regardless of how the queue is selected (workflow config, xmlchange, or default).
+- ``workflow`` can be used as a selector in ``config_batch.xml`` to target a specific workflow job (for example ``workflow="case.build"``).

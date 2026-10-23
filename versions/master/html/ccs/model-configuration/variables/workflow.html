@@ -304,6 +304,9 @@ Once a queue is specified for a job, the batch system configuration (<code class
 <span class="nt">&lt;directives</span><span class="w"> </span><span class="na">queue=</span><span class="s">"gpu"</span><span class="nt">&gt;</span>
 <span class="w">  </span><span class="nt">&lt;directive&gt;</span>--gres=gpu:1<span class="nt">&lt;/directive&gt;</span>
 <span class="nt">&lt;/directives&gt;</span>
+<span class="nt">&lt;directives</span><span class="w"> </span><span class="na">workflow=</span><span class="s">"case.build"</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;directive&gt;</span>--hint=nomultithread<span class="nt">&lt;/directive&gt;</span>
+<span class="nt">&lt;/directives&gt;</span>
 </pre></div>
 </div>
 <p>This allows you to:
@@ -314,7 +317,8 @@ Once a queue is specified for a job, the batch system configuration (<code class
 - The queue specified in the workflow configuration must exist on the target system. If the queue is not available, a warning is logged and the default queue selection is used.
 - Queue names vary by machine and batch system (e.g., slurm, PBS, LSF).
 - The queue element is optional and defaults to the regular queue selection process if not specified.
-- Queue-specific batch directives and arguments in <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> (using <code class="docutils literal notranslate"><span class="pre">queue</span></code> attribute) apply regardless of how the queue is selected (workflow config, xmlchange, or default).</p>
+- Queue-specific batch directives and arguments in <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> (using <code class="docutils literal notranslate"><span class="pre">queue</span></code> attribute) apply regardless of how the queue is selected (workflow config, xmlchange, or default).
+- <code class="docutils literal notranslate"><span class="pre">workflow</span></code> can be used as a selector in <code class="docutils literal notranslate"><span class="pre">config_batch.xml</span></code> to target a specific workflow job (for example <code class="docutils literal notranslate"><span class="pre">workflow=&quot;case.build&quot;</span></code>).</p>
 </section>
 </section>
 

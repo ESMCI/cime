@@ -381,46 +381,49 @@ requested.</p>
 <tr class="row-odd"><td><p>job_queue</p></td>
 <td><p>If set the argument is only used when submitted to the queue.</p></td>
 </tr>
-<tr class="row-even"><td><p>directive</p></td>
+<tr class="row-even"><td><p>workflow</p></td>
+<td><p>If set, only applies when the workflow job name matches (for example <code class="docutils literal notranslate"><span class="pre">case.build</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p>directive</p></td>
 <td><p>Batch directive to add to submission script.</p></td>
 </tr>
-<tr class="row-odd"><td><p>default</p></td>
+<tr class="row-even"><td><p>default</p></td>
 <td><p>Default value is directive value cannot be resolved.</p></td>
 </tr>
-<tr class="row-even"><td><p>prefix</p></td>
+<tr class="row-odd"><td><p>prefix</p></td>
 <td><p>Value to prefix directives.</p></td>
 </tr>
-<tr class="row-odd"><td><p>queue</p></td>
+<tr class="row-even"><td><p>queue</p></td>
 <td><p>Queue defined for this batch system.</p></td>
 </tr>
-<tr class="row-even"><td><p>default</p></td>
+<tr class="row-odd"><td><p>default</p></td>
 <td><p>Whether the queue is the default for the system.</p></td>
 </tr>
-<tr class="row-odd"><td><p>strict</p></td>
+<tr class="row-even"><td><p>strict</p></td>
 <td><p>If true then the walltime must be less than the maximum allowed walltime.</p></td>
 </tr>
-<tr class="row-even"><td><p>nodemax</p></td>
+<tr class="row-odd"><td><p>nodemax</p></td>
 <td><p>Maximum number of nodes.</p></td>
 </tr>
-<tr class="row-odd"><td><p>nodemin</p></td>
+<tr class="row-even"><td><p>nodemin</p></td>
 <td><p>Minimum number of nodes.</p></td>
 </tr>
-<tr class="row-even"><td><p>jobmax</p></td>
+<tr class="row-odd"><td><p>jobmax</p></td>
 <td><p>Maximum number of tasks.</p></td>
 </tr>
-<tr class="row-odd"><td><p>jobmin</p></td>
+<tr class="row-even"><td><p>jobmin</p></td>
 <td><p>Minimum number of tasks.</p></td>
 </tr>
-<tr class="row-even"><td><p>jobname</p></td>
+<tr class="row-odd"><td><p>jobname</p></td>
 <td><p>If job matches value then this queue will be used.</p></td>
 </tr>
-<tr class="row-odd"><td><p>walltimemax</p></td>
+<tr class="row-even"><td><p>walltimemax</p></td>
 <td><p>Maximum walltime.</p></td>
 </tr>
-<tr class="row-even"><td><p>walltimemin</p></td>
+<tr class="row-odd"><td><p>walltimemin</p></td>
 <td><p>Minimum walltime.</p></td>
 </tr>
-<tr class="row-odd"><td><p>walltimedef</p></td>
+<tr class="row-even"><td><p>walltimedef</p></td>
 <td><p>Default walltime.</p></td>
 </tr>
 </tbody>
@@ -471,9 +474,9 @@ requested.</p>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
 <span class="w">            </span><span class="nt">&lt;arg</span><span class="w"> </span><span class="na">flag=</span><span class="s">""</span><span class="w"> </span><span class="na">name=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="nt">&lt;/arg&gt;</span>
-<span class="w">            </span><span class="cm">&lt;!-- Attributes 'job_queue' is optional--&gt;</span>
+<span class="w">            </span><span class="cm">&lt;!-- Attributes 'job_queue' and 'workflow' are optional--&gt;</span>
 <span class="w">            </span><span class="cm">&lt;!-- Occurrences min: 1 max: Unlimited--&gt;</span>
-<span class="w">            </span><span class="nt">&lt;argument</span><span class="w"> </span><span class="na">job_queue=</span><span class="s">""</span><span class="nt">&gt;</span>
+<span class="w">            </span><span class="nt">&lt;argument</span><span class="w"> </span><span class="na">job_queue=</span><span class="s">""</span><span class="w"> </span><span class="na">workflow=</span><span class="s">""</span><span class="nt">&gt;</span>
 <span class="w">            </span><span class="nt">&lt;/argument&gt;</span>
 <span class="w">        </span><span class="nt">&lt;/submit_args&gt;</span>
 <span class="w">        </span><span class="cm">&lt;!-- Attributes 'None' is None--&gt;</span>
