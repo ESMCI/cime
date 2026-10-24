@@ -7,9 +7,6 @@ This module contains only one class, `NamelistDefinition`, inheriting from
 # Warnings we typically ignore.
 # pylint:disable=invalid-name
 
-# Disable warnings due to using `standard_module_setup`
-# pylint:disable=wildcard-import,unused-wildcard-import
-
 import collections
 import logging
 import os

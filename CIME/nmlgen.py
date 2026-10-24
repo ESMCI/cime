@@ -3,9 +3,6 @@
 # Typically ignore this.
 # pylint: disable=invalid-name
 
-# Disable these because this is our standard setup
-# pylint: disable=wildcard-import,unused-wildcard-import
-
 import datetime
 import hashlib
 import logging
