@@ -11,8 +11,7 @@ from standard_script_setup import *
 from CIME.case import Case
 from CIME.config import Config
 from CIME.get_timing import get_timing
-from CIME.provenance import *
-from CIME.utils import get_lids
+from CIME.utils import expect, get_lids
 
 logger = logging.getLogger(__name__)
 

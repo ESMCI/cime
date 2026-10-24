@@ -108,9 +108,6 @@ from contextlib import contextmanager
 
 from CIME.utils import expect, string_in_list
 
-# Disable these because this is our standard setup
-# pylint: disable=wildcard-import,unused-wildcard-import
-
 
 logger = logging.getLogger(__name__)
 
