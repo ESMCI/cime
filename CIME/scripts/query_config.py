@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 
+from CIME.Tools.standard_script_setup import *
 from CIME import utils
 from CIME.config import Config
 from CIME.XML.component import Component
