@@ -15,20 +15,22 @@ respectively. These can be changed by setting the environment variables
 COMPILER, MPILIB, and DEBUG, respectively.
 """
 
-from CIME.XML.standard_module_setup import *
+import glob
+import logging
+import os
+import shutil
+
+from CIME.build import CmakeTmpBuildDir
 from CIME.utils import (
+    copy_local_macros_to_dir,
     expect,
-    safe_copy,
     get_model,
     get_src_root,
+    safe_copy,
     stringify_bool,
-    copy_local_macros_to_dir,
 )
 from CIME.XML.env_mach_specific import EnvMachSpecific
 from CIME.XML.files import Files
-from CIME.build import CmakeTmpBuildDir
-
-import shutil, glob
 
 logger = logging.getLogger(__name__)
 

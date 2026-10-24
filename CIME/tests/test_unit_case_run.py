@@ -1,9 +1,8 @@
 import unittest
 from unittest import mock
 
+from CIME.case.case_run import TERMINATION_TEXT, _post_run_check
 from CIME.core.exceptions import CIMEError
-from CIME.case.case_run import TERMINATION_TEXT
-from CIME.case.case_run import _post_run_check
 
 
 def _case_post_run_check():

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-import os
-import json
-import unittest
-import tempfile
 import contextlib
+import json
+import os
 import sysconfig
+import tempfile
+import unittest
 from pathlib import Path
 from unittest import mock
+
 from CIME.tests.utils import chdir
 
 evv4esm = False

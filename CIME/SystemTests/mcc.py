@@ -4,7 +4,9 @@ Implemetation of CIME MCC test: Compares ensemble methods
 This does two runs: In the first we run a three member ensemble using the
  MULTI_DRIVER capability, then we run a second single instance case and compare
 """
-from CIME.XML.standard_module_setup import *
+
+import logging
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)

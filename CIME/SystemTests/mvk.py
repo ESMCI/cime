@@ -6,9 +6,9 @@ conduct an ensemble of simulations starting from different initial conditions.
 This class inherits from SystemTestsCommon.
 """
 
-import os
 import json
 import logging
+import os
 from shutil import copytree
 
 from CIME import test_status

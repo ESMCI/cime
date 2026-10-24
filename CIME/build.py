@@ -2,18 +2,26 @@
 functions for building CIME models
 """
 
-import glob, shutil, time, threading, subprocess
+import glob
+import logging
+import os
+import re
+import shutil
+import subprocess
+import threading
+import time
 from pathlib import Path
-from CIME.XML.standard_module_setup import *
 from CIME.status import run_and_log_case_status
 from CIME.utils import (
     CESM_LIKE_MODELS,
+    expect,
     get_model,
     analyze_build_log,
     stringify_bool,
     get_timestamp,
     run_sub_or_cmd,
     run_cmd,
+    run_cmd_no_fail,
     get_batch_script_for_job,
     gzip_existing_file,
     safe_copy,

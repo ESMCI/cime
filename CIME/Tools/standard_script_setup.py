@@ -1,11 +1,25 @@
 """
 Encapsulate the importing of python utils and logging setup, things
 that every script should do.
+
+New scripts should use explicit imports instead of
+`from CIME.Tools.standard_script_setup import *`.
+
+The wildcard exports are maintained for backward compatibility with external
+tools and with the scripts under `CIME/Tools` and `CIME/scripts`, which still
+import this module for its bootstrap side effects (version check, `sys.path`
+and `CIMEROOT` setup). Those scripts will move to the shared bootstrap helpers
+in a follow-up.
 """
+
 # pylint: disable=unused-import
 
-import sys, os
-import __main__ as main
+import argparse  # noqa: F401
+import logging  # noqa: F401
+import os
+import sys
+
+import __main__ as main  # noqa: F401
 
 
 def check_minimum_python_version(major, minor, warn_only=False):
@@ -48,7 +62,6 @@ sys.path.insert(0, cimeroot)
 # Important: Allows external tools to link up with CIME
 os.environ["CIMEROOT"] = cimeroot
 
-import CIME.utils
+import CIME.utils  # noqa: E402
 
 CIME.utils.stop_buffering_output()
-import argparse, logging

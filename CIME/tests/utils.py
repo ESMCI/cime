@@ -1,19 +1,16 @@
+import contextlib
 import io
 import os
-import tempfile
-import signal
 import shutil
 import sys
-import time
-import contextlib
+import tempfile
+import xml.etree.ElementTree as ET
 from collections.abc import Iterable
 from unittest import mock
-import xml.etree.ElementTree as ET
 
-from CIME import utils
 from CIME import test_status
-from CIME.utils import expect
 from CIME.case import Case
+from CIME.utils import expect
 from CIME.XML.entry_id import EntryID
 
 MACRO_PRESERVE_ENV = [
@@ -321,7 +318,6 @@ class MockMachines(object):
 
 
 class MakefileTester(object):
-
     """Helper class for checking Makefile output.
 
     Public methods:
@@ -421,7 +417,6 @@ query:
 
 
 class CMakeTester(object):
-
     """Helper class for checking CMake output.
 
     Public methods:

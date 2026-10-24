@@ -2,47 +2,71 @@
 Base class for CIME system tests
 """
 
-from CIME.XML.standard_module_setup import *
-from CIME.XML.env_run import EnvRun
-from CIME.XML.env_test import EnvTest
-from CIME.status import append_testlog
-from CIME.utils import (
-    CESM_LIKE_MODELS,
-    get_model,
-    safe_copy,
-    get_timestamp,
-    CIMEError,
-    expect,
-    get_current_commit,
-    SharedArea,
-    compset_lacks_cpl_log,
-)
-from CIME.test_status import *
-from CIME.hist_utils import (
-    copy_histfiles,
-    compare_test,
-    generate_teststatus,
-    compare_baseline,
-    get_ts_synopsis,
-    generate_baseline,
-)
-from CIME.config import Config
-from CIME.provenance import save_test_time
-from CIME.locked_files import LOCKED_DIR, lock_file, is_locked
+import calendar
+import glob
+import gzip
+import logging
+import math
+import os
+import re
+import time
+import traceback
+from contextlib import ExitStack
+from datetime import datetime, timedelta
+from typing import List, Tuple, Union
+
+import CIME.build as build
 from CIME.baselines.performance import (
     get_latest_cpl_logs,
-    perf_get_memory_list,
+    load_coupler_customization,
     perf_compare_memory_baseline,
     perf_compare_throughput_baseline,
+    perf_get_memory_list,
     perf_write_baseline,
-    load_coupler_customization,
 )
-import CIME.build as build
-from datetime import datetime, timedelta
-import glob, gzip, time, traceback, os, math, calendar
-
-from contextlib import ExitStack
-from typing import List, Tuple, Union
+from CIME.config import Config
+from CIME.hist_utils import (
+    compare_baseline,
+    compare_test,
+    copy_histfiles,
+    generate_baseline,
+    generate_teststatus,
+    get_ts_synopsis,
+)
+from CIME.locked_files import LOCKED_DIR, is_locked, lock_file
+from CIME.provenance import save_test_time
+from CIME.status import append_testlog
+from CIME.test_status import (
+    BASELINE_PHASE,
+    COMPARE_PHASE,
+    GENERATE_PHASE,
+    MEMCOMP_PHASE,
+    MEMLEAK_PHASE,
+    MODEL_BUILD_PHASE,
+    RUN_PHASE,
+    SHAREDLIB_BUILD_PHASE,
+    STARCHIVE_PHASE,
+    SUBMIT_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TEST_RERUN_COMMENT,
+    THROUGHPUT_PHASE,
+    TestStatus,
+)
+from CIME.utils import (
+    CIMEError,
+    CESM_LIKE_MODELS,
+    SharedArea,
+    expect,
+    get_current_commit,
+    get_model,
+    get_timestamp,
+    compset_lacks_cpl_log,
+    safe_copy,
+)
+from CIME.XML.env_run import EnvRun
+from CIME.XML.env_test import EnvTest
 
 logger = logging.getLogger(__name__)
 
@@ -286,7 +310,7 @@ class SystemTestsCommon(object):
         h = restdatetime.hour
         m = restdatetime.minute
         s = restdatetime.second
-        self._rest_time += f"{(h*3600+m*60+s):05d}"
+        self._rest_time += f"{(h * 3600 + m * 60 + s):05d}"
 
         logger.info(
             "doing an {0} {1} initial test with restart file at {2} {1}".format(
@@ -358,7 +382,6 @@ class SystemTestsCommon(object):
             phase_status != TEST_PEND_STATUS or phase_comment == TEST_RERUN_COMMENT
         )
         if reset or (self._case.get_value("IS_FIRST_RUN") and rerunning):
-
             logging.warning(
                 "Resetting case due to detected re-run of phase {}".format(phase)
             )

@@ -1,17 +1,7 @@
 #!/usr/bin/env python3
 
-import glob
-import re
 import os
-import stat
-import doctest
-import sys
-import pkgutil
-import unittest
-import functools
 
-import CIME
-from CIME import utils
 from CIME.tests import base
 
 
