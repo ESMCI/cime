@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 
-
+from standard_script_setup import *
 from CIME import utils
 from CIME.build import get_standard_makefile_args
 from CIME.case import Case
