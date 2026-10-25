@@ -2597,7 +2597,10 @@ directory, NOT in this subdirectory."""
             loaded_envs = self.load_env(job=job_id, reset=True, verbose=False)
 
             for name, value in iter(sorted(loaded_envs, key=lambda x: x[0])):
-                write("      Setting Environment {}={}".format(name, value))
+                if value is None:
+                    write("      Unsetting Environment {}".format(name))
+                else:
+                    write("      Setting Environment {}={}".format(name, value))
 
             write("")
             write("    SUBMIT CMD:")
