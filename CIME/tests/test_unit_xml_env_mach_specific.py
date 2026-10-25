@@ -426,3 +426,20 @@ class TestXMLEnvMachSpecific(unittest.TestCase):
         )
 
         assert self._env_actions(mach_specific) == [("FOO", "gnu_openmpi")]
+
+    @mock.patch.dict("os.environ", {"FOO": "preexisting"})
+    def test_load_envs_none_value_unsets_existing_var(self):
+        mach_specific = EnvMachSpecific()
+
+        mach_specific._load_envs([("FOO", None)])
+
+        assert "FOO" not in os.environ
+
+    @mock.patch.dict("os.environ", {})
+    def test_load_envs_none_value_leaves_missing_var_unset(self):
+        os.environ.pop("FOO", None)
+        mach_specific = EnvMachSpecific()
+
+        mach_specific._load_envs([("FOO", None)])
+
+        assert "FOO" not in os.environ
