@@ -333,6 +333,7 @@ def jenkins_generic_job(
     else:
         archiver_thread = threading.Thread(
             target=handle_old_test_data,
+            daemon=True,
             args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
         )
         archiver_thread.start()
