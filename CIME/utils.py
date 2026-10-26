@@ -2642,8 +2642,8 @@ class Timeout(object):
 
     def __init__(self, seconds, name="unnamed", action=None):
         self._seconds = seconds
-        self._name    = name
-        self._action  = action if action is not None else self._handle_timeout
+        self._name = name
+        self._action = action if action is not None else self._handle_timeout
 
     def _handle_timeout(self, *_):
         raise CimeTimeoutError(f"Timeout '{self._name}' of {self._seconds} expired")

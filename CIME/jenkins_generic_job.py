@@ -394,8 +394,7 @@ def jenkins_generic_job(
         )[0]
         # Create_test should have either passed, detected failing tests, or timed out
         expect(
-            create_test_stat
-            in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
+            create_test_stat in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
             f"Create_test script FAILED with unexpected error code '{create_test_stat:d}'!",
         )
 
@@ -425,9 +424,7 @@ def jenkins_generic_job(
 
     time_left = (time.time() - curr_time) - timeout
     if time_left > 0:
-        timeout_context = Timeout(
-            time_left, action=CIME.wait_for_tests.signal_handler
-        )
+        timeout_context = Timeout(time_left, action=CIME.wait_for_tests.signal_handler)
     else:
         # We have already timed out
         timeout_context = Timeout(None)
