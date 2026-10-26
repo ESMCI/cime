@@ -227,6 +227,17 @@ OR
         "the scratch-root test area.",
     )
 
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=82800,
+        help="Maximum number of seconds to wait for tests to complete. Default is "
+        "23 hours. If the timeout is exceeded, this job stops waiting, cancels any "
+        "outstanding batch jobs, and reports the results gathered so far. This is "
+        "useful for very long jobs where Jenkins may be unable to signal a timeout "
+        "itself, e.g. if the network connection to the agent is dropped.",
+    )
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
     if args.no_submit:
@@ -304,6 +315,7 @@ OR
         args.queue,
         args.driver,
         args.use_existing_test_id,
+        args.timeout,
     )
 
 
@@ -340,6 +352,7 @@ def _main_func(description):
         queue,
         driver,
         use_existing_test_id,
+        timeout,
     ) = parse_command_line(sys.argv, description)
 
     sys.exit(
@@ -374,6 +387,7 @@ def _main_func(description):
             queue,
             driver,
             use_existing_test_id,
+            timeout,
         )
         else CIME.utils.TESTS_FAILED_ERR_CODE
     )

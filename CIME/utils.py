@@ -2640,12 +2640,13 @@ class Timeout(object):
     Provided None as seconds makes this class a no-op
     """
 
-    def __init__(self, seconds, action=None):
+    def __init__(self, seconds, name="unnamed", action=None):
         self._seconds = seconds
-        self._action = action if action is not None else self._handle_timeout
+        self._name    = name
+        self._action  = action if action is not None else self._handle_timeout
 
     def _handle_timeout(self, *_):
-        raise RuntimeError("Timeout expired")
+        raise CimeTimeoutError(f"Timeout '{self._name}' of {self._seconds} expired")
 
     def __enter__(self):
         if self._seconds is not None:
@@ -2893,11 +2894,12 @@ class SectionTimer:
     def __init__(self, name):
         self.name = name
         self.start = None
+        self.elapsed = None
 
     def __enter__(self):
         self.start = time.perf_counter()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        elapsed = time.perf_counter() - self.start
-        print(f"[Timer] {self.name} took {elapsed:.4f} seconds")
+        self.elapsed = time.perf_counter() - self.start
+        print(f"[Timer] {self.name} took {self.elapsed:.4f} seconds")
