@@ -908,7 +908,7 @@ def run_cmd(
     proc = subprocess.Popen(
         cmd,
         shell=shell,
-        start_new_session=True,  # creates a process group
+        start_new_session=timeout is not None,  # creates a process group
         stdout=arg_stdout,
         stderr=arg_stderr,
         stdin=stdin,

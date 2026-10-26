@@ -417,7 +417,7 @@ def jenkins_generic_job(
     expect(glob_matches, f"{globstr} didn't match anything?")
 
     if timeout:
-        time_left = timeout - (time.time() - curr_time)
+        time_left = int(timeout - (time.time() - curr_time))
         if time_left > 0:
             timeout_context = Timeout(time_left, action=CIME.wait_for_tests.signal_handler)
         else:
@@ -451,7 +451,7 @@ def jenkins_generic_job(
     # If there is time remaining and the archiver has not finished, we can wait for it.
     if archiver_thread is not None and not CIME.wait_for_tests.SIGNAL_RECEIVED:
         if timeout:
-            time_left = timeout - (time.time() - curr_time)
+            time_left = int(timeout - (time.time() - curr_time))
         else:
             time_left = None
         if time_left is None or time_left > 0:
