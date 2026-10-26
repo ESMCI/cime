@@ -419,7 +419,9 @@ def jenkins_generic_job(
     if timeout:
         time_left = int(timeout - (time.time() - curr_time))
         if time_left > 0:
-            timeout_context = Timeout(time_left, action=CIME.wait_for_tests.signal_handler)
+            timeout_context = Timeout(
+                time_left, action=CIME.wait_for_tests.signal_handler
+            )
         else:
             # We have already timed out
             timeout_context = Timeout(None)
