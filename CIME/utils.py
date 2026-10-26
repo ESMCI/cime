@@ -905,33 +905,26 @@ def run_cmd(
     env["PYTHONPATH"] = ":".join(filter(None, cime_pythonpath))
     env["CIMEROOT"] = f"{get_cime_root()}"
 
-    if timeout:
-        with Timeout(timeout):
-            proc = subprocess.Popen(
-                cmd,
-                shell=shell,
-                stdout=arg_stdout,
-                stderr=arg_stderr,
-                stdin=stdin,
-                cwd=from_dir,
-                executable=executable,
-                env=env,
-            )
+    proc = subprocess.Popen(
+        cmd,
+        shell=shell,
+        preexec_fn=os.setsid,  # Creates a process group
+        stdout=arg_stdout,
+        stderr=arg_stderr,
+        stdin=stdin,
+        cwd=from_dir,
+        executable=executable,
+        env=env,
+    )
 
-            output, errput = proc.communicate(input_str)
-    else:
-        proc = subprocess.Popen(
-            cmd,
-            shell=shell,
-            stdout=arg_stdout,
-            stderr=arg_stderr,
-            stdin=stdin,
-            cwd=from_dir,
-            executable=executable,
-            env=env,
-        )
+    try:
+        output, errput = proc.communicate(input_str, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        # Send SIGKILL to the entire group ID (negative PID)
+        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
 
-        output, errput = proc.communicate(input_str)
+        # Clean up file descriptors
+        output, errput = proc.communicate()
 
     # In Python3, subprocess.communicate returns bytes. We want to work with strings
     # as much as possible, so we convert bytes to string (which is unicode in py3) via

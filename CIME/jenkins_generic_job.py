@@ -385,13 +385,17 @@ def jenkins_generic_job(
 
         create_test_cmd = "./create_test " + " ".join(create_test_args)
 
-        create_test_stat = CIME.utils.run_cmd(
-            create_test_cmd,
-            from_dir=CIME.utils.get_scripts_root(),
-            verbose=True,
-            arg_stdout=None,
-            arg_stderr=None,
-        )[0]
+        try:
+            create_test_stat = CIME.utils.run_cmd(
+                create_test_cmd,
+                from_dir=CIME.utils.get_scripts_root(),
+                verbose=True,
+                arg_stdout=None,
+                arg_stderr=None,
+                timeout=timeout
+            )[0]
+        except CimeTimeoutError:
+            
         # Create_test should have either passed, detected failing tests, or timed out
         expect(
             create_test_stat in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
@@ -422,7 +426,7 @@ def jenkins_generic_job(
     glob_matches = glob.glob(globstr)
     expect(glob_matches, f"{globstr} didn't match anything?")
 
-    time_left = (time.time() - curr_time) - timeout
+    time_left = timeout - (time.time() - curr_time)
     if time_left > 0:
         timeout_context = Timeout(time_left, action=CIME.wait_for_tests.signal_handler)
     else:
@@ -453,7 +457,7 @@ def jenkins_generic_job(
 
     # If there is time remaining and the archiver has not finished, we can wait for it.
     if archiver_thread is not None and not CIME.wait_for_tests.SIGNAL_RECEIVED:
-        time_left = (time.time() - curr_time) - timeout
+        time_left = timeout - (time.time() - curr_time)
         if time_left > 0:
             with Timeout(time_left):
                 logging.info("TEST ARCHIVER: Waiting for archiver thread")
