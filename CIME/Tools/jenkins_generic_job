@@ -235,7 +235,8 @@ OR
         "23 hours. If the timeout is exceeded, this job stops waiting, cancels any "
         "outstanding batch jobs, and reports the results gathered so far. This is "
         "useful for very long jobs where Jenkins may be unable to signal a timeout "
-        "itself, e.g. if the network connection to the agent is dropped.",
+        "itself, e.g. if the network connection to the agent is dropped. Set this to "
+        "zero to have no timeout.",
     )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)

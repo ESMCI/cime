@@ -271,16 +271,6 @@ def jenkins_generic_job(
     ###############################################################################
     """
     Return True if all tests passed
-
-    If ``use_existing_test_id`` is provided, create_test is not run. Instead,
-    the pre-existing test results identified by that test-id are located under
-    the test root and processed (waited on and optionally submitted to CDash).
-
-    If ``timeout`` (seconds, default 23 hours) is provided, waiting for tests is
-    aborted once the timeout is exceeded; any outstanding batch jobs are cancelled
-    and the results gathered so far are reported. This lets very long jobs stop
-    themselves when Jenkins cannot signal a timeout, e.g. if the network
-    connection to the agent is dropped. Use ``--timeout 0`` to disable the timeout.
     """
     use_batch = machine.has_batch_system() and not no_batch
     test_suite = machine.get_value("TESTS")
@@ -288,6 +278,7 @@ def jenkins_generic_job(
     test_suite = test_suite if arg_test_suite is None else arg_test_suite
     test_root = os.path.join(scratch_root, "J")
     curr_time = time.time()
+    timeout = None if timeout == 0 else timeout
 
     if use_batch:
         batch_system = machine.get_value("BATCH_SYSTEM")
@@ -425,13 +416,16 @@ def jenkins_generic_job(
     glob_matches = glob.glob(globstr)
     expect(glob_matches, f"{globstr} didn't match anything?")
 
-    time_left = timeout - (time.time() - curr_time)
-    if time_left > 0:
-        timeout_context = Timeout(time_left, action=CIME.wait_for_tests.signal_handler)
+    if timeout:
+        time_left = timeout - (time.time() - curr_time)
+        if time_left > 0:
+            timeout_context = Timeout(time_left, action=CIME.wait_for_tests.signal_handler)
+        else:
+            # We have already timed out
+            timeout_context = Timeout(None)
+            CIME.wait_for_tests.signal_handler()
     else:
-        # We have already timed out
         timeout_context = Timeout(None)
-        CIME.wait_for_tests.signal_handler()
 
     # Run wait_for_tests
     with timeout_context:
@@ -456,8 +450,11 @@ def jenkins_generic_job(
 
     # If there is time remaining and the archiver has not finished, we can wait for it.
     if archiver_thread is not None and not CIME.wait_for_tests.SIGNAL_RECEIVED:
-        time_left = timeout - (time.time() - curr_time)
-        if time_left > 0:
+        if timeout:
+            time_left = timeout - (time.time() - curr_time)
+        else:
+            time_left = None
+        if time_left is None or time_left > 0:
             with Timeout(time_left):
                 logging.info("TEST ARCHIVER: Waiting for archiver thread")
                 archiver_thread.join()
