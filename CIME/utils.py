@@ -2639,7 +2639,7 @@ class Timeout(object):
         self._action = action if action is not None else self._handle_timeout
 
     def _handle_timeout(self, *_):
-        raise CimeTimeoutError(f"Timeout '{self._name}' of {self._seconds} expired")
+        raise RuntimeError(f"Timeout '{self._name}' of {self._seconds} expired")
 
     def __enter__(self):
         if self._seconds is not None:
