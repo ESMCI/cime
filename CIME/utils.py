@@ -917,6 +917,7 @@ def run_cmd(
         env=env,
     )
 
+    timed_out = False
     try:
         output, errput = proc.communicate(input_str, timeout=timeout)
     except subprocess.TimeoutExpired:
@@ -925,6 +926,8 @@ def run_cmd(
 
         # Clean up file descriptors
         output, errput = proc.communicate()
+
+        timed_out = True
 
     # In Python3, subprocess.communicate returns bytes. We want to work with strings
     # as much as possible, so we convert bytes to string (which is unicode in py3) via
@@ -952,6 +955,10 @@ def run_cmd(
         arg_stdout.close()  # pylint: disable=no-member
     if isinstance(arg_stderr, io.IOBase) and arg_stderr is not arg_stdout:
         arg_stderr.close()  # pylint: disable=no-member
+
+    # Timed-out procs should never appear to have succeeded
+    if stat == 0 and timed_out:
+        stat = 1
 
     if verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG)):
         if stat != 0:
