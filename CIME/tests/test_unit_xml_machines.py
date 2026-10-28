@@ -239,6 +239,7 @@ class TestUnitXMLMachines(unittest.TestCase):
         # Also clear Files cache to ensure we don't get stale paths from other tests
         from CIME.XML.files import Files
         from CIME.XML.entry_id import EntryID
+
         Files._FILEMAP = {}
         EntryID._FILEMAP = {}
         # read_only=False for github testing
@@ -258,7 +259,7 @@ class TestUnitXMLMachines(unittest.TestCase):
         self.machine.machines_dir = None
         self.machine.custom_settings = {}
         self.machine.extra_machines_dir = None
-        
+
         # Now load from our test XML
         self.machine.read_fd(io.StringIO(MACHINE_TEST_XML))
         # Set to the first available machine
