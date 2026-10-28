@@ -74,8 +74,11 @@ def scratch_root():
         yield tmp
 
 
-def test_timeout_is_forwarded_to_wait_for_tests(scratch_root):
+def test_timeout_wraps_wait_for_tests(scratch_root):
+    # Context
     machine = _make_machine(scratch_root)
+
+    # Mocks
     with mock.patch(
         "CIME.wait_for_tests.wait_for_tests", return_value=True
     ) as wait_for_tests, mock.patch(
@@ -83,12 +86,19 @@ def test_timeout_is_forwarded_to_wait_for_tests(scratch_root):
     ), mock.patch(
         "CIME.jenkins_generic_job.glob.glob",
         return_value=[f"{scratch_root}/J/case.mymachine_gnu.myexisting123/TestStatus"],
-    ):
+    ), mock.patch(
+        "CIME.jenkins_generic_job.time.time", return_value=0
+    ), mock.patch("CIME.jenkins_generic_job.Timeout") as timeout_context:
+        # Act
         result = _call(scratch_root, machine, timeout=42)
 
+    # Assert
     assert result is True
     wait_for_tests.assert_called_once()
-    assert wait_for_tests.call_args.kwargs["timeout"] == 42
+    timeout_context.assert_called_once_with(
+        42, action=jenkins_generic_job.CIME.wait_for_tests.signal_handler
+    )
+    timeout_context.return_value.__enter__.assert_called_once()
 
 
 def test_timeout_defaults_to_none(scratch_root):
