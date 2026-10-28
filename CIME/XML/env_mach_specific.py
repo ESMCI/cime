@@ -415,6 +415,11 @@ class EnvMachSpecific(EnvBase):
                                     val
                                 ),
                             )
+                            if val == "":
+                                # Treat a value that resolves to nothing (e.g. an
+                                # empty $ENV or a $SHELL command with no output)
+                                # the same as an empty element
+                                val = None
 
                         # intentional unindent, result is appended even if val is None
                         name = self.get(child, "name")

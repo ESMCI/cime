@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import unittest
 import tempfile
 from unittest import mock
@@ -8,6 +9,28 @@ from CIME import utils
 from CIME.XML.env_mach_specific import EnvMachSpecific
 
 # pylint: disable=unused-argument
+
+ENV_MACH_SPECIFIC_TEMPLATE = """<?xml version="1.0"?>
+<file id="env_mach_specific.xml" version="2.0">
+  <header>
+    These variables control the machine dependent environment.
+    </header>
+  <group id="compliant_values">
+    <entry id="run_exe" value="${{EXEROOT}}/e3sm.exe ">
+      <type>char</type>
+      <desc>executable name</desc>
+    </entry>
+    <entry id="run_misc_suffix" value=" &gt;&gt; e3sm.log.$LID 2&gt;&amp;1 ">
+      <type>char</type>
+      <desc>redirect for job output</desc>
+    </entry>
+  </group>
+  <module_system type="none"/>
+  <environment_variables>
+    {env_lines}
+  </environment_variables>
+</file>
+"""
 
 
 class TestXMLEnvMachSpecific(unittest.TestCase):
@@ -343,3 +366,80 @@ class TestXMLEnvMachSpecific(unittest.TestCase):
         value = mach_specific.get_module_system_cmd_path("python")
 
         assert value == "/testexec/python"
+
+    def _make_mach_specific(self, env_lines):
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(ENV_MACH_SPECIFIC_TEMPLATE.format(env_lines=env_lines).encode())
+            temp.seek(0)
+
+            return EnvMachSpecific(infile=temp.name)
+
+    def _mock_case(self):
+        case = mock.MagicMock()
+        case.get_value.side_effect = {"COMPILER": "gnu", "MPILIB": "openmpi"}.get
+
+        return case
+
+    def _env_actions(self, mach_specific):
+        nodes = mach_specific.get_children("environment_variables")
+
+        return mach_specific._compute_env_actions(nodes, self._mock_case())
+
+    def test_env_literal_value_is_set(self):
+        mach_specific = self._make_mach_specific('<env name="FOO">bar</env>')
+
+        assert self._env_actions(mach_specific) == [("FOO", "bar")]
+
+    def test_env_empty_element_is_unset(self):
+        mach_specific = self._make_mach_specific('<env name="FOO"/>')
+
+        assert self._env_actions(mach_specific) == [("FOO", None)]
+
+    @mock.patch.dict("os.environ", {"CIME_TEST_EMPTY_VAR": ""})
+    def test_env_value_resolving_to_empty_env_is_unset(self):
+        mach_specific = self._make_mach_specific(
+            '<env name="FOO">$ENV{CIME_TEST_EMPTY_VAR}</env>'
+        )
+
+        assert self._env_actions(mach_specific) == [("FOO", None)]
+
+    @mock.patch.dict("os.environ", {})
+    def test_env_value_resolving_to_empty_shell_output_is_unset(self):
+        os.environ.pop("CIME_TEST_UNSET_VAR", None)
+        mach_specific = self._make_mach_specific(
+            '<env name="FOO">$SHELL{printenv CIME_TEST_UNSET_VAR || true}</env>'
+        )
+
+        assert self._env_actions(mach_specific) == [("FOO", None)]
+
+    @mock.patch.dict("os.environ", {"CIME_TEST_SET_VAR": "/some/path"})
+    def test_env_value_resolving_to_nonempty_is_set(self):
+        mach_specific = self._make_mach_specific(
+            '<env name="FOO">$SHELL{printenv CIME_TEST_SET_VAR || true}</env>'
+        )
+
+        assert self._env_actions(mach_specific) == [("FOO", "/some/path")]
+
+    def test_env_value_compiler_mpilib_substitution(self):
+        mach_specific = self._make_mach_specific(
+            '<env name="FOO">$COMPILER_$MPILIB</env>'
+        )
+
+        assert self._env_actions(mach_specific) == [("FOO", "gnu_openmpi")]
+
+    @mock.patch.dict("os.environ", {"FOO": "preexisting"})
+    def test_load_envs_none_value_unsets_existing_var(self):
+        mach_specific = EnvMachSpecific()
+
+        mach_specific._load_envs([("FOO", None)])
+
+        assert "FOO" not in os.environ
+
+    @mock.patch.dict("os.environ", {})
+    def test_load_envs_none_value_leaves_missing_var_unset(self):
+        os.environ.pop("FOO", None)
+        mach_specific = EnvMachSpecific()
+
+        mach_specific._load_envs([("FOO", None)])
+
+        assert "FOO" not in os.environ

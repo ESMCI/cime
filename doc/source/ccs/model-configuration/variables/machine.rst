@@ -265,6 +265,18 @@ env                         Can have multiple where the combination of ``name`` 
         <env name="" source=""></env>
   </environment_variables>
 
+An ``env`` element with no value, or whose value resolves to an empty string
+(for example, from an empty ``$ENV{...}`` or a ``$SHELL{...}`` command with
+no output), unsets the environment variable. This makes it possible to set
+a variable only when another one is available:
+
+.. code-block:: xml
+
+  <environment_variables>
+        <!-- Set PIO from MY_PIO if it is set; otherwise leave PIO unset -->
+        <env name="PIO">$SHELL{printenv MY_PIO || true}</env>
+  </environment_variables>
+
 Resource Limits
 :::::::::::::::
 =================== =====================================================
