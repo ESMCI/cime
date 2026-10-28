@@ -939,9 +939,9 @@ def run_cmd(
             except subprocess.TimeoutExpired:
                 try:
                     os.killpg(proc.pid, signal.SIGKILL)
-                    output, errput = proc.communicate()
                 except ProcessLookupError:
                     pass  # Group already exited
+                output, errput = proc.communicate()
             except ProcessLookupError:
                 output, errput = proc.communicate()
 
