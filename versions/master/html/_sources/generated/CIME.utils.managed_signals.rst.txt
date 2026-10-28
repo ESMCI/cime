@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.managed\_signals
+===========================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: managed_signals

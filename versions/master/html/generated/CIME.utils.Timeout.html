@@ -24,7 +24,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME.wait_for_tests" href="CIME.wait_for_tests.html" />
+    <link rel="next" title="CIME.utils.ProcessInterrupted" href="CIME.utils.ProcessInterrupted.html" />
     <link rel="prev" title="CIME.utils.SharedArea" href="CIME.utils.SharedArea.html" /> 
 </head>
 
@@ -164,6 +164,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.is_python_executable.html">CIME.utils.is_python_executable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.ls_sorted_by_fname.html">CIME.utils.ls_sorted_by_fname</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.ls_sorted_by_mtime.html">CIME.utils.ls_sorted_by_mtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.managed_signals.html">CIME.utils.managed_signals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.match_any.html">CIME.utils.match_any</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.model_log.html">CIME.utils.model_log</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CIME.utils.new_lid.html">CIME.utils.new_lid</a></li>
@@ -201,6 +202,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#CIME.utils.Timeout"><code class="docutils literal notranslate"><span class="pre">Timeout</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="CIME.utils.ProcessInterrupted.html">CIME.utils.ProcessInterrupted</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.wait_for_tests.html">CIME.wait_for_tests</a></li>
@@ -238,7 +240,7 @@
 <h1>CIME.utils.Timeout<a class="headerlink" href="#cime-utils-timeout" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="CIME.utils.Timeout">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">Timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.Timeout" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CIME.utils.</span></span><span class="sig-name descname"><span class="pre">Timeout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unnamed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/utils.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.utils.Timeout" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A context manager that implements a timeout. By default, it
 will raise exception, but a custon function call can be provided.
@@ -262,7 +264,7 @@ Provided None as seconds makes this class a no-op</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="CIME.utils.SharedArea.html" class="btn btn-neutral float-left" title="CIME.utils.SharedArea" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="CIME.wait_for_tests.html" class="btn btn-neutral float-right" title="CIME.wait_for_tests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CIME.utils.ProcessInterrupted.html" class="btn btn-neutral float-right" title="CIME.utils.ProcessInterrupted" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

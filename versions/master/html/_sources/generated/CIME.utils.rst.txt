@@ -86,6 +86,7 @@ CIME.utils
                     is_python_executable
                     ls_sorted_by_fname
                     ls_sorted_by_mtime
+                    managed_signals
                     match_any
                     model_log
                     new_lid
@@ -136,6 +137,15 @@ CIME.utils
     
 
     
+        
+            .. rubric:: Exceptions
+
+            .. autosummary::
+                :toctree:
+                :nosignatures:
+                :template: autosummary/base.rst
+                
+                    ProcessInterrupted
         
     
 
