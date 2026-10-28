@@ -185,7 +185,7 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
       <modules DEBUG="TRUE">
         <command name="load">debug</command>
       </modules>
-      <modules compiler="intel">>
+      <modules compiler="intel">
         <command name="load">PrgEnv-intel/8.3.3</command>
       </modules>
       <modules compiler="gnu">
@@ -195,7 +195,7 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
         <command name="load">PrgEnv-gnu/8.3.3</command>
         <command name="load">PrgEnv-gnugpu/8.3.3</command>
       </modules>
-      <modules compiler="gnugpu">>
+      <modules compiler="gnugpu">
         <command name="load">PrgEnv-gnugpu/8.3.3</command>
       </modules>
       <modules>
