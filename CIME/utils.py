@@ -905,33 +905,47 @@ def run_cmd(
     env["PYTHONPATH"] = ":".join(filter(None, cime_pythonpath))
     env["CIMEROOT"] = f"{get_cime_root()}"
 
-    if timeout:
-        with Timeout(timeout):
-            proc = subprocess.Popen(
-                cmd,
-                shell=shell,
-                stdout=arg_stdout,
-                stderr=arg_stderr,
-                stdin=stdin,
-                cwd=from_dir,
-                executable=executable,
-                env=env,
-            )
+    proc = subprocess.Popen(
+        cmd,
+        shell=shell,
+        start_new_session=timeout is not None,  # creates a process group
+        stdout=arg_stdout,
+        stderr=arg_stderr,
+        stdin=stdin,
+        cwd=from_dir,
+        executable=executable,
+        env=env,
+    )
 
-            output, errput = proc.communicate(input_str)
-    else:
-        proc = subprocess.Popen(
-            cmd,
-            shell=shell,
-            stdout=arg_stdout,
-            stderr=arg_stderr,
-            stdin=stdin,
-            cwd=from_dir,
-            executable=executable,
-            env=env,
-        )
-
+    timed_out = False
+    if timeout is None:
         output, errput = proc.communicate(input_str)
+    else:
+        # If timeouts are on, things are much more complicated. The subprocess is its
+        # own process group so we can use killpg, which should ensure that everything
+        # gets killed when there's a timeout. However, this means SIGINT and SIGTERM
+        # signals going to the parent process (this program) will not be seen by the
+        # subprocess, so we have to handle those here via managed_signals.
+        try:
+            with managed_signals():
+                output, errput = proc.communicate(input_str, timeout=timeout)
+        except (subprocess.TimeoutExpired, ProcessInterrupted):
+            # To be nice, we first try to kill the subprocess in a way that it can
+            # handle the signal and cleanup. We allow it 30 seconds to stop before
+            # killing it decisively.
+            try:
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+                output, errput = proc.communicate(timeout=30)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(proc.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass  # Group already exited
+                output, errput = proc.communicate()
+            except ProcessLookupError:
+                output, errput = proc.communicate()
+
+            timed_out = True
 
     # In Python3, subprocess.communicate returns bytes. We want to work with strings
     # as much as possible, so we convert bytes to string (which is unicode in py3) via
@@ -959,6 +973,10 @@ def run_cmd(
         arg_stdout.close()  # pylint: disable=no-member
     if isinstance(arg_stderr, io.IOBase) and arg_stderr is not arg_stdout:
         arg_stderr.close()  # pylint: disable=no-member
+
+    # Timed-out procs should never appear to have succeeded
+    if stat == 0 and timed_out:
+        stat = 1
 
     if verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG)):
         if stat != 0:
@@ -2640,12 +2658,13 @@ class Timeout(object):
     Provided None as seconds makes this class a no-op
     """
 
-    def __init__(self, seconds, action=None):
+    def __init__(self, seconds, name="unnamed", action=None):
         self._seconds = seconds
+        self._name = name
         self._action = action if action is not None else self._handle_timeout
 
     def _handle_timeout(self, *_):
-        raise RuntimeError("Timeout expired")
+        raise RuntimeError(f"Timeout '{self._name}' of {self._seconds} expired")
 
     def __enter__(self):
         if self._seconds is not None:
@@ -2893,11 +2912,45 @@ class SectionTimer:
     def __init__(self, name):
         self.name = name
         self.start = None
+        self.elapsed = None
 
     def __enter__(self):
         self.start = time.perf_counter()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        elapsed = time.perf_counter() - self.start
-        print(f"[Timer] {self.name} took {elapsed:.4f} seconds")
+        self.elapsed = time.perf_counter() - self.start
+        print(f"[Timer] {self.name} took {self.elapsed:.4f} seconds")
+
+
+class ProcessInterrupted(Exception):
+    pass
+
+
+@contextmanager
+def managed_signals():
+    """
+    Context manager that handles only signal registration and default restoration.
+    Useful for handling signal interruptions as exceptions.
+    """
+
+    def handle_shutdown_signal(signum, frame):
+        # Raising an exception breaks Python out of the blocking C-level communicate() call
+        raise ProcessInterrupted()
+
+    # 1. Save original handlers
+    original_sigint = signal.getsignal(signal.SIGINT)
+    original_sigterm = signal.getsignal(signal.SIGTERM)
+
+    # 2. Register custom handlers
+    signal.signal(signal.SIGINT, handle_shutdown_signal)
+    signal.signal(signal.SIGTERM, handle_shutdown_signal)
+
+    try:
+        # Run whatever code is inside the 'with' block
+        yield
+
+    finally:
+        # 3. Always restore original signal handlers on exit
+        signal.signal(signal.SIGINT, original_sigint)
+        signal.signal(signal.SIGTERM, original_sigterm)

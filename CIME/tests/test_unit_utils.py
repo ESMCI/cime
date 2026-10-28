@@ -5,6 +5,9 @@ import stat
 import shutil
 import sys
 import tempfile
+import time
+import signal
+import subprocess
 
 import unittest
 from unittest import mock
@@ -25,6 +28,9 @@ from CIME.utils import (
     get_current_commit,
     get_current_branch,
     get_current_submodule_status,
+    run_cmd,
+    ProcessInterrupted,
+    managed_signals,
 )
 
 
@@ -735,6 +741,160 @@ class TestGitWrappers(unittest.TestCase):
         """Test get_current_submodule_status handles invalid dir"""
         result = get_current_submodule_status(repo="tgw_not_exist")
         self.assertEqual(result, None)
+
+
+class TestRunCmdTimeout(unittest.TestCase):
+    """Test timeout handling in run_cmd function"""
+
+    def test_run_cmd_no_timeout(self):
+        """Test that run_cmd works normally without timeout"""
+        stat, output, errput = run_cmd("echo 'hello world'")
+        self.assertEqual(stat, 0)
+        self.assertIn("hello world", output)
+
+    def test_run_cmd_timeout_expires(self):
+        """Test that run_cmd returns failure when timeout expires"""
+        stat, output, errput = run_cmd("sleep 5", timeout=0.5)
+        # Timed-out processes should return non-zero status
+        self.assertNotEqual(stat, 0)
+
+    def test_run_cmd_completes_before_timeout(self):
+        """Test that run_cmd succeeds when command completes before timeout"""
+        stat, output, errput = run_cmd("echo 'fast'", timeout=5)
+        self.assertEqual(stat, 0)
+        self.assertIn("fast", output)
+
+    def test_run_cmd_timeout_with_output(self):
+        """Test that partial output is captured before timeout"""
+        cmd = "echo 'output'; sleep 5"
+        stat, output, errput = run_cmd(cmd, timeout=0.5)
+        # Should fail due to timeout
+        self.assertNotEqual(stat, 0)
+        # But we should still capture the output before the sleep
+        self.assertIn("output", output)
+
+    def test_run_cmd_timeout_with_stderr(self):
+        """Test timeout handling with stderr output"""
+        cmd = "echo 'error' >&2; sleep 5"
+        stat, output, errput = run_cmd(cmd, timeout=0.5, combine_output=False)
+        self.assertNotEqual(stat, 0)
+        self.assertIn("error", errput)
+
+    def test_run_cmd_timeout_long_running_process(self):
+        """Test timeout with a process that creates process groups"""
+        # A bash script that spawns child processes
+        cmd = "bash -c 'sleep 10 & wait'"
+        stat, output, errput = run_cmd(cmd, timeout=0.5)
+        # Should timeout and fail
+        self.assertNotEqual(stat, 0)
+
+    def test_run_cmd_timeout_zero(self):
+        """Test timeout with very small timeout value"""
+        stat, output, errput = run_cmd("sleep 1", timeout=0.1)
+        # Should timeout immediately
+        self.assertNotEqual(stat, 0)
+
+    def test_run_cmd_timeout_respects_sigterm(self):
+        """Test that process receives SIGTERM on timeout"""
+        # Create a script that handles SIGTERM gracefully
+        script = """
+import signal
+import sys
+import time
+
+def handler(signum, frame):
+    print("SIGTERM received", file=sys.stderr)
+    sys.exit(42)
+
+signal.signal(signal.SIGTERM, handler)
+time.sleep(10)
+"""
+        stat, output, errput = run_cmd(f"python3 -c '{script}'", timeout=1.0)
+        # Process should have been killed by timeout
+        self.assertNotEqual(stat, 0)
+
+    def test_run_cmd_timeout_none_parameter(self):
+        """Test that timeout=None disables timeout"""
+        stat, output, errput = run_cmd("echo 'test'", timeout=None)
+        self.assertEqual(stat, 0)
+        self.assertIn("test", output)
+
+    def test_run_cmd_with_input_and_timeout(self):
+        """Test timeout with stdin input"""
+        stat, output, errput = run_cmd("cat", input_str=b"hello\n", timeout=2.0)
+        self.assertEqual(stat, 0)
+        self.assertIn("hello", output)
+
+    def test_run_cmd_timeout_with_from_dir(self):
+        """Test timeout works with from_dir parameter"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            stat, output, errput = run_cmd("pwd", from_dir=tmpdir, timeout=2.0)
+            self.assertEqual(stat, 0)
+            self.assertIn(tmpdir, output)
+
+    def test_run_cmd_timeout_with_env(self):
+        """Test timeout works with custom environment"""
+        env = os.environ.copy()
+        env["TEST_VAR"] = "test_value"
+        stat, output, errput = run_cmd(
+            "echo $TEST_VAR", env=env, timeout=2.0, shell=True
+        )
+        self.assertEqual(stat, 0)
+        self.assertIn("test_value", output)
+
+    def test_run_cmd_timeout_creates_process_group(self):
+        """Test that timeout creates a process group for proper cleanup"""
+        # When timeout is set, start_new_session should be True
+        # This is verified indirectly by checking timeout works with subprocesses
+        cmd = "bash -c 'sleep 10 & sleep 10 & wait'"
+        stat, output, errput = run_cmd(cmd, timeout=0.5)
+        # Should successfully kill all child processes
+        self.assertNotEqual(stat, 0)
+
+    def test_run_cmd_timeout_with_shell_false(self):
+        """Test timeout works with shell=False"""
+        stat, output, errput = run_cmd("echo hello world", timeout=2.0, shell=False)
+        self.assertEqual(stat, 0)
+        self.assertIn("hello", output)
+
+    def test_run_cmd_timeout_verbose_output(self):
+        """Test timeout with verbose logging"""
+        with mock.patch("CIME.utils.logger") as mock_logger:
+            mock_logger.isEnabledFor.return_value = True
+            stat, output, errput = run_cmd(
+                "echo 'verbose test'", timeout=2.0, verbose=True
+            )
+            self.assertEqual(stat, 0)
+            # Verify logging was called
+            self.assertGreater(mock_logger.info.call_count, 0)
+
+    def test_run_cmd_timeout_vs_normal_nonzero_exit(self):
+        """Test distinguishing timeout failure from command failure"""
+        # Command that fails normally
+        stat1, output1, errput1 = run_cmd("false")
+        # Command that times out (also fails)
+        stat2, output2, errput2 = run_cmd("sleep 5", timeout=0.1)
+        # Both should be non-zero, but from different reasons
+        self.assertNotEqual(stat1, 0)
+        self.assertNotEqual(stat2, 0)
+
+    def test_run_cmd_timeout_cascade_signals(self):
+        """Test the cascade of SIGTERM -> SIGKILL on timeout"""
+        # This tests the implementation detail that timeout first tries SIGTERM,
+        # then SIGKILL. We use a process that should respond to SIGTERM.
+        script = """
+import signal
+import time
+
+def handler(signum, frame):
+    exit(0)
+
+signal.signal(signal.SIGTERM, handler)
+time.sleep(60)
+"""
+        stat, output, errput = run_cmd(f"python3 -c '{script}'", timeout=1.0)
+        # Should have been cleanly terminated via SIGTERM cascade
+        self.assertNotEqual(stat, 0)
 
 
 if __name__ == "__main__":

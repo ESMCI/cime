@@ -1,5 +1,5 @@
 import CIME.wait_for_tests
-from CIME.utils import expect, run_cmd_no_fail
+from CIME.utils import expect, run_cmd_no_fail, Timeout
 from CIME.case import Case
 
 import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
@@ -266,20 +266,19 @@ def jenkins_generic_job(
     queue,
     driver,
     use_existing_test_id,
+    timeout=82800,
 ):
     ###############################################################################
     """
     Return True if all tests passed
-
-    If ``use_existing_test_id`` is provided, create_test is not run. Instead,
-    the pre-existing test results identified by that test-id are located under
-    the test root and processed (waited on and optionally submitted to CDash).
     """
     use_batch = machine.has_batch_system() and not no_batch
     test_suite = machine.get_value("TESTS")
     proxy = machine.get_value("PROXY")
     test_suite = test_suite if arg_test_suite is None else arg_test_suite
     test_root = os.path.join(scratch_root, "J")
+    curr_time = time.time()
+    timeout = None if timeout == 0 else timeout
 
     if use_batch:
         batch_system = machine.get_value("BATCH_SYSTEM")
@@ -325,6 +324,7 @@ def jenkins_generic_job(
     else:
         archiver_thread = threading.Thread(
             target=handle_old_test_data,
+            daemon=True,
             args=(machine, compiler, test_id_root, scratch_root, test_root, test_id),
         )
         archiver_thread.start()
@@ -332,7 +332,6 @@ def jenkins_generic_job(
     #
     # Set up create_test command and run it
     #
-
     if use_existing_test_id is None:
         create_test_args = [
             test_suite,
@@ -378,25 +377,24 @@ def jenkins_generic_job(
 
         create_test_cmd = "./create_test " + " ".join(create_test_args)
 
-        if not CIME.wait_for_tests.SIGNAL_RECEIVED:
-            create_test_stat = CIME.utils.run_cmd(
-                create_test_cmd,
-                from_dir=CIME.utils.get_scripts_root(),
-                verbose=True,
-                arg_stdout=None,
-                arg_stderr=None,
-            )[0]
-            # Create_test should have either passed, detected failing tests, or timed out
-            expect(
-                create_test_stat
-                in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGTERM],
-                f"Create_test script FAILED with error code '{create_test_stat:d}'!",
-            )
+        create_test_stat = CIME.utils.run_cmd(
+            create_test_cmd,
+            from_dir=CIME.utils.get_scripts_root(),
+            verbose=True,
+            arg_stdout=None,
+            arg_stderr=None,
+            timeout=timeout,
+        )[0]
+        # Create_test should have either passed, detected failing tests, or timed out
+        expect(
+            create_test_stat
+            in [0, CIME.utils.TESTS_FAILED_ERR_CODE, -signal.SIGKILL, -signal.SIGTERM],
+            f"Create_test script FAILED with unexpected error code '{create_test_stat:d}'!",
+        )
 
     #
     # Wait for tests
     #
-
     if submit_to_cdash:
         cdash_build_name = (
             "_".join([test_suite, baseline_name, compiler])
@@ -417,27 +415,51 @@ def jenkins_generic_job(
 
     glob_matches = glob.glob(globstr)
     expect(glob_matches, f"{globstr} didn't match anything?")
-    tests_passed = CIME.wait_for_tests.wait_for_tests(
-        glob.glob(globstr),
-        no_wait=not use_batch,  # wait if using queue
-        check_throughput=check_throughput,
-        check_memory=check_memory,
-        ignore_namelists=ignore_namelists,
-        ignore_diffs=ignore_diffs,
-        ignore_memleak=ignore_memleak,
-        cdash_build_name=cdash_build_name,
-        cdash_project=cdash_project,
-        cdash_build_group=cdash_build_group,
-        update_success=update_success,
-    )
 
+    if timeout:
+        time_left = int(timeout - (time.time() - curr_time))
+        if time_left > 0:
+            timeout_context = Timeout(
+                time_left, action=CIME.wait_for_tests.signal_handler
+            )
+        else:
+            # We have already timed out
+            timeout_context = Timeout(None)
+            CIME.wait_for_tests.signal_handler()
+    else:
+        timeout_context = Timeout(None)
+
+    # Run wait_for_tests
+    with timeout_context:
+        no_wait = not use_batch or CIME.wait_for_tests.SIGNAL_RECEIVED
+        tests_passed = CIME.wait_for_tests.wait_for_tests(
+            glob.glob(globstr),
+            no_wait=no_wait,  # wait if using queue and not timed out
+            check_throughput=check_throughput,
+            check_memory=check_memory,
+            ignore_namelists=ignore_namelists,
+            ignore_diffs=ignore_diffs,
+            ignore_memleak=ignore_memleak,
+            cdash_build_name=cdash_build_name,
+            cdash_project=cdash_project,
+            cdash_build_group=cdash_build_group,
+            update_success=update_success,
+        )
+
+    # Cleanup queue if this is a batch machine and we timed out
     if use_batch and CIME.wait_for_tests.SIGNAL_RECEIVED:
-        # Cleanup
         cleanup_queue(test_root, test_id)
 
+    # If there is time remaining and the archiver has not finished, we can wait for it.
     if archiver_thread is not None and not CIME.wait_for_tests.SIGNAL_RECEIVED:
-        logging.info("TEST ARCHIVER: Waiting for archiver thread")
-        archiver_thread.join()
-        logging.info("TEST ARCHIVER: Waiting for archiver finished")
+        if timeout:
+            time_left = int(timeout - (time.time() - curr_time))
+        else:
+            time_left = None
+        if time_left is None or time_left > 0:
+            with Timeout(time_left):
+                logging.info("TEST ARCHIVER: Waiting for archiver thread")
+                archiver_thread.join()
+                logging.info("TEST ARCHIVER: Waiting for archiver finished")
 
     return tests_passed

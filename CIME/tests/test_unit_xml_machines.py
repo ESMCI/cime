@@ -185,7 +185,7 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
       <modules DEBUG="TRUE">
         <command name="load">debug</command>
       </modules>
-      <modules compiler="intel">>
+      <modules compiler="intel">
         <command name="load">PrgEnv-intel/8.3.3</command>
       </modules>
       <modules compiler="gnu">
@@ -195,7 +195,7 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
         <command name="load">PrgEnv-gnu/8.3.3</command>
         <command name="load">PrgEnv-gnugpu/8.3.3</command>
       </modules>
-      <modules compiler="gnugpu">>
+      <modules compiler="gnugpu">
         <command name="load">PrgEnv-gnugpu/8.3.3</command>
       </modules>
       <modules>
@@ -236,11 +236,34 @@ MACHINE_TEST_XML = """<config_machines version="2.0">
 class TestUnitXMLMachines(unittest.TestCase):
     def setUp(self):
         Machines._FILEMAP = {}
+        # Also clear Files cache to ensure we don't get stale paths from other tests
+        from CIME.XML.files import Files
+        from CIME.XML.entry_id import EntryID
+
+        Files._FILEMAP = {}
+        EntryID._FILEMAP = {}
         # read_only=False for github testing
         # MACHINE IS SET BELOW TO USE DEFINITION IN "MACHINE_TEST_XML"
-        self.machine = Machines()
+        # Don't try to load default file - just create empty Machines object
+        self.machine = Machines.__new__(Machines)
+        # Manually initialize the attributes from GenericXML.__init__
+        self.machine.tree = None
+        self.machine.root = None
+        self.machine.locked = False
+        self.machine.read_only = False
+        self.machine.filename = None
+        self.machine.needsrewrite = False
+        # And Machines-specific attributes
+        self.machine.machine_node = None
+        self.machine.machine = None
+        self.machine.machines_dir = None
+        self.machine.custom_settings = {}
+        self.machine.extra_machines_dir = None
 
+        # Now load from our test XML
         self.machine.read_fd(io.StringIO(MACHINE_TEST_XML))
+        # Set to the first available machine
+        self.machine.set_machine("default")
 
     def test_get_resolved_environment_variable(self):
         self.machine.set_machine("multi-compiler")
