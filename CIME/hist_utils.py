@@ -337,16 +337,12 @@ def _compare_hists(
             model, hists1, hists2, suffix1, suffix2
         )
         for item in one_not_two:
-            if "initial" in item:
-                continue
             comments += "    File '{}' {} in '{}' with suffix '{}'\n".format(
                 item, NO_COMPARE, from_dir2, suffix2
             )
             all_success = False
 
         for item in two_not_one:
-            if "initial" in item:
-                continue
             comments += "    File '{}' {} in '{}' with suffix '{}'\n".format(
                 item, NO_ORIGINAL, from_dir1, suffix1
             )
