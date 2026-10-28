@@ -88,7 +88,9 @@ def test_timeout_wraps_wait_for_tests(scratch_root):
         return_value=[f"{scratch_root}/J/case.mymachine_gnu.myexisting123/TestStatus"],
     ), mock.patch(
         "CIME.jenkins_generic_job.time.time", return_value=0
-    ), mock.patch("CIME.jenkins_generic_job.Timeout") as timeout_context:
+    ), mock.patch(
+        "CIME.jenkins_generic_job.Timeout"
+    ) as timeout_context:
         # Act
         result = _call(scratch_root, machine, timeout=42)
 
@@ -115,7 +117,9 @@ def test_timeout_defaults_to_23_hours(scratch_root):
         return_value=[f"{scratch_root}/J/case.mymachine_gnu.myexisting123/TestStatus"],
     ), mock.patch(
         "CIME.jenkins_generic_job.time.time", return_value=0
-    ), mock.patch("CIME.jenkins_generic_job.Timeout") as timeout_context:
+    ), mock.patch(
+        "CIME.jenkins_generic_job.Timeout"
+    ) as timeout_context:
         # Act
         result = _call(scratch_root, machine)
 

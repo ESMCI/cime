@@ -809,10 +809,7 @@ def handler(signum, frame):
 signal.signal(signal.SIGTERM, handler)
 time.sleep(10)
 """
-        stat, output, errput = run_cmd(
-            f"python3 -c '{script}'",
-            timeout=1.0
-        )
+        stat, output, errput = run_cmd(f"python3 -c '{script}'", timeout=1.0)
         # Process should have been killed by timeout
         self.assertNotEqual(stat, 0)
 
@@ -824,22 +821,14 @@ time.sleep(10)
 
     def test_run_cmd_with_input_and_timeout(self):
         """Test timeout with stdin input"""
-        stat, output, errput = run_cmd(
-            "cat",
-            input_str=b"hello\n",
-            timeout=2.0
-        )
+        stat, output, errput = run_cmd("cat", input_str=b"hello\n", timeout=2.0)
         self.assertEqual(stat, 0)
         self.assertIn("hello", output)
 
     def test_run_cmd_timeout_with_from_dir(self):
         """Test timeout works with from_dir parameter"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            stat, output, errput = run_cmd(
-                "pwd",
-                from_dir=tmpdir,
-                timeout=2.0
-            )
+            stat, output, errput = run_cmd("pwd", from_dir=tmpdir, timeout=2.0)
             self.assertEqual(stat, 0)
             self.assertIn(tmpdir, output)
 
@@ -848,10 +837,7 @@ time.sleep(10)
         env = os.environ.copy()
         env["TEST_VAR"] = "test_value"
         stat, output, errput = run_cmd(
-            "echo $TEST_VAR",
-            env=env,
-            timeout=2.0,
-            shell=True
+            "echo $TEST_VAR", env=env, timeout=2.0, shell=True
         )
         self.assertEqual(stat, 0)
         self.assertIn("test_value", output)
@@ -867,11 +853,7 @@ time.sleep(10)
 
     def test_run_cmd_timeout_with_shell_false(self):
         """Test timeout works with shell=False"""
-        stat, output, errput = run_cmd(
-            "echo hello world",
-            timeout=2.0,
-            shell=False
-        )
+        stat, output, errput = run_cmd("echo hello world", timeout=2.0, shell=False)
         self.assertEqual(stat, 0)
         self.assertIn("hello", output)
 
@@ -880,9 +862,7 @@ time.sleep(10)
         with mock.patch("CIME.utils.logger") as mock_logger:
             mock_logger.isEnabledFor.return_value = True
             stat, output, errput = run_cmd(
-                "echo 'verbose test'",
-                timeout=2.0,
-                verbose=True
+                "echo 'verbose test'", timeout=2.0, verbose=True
             )
             self.assertEqual(stat, 0)
             # Verify logging was called
@@ -912,10 +892,7 @@ def handler(signum, frame):
 signal.signal(signal.SIGTERM, handler)
 time.sleep(60)
 """
-        stat, output, errput = run_cmd(
-            f"python3 -c '{script}'",
-            timeout=1.0
-        )
+        stat, output, errput = run_cmd(f"python3 -c '{script}'", timeout=1.0)
         # Should have been cleanly terminated via SIGTERM cascade
         self.assertNotEqual(stat, 0)
 
