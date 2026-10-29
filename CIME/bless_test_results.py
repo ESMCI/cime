@@ -356,13 +356,6 @@ def bless_test_results(
         )
 
         # Report that we have discovered a case
-        logger.info(
-            "###############################################################################"
-        )
-        logger.info(
-            f"Blessing results for test: {test_name}, most recent result: {overall_result}"
-        )
-        logger.info(f"Case dir: {test_dir}")
 
         # See if we need to bless namelist
         if namelists_only or bless_all_non_perf:
@@ -392,11 +385,16 @@ def bless_test_results(
 
         if not nl_bless and not hist_bless and not tput_bless and not mem_bless:
             logger.info(
-                "  NOTHING to bless for test: {}, overall status: {}".format(
-                    test_name, overall_result
-                )
+                f"NOTHING to bless for test: {test_name}, most recent result: {overall_result}"
             )
         else:
+            logger.info(
+                "###############################################################################"
+            )
+            logger.info(
+                f"Blessing results for test: {test_name}, most recent result: {overall_result}"
+            )
+            logger.info(f"Case dir: {test_dir}")
 
             # Now, do the bless
             logger.debug("Determined blesses for {!r}".format(test_name))
