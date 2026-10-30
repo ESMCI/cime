@@ -9,7 +9,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.utils import safe_copy
 from CIME.status import append_case_status
 
-import datetime, re
+import datetime, glob, re
 
 logger = logging.getLogger(__name__)
 
@@ -937,6 +937,13 @@ class _TimingParser:
 def get_timing(case, lid):
     parser = _TimingParser(case, lid)
     parser.getTiming()
+    timing_files = glob.glob(
+        os.path.join(case.get_value("CASEROOT"), "timing", "*." + lid)
+    )
+    if not timing_files:
+        # The parser already warned that the model wrote no profile; git exits 128 on a
+        # pathspec that matches nothing, and no files were created to report
+        return
     if case._gitinterface:
         case._gitinterface._git_command("add", "*." + lid)
     append_case_status(
