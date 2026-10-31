@@ -10,7 +10,7 @@ ensures that the batch system is left in a clean state.
 from standard_script_setup import *
 
 import CIME.wait_for_tests
-from CIME.utils import expect
+from CIME.utils import expect, convert_to_seconds
 from CIME.XML.machines import Machines
 from CIME.jenkins_generic_job import jenkins_generic_job
 
@@ -229,14 +229,13 @@ OR
 
     parser.add_argument(
         "--timeout",
-        type=int,
-        default=82800,
-        help="Maximum number of seconds to wait for tests to complete. Default is "
-        "23 hours. If the timeout is exceeded, this job stops waiting, cancels any "
+        default="0",
+        help="Maximum time to wait for tests to complete. Default is "
+        "zero (no timeout). If the timeout is exceeded, this job stops waiting, cancels any "
         "outstanding batch jobs, and reports the results gathered so far. This is "
         "useful for very long jobs where Jenkins may be unable to signal a timeout "
         "itself, e.g. if the network connection to the agent is dropped. Set this to "
-        "zero to have no timeout.",
+        "zero to have no timeout. You can use babylonian (HH:MM:SS) or raw seconds.",
     )
 
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
@@ -262,6 +261,13 @@ OR
         ),
         "Does not make sense to use --cdash-project without --submit-to-cdash",
     )
+
+    # Convert time to raw seconds
+    if ":" in args.timeout:
+        args.timeout = convert_to_seconds(args.timeout)
+    else:
+        # We got raw seconds
+        args.timeout = int(args.timeout)
 
     machine = Machines(machine=args.machine)
 
