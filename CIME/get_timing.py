@@ -937,18 +937,19 @@ class _TimingParser:
 def get_timing(case, lid):
     parser = _TimingParser(case, lid)
     parser.getTiming()
-    timing_files = glob.glob(
-        os.path.join(case.get_value("CASEROOT"), "timing", "*." + lid)
-    )
+    _report_timing_files(case.get_value("CASEROOT"), case._gitinterface, lid)
+
+
+def _report_timing_files(caseroot, gitinterface, lid):
+    timing_files = glob.glob(os.path.join(caseroot, "timing", "*." + lid))
     if not timing_files:
-        # The parser already warned that the model wrote no profile; git exits 128 on a
-        # pathspec that matches nothing, and no files were created to report
+        # The parser already warned that the model wrote no profile, so there are no
+        # timing files to report
         return
-    if case._gitinterface:
-        case._gitinterface._git_command("add", "*." + lid)
+    # append_case_status git adds and commits the timing files
     append_case_status(
-        "",
-        "",
+        "",  # phase: none, CaseStatus gets only the message
+        "",  # status: none
         msg="Timing files created for run {}".format(lid),
-        gitinterface=case._gitinterface,
+        gitinterface=gitinterface,
     )
