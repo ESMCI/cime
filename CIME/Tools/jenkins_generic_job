@@ -263,11 +263,10 @@ OR
     )
 
     # Convert time to raw seconds
-    if ":" in args.timeout:
+    try:
         args.timeout = convert_to_seconds(args.timeout)
-    else:
-        # We got raw seconds
-        args.timeout = int(args.timeout)
+    except (ValueError, CIME.utils.CIMEError):
+        parser.error("--timeout must be raw seconds or HH:MM:SS")
 
     machine = Machines(machine=args.machine)
 
