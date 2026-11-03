@@ -69,6 +69,25 @@ ENV_BUILD_NO_COMPCLASS = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+def test_env_build_suffixed_component_values(tmp_path):
+    # Context
+    infile = tmp_path / "env_build.xml"
+    infile.write_text(ENV_BUILD_BASE)
+    env_build = EnvBuild(infile=str(infile), components=["atm", "lnd", "ocn"])
+
+    # Act
+    original_value = env_build.get_value("COMP_BOOST_OPTION_atm")
+    resolved_value = env_build.get_resolved_value("${COMP_BOOST_OPTION_atm}")
+    env_build.set_value("COMP_BOOST_OPTION_atm", "new_atm_value")
+
+    # Assert
+    assert original_value == "boost_atm"
+    assert resolved_value == "boost_atm"
+    assert env_build.get_value("COMP_BOOST_OPTION_atm") == "new_atm_value"
+    assert env_build.get_value("COMP_BOOST_OPTION_lnd") == "boost_lnd"
+    assert env_build.get_value("COMP_BOOST_OPTION_ocn") == "boost_ocn"
+
+
 class TestEnvBuild(unittest.TestCase):
     """Test cases for EnvBuild class."""
 
