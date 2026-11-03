@@ -119,7 +119,7 @@ class EnvBase(EntryID):
             # pylint: disable=attribute-defined-outside-init
             self._components = components
 
-    def get_components(self, components):
+    def get_components(self):
         if hasattr(self, "_components"):
             return self._components
         else:

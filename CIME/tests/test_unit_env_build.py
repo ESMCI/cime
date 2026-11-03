@@ -13,7 +13,9 @@ from CIME.XML.env_build import EnvBuild
 
 def _open_temp_file(stack, content):
     """Helper to create a temporary XML file with given content."""
-    file_obj = stack.enter_context(tempfile.NamedTemporaryFile(mode="w", suffix=".xml", delete=False))
+    file_obj = stack.enter_context(
+        tempfile.NamedTemporaryFile(mode="w", suffix=".xml", delete=False)
+    )
     file_obj.write(content)
     file_obj.close()
     return file_obj
@@ -118,13 +120,19 @@ class TestEnvBuild(unittest.TestCase):
             env_build = EnvBuild(infile=temp_file.name, components=components)
 
             # Get values for each component
-            atm_value = env_build.get_value("COMP_BOOST_OPTION", attribute={"compclass": "atm"})
+            atm_value = env_build.get_value(
+                "COMP_BOOST_OPTION", attribute={"compclass": "atm"}
+            )
             self.assertEqual(atm_value, "boost_atm")
 
-            lnd_value = env_build.get_value("COMP_BOOST_OPTION", attribute={"compclass": "lnd"})
+            lnd_value = env_build.get_value(
+                "COMP_BOOST_OPTION", attribute={"compclass": "lnd"}
+            )
             self.assertEqual(lnd_value, "boost_lnd")
 
-            ocn_value = env_build.get_value("COMP_BOOST_OPTION", attribute={"compclass": "ocn"})
+            ocn_value = env_build.get_value(
+                "COMP_BOOST_OPTION", attribute={"compclass": "ocn"}
+            )
             self.assertEqual(ocn_value, "boost_ocn")
 
     def test_env_build_set_compclass_value(self):
@@ -139,13 +147,19 @@ class TestEnvBuild(unittest.TestCase):
             env_build.set_value("COMP_BOOST_OPTION", "new_boost_value")
 
             # Verify all components have the same value
-            atm_value = env_build.get_value("COMP_BOOST_OPTION", attribute={"compclass": "atm"})
+            atm_value = env_build.get_value(
+                "COMP_BOOST_OPTION", attribute={"compclass": "atm"}
+            )
             self.assertEqual(atm_value, "new_boost_value")
 
-            lnd_value = env_build.get_value("COMP_BOOST_OPTION", attribute={"compclass": "lnd"})
+            lnd_value = env_build.get_value(
+                "COMP_BOOST_OPTION", attribute={"compclass": "lnd"}
+            )
             self.assertEqual(lnd_value, "new_boost_value")
 
-            ocn_value = env_build.get_value("COMP_BOOST_OPTION", attribute={"compclass": "ocn"})
+            ocn_value = env_build.get_value(
+                "COMP_BOOST_OPTION", attribute={"compclass": "ocn"}
+            )
             self.assertEqual(ocn_value, "new_boost_value")
 
     def test_env_build_get_compclass_logical_value(self):
@@ -156,10 +170,14 @@ class TestEnvBuild(unittest.TestCase):
             env_build = EnvBuild(infile=temp_file.name, components=components)
 
             # Get logical values for each component
-            atm_value = env_build.get_value("COMP_BUILD_FLAG", attribute={"compclass": "atm"})
+            atm_value = env_build.get_value(
+                "COMP_BUILD_FLAG", attribute={"compclass": "atm"}
+            )
             self.assertTrue(atm_value)
 
-            lnd_value = env_build.get_value("COMP_BUILD_FLAG", attribute={"compclass": "lnd"})
+            lnd_value = env_build.get_value(
+                "COMP_BUILD_FLAG", attribute={"compclass": "lnd"}
+            )
             self.assertFalse(lnd_value)
 
     def test_env_build_non_component_entry(self):
