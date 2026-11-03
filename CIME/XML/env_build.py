@@ -17,6 +17,7 @@ class EnvBuild(EnvBase):
         """
         initialize an object interface to file env_build.xml in the case directory
         """
+        self._components = components
         schema = os.path.join(utils.get_schema_path(), "env_entry_id.xsd")
         self._caseroot = case_root
         EnvBase.__init__(self, case_root, infile, schema=schema, read_only=read_only)
