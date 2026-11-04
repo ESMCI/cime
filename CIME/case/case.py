@@ -1782,7 +1782,10 @@ class Case(object):
                 for customize_file in os.listdir(customize_path):
                     file_path = os.path.join(customize_path, customize_file)
                     if os.path.isfile(file_path):
-                        safe_copy(file_path, casetools)
+                        destfile = os.path.join(casetools, customize_file)
+                        if os.path.islink(destfile):
+                            os.unlink(destfile)
+                        safe_copy(file_path, destfile)
 
         # add archive_metadata to the CASEROOT but only for CESM
         if config.copy_cesm_tools:
