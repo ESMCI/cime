@@ -136,7 +136,7 @@ class ParamGen:
         """
 
         # First check whether the given xml file conforms to the entry_id_pg.xsd schema
-        from distutils.spawn import find_executable
+        from shutil import which as find_executable
 
         xmllint = find_executable("xmllint")
         if xmllint is None:

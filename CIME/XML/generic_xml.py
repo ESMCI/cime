@@ -8,7 +8,7 @@ from CIME.utils import safe_copy, get_src_root
 import xml.etree.ElementTree as ET
 
 # pylint: disable=import-error
-from distutils.spawn import find_executable
+from shutil import which as find_executable
 import getpass
 from copy import deepcopy
 from collections import namedtuple

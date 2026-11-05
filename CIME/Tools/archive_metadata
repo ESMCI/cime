@@ -140,7 +140,7 @@ class PasswordPromptAction(argparse.Action):
         conf_path = os.path.join(home, ".subversion/cmip6.conf")
         if os.path.exists(conf_path):
             # read the .cmip6.conf file
-            config = configparser.SafeConfigParser()
+            config = configparser.ConfigParser()
             config.read(conf_path)
             password = config.get("svn", "password")
         else:

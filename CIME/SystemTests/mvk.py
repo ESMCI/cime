@@ -10,7 +10,7 @@ import os
 import json
 import logging
 
-from distutils import dir_util
+import shutil
 
 import CIME.test_status
 import CIME.utils
@@ -173,10 +173,11 @@ class MVK(SystemTestsCommon):
             urlroot = CIME.utils.get_urlroot(mach_obj)
             if htmlroot is not None:
                 with CIME.utils.SharedArea():
-                    dir_util.copy_tree(
+                    shutil.copytree(
                         evv_out_dir,
                         os.path.join(htmlroot, "evv", case_name),
-                        preserve_mode=False,
+                        copy_function=shutil.copyfile,
+                        dirs_exist_ok=True,
                     )
                 if urlroot is None:
                     urlroot = "[{}_URL]".format(mach_name.capitalize())
