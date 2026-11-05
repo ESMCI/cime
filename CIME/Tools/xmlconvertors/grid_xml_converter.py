@@ -25,7 +25,7 @@ sys.path.insert(
 from CIME import utils
 from CIME.Tools.standard_script_setup import *
 from CIME.utils import run_cmd_no_fail
-from distutils.spawn import find_executable
+from shutil import which as find_executable
 import xml.etree.ElementTree as ET
 import operator
 

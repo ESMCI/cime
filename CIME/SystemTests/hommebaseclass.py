@@ -8,7 +8,6 @@ from CIME.utils import append_testlog, SharedArea
 from CIME.test_status import *
 
 import shutil
-from distutils import dir_util
 
 logger = logging.getLogger(__name__)
 
@@ -97,10 +96,11 @@ class HommeBase(SystemTestsCommon):
                     shutil.rmtree(full_baseline_dir)
 
                 with SharedArea():
-                    dir_util.copy_tree(
+                    shutil.copytree(
                         os.path.join(exeroot, "tests", "baseline"),
                         full_baseline_dir,
-                        preserve_mode=False,
+                        copy_function=shutil.copyfile,
+                        dirs_exist_ok=True,
                     )
 
         elif compare:

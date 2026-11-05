@@ -5,12 +5,12 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 import shlex
 import configparser
 import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, importlib, fnmatch
+import importlib.machinery
 import importlib.util
 import errno, signal, warnings, filecmp
 import stat as statlib
 from contextlib import contextmanager
 
-from distutils import file_util
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
@@ -192,7 +192,7 @@ def check_name(fullname, additional_chars=None, fullpath=False):
     False
     """
 
-    chars = "+*?<>/{}[\]~`@:"  # pylint: disable=anomalous-backslash-in-string
+    chars = r"+*?<>/{}[\]~`@:"  # pylint: disable=anomalous-backslash-in-string
     if additional_chars is not None:
         chars += additional_chars
     if fullname.endswith("/"):
@@ -262,7 +262,7 @@ def _read_cime_config_file():
     cime_config_file = os.path.abspath(
         os.path.join(os.path.expanduser("~"), ".cime", "config")
     )
-    cime_config = configparser.SafeConfigParser()
+    cime_config = configparser.ConfigParser()
     if os.path.isfile(cime_config_file):
         cime_config.read(cime_config_file)
         for section in cime_config.sections():
@@ -1384,12 +1384,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
 
         if owner_uid == os.getuid():
             # I am the owner, copy file contents, permissions, and metadata
-            file_util.copy_file(
-                src_path,
-                tgt_path,
-                preserve_mode=preserve_meta,
-                preserve_times=preserve_meta,
-            )
+            (shutil.copy2 if preserve_meta else shutil.copyfile)(src_path, tgt_path)
         else:
             # I am not the owner, just copy file contents
             shutil.copyfile(src_path, tgt_path)
@@ -1397,12 +1392,7 @@ def safe_copy(src_path, tgt_path, preserve_meta=True):
     else:
         # We are making a new file, copy file contents, permissions, and metadata.
         # This can fail if the underlying directory is not writable by current user.
-        file_util.copy_file(
-            src_path,
-            tgt_path,
-            preserve_mode=preserve_meta,
-            preserve_times=preserve_meta,
-        )
+        (shutil.copy2 if preserve_meta else shutil.copyfile)(src_path, tgt_path)
 
     # If src file was executable, then the tgt file should be too
     st = os.stat(tgt_path)

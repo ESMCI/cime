@@ -355,7 +355,7 @@ class OptimizeModel(object):
         raise NotImplementedError
 
     def write_pe_template(self, pefilename, ntasks, nthrds, roots):
-        from distutils.spawn import find_executable
+        from shutil import which as find_executable
         from xml.etree import ElementTree as ET
         from CIME.utils import run_cmd
 

@@ -20,7 +20,7 @@ from CIME.utils import (
 from multiprocessing.dummy import Pool as ThreadPool
 
 # pylint: disable=import-error
-from distutils.spawn import find_executable
+from shutil import which as find_executable
 
 logger = logging.getLogger(__name__)
 
