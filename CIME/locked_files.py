@@ -119,7 +119,12 @@ def diff_lockedfile(case, caseroot, filename):
 def _get_case_env(case, caseroot, locked_file, env_name):
     if env_name == "env_build":
         l_env = case.get_env("build")
-        r_env = EnvBuild(caseroot, str(locked_file), read_only=True)
+        r_env = EnvBuild(
+            case_root=caseroot,
+            infile=str(locked_file),
+            components=l_env.get_components(),
+            read_only=True,
+        )
     elif env_name == "env_mach_pes":
         l_env = case.get_env("mach_pes")
         r_env = EnvMachPes(
