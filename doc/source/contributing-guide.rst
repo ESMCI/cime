@@ -146,6 +146,69 @@ Development process
 6. Push your changes to your fork
 7. Open a pull request
 
+Running Python tests
+--------------------
+
+Use the repository test helper to run the complete Python unit- or system-test
+suite in a suitable environment::
+
+    ./devtools/run_tests unit
+    ./devtools/run_tests system
+    ./devtools/run_tests all
+
+Pass one or more pytest paths or node IDs after ``--`` to run selected tests
+instead of the complete suite::
+
+    ./devtools/run_tests unit -- CIME/tests/test_unit_utils.py CIME/tests/test_unit_machines.py::TestMachines::test_machine_name
+
+The ``all`` suite runs unit and system tests in one pytest process and reports
+their aggregate coverage together. Coverage measures the ``CIME`` package;
+test modules are excluded from the report. As with the system suite, running
+``all`` on a batch-enabled host requires user approval before passing
+``--allow-batch``.
+
+The helper prefers a host machine recognized by ``query_config``. Otherwise,
+it uses Docker or Podman when available; unit tests can fall back to the
+``linux-generic`` machine and a local Python virtual environment. System tests
+require a full E3SM or CESM source checkout and either a matching host machine
+or a container runtime. The default container image is
+``ghcr.io/esmci/cime:latest``; use ``--build-image`` to build the local test
+image with Docker BuildKit instead (for example, ``./devtools/run_tests system
+--backend docker --build-image``).
+
+System tests populate a versioned input-data cache under the user's cache
+directory from the image tagged in ``docker/INPUTDATA_VERSION``. Test artifacts
+are written to a temporary directory, and ``--no-teardown`` is enabled so the
+cases and logs remain available for inspection. The helper prints the artifact
+directory and retains it after the run. Use ``--artifact-dir`` to choose a
+specific new directory, or ``--cache-dir`` to override the cache location.
+Pytest's native output includes the test status summary and a terminal coverage
+table with missing lines.
+
+On a batch-enabled host, system tests stop unless ``--allow-batch`` is passed.
+Ask the user for approval before using that option; the helper does not submit
+batch jobs without it. Container tests use the container's non-batch machine
+configuration.
+
+Podman storage on an NFS-backed home directory can fail while unpacking an
+image because the filesystem lacks extended-attribute support. Configure Podman
+storage on a site-provided local scratch filesystem, then pass its configuration
+to the helper. For example, when ``$TMPDIR`` is xattr-capable::
+
+    mkdir -p "$TMPDIR/podman"/{graphroot,runroot}
+    cat > "$TMPDIR/podman-storage.conf" <<'EOF'
+    [storage]
+    driver = "overlay"
+    graphroot = "$TMPDIR/podman/graphroot"
+    runroot = "$TMPDIR/podman/runroot"
+    EOF
+    ./devtools/run_tests unit --backend podman \
+        --podman-storage-conf "$TMPDIR/podman-storage.conf"
+
+The storage location must remain available for the complete test run. Consult
+your site's container documentation when ``$TMPDIR`` is unavailable or is not
+node-local storage.
+
 Code style
 ----------
 
