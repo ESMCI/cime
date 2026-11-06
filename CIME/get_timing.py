@@ -943,8 +943,6 @@ def get_timing(case, lid):
 def _report_timing_files(caseroot, gitinterface, lid):
     timing_files = glob.glob(os.path.join(caseroot, "timing", "*." + lid))
     if not timing_files:
-        # The parser already warned that the model wrote no profile, so there are no
-        # timing files to report
         return
     # append_case_status git adds and commits the timing files
     append_case_status(
