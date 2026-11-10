@@ -143,6 +143,25 @@
 <dt class="sig sig-object py" id="CIME.status.append_case_status">
 <span class="sig-prename descclassname"><span class="pre">CIME.status.</span></span><span class="sig-name descname"><span class="pre">append_case_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gitinterface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/status.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.status.append_case_status" title="Link to this definition"></a></dt>
 <dd><p>Update CaseStatus file</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">gitinterface</span></code> is given, also commit all changes in the case’s
+local git repository: deleted files are removed, and new or modified
+files (other than those excluded by <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code>) are added. <code class="docutils literal notranslate"><span class="pre">msg</span></code>
+is used as the commit message. If the commit succeeds and the repository
+has a remote, the commit is then pushed to it.</p>
+<dl>
+<dt>Args:</dt><dd><p>phase (str): Name of the phase being logged (e.g., “case.submit”).
+status (str): Status of the phase (e.g., “starting”, “success”).
+msg (str, optional): Additional message to log; also used as the git</p>
+<blockquote>
+<div><p>commit message.</p>
+</div></blockquote>
+<p>caseroot (str, optional): Path to the case directory.
+gitinterface (GitInterface, optional): Interface to the case’s local</p>
+<blockquote>
+<div><p>git repository. If None, no git operations are performed.</p>
+</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

@@ -142,7 +142,35 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="CIME.status.run_and_log_case_status">
 <span class="sig-prename descclassname"><span class="pre">CIME.status.</span></span><span class="sig-name descname"><span class="pre">run_and_log_case_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caseroot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_starting_msg_functor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_success_msg_functor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gitinterface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/esmci/cime/blob/master/CIME/status.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CIME.status.run_and_log_case_status" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Run <code class="docutils literal notranslate"><span class="pre">func</span></code>, logging its start and its success or failure to CaseStatus</p>
+<p>The status is logged with <code class="docutils literal notranslate"><span class="pre">append_case_status</span></code>, so if <code class="docutils literal notranslate"><span class="pre">gitinterface</span></code>
+is given, all changes in the case’s local git repository are committed
+(and pushed, if a remote is set) each time the status is logged.</p>
+<dl>
+<dt>Args:</dt><dd><p>func (callable): Function to run, taking no arguments.
+phase (str): Name of the phase being logged (e.g., “case.submit”).
+caseroot (str, optional): Path to the case directory.
+custom_starting_msg_functor (callable, optional): Function, taking no</p>
+<blockquote>
+<div><p>arguments, that returns a message to log with the start of the phase.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>custom_success_msg_functor (callable, optional): Function, taking the</dt><dd><p>return value of <code class="docutils literal notranslate"><span class="pre">func</span></code>, that returns a message to log with the
+completion of the phase.</p>
+</dd>
+</dl>
+<p>is_batch (bool, optional): Whether a batch system is used.
+gitinterface (GitInterface, optional): Interface to the case’s local</p>
+<blockquote>
+<div><p>git repository. If None, no git operations are performed.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>The return value of <code class="docutils literal notranslate"><span class="pre">func</span></code>.</p>
+</dd>
+<dt>Raises:</dt><dd><p>Any exception raised by <code class="docutils literal notranslate"><span class="pre">func</span></code>, after logging the failure.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 

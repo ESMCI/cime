@@ -235,6 +235,11 @@ it is important that dependent libraries are identified.</p>
 shared by several models as shown above.</p>
 <p>The components <code class="docutils literal notranslate"><span class="pre">buildnml</span></code> script can modify the variable and add a list of libraries needed by the given component.
 The list should be ordered so that a library comes after all of the libraries it depends on.</p>
+<p>When building the model, the libraries are also passed to CMake as the <code class="docutils literal notranslate"><span class="pre">CASE_SUPPORT_LIBRARIES</span></code> variable,
+a <code class="docutils literal notranslate"><span class="pre">;</span></code> separated list in build order without duplicates (e.g., <code class="docutils literal notranslate"><span class="pre">-DCASE_SUPPORT_LIBRARIES='gptl;mct;csm_share'</span></code>).
+This allows the CMake build of a model to find the libraries that the case needs.
+Like the other case specific CMake arguments, it is not passed if <code class="docutils literal notranslate"><span class="pre">common_sharedlibroot</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+since the shared libraries are then common to several cases.</p>
 <p>The following is a small example of a <code class="docutils literal notranslate"><span class="pre">buildnml</span></code> script modifying <code class="docutils literal notranslate"><span class="pre">CASE_SUPPORT_LIBRARIES</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">buildnml</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
     <span class="o">...</span>
