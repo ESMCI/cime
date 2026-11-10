@@ -26,6 +26,55 @@ class HommeBase(SystemTestsCommon):
         self.csnd = "not defined"
         self.cmakesuffix = self.csnd
 
+    @staticmethod
+    def _parse_cmake_options(opts_string):
+        """Parse a string of cmake options into a list of -DVAR=VAL flags.
+
+        Supports '-DVAR=VAL', 'VAR=VAL', and 'VAR VAL' formats.
+
+        Args:
+            opts_string (str): Whitespace-separated CMake option string.
+
+        Returns:
+            list[str]: Parsed list of `-D...` CMake flags.
+        """
+        opts = []
+        tokens = opts_string.strip().split()
+        i = 0
+        while i < len(tokens):
+            tok = tokens[i]
+            if tok.startswith("-D"):
+                opts.append(tok)
+                i += 1
+            elif "=" in tok:
+                opts.append(f"-D{tok}")
+                i += 1
+            elif i + 1 < len(tokens) and not tokens[i + 1].startswith("-"):
+                opts.append(f"-D{tok}={tokens[i + 1]}")
+                i += 2
+            else:
+                opts.append(f"-D{tok}")
+                i += 1
+        return opts
+
+    def _get_extra_cmake_options(self):
+        """Gather extra CMake options from HOMME_CMAKE_OPTIONS.
+
+        Supports format 'OPT VAL ...' matching SCREAM_CMAKE_OPTIONS, or '-DOPT=VAL'.
+
+        Returns:
+            list[str]: Deduplicated list of `-D...` CMake flags.
+        """
+        homme_opts = self._case.get_value("HOMME_CMAKE_OPTIONS")
+        if not homme_opts:
+            return []
+        opts_dict = {}
+        for opt in self._parse_cmake_options(homme_opts):
+            clean_opt = opt if opt.startswith("-D") else f"-D{opt}"
+            var_name = clean_opt[2:].split("=")[0]
+            opts_dict[var_name] = clean_opt
+        return list(opts_dict.values())
+
     def build_phase(self, sharedlib_only=False, model_only=False):
         if not sharedlib_only:
             # Build HOMME
@@ -59,13 +108,24 @@ class HommeBase(SystemTestsCommon):
             logger.info(
                 f"[DEBUG] Machine: {mach}, Source root: {srcroot}, Total Procs: {procs}, Is Debug: {is_debug}"
             )
-            logger.info("[DEBUG] Preparing to invoke CMake with constructed command:")
             cmake_cmd = "cmake -C {0}/components/homme/cmake/machineFiles/{1}{6}.cmake -DUSE_NUM_PROCS={2} {0}/components/homme -DHOMME_BASELINE_DIR={3}/{4} -DCPRNC_DIR={5}/..".format(
                 srcroot, mach, procs, baselinedir, basename, cprnc, self.cmakesuffix
             )
 
             if is_debug:
                 cmake_cmd += " -DCMAKE_BUILD_TYPE=Debug"
+
+            extra_cmake_opts = self._get_extra_cmake_options()
+            if extra_cmake_opts:
+                extra_str = " ".join(extra_cmake_opts)
+                logger.info(
+                    f"[DEBUG] Appending extra CMake options to HOMME build: {extra_str}"
+                )
+                cmake_cmd += f" {extra_str}"
+
+            logger.info(
+                f"[DEBUG] Preparing to invoke CMake with constructed command: {cmake_cmd}"
+            )
 
             run_cmd_no_fail(
                 cmake_cmd,
