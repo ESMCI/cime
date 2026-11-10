@@ -285,6 +285,18 @@ def get_standard_cmake_args(case, sharedpath):
         comps = _get_compset_comps(case)
         cmake_args += " -DCOMP_NAMES='{}' ".format(";".join(comps))
 
+        # The support libs (in the order they are built, without duplicates or
+        # empty entries), if the case defines them
+        support_libs = [
+            lib
+            for lib in dict.fromkeys(case.get_values("CASE_SUPPORT_LIBRARIES"))
+            if lib
+        ]
+        if support_libs:
+            cmake_args += " -DCASE_SUPPORT_LIBRARIES='{}' ".format(
+                ";".join(support_libs)
+            )
+
     for var in _CMD_ARGS_FOR_BUILD:
         cmake_args += xml_to_make_variable(case, var, cmake=True)
 

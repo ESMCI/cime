@@ -98,6 +98,12 @@ shared by several models as shown above.
 The components ``buildnml`` script can modify the variable and add a list of libraries needed by the given component.
 The list should be ordered so that a library comes after all of the libraries it depends on.
 
+When building the model, the libraries are also passed to CMake as the ``CASE_SUPPORT_LIBRARIES`` variable,
+a ``;`` separated list in build order without duplicates (e.g., ``-DCASE_SUPPORT_LIBRARIES='gptl;mct;csm_share'``).
+This allows the CMake build of a model to find the libraries that the case needs.
+Like the other case specific CMake arguments, it is not passed if ``common_sharedlibroot`` is ``True``,
+since the shared libraries are then common to several cases.
+
 The following is a small example of a ``buildnml`` script modifying ``CASE_SUPPORT_LIBRARIES``.
 
 .. code-block:: python
