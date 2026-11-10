@@ -671,7 +671,7 @@
       <value lib="gptl">$CIMEROOT/CIME/build_scripts/buildlib.gptl</value>
       <value lib="pio">$CIMEROOT/CIME/build_scripts/buildlib.pio</value>
       <value lib="mct">$CIMEROOT/CIME/build_scripts/buildlib.mct</value>
-      <value lib="csm_share">$SRCROOT/share/buildlib.csm_share</value>
+      <value lib="csm_share">$SRCROOT/share/buildlib.share</value>
       <value lib="mpi-serial">$CIMEROOT/CIME/build_scripts/buildlib.mpi-serial</value>
       <value lib="cprnc">$CIMEROOT/CIME/build_scripts/buildlib.cprnc</value>
     </values>
