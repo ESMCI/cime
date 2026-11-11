@@ -25,7 +25,7 @@ This deselection is not added for explicit targets.
 
 By default, the helper prefers a current host recognized by ``query_config``;
 otherwise it tries Docker and then Podman. Unit tests can fall back to the
-``linux-generic`` machine. Host runs require Python 3.10 or newer and use a
+``linux-generic`` machine. Host runs require Python 3.9 or newer and use a
 cached virtual environment. Container runs use
 ``ghcr.io/esmci/cime:latest`` by default; use ``--image`` to select another
 image or ``--build-image`` to build the local Docker image (requires Docker
@@ -284,9 +284,9 @@ def _find_host_python(requested: Optional[str] = None) -> str:
         )
         if result.returncode == 0:
             match = re.match(r"(\d+)\.(\d+)$", result.stdout.strip())
-            if match and tuple(map(int, match.groups())) >= (3, 10):
+            if match and tuple(map(int, match.groups())) >= (3, 9):
                 return executable
-    raise RunnerError("Python 3.10 or newer is required for host test runs.")
+    raise RunnerError("Python 3.9 or newer is required for host test runs.")
 
 
 def _cache_root(override: Optional[Path] = None) -> Path:

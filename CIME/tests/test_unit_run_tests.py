@@ -242,7 +242,7 @@ def test_find_host_python_accepts_python_310(monkeypatch):
     assert python == "/usr/bin/python3"
 
 
-def test_find_host_python_rejects_python_39(monkeypatch):
+def test_find_host_python_accepts_python_39(monkeypatch):
     # Context
     monkeypatch.setattr(run_tests.shutil, "which", lambda _: "/usr/bin/python3")
     monkeypatch.setattr(
@@ -251,8 +251,24 @@ def test_find_host_python_rejects_python_39(monkeypatch):
         lambda *a, **k: CompletedProcess(args=[], returncode=0, stdout="3.9\n"),
     )
 
+    # Act
+    python = run_tests._find_host_python()
+
+    # Assert
+    assert python == "/usr/bin/python3"
+
+
+def test_find_host_python_rejects_python_38(monkeypatch):
+    # Context
+    monkeypatch.setattr(run_tests.shutil, "which", lambda _: "/usr/bin/python3")
+    monkeypatch.setattr(
+        run_tests.subprocess,
+        "run",
+        lambda *a, **k: CompletedProcess(args=[], returncode=0, stdout="3.8\n"),
+    )
+
     # Act / Assert
-    with pytest.raises(run_tests.RunnerError, match="Python 3.10 or newer"):
+    with pytest.raises(run_tests.RunnerError, match="Python 3.9 or newer"):
         run_tests._find_host_python()
 
 
