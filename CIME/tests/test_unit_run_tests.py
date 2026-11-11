@@ -142,7 +142,7 @@ def test_model_checkout_rejects_unsupported_model(tmp_path):
     cime_root = tmp_path / "cime"
     (tmp_path / "cime_config").mkdir()
     (tmp_path / "components").mkdir()
-    (tmp_path / ".cime_model_id").write_text("noresm\n")
+    (tmp_path / ".cime_model_id").write_text("nonexistent_model_name\n")
 
     # Act / Assert
     with pytest.raises(run_tests.RunnerError, match="supports E3SM and CESM"):
