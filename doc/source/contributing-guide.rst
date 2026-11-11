@@ -164,8 +164,7 @@ instead of the complete suite::
 The ``all`` suite runs unit and system tests in one pytest process and reports
 their aggregate coverage together. Coverage measures the ``CIME`` package;
 test modules are excluded from the report. As with the system suite, running
-``all`` on a batch-enabled host requires user approval before passing
-``--allow-batch``.
+``all`` on a batch-enabled host requires ``--allow-batch``.
 
 The helper prefers a host machine recognized by ``query_config``. Otherwise,
 it uses Docker or Podman when available; unit tests can fall back to the
@@ -187,9 +186,8 @@ table with missing lines. The helper uses pytest verbosity level 3 by default;
 pass ``--verbosity LEVEL`` to select a level from 0 to 3.
 
 On a batch-enabled host, system tests stop unless ``--allow-batch`` is passed.
-Ask the user for approval before using that option; the helper does not submit
-batch jobs without it. Container tests use the container's non-batch machine
-configuration.
+The helper does not submit batch jobs without it. Container tests use the
+container's non-batch machine configuration.
 
 Podman storage on an NFS-backed home directory can fail while unpacking an
 image because the filesystem lacks extended-attribute support. Configure Podman

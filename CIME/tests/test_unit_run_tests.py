@@ -671,7 +671,7 @@ def test_artifact_dir_rejects_existing_override(tmp_path):
         run_tests._artifact_dir(artifacts)
 
 
-def test_system_host_batch_requires_approval(monkeypatch, tmp_path):
+def test_system_host_batch_requires_allow_batch(monkeypatch, tmp_path):
     # Context
     args = Namespace(
         suite="system",
@@ -684,6 +684,7 @@ def test_system_host_batch_requires_approval(monkeypatch, tmp_path):
         build_image=False,
         image="ghcr.io/esmci/cime:latest",
         podman_storage_conf=None,
+        verbosity=3,
     )
     monkeypatch.setattr(
         run_tests, "_model_checkout", lambda root: (root.parent, "e3sm")
@@ -694,11 +695,11 @@ def test_system_host_batch_requires_approval(monkeypatch, tmp_path):
     monkeypatch.setattr(run_tests, "_host_has_batch", lambda *a, **k: True)
 
     # Act / Assert
-    with pytest.raises(run_tests.RunnerError, match="Ask the user for approval"):
+    with pytest.raises(run_tests.RunnerError, match="Rerun with --allow-batch"):
         run_tests.run_tests(args, cime_root=tmp_path / "cime")
 
 
-def test_system_host_batch_runs_after_approval(monkeypatch, tmp_path):
+def test_system_host_batch_runs_with_allow_batch(monkeypatch, tmp_path):
     # Context
     args = Namespace(
         suite="system",
@@ -711,6 +712,7 @@ def test_system_host_batch_runs_after_approval(monkeypatch, tmp_path):
         build_image=False,
         image="ghcr.io/esmci/cime:latest",
         podman_storage_conf=None,
+        verbosity=3,
     )
     monkeypatch.setattr(
         run_tests, "_model_checkout", lambda root: (root.parent, "e3sm")
@@ -750,6 +752,7 @@ def test_podman_pull_reports_xattr_storage_failure(monkeypatch, tmp_path):
         build_image=False,
         image="ghcr.io/esmci/cime:latest",
         podman_storage_conf=tmp_path / "storage.conf",
+        verbosity=3,
     )
     monkeypatch.setattr(
         run_tests, "_model_checkout", lambda root: (root.parent, "e3sm")

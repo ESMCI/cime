@@ -40,10 +40,10 @@ If Podman storage is on a filesystem without extended-attribute support, use
 ``--podman-storage-conf`` to select a site-appropriate storage configuration.
 
 Host system tests do not submit batch jobs unless ``--allow-batch`` is passed.
-Obtain user approval before using that option. Artifacts are retained in a new
-temporary directory by default; ``--artifact-dir`` selects a specific new
-directory. System-test cases and logs are retained for inspection. The helper
-prints pytest's summary and coverage report and returns pytest's exit status.
+Artifacts are retained in a new temporary directory by default;
+``--artifact-dir`` selects a specific new directory. System-test cases and logs
+are retained for inspection. The helper prints pytest's summary and coverage
+report and returns pytest's exit status.
 """
 
 import argparse
@@ -111,7 +111,7 @@ def parse_command_line(args: Optional[Sequence[str]] = None) -> argparse.Namespa
     parser.add_argument(
         "--allow-batch",
         action="store_true",
-        help="allow system tests to submit jobs on a batch-enabled host; use only after user approval",
+        help="allow system tests to submit jobs on a batch-enabled host",
     )
     parser.add_argument(
         "--python",
@@ -693,13 +693,13 @@ def run_tests(
         has_batch = _host_has_batch(cime_root, machine, run=run)
         if args.suite in ("system", "all") and has_batch and not args.allow_batch:
             raise RunnerError(
-                f"Host machine {machine!r} uses a batch system. Ask the user for "
-                "approval, then rerun with --allow-batch."
+                f"Host machine {machine!r} uses a batch system. Rerun with "
+                "--allow-batch to permit batch submission."
             )
         if args.suite in ("system", "all") and not has_batch:
             print(f"Batch: machine {machine} has no batch system; running locally.")
         elif args.suite in ("system", "all") and args.allow_batch:
-            print(f"Batch: approved by user for host machine {machine}.")
+            print(f"Batch: permitted for host machine {machine}.")
 
     artifacts = _artifact_dir(args.artifact_dir)
     print(f"Model: {model}")
@@ -751,7 +751,7 @@ def run_tests(
         image = (
             args.image
             if args.image != "ghcr.io/esmci/cime:latest"
-            else "cime:agent-tests"
+            else "cime:tests"
         )
         build_env = os.environ.copy()
         build_env["DOCKER_BUILDKIT"] = "1"
