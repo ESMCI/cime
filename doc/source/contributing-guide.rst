@@ -183,7 +183,8 @@ cases and logs remain available for inspection. The helper prints the artifact
 directory and retains it after the run. Use ``--artifact-dir`` to choose a
 specific new directory, or ``--cache-dir`` to override the cache location.
 Pytest's native output includes the test status summary and a terminal coverage
-table with missing lines.
+table with missing lines. The helper uses pytest verbosity level 3 by default;
+pass ``--verbosity LEVEL`` to select a level from 0 to 3.
 
 On a batch-enabled host, system tests stop unless ``--allow-batch`` is passed.
 Ask the user for approval before using that option; the helper does not submit

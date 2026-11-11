@@ -53,6 +53,28 @@ def test_parse_command_line_accepts_all_suite():
     assert args.suite == "all"
 
 
+def test_parse_command_line_sets_configurable_verbosity():
+    # Context
+    argv = ["unit", "--verbosity", "1"]
+
+    # Act
+    args = run_tests.parse_command_line(argv)
+
+    # Assert
+    assert args.verbosity == 1
+
+
+def test_parse_command_line_defaults_to_verbose_output():
+    # Context
+    argv = ["unit"]
+
+    # Act
+    args = run_tests.parse_command_line(argv)
+
+    # Assert
+    assert args.verbosity == 3
+
+
 def test_parse_command_line_accepts_podman_storage_conf(tmp_path):
     # Context
     storage_conf = tmp_path / "storage.conf"
@@ -424,6 +446,7 @@ def test_container_command_mounts_input_data_for_system_suite(tmp_path):
     assert "--cov=CIME" in command
     assert "--cov-branch" in command
     assert "--cov-report=term-missing" in command
+    assert "-vvv" in command
     assert not any(argument.startswith("--junitxml") for argument in command)
     assert command[-2:] == [
         "CIME/tests/test_sys_a.py",
@@ -460,12 +483,38 @@ def test_container_command_combines_suites_and_uses_total_coverage(tmp_path):
     assert "--cov=CIME" in command
     assert "--cov-branch" in command
     assert "--cov-report=term-missing" in command
+    assert "-vvv" in command
     assert "CIME/tests/test_unit_example.py" in command
     assert "CIME/tests/test_sys_example.py" in command
     assert any(
         argument.startswith("--deselect=CIME/tests/test_sys_full_system.py")
         for argument in command
     )
+
+
+def test_container_command_uses_requested_verbosity(tmp_path):
+    # Context
+    model_root = tmp_path / "model"
+    cime_root = model_root / "cime"
+    cime_root.mkdir(parents=True)
+
+    # Act
+    command = run_tests._container_command(
+        "docker",
+        "cime:test",
+        "e3sm",
+        model_root,
+        cime_root,
+        tmp_path / "artifacts",
+        None,
+        "unit",
+        ["CIME/tests/test_unit_a.py"],
+        verbosity=1,
+    )
+
+    # Assert
+    assert "-v" in command
+    assert "-vvv" not in command
 
 
 def test_container_command_does_not_mount_input_data_for_unit_suite(tmp_path):

@@ -67,6 +67,14 @@ CIME_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(CIME_ROOT))
 
 RunCommand = Callable[..., subprocess.CompletedProcess[str]]
+PYTEST_OPTIONS = (
+    "-ra",
+    "-s",
+    "--no-teardown",
+    "--cov=CIME",
+    "--cov-branch",
+    "--cov-report=term-missing",
+)
 
 
 class RunnerError(Exception):
@@ -118,6 +126,14 @@ def parse_command_line(args: Optional[Sequence[str]] = None) -> argparse.Namespa
         "--artifact-dir",
         type=Path,
         help="directory for test artifacts (created if it does not already exist)",
+    )
+    parser.add_argument(
+        "--verbosity",
+        type=int,
+        default=3,
+        choices=range(4),
+        metavar="LEVEL",
+        help="pytest verbosity from 0 to 3 (default: %(default)s)",
     )
     parser.add_argument(
         "--podman-storage-conf",
@@ -521,6 +537,7 @@ def _container_command(
     inputdata: Optional[Path],
     suite: str,
     targets: Sequence[str],
+    verbosity: int = 3,
 ) -> List[str]:
     relative_cime = cime_root.relative_to(model_root)
     selected = _container_targets(cime_root, targets, suite)
@@ -564,19 +581,15 @@ def _container_command(
             "python",
             "-m",
             "pytest",
-            "-vvv",
-            "-ra",
-            "-s",
             "--machine",
             "docker",
             "--no-batch",
-            "--no-teardown",
             "--test-root=/root/storage/cases",
-            "--cov=CIME",
-            "--cov-branch",
-            "--cov-report=term-missing",
         ]
     )
+    if verbosity:
+        command.append("-" + "v" * verbosity)
+    command.extend(PYTEST_OPTIONS)
     if suite in ("system", "all") and not targets:
         command.append(
             "--deselect=CIME/tests/test_sys_full_system.py::TestFullSystem::test_full_system"
@@ -710,15 +723,13 @@ def run_tests(
             python,
             "-m",
             "pytest",
-            "-vvv",
-            "-ra",
-            "-s",
             "--machine",
             machine,
-            "--no-teardown",
             f"--test-root={artifacts}",
         ]
-        command.extend(["--cov=CIME", "--cov-branch", "--cov-report=term-missing"])
+        if args.verbosity:
+            command.append("-" + "v" * args.verbosity)
+        command.extend(PYTEST_OPTIONS)
         if not (args.suite in ("system", "all") and has_batch and args.allow_batch):
             command.append("--no-batch")
         if args.suite in ("system", "all") and not args.targets:
@@ -802,6 +813,7 @@ def run_tests(
         inputdata,
         args.suite,
         args.targets,
+        args.verbosity,
     )
     if inputdata is not None:
         print(f"Input data cache: {inputdata}")
