@@ -335,6 +335,66 @@ def test_choose_backend_rejects_system_without_host_or_runtime(monkeypatch, tmp_
         )
 
 
+def test_choose_backend_uses_docker_when_host_is_not_recognized(monkeypatch, tmp_path):
+    # Context
+    args = Namespace(backend="auto", suite="unit", build_image=False)
+    listing = CompletedProcess(
+        args=[],
+        returncode=0,
+        stdout="Machine(s)\n  linux-generic : generic\n",
+        stderr="",
+    )
+    no_current_machine = CompletedProcess(
+        args=[], returncode=1, stdout="", stderr="No machine None found"
+    )
+    monkeypatch.setattr(
+        run_tests.shutil,
+        "which",
+        lambda candidate: "/usr/bin/docker" if candidate == "docker" else None,
+    )
+    results = iter(
+        [
+            listing,
+            no_current_machine,
+            CompletedProcess(args=[], returncode=0, stdout="", stderr=""),
+        ]
+    )
+
+    # Act
+    backend, machine, machines = run_tests._choose_backend(
+        args, tmp_path / "cime", run=lambda *a, **k: next(results)
+    )
+
+    # Assert
+    assert (backend, machine, machines) == ("docker", None, {"linux-generic"})
+
+
+def test_choose_backend_uses_linux_generic_without_host_or_container(
+    monkeypatch, tmp_path
+):
+    # Context
+    args = Namespace(backend="auto", suite="unit", build_image=False)
+    listing = CompletedProcess(
+        args=[],
+        returncode=0,
+        stdout="Machine(s)\n  linux-generic : generic\n",
+        stderr="",
+    )
+    no_current_machine = CompletedProcess(
+        args=[], returncode=1, stdout="", stderr="No machine None found"
+    )
+    monkeypatch.setattr(run_tests.shutil, "which", lambda _: None)
+    results = iter([listing, no_current_machine])
+
+    # Act
+    backend, machine, machines = run_tests._choose_backend(
+        args, tmp_path / "cime", run=lambda *a, **k: next(results)
+    )
+
+    # Assert
+    assert (backend, machine, machines) == ("host", "linux-generic", {"linux-generic"})
+
+
 def test_choose_backend_explicit_container_skips_machine_queries(monkeypatch, tmp_path):
     # Context
     args = Namespace(backend="docker", suite="system", build_image=False)
