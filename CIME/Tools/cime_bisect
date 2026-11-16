@@ -45,6 +45,16 @@ fi
 good="$1"
 shift
 
+if ! git rev-parse --verify --quiet "$good^{commit}" >/dev/null; then
+    echo "'$good' is not a valid commit" >&2
+    exit 1
+fi
+
+if ! git merge-base --is-ancestor "$good" HEAD; then
+    echo "Good commit '$good' is not an ancestor of HEAD" >&2
+    exit 1
+fi
+
 cleanup() {
     git bisect reset >/dev/null 2>&1
     git submodule update --recursive
