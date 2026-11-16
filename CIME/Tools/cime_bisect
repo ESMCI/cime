@@ -1,4 +1,4 @@
-#!/usr/bin/env -S bash -x
+#!/usr/bin/env bash
 
 # A thin wrapper around "git bisect start --first-parent" that drives the
 # whole bisection: start, run, report, reset.
