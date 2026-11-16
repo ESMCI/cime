@@ -29,6 +29,21 @@ def append_testlog(msg, caseroot="."):
 def append_case_status(phase, status, msg=None, caseroot=".", gitinterface=None):
     """
     Update CaseStatus file
+
+    If ``gitinterface`` is given, also commit all changes in the case's
+    local git repository: deleted files are removed, and new or modified
+    files (other than those excluded by ``.gitignore``) are added. ``msg``
+    is used as the commit message. If the commit succeeds and the repository
+    has a remote, the commit is then pushed to it.
+
+    Args:
+        phase (str): Name of the phase being logged (e.g., "case.submit").
+        status (str): Status of the phase (e.g., "starting", "success").
+        msg (str, optional): Additional message to log; also used as the git
+            commit message.
+        caseroot (str, optional): Path to the case directory.
+        gitinterface (GitInterface, optional): Interface to the case's local
+            git repository. If None, no git operations are performed.
     """
     msg = msg if msg else ""
     append_status(
@@ -76,6 +91,32 @@ def run_and_log_case_status(
     is_batch=False,
     gitinterface=None,
 ):
+    """
+    Run ``func``, logging its start and its success or failure to CaseStatus
+
+    The status is logged with ``append_case_status``, so if ``gitinterface``
+    is given, all changes in the case's local git repository are committed
+    (and pushed, if a remote is set) each time the status is logged.
+
+    Args:
+        func (callable): Function to run, taking no arguments.
+        phase (str): Name of the phase being logged (e.g., "case.submit").
+        caseroot (str, optional): Path to the case directory.
+        custom_starting_msg_functor (callable, optional): Function, taking no
+            arguments, that returns a message to log with the start of the phase.
+        custom_success_msg_functor (callable, optional): Function, taking the
+            return value of ``func``, that returns a message to log with the
+            completion of the phase.
+        is_batch (bool, optional): Whether a batch system is used.
+        gitinterface (GitInterface, optional): Interface to the case's local
+            git repository. If None, no git operations are performed.
+
+    Returns:
+        The return value of ``func``.
+
+    Raises:
+        Any exception raised by ``func``, after logging the failure.
+    """
     starting_msg = None
 
     if custom_starting_msg_functor is not None:

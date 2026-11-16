@@ -1778,7 +1778,14 @@ class Case(object):
 
             srcroot = self.get_value("SRCROOT")
             customize_path = os.path.join(srcroot, "cime_config", "customize")
-            safe_copy(os.path.join(customize_path, "e3sm_compile_wrap.py"), casetools)
+            if os.path.isdir(customize_path):
+                for customize_file in os.listdir(customize_path):
+                    file_path = os.path.join(customize_path, customize_file)
+                    if os.path.isfile(file_path):
+                        destfile = os.path.join(casetools, customize_file)
+                        if os.path.islink(destfile):
+                            os.unlink(destfile)
+                        safe_copy(file_path, destfile)
 
         # add archive_metadata to the CASEROOT but only for CESM
         if config.copy_cesm_tools:
