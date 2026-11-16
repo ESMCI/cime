@@ -40,3 +40,7 @@ data/
 # Claude Code user-local configuration
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Prevent copies of the tracked Claude skill symlink's target from being
+# committed if Windows resolves the link into a directory.
+/.claude/skills/
