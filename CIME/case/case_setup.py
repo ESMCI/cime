@@ -714,8 +714,6 @@ def _create_case_repo(self, caseroot):
         append_case_status(
             "", "", "local git repository created", gitinterface=self._gitinterface
         )
-        # add all files in caseroot to local repository
-        self._gitinterface._git_command("add", "*")
     elif not self._gitinterface:
         append_case_status(
             "",
