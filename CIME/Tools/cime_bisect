@@ -8,6 +8,11 @@
 # commits on development branches. The bad commit is always the current
 # HEAD. Run this from the root of the repo you want to bisect (CIME or the
 # model that houses it).
+#
+# If you are bisecting with a create_test command, you need to be careful
+# with the create_test flags. If you are doing full runs on a batch system,
+# you should provide --wait. If you are bisecting a DIFF, you should provide
+# --ignore-namelists so that NML issues won't muddy the bisection.
 
 usage() {
     cat <<USAGE
@@ -25,9 +30,13 @@ Examples:
 
   # Bisect a build error
   $(basename "$0") HEAD~4 ./cime/scripts/create_test ERS.f45_g37.B1850C5 --no-run
+
+  # Bisect a DIFF
+  $(basename "$0") HEAD~4 ./cime/scripts/create_test ERS.f45_g37.B1850C5 -c -b master --wait --ignore-namelists
 USAGE
 }
 
+# Arg parsing
 case "$1" in
     -h|--help) usage; exit 0 ;;
 esac
@@ -37,13 +46,14 @@ if [ "$#" -lt 2 ]; then
     exit 1
 fi
 
+good="$1"
+shift
+
+# Sanity checks
 if [ ! -e .git ]; then
     echo "Please run from the root of a git repo (CIME or the model that houses it)" >&2
     exit 1
 fi
-
-good="$1"
-shift
 
 if ! git rev-parse --verify --quiet "$good^{commit}" >/dev/null; then
     echo "'$good' is not a valid commit" >&2
@@ -55,17 +65,20 @@ if ! git merge-base --is-ancestor "$good" HEAD; then
     exit 1
 fi
 
+# We always want to reset after bisection is done
 cleanup() {
     git bisect reset >/dev/null 2>&1
     git submodule update --recursive
 }
 trap cleanup EXIT
 
+# Start and run the bisection
 git bisect start --first-parent HEAD "$good" || exit 1
 
 git bisect run bash -c 'git submodule update --recursive && "$@"' bisect-run "$@"
 rc=$?
 
+# Report
 if [ "$rc" -eq 0 ]; then
     echo "####################################################"
     echo "FIRST BAD COMMIT IS:"
