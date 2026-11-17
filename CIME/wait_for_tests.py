@@ -1,5 +1,5 @@
 # pylint: disable=import-error
-import queue, os, time, threading, socket, signal, shutil, glob, tempfile
+import queue, os, re, time, threading, socket, signal, shutil, glob, tempfile
 from pathlib import Path
 
 # pylint: disable=import-error
@@ -19,6 +19,8 @@ E3SM_MAIN_CDASH = "E3SM"
 CDASH_DEFAULT_BUILD_GROUP = "ACME_Latest"
 SLEEP_INTERVAL_SEC = 0.1
 ENV_VAR_KEEP_CDASH = "CIME_TEST_CDASH_WFT"
+CTEST_UPLOADED_RE = re.compile(r"^\s*Uploaded:\s+(\S.*?)\s*$", re.MULTILINE)
+CTEST_NOTES_FILE = "Notes.xml"
 
 
 ###############################################################################
@@ -424,6 +426,118 @@ def create_cdash_upload_xml(
 
 
 ###############################################################################
+def parse_uploaded_files(ctest_output):
+    ###############################################################################
+    """Return the basenames of the files ctest reported as ``Uploaded:``.
+
+    ctest submits the XML files one at a time and aborts on the first failure,
+    so this is the set of files CDash has already accepted for the build.
+    """
+    return {os.path.basename(m) for m in CTEST_UPLOADED_RE.findall(ctest_output)}
+
+
+###############################################################################
+def prune_uploaded_files(testtime_dir, uploaded):
+    ###############################################################################
+    """Remove already-uploaded files from the ctest tag directory.
+
+    ctest only submits files present in ``Testing/<tag>/``. CDash appends the
+    contents of a resubmitted file to the existing build rather than replacing
+    it, so anything already accepted must not be sent again.
+
+    Returns:
+        Sorted list of the file names that were removed.
+    """
+    removed = []
+    for path in sorted(Path(testtime_dir).iterdir()):
+        if path.name in uploaded:
+            path.unlink()
+            removed.append(path.name)
+    return removed
+
+
+###############################################################################
+def submit_cdash_files(
+    tmp_path,
+    testtime_dir,
+    cdash_build_name,
+    cdash_project,
+    hostname,
+    cdash_timestamp,
+    uploaded,
+    run_cmd_func=run_cmd,
+):
+    ###############################################################################
+    """Submit the XML files in ``testtime_dir`` to CDash via ctest.
+
+    Tries https first and falls back to http. Files recorded in ``uploaded``
+    (which is updated in place after every attempt) are removed before each
+    ctest invocation so a retry only resends what CDash has not yet accepted.
+
+    Returns:
+        True if ctest reported a successful submission, False otherwise.
+    """
+    dart_path = tmp_path / "DartConfiguration.tcl"
+
+    for drop_method in ["https", "http"]:
+        dart_config = f"""
+SourceDirectory: {str(tmp_path.absolute())}
+BuildDirectory: {str(tmp_path.absolute())}
+
+# Site is something like machine.domain, i.e. pragmatic.crd
+Site: {hostname}
+
+# Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
+BuildName: {cdash_build_name}
+
+# Submission information
+IsCDash: TRUE
+CDashVersion:
+QueryCDashVersion:
+DropSite: my.cdash.org
+DropLocation: /submit.php?project={cdash_project}
+DropSiteUser:
+DropSitePassword:
+DropSiteMode:
+DropMethod: {drop_method}
+TriggerSite:
+ScpCommand: {shutil.which('scp')}
+
+# Dashboard start time
+NightlyStartTime: {cdash_timestamp} UTC
+
+UseLaunchers:
+CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
+"""
+        with dart_path.open(mode="w") as dart_fd:
+            dart_fd.write(dart_config)
+
+        pruned = prune_uploaded_files(testtime_dir, uploaded)
+        if pruned:
+            logging.info(f"Not resubmitting files already accepted by CDash: {pruned}")
+
+        ctest_cmd = "ctest -VV -D NightlySubmit"
+        # -A regenerates Notes.xml on every run, so drop it once it has landed
+        if CTEST_NOTES_FILE not in uploaded:
+            ctest_cmd += " -A notes.txt"
+
+        stat, out, _ = run_cmd_func(
+            ctest_cmd,
+            combine_output=True,
+            from_dir=str(tmp_path),
+        )
+        uploaded.update(parse_uploaded_files(out))
+
+        if stat != 0:
+            logging.warning(f"ctest upload drop method {drop_method} FAILED:\n{out}")
+        else:
+            logging.info(f"Upload SUCCESS:\n{out}")
+            return True
+
+    return False
+
+
+###############################################################################
 def create_cdash_xml(
     results,
     cdash_build_name,
@@ -476,12 +590,15 @@ def create_cdash_xml(
     # Try multiple tmproots if necessary. The default /tmp will be tried first
     # unless cdash_tmproot was provided. The location of the default can be
     # modified via the TMPDIR environment variable.
+    #
+    # Files CDash has already accepted are tracked across all attempts so that
+    # no retry resubmits them, which would duplicate tests on the dashboard.
+    uploaded = set()
     for tmproot in tmproots:
         try:
             with tempfile.TemporaryDirectory(dir=tmproot) as tmpdir:
                 tmp_path = Path(tmpdir)
                 utc_time = time.strftime("%Y%m%d-%H%M", utc_time_tuple)
-                dart_path = tmp_path / "DartConfiguration.tcl"
                 testing_path = tmp_path / "Testing"
                 testtime_dir = testing_path / utc_time  # Most action happens here
                 tag_file = testing_path / "TAG"
@@ -520,57 +637,22 @@ def create_cdash_xml(
                     testtime_dir,
                 )
 
-                for drop_method in ["https", "http"]:
-                    dart_config = f"""
-SourceDirectory: {str(tmp_path.absolute())}
-BuildDirectory: {str(tmp_path.absolute())}
-
-# Site is something like machine.domain, i.e. pragmatic.crd
-Site: {hostname}
-
-# Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: {cdash_build_name}
-
-# Submission information
-IsCDash: TRUE
-CDashVersion:
-QueryCDashVersion:
-DropSite: my.cdash.org
-DropLocation: /submit.php?project={cdash_project}
-DropSiteUser:
-DropSitePassword:
-DropSiteMode:
-DropMethod: {drop_method}
-TriggerSite:
-ScpCommand: {shutil.which('scp')}
-
-# Dashboard start time
-NightlyStartTime: {cdash_timestamp} UTC
-
-UseLaunchers:
-CurlOptions: CURLOPT_SSL_VERIFYPEER_OFF;CURLOPT_SSL_VERIFYHOST_OFF
-"""
-                    with dart_path.open(mode="w") as dart_fd:
-                        dart_fd.write(dart_config)
-
-                    stat, out, _ = run_cmd(
-                        "ctest -VV -D NightlySubmit -A notes.txt",
-                        combine_output=True,
-                        from_dir=str(tmp_path),
-                    )
-                    if stat != 0:
-                        logging.warning(
-                            f"ctest upload drop method {drop_method} FAILED:\n{out}"
+                if submit_cdash_files(
+                    tmp_path,
+                    testtime_dir,
+                    cdash_build_name,
+                    cdash_project,
+                    hostname,
+                    cdash_timestamp,
+                    uploaded,
+                ):
+                    if ENV_VAR_KEEP_CDASH in os.environ:
+                        logging.info(
+                            f"Test mode enabled, copying {str(tmp_path)} to {os.getcwd()}"
                         )
-                    else:
-                        logging.info(f"Upload SUCCESS:\n{out}")
-                        if ENV_VAR_KEEP_CDASH in os.environ:
-                            logging.info(
-                                f"Test mode enabled, copying {str(tmp_path)} to {os.getcwd()}"
-                            )
-                            safe_copy(str(tmp_path / "Testing"), os.getcwd())
+                        safe_copy(str(tmp_path / "Testing"), os.getcwd())
 
-                        return
+                    return
 
         except Exception as e:
             logging.warning(
