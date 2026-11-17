@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.is\_python\_executable
+=================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: is_python_executable

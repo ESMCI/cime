@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.run\_cmd
+===================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: run_cmd

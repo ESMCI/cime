@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.jenkins\_generic\_job.handle\_old\_test\_data
+==================================================
+
+.. currentmodule:: CIME.jenkins_generic_job
+
+.. autofunction:: handle_old_test_data

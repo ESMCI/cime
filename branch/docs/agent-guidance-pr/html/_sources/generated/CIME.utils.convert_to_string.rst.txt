@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.convert\_to\_string
+==============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: convert_to_string

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.get\_cime\_config
+============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: get_cime_config

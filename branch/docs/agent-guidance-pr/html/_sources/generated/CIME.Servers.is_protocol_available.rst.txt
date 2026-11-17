@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.Servers.is\_protocol\_available
+====================================
+
+.. currentmodule:: CIME.Servers
+
+.. autofunction:: is_protocol_available

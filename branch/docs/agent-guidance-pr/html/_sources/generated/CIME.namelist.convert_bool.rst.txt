@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.namelist.convert\_bool
+===========================
+
+.. currentmodule:: CIME.namelist
+
+.. autofunction:: convert_bool

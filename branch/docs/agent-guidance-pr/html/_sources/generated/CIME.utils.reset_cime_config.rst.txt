@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.reset\_cime\_config
+==============================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: reset_cime_config
