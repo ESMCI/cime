@@ -49,6 +49,8 @@ def parse_command_line(args):
         nargs="*",
         help="Full pathname to a directory containing any combination of user_nl_* files "
         "\nand a shell_commands script (typically containing xmlchange commands). "
+        "\nA shell_commands_post_setup script may also be provided; it is run from the"
+        "\ncase directory the first time case.setup completes."
         "\nThe directory can also contain an SourceMods/ directory with the same structure "
         "\nas would be found in a case directory."
         "\nIt can also contain a file named 'include_user_mods' which gives the path to"

@@ -15,6 +15,7 @@ A case can customized by providing **user mods** when creating a new case. The *
 * Namelist files
 * Source code modifications
 * Shell commands (can call ``xmlchange``)
+* Shell commands to run after ``case.setup``
 
 This can be useful when a user wants to carry out a series of experiments based on a common set of changes to the namelists, source code, and/or case XML settings.
 
@@ -32,6 +33,25 @@ Here's an example **user mod** to demonstrate.
     It is important to note that the file containing the **xmlchange** 
     commands must be named ``shell_commands`` in order for it to be recognized
     and run upon case creation.
+
+Some changes can only be made once ``case.setup`` has generated the case
+files they depend on, for example per-instance ``user_nl_<comp>_<inst>`` files
+or ``env_mach_specific.xml``. Place such commands in a file named
+``shell_commands_post_setup``. These commands are collected into
+``$CASEROOT/shell_commands_post_setup`` when the case is created and run from
+``$CASEROOT`` the first time ``./case.setup`` completes.
+
+::
+
+    echo "echo 'nlmaps_verbosity = 2' >> user_nl_cpl_0002" >> ./usermod/shell_commands_post_setup
+
+.. note::
+
+    ``shell_commands_post_setup`` runs only once per case. A copy of the
+    executed file is kept in ``$CASEROOT/LockedFiles/shell_commands_post_setup``
+    and later invocations of ``./case.setup`` (including ``--reset``) skip it.
+    Remove that copy to have the commands run again on the next ``./case.setup``.
+    As with ``shell_commands``, any ``xmlchange`` call is run with ``--force``.
 
 The structure of the component directories does not need to be the 
 same as in the component source code. As an example, should the user

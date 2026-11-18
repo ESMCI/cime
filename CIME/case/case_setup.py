@@ -24,8 +24,9 @@ from CIME.utils import (
 )
 from CIME.status import run_and_log_case_status, append_case_status
 from CIME.test_status import *
-from CIME.locked_files import unlock_file, lock_file, check_lockedfiles
+from CIME.locked_files import unlock_file, lock_file, is_locked, check_lockedfiles
 from CIME.gitinterface import GitInterface
+from CIME.user_mod_support import SHELL_COMMANDS_POST_SETUP
 
 import errno, shutil
 import re
@@ -327,6 +328,35 @@ def _create_macros(
     copy_local_macros_to_dir(
         case_cmake_path, extra_machdir=case.get_value("EXTRA_MACHDIR")
     )
+
+
+###############################################################################
+def _run_post_setup_shell_commands(case, caseroot):
+    ###############################################################################
+    """Run user_mods shell_commands_post_setup the first time case.setup completes.
+
+    The executed file is copied to LockedFiles as a record that it has run, so
+    later re-setups (e.g. case.setup --reset, or those done internally by system
+    tests) do not run it again. Remove that copy to force the commands to re-run.
+    """
+    sc_file = os.path.join(caseroot, SHELL_COMMANDS_POST_SETUP)
+    if not os.path.isfile(sc_file):
+        return
+
+    if is_locked(SHELL_COMMANDS_POST_SETUP, caseroot):
+        logger.info(
+            "{} has already been run for this case, skipping".format(
+                SHELL_COMMANDS_POST_SETUP
+            )
+        )
+        return
+
+    # The commands may change xml files via xmlchange, so write out pending
+    # changes first and re-read everything afterwards.
+    case.flush()
+    run_cmd_no_fail(sc_file, from_dir=caseroot, verbose=True)
+    lock_file(SHELL_COMMANDS_POST_SETUP, caseroot)
+    case.read_xml()
 
 
 ###############################################################################
@@ -641,6 +671,8 @@ def _case_setup_impl(
         env_module.make_env_mach_specific_file("csh", case)
         if not non_local:
             env_module.save_all_env_info("software_environment.txt")
+
+        _run_post_setup_shell_commands(case, caseroot)
 
         logger.info(
             "You can now run './preview_run' to get more info on how your case will be run"

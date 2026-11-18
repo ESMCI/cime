@@ -4,7 +4,7 @@ import unittest
 import shutil
 import tempfile
 import os
-from CIME.user_mod_support import apply_user_mods
+from CIME.user_mod_support import apply_user_mods, SHELL_COMMANDS_POST_SETUP
 from CIME.core.exceptions import CIMEError
 
 # ========================================================================
@@ -12,6 +12,12 @@ from CIME.core.exceptions import CIMEError
 # ========================================================================
 
 _SOURCEMODS = os.path.join("SourceMods", "src.drv")
+_POST_SETUP_RESULT = "shell_commands_post_setup_result"
+
+
+def _post_setup_command(name, caseroot):
+    """Returns the shell_commands_post_setup line written for user_mod 'name'."""
+    return "echo {} >> {}/{}\n".format(name, caseroot, _POST_SETUP_RESULT)
 
 
 class TestUserModSupport(unittest.TestCase):
@@ -43,6 +49,9 @@ class TestUserModSupport(unittest.TestCase):
         - A shell_commands file with contents:
           echo foo >> /PATH/TO/CASEROOT/shell_commands_result
 
+        - A shell_commands_post_setup file with contents:
+          echo foo >> /PATH/TO/CASEROOT/shell_commands_post_setup_result
+
         - A file in _SOURCEMODS named myfile.F90 with contents:
           foo
 
@@ -65,6 +74,8 @@ class TestUserModSupport(unittest.TestCase):
                 name, self._caseroot
             )
             shell_commands.write(command)
+        with open(os.path.join(mod_dir, SHELL_COMMANDS_POST_SETUP), "w") as post_setup:
+            post_setup.write(_post_setup_command(name, self._caseroot))
         with open(os.path.join(mod_dir_sourcemods, "myfile.F90"), "w") as f90_file:
             f90_file.write(name + "\n")
 
@@ -108,6 +119,29 @@ class TestUserModSupport(unittest.TestCase):
         with open(path_to_shell_commands_result, "r") as shell_commands_result:
             contents = shell_commands_result.read()
             self.assertEqual(expected_shell_commands_result, contents)
+
+        # Post-setup commands are collected in the same order as shell_commands
+        # (one echo line per mod), but must not be executed by apply_user_mods
+        expected_post_setup = "".join(
+            _post_setup_command(name, self._caseroot)
+            for name in expected_shell_commands_result.splitlines()
+        )
+        path_to_post_setup = os.path.join(self._caseroot, SHELL_COMMANDS_POST_SETUP)
+        self.assertTrue(
+            os.path.isfile(path_to_post_setup),
+            msg=msg + ": {} does not exist".format(SHELL_COMMANDS_POST_SETUP),
+        )
+        self.assertTrue(
+            os.access(path_to_post_setup, os.X_OK),
+            msg=msg + ": {} is not executable".format(SHELL_COMMANDS_POST_SETUP),
+        )
+        with open(path_to_post_setup, "r") as post_setup:
+            self.assertEqual(expected_post_setup, post_setup.read())
+        self.assertFalse(
+            os.path.exists(os.path.join(self._caseroot, _POST_SETUP_RESULT)),
+            msg=msg
+            + ": {} was executed by apply_user_mods".format(SHELL_COMMANDS_POST_SETUP),
+        )
 
         path_to_sourcemod = os.path.join(self._caseroot_sourcemods, "myfile.F90")
         self.assertTrue(
@@ -206,6 +240,43 @@ derived_combo
             expected_sourcemod="derived_combo\n",
             msg="test_duplicate_includes",
         )
+
+
+def test_apply_user_mods_post_setup_forces_xmlchange(tmp_path):
+    # Context
+    caseroot = tmp_path / "case"
+    caseroot.mkdir()
+    mod_dir = tmp_path / "mods"
+    mod_dir.mkdir()
+    (mod_dir / SHELL_COMMANDS_POST_SETUP).write_text(
+        "./xmlchange NTASKS=4\n./xmlchange --append CAM_CONFIG_OPTS='-foo'\n"
+    )
+
+    # Act
+    apply_user_mods(str(caseroot), str(mod_dir))
+
+    # Assert
+    case_file = caseroot / SHELL_COMMANDS_POST_SETUP
+    assert case_file.read_text() == (
+        "./xmlchange --force NTASKS=4\n"
+        "./xmlchange --force --append CAM_CONFIG_OPTS='-foo'\n"
+    )
+    assert not (caseroot / "shell_commands").exists()
+
+
+def test_apply_user_mods_post_setup_absent(tmp_path):
+    # Context
+    caseroot = tmp_path / "case"
+    caseroot.mkdir()
+    mod_dir = tmp_path / "mods"
+    mod_dir.mkdir()
+    (mod_dir / "user_nl_cpl").write_text("foo\n")
+
+    # Act
+    apply_user_mods(str(caseroot), str(mod_dir))
+
+    # Assert
+    assert not (caseroot / SHELL_COMMANDS_POST_SETUP).exists()
 
 
 if __name__ == "__main__":

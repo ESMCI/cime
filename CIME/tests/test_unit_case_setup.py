@@ -1,14 +1,40 @@
 #!/usr/bin/env python3
 
 import os
+import stat
 import unittest
 import tempfile
 import contextlib
 from pathlib import Path
 from unittest import mock
 
+import pytest
+
 from CIME.case import case_setup
+from CIME.core.exceptions import CIMEError
+from CIME.locked_files import LOCKED_DIR
 from CIME.tests.utils import chdir
+from CIME.user_mod_support import SHELL_COMMANDS_POST_SETUP
+
+
+class FakeCase:
+    """Minimal stand-in for Case recording xml sync calls."""
+
+    def __init__(self):
+        self.calls = []
+
+    def flush(self, flushall=False):
+        self.calls.append("flush")
+
+    def read_xml(self):
+        self.calls.append("read_xml")
+
+
+def _write_post_setup_commands(caseroot, contents):
+    path = Path(caseroot, SHELL_COMMANDS_POST_SETUP)
+    path.write_text(contents)
+    path.chmod(path.stat().st_mode | stat.S_IXUSR)
+    return path
 
 
 @contextlib.contextmanager
@@ -310,3 +336,66 @@ class TestCaseSetup(unittest.TestCase):
                 "gnu-test",
                 "LINUX",
             )
+
+
+def test_run_post_setup_shell_commands_absent(tmp_path):
+    # Context
+    case = FakeCase()
+
+    # Act
+    case_setup._run_post_setup_shell_commands(case, str(tmp_path))
+
+    # Assert
+    assert case.calls == []
+    assert not (tmp_path / LOCKED_DIR / SHELL_COMMANDS_POST_SETUP).exists()
+
+
+def test_run_post_setup_shell_commands_first_setup(tmp_path):
+    # Context
+    case = FakeCase()
+    contents = "#!/bin/sh\necho ran >> post_setup_result\n"
+    _write_post_setup_commands(tmp_path, contents)
+
+    # Act
+    case_setup._run_post_setup_shell_commands(case, str(tmp_path))
+
+    # Assert
+    # Commands run from caseroot; xml state is flushed before and re-read after
+    assert (tmp_path / "post_setup_result").read_text() == "ran\n"
+    assert case.calls == ["flush", "read_xml"]
+    locked = tmp_path / LOCKED_DIR / SHELL_COMMANDS_POST_SETUP
+    assert locked.read_text() == contents
+
+
+def test_run_post_setup_shell_commands_already_run(tmp_path):
+    # Context
+    case = FakeCase()
+    contents = "#!/bin/sh\necho ran >> post_setup_result\n"
+    _write_post_setup_commands(tmp_path, contents)
+    (tmp_path / LOCKED_DIR).mkdir()
+    (tmp_path / LOCKED_DIR / SHELL_COMMANDS_POST_SETUP).write_text(contents)
+
+    # Act
+    case_setup._run_post_setup_shell_commands(case, str(tmp_path))
+
+    # Assert
+    assert not (tmp_path / "post_setup_result").exists()
+    assert case.calls == []
+
+
+def test_run_post_setup_shell_commands_failure(tmp_path):
+    # Context
+    case = FakeCase()
+    _write_post_setup_commands(
+        tmp_path, "#!/bin/sh\necho ran >> post_setup_result\nexit 1\n"
+    )
+
+    # Act
+    with pytest.raises(CIMEError):
+        case_setup._run_post_setup_shell_commands(case, str(tmp_path))
+
+    # Assert
+    # A failed run is not recorded, so it is retried on the next case.setup
+    assert (tmp_path / "post_setup_result").read_text() == "ran\n"
+    assert not (tmp_path / LOCKED_DIR / SHELL_COMMANDS_POST_SETUP).exists()
+    assert case.calls == ["flush"]
