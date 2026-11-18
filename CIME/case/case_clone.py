@@ -1,12 +1,13 @@
 """
 create_clone is a member of the Case class from file case.py
 """
+
 import os, glob, shutil
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, check_name, safe_copy, get_model, CESM_LIKE_MODELS
 from CIME.simple_compare import compare_files
 from CIME.locked_files import lock_file
-from CIME.user_mod_support import apply_user_mods
+from CIME.user_mod_support import apply_user_mods, SHELL_COMMANDS_POST_SETUP
 
 logger = logging.getLogger(__name__)
 
@@ -156,6 +157,12 @@ def create_clone(
 
         for item in files:
             safe_copy(item, newcaseroot)
+
+        # copy the collected post-setup hook so the clone's own case.setup runs it;
+        # its LockedFiles execution marker is intentionally not carried over
+        post_setup_hook = os.path.join(cloneroot, SHELL_COMMANDS_POST_SETUP)
+        if os.path.isfile(post_setup_hook):
+            safe_copy(post_setup_hook, newcaseroot)
 
         # copy SourceMod and Buildconf files
         # if symlinks exist, copy rather than follow links

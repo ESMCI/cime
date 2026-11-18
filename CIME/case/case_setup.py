@@ -339,7 +339,8 @@ def _run_post_setup_shell_commands(case, caseroot, reset=False):
     reset (case.setup --reset, including the resets system tests perform
     internally). A plain re-run of case.setup skips them. The executed file is
     copied to LockedFiles as the record of having run; remove that copy to force
-    the commands to run on the next plain case.setup.
+    the commands to run on the next plain case.setup. create_clone copies the
+    hook but not that record, so each clone runs the commands on its own setup.
     """
     sc_file = os.path.join(caseroot, SHELL_COMMANDS_POST_SETUP)
     if not os.path.isfile(sc_file):
