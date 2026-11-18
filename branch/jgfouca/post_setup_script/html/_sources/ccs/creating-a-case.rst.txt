@@ -45,7 +45,7 @@ or ``env_mach_specific.xml``. Place such commands in a file named
 ::
 
     cat > ./usermod/shell_commands_post_setup << 'EOF'
-    grep -q nlmaps_verbosity user_nl_cpl_0002 || echo "nlmaps_verbosity = 2" >> user_nl_cpl_0002
+    grep -q nlmaps_verbosity user_nl_cpl || echo "nlmaps_verbosity = 2" >> user_nl_cpl
     EOF
 
 .. note::

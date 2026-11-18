@@ -148,7 +148,7 @@ or <code class="docutils literal notranslate"><span class="pre">env_mach_specifi
 <code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> when <code class="docutils literal notranslate"><span class="pre">./case.setup</span></code> first completes and again on each
 <code class="docutils literal notranslate"><span class="pre">./case.setup</span> <span class="pre">--reset</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">&gt;</span> <span class="o">./</span><span class="n">usermod</span><span class="o">/</span><span class="n">shell_commands_post_setup</span> <span class="o">&lt;&lt;</span> <span class="s1">'EOF'</span>
-<span class="n">grep</span> <span class="o">-</span><span class="n">q</span> <span class="n">nlmaps_verbosity</span> <span class="n">user_nl_cpl_0002</span> <span class="o">||</span> <span class="n">echo</span> <span class="s2">"nlmaps_verbosity = 2"</span> <span class="o">&gt;&gt;</span> <span class="n">user_nl_cpl_0002</span>
+<span class="n">grep</span> <span class="o">-</span><span class="n">q</span> <span class="n">nlmaps_verbosity</span> <span class="n">user_nl_cpl</span> <span class="o">||</span> <span class="n">echo</span> <span class="s2">"nlmaps_verbosity = 2"</span> <span class="o">&gt;&gt;</span> <span class="n">user_nl_cpl</span>
 <span class="n">EOF</span>
 </pre></div>
 </div>
