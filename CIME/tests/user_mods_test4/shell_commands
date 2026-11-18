@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "shell_commands_ran" >> post_setup_result
