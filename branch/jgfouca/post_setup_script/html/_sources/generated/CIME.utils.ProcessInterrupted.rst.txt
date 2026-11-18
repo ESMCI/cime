@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.ProcessInterrupted
+=============================
+
+.. currentmodule:: CIME.utils
+
+.. autoexception:: ProcessInterrupted

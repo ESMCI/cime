@@ -1,0 +1,33 @@
+..
+  class.rst
+
+CIME.test\_status.TestStatus
+============================
+
+.. currentmodule:: CIME.test_status
+
+.. autoclass:: TestStatus
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~TestStatus.__init__
+                    ~TestStatus.current_is
+                    ~TestStatus.flush
+                    ~TestStatus.get_comment
+                    ~TestStatus.get_latest_phase
+                    ~TestStatus.get_name
+                    ~TestStatus.get_overall_test_status
+                    ~TestStatus.get_status
+                    ~TestStatus.increment_non_pass_counts
+                    ~TestStatus.phase_statuses_dump
+                    ~TestStatus.set_status
+        
+    

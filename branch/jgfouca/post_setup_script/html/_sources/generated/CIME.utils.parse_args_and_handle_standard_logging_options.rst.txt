@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.parse\_args\_and\_handle\_standard\_logging\_options
+===============================================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: parse_args_and_handle_standard_logging_options

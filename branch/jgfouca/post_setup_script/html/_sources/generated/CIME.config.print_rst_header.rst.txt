@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.config.print\_rst\_header
+==============================
+
+.. currentmodule:: CIME.config
+
+.. autofunction:: print_rst_header

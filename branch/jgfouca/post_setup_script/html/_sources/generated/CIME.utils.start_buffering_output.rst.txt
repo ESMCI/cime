@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.utils.start\_buffering\_output
+===================================
+
+.. currentmodule:: CIME.utils
+
+.. autofunction:: start_buffering_output

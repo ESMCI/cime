@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.provenance.get\_recommended\_test\_time\_based\_on\_past
+=============================================================
+
+.. currentmodule:: CIME.provenance
+
+.. autofunction:: get_recommended_test_time_based_on_past

@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.bless\_test\_results.bless\_namelists
+==========================================
+
+.. currentmodule:: CIME.bless_test_results
+
+.. autofunction:: bless_namelists

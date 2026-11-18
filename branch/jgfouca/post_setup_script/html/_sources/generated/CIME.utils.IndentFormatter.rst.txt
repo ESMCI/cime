@@ -1,0 +1,30 @@
+..
+  class.rst
+
+CIME.utils.IndentFormatter
+==========================
+
+.. currentmodule:: CIME.utils
+
+.. autoclass:: IndentFormatter
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~IndentFormatter.__init__
+                    ~IndentFormatter.converter
+                    ~IndentFormatter.format
+                    ~IndentFormatter.formatException
+                    ~IndentFormatter.formatMessage
+                    ~IndentFormatter.formatStack
+                    ~IndentFormatter.formatTime
+                    ~IndentFormatter.usesTime
+        
+    
