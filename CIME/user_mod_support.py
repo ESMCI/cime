@@ -8,8 +8,8 @@ import glob
 
 logger = logging.getLogger(__name__)
 
-# Shell commands collected from user_mods but deferred until the first
-# successful case.setup (see CIME.case.case_setup).
+# Shell commands collected from user_mods but deferred until case.setup
+# completes (see CIME.case.case_setup).
 SHELL_COMMANDS_POST_SETUP = "shell_commands_post_setup"
 
 
@@ -38,7 +38,8 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
 
     shell_commands are executed immediately. shell_commands_post_setup are
     only collected into caseroot/shell_commands_post_setup (accumulating across
-    calls) and are executed by case.setup the first time it completes.
+    calls) and are executed by case.setup when it first completes and on each
+    case.setup --reset.
 
     keepexe is an optional argument that is needed for cases where apply_user_mods is
     called from create_clone

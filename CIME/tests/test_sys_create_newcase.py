@@ -267,6 +267,10 @@ class TestCreateNewcase(base.BaseTestCase):
         with open(result_file, "r") as fd:
             after_setup = fd.read()
 
+        self.run_cmd_assert_result("./case.setup", from_dir=testdir)
+        with open(result_file, "r") as fd:
+            after_resetup = fd.read()
+
         self.run_cmd_assert_result("./case.setup --reset", from_dir=testdir)
         with open(result_file, "r") as fd:
             after_reset = fd.read()
@@ -283,9 +287,14 @@ class TestCreateNewcase(base.BaseTestCase):
             msg="shell_commands_post_setup should run after case.setup",
         )
         self.assertEqual(
-            after_reset,
+            after_resetup,
             after_setup,
-            msg="shell_commands_post_setup should not re-run on case.setup --reset",
+            msg="shell_commands_post_setup should not re-run on a plain case.setup",
+        )
+        self.assertEqual(
+            after_reset,
+            after_setup + "post_setup_ran\n",
+            msg="shell_commands_post_setup should re-run on case.setup --reset",
         )
         self.assertTrue(
             os.path.isfile(

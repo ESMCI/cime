@@ -399,3 +399,23 @@ def test_run_post_setup_shell_commands_failure(tmp_path):
     assert (tmp_path / "post_setup_result").read_text() == "ran\n"
     assert not (tmp_path / LOCKED_DIR / SHELL_COMMANDS_POST_SETUP).exists()
     assert case.calls == ["flush"]
+
+
+def test_run_post_setup_shell_commands_reset_reruns(tmp_path):
+    # Context
+    case = FakeCase()
+    old_contents = "#!/bin/sh\necho old >> post_setup_result\n"
+    contents = "#!/bin/sh\necho ran >> post_setup_result\n"
+    _write_post_setup_commands(tmp_path, contents)
+    (tmp_path / LOCKED_DIR).mkdir()
+    locked = tmp_path / LOCKED_DIR / SHELL_COMMANDS_POST_SETUP
+    locked.write_text(old_contents)
+
+    # Act
+    case_setup._run_post_setup_shell_commands(case, str(tmp_path), reset=True)
+
+    # Assert
+    # A reset re-runs the commands even though they ran before and refreshes the record
+    assert (tmp_path / "post_setup_result").read_text() == "ran\n"
+    assert case.calls == ["flush", "read_xml"]
+    assert locked.read_text() == contents

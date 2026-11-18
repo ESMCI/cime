@@ -39,19 +39,24 @@ files they depend on, for example per-instance ``user_nl_<comp>_<inst>`` files
 or ``env_mach_specific.xml``. Place such commands in a file named
 ``shell_commands_post_setup``. These commands are collected into
 ``$CASEROOT/shell_commands_post_setup`` when the case is created and run from
-``$CASEROOT`` the first time ``./case.setup`` completes.
+``$CASEROOT`` when ``./case.setup`` first completes and again on each
+``./case.setup --reset``.
 
 ::
 
-    echo "echo 'nlmaps_verbosity = 2' >> user_nl_cpl_0002" >> ./usermod/shell_commands_post_setup
+    cat > ./usermod/shell_commands_post_setup << 'EOF'
+    grep -q nlmaps_verbosity user_nl_cpl_0002 || echo "nlmaps_verbosity = 2" >> user_nl_cpl_0002
+    EOF
 
 .. note::
 
-    ``shell_commands_post_setup`` runs only once per case. A copy of the
-    executed file is kept in ``$CASEROOT/LockedFiles/shell_commands_post_setup``
-    and later invocations of ``./case.setup`` (including ``--reset``) skip it.
-    Remove that copy to have the commands run again on the next ``./case.setup``.
-    As with ``shell_commands``, any ``xmlchange`` call is run with ``--force``.
+    A plain re-run of ``./case.setup`` does not repeat ``shell_commands_post_setup``.
+    A copy of the executed file is kept in ``$CASEROOT/LockedFiles/shell_commands_post_setup``
+    as the record that it has run; remove that copy to have the commands run on the
+    next plain ``./case.setup``. Because ``--reset`` re-runs the commands, they should
+    be written so that repeating them is safe (for example prefer ``xmlchange`` over
+    appending to files). As with ``shell_commands``, any ``xmlchange`` call is run with
+    ``--force``.
 
 The structure of the component directories does not need to be the 
 same as in the component source code. As an example, should the user

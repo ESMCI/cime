@@ -60,8 +60,8 @@ and ``user_nl_xxx`` files in a user_mods directory by calling:
 
 Note that an optional ``--keepexe`` flag can also be used in this case.
 A ``shell_commands_post_setup`` file in the user_mods directory is collected
-into the cloned case and run the first time ``./case.setup`` completes there
-(see :ref:`ccs_create_newcase`).
+into the cloned case and run there when ``./case.setup`` first completes and on
+each ``./case.setup --reset`` (see :ref:`ccs_create_newcase`).
 
 .. warning:: 
 

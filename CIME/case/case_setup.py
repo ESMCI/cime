@@ -331,21 +331,23 @@ def _create_macros(
 
 
 ###############################################################################
-def _run_post_setup_shell_commands(case, caseroot):
+def _run_post_setup_shell_commands(case, caseroot, reset=False):
     ###############################################################################
-    """Run user_mods shell_commands_post_setup the first time case.setup completes.
+    """Run user_mods shell_commands_post_setup after case.setup completes.
 
-    The executed file is copied to LockedFiles as a record that it has run, so
-    later re-setups (e.g. case.setup --reset, or those done internally by system
-    tests) do not run it again. Remove that copy to force the commands to re-run.
+    The commands run the first time case.setup completes and again on every
+    reset (case.setup --reset, including the resets system tests perform
+    internally). A plain re-run of case.setup skips them. The executed file is
+    copied to LockedFiles as the record of having run; remove that copy to force
+    the commands to run on the next plain case.setup.
     """
     sc_file = os.path.join(caseroot, SHELL_COMMANDS_POST_SETUP)
     if not os.path.isfile(sc_file):
         return
 
-    if is_locked(SHELL_COMMANDS_POST_SETUP, caseroot):
+    if not reset and is_locked(SHELL_COMMANDS_POST_SETUP, caseroot):
         logger.info(
-            "{} has already been run for this case, skipping".format(
+            "{} has already been run for this case, skipping (use case.setup --reset to run it again)".format(
                 SHELL_COMMANDS_POST_SETUP
             )
         )
@@ -672,7 +674,7 @@ def _case_setup_impl(
         if not non_local:
             env_module.save_all_env_info("software_environment.txt")
 
-        _run_post_setup_shell_commands(case, caseroot)
+        _run_post_setup_shell_commands(case, caseroot, reset=reset)
 
         logger.info(
             "You can now run './preview_run' to get more info on how your case will be run"
