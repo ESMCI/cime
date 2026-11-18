@@ -115,8 +115,12 @@ while preserving local modifications to the case.</p>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">create_clone</span></code> script preserves any local namelist modifications
 made in the <strong>user_nl_xxxx</strong> files as well as any source code
-modifications in the <strong>SourceMods/</strong> directory tree. Otherwise, your <strong>$CASEROOT</strong> directory
-will appear as if <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> had just been run.</p>
+modifications in the <strong>SourceMods/</strong> directory tree. The collected
+<code class="docutils literal notranslate"><span class="pre">shell_commands_post_setup</span></code> file of the original case, if any, is also
+copied so that the clone runs the same post-setup commands when its own
+<code class="docutils literal notranslate"><span class="pre">./case.setup</span></code> first completes (see <a class="reference internal" href="creating-a-case.html#ccs-create-newcase"><span class="std std-ref">Creating a Case</span></a>); the
+original case’s record of having run them is not copied. Otherwise, your
+<strong>$CASEROOT</strong> directory will appear as if <code class="docutils literal notranslate"><span class="pre">create_newcase</span></code> had just been run.</p>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>Do not change anything in the <code class="docutils literal notranslate"><span class="pre">env_case.xml</span></code> file.</p>
@@ -142,8 +146,9 @@ and <code class="docutils literal notranslate"><span class="pre">user_nl_xxx</sp
 </pre></div>
 </div>
 <p>Note that an optional <code class="docutils literal notranslate"><span class="pre">--keepexe</span></code> flag can also be used in this case.
-A <code class="docutils literal notranslate"><span class="pre">shell_commands_post_setup</span></code> file in the user_mods directory is collected
-into the cloned case and run there when <code class="docutils literal notranslate"><span class="pre">./case.setup</span></code> first completes and on
+A <code class="docutils literal notranslate"><span class="pre">shell_commands_post_setup</span></code> file in the user_mods directory is appended to
+the clone’s collected <code class="docutils literal notranslate"><span class="pre">shell_commands_post_setup</span></code> (after any commands inherited
+from the original case) and run there when <code class="docutils literal notranslate"><span class="pre">./case.setup</span></code> first completes and on
 each <code class="docutils literal notranslate"><span class="pre">./case.setup</span> <span class="pre">--reset</span></code> (see <a class="reference internal" href="creating-a-case.html#ccs-create-newcase"><span class="std std-ref">Creating a Case</span></a>).</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

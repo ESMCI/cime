@@ -26,8 +26,12 @@ Now the new cloned case can be built and submitted.
 
 The ``create_clone`` script preserves any local namelist modifications
 made in the **user_nl_xxxx** files as well as any source code
-modifications in the **SourceMods/** directory tree. Otherwise, your **$CASEROOT** directory
-will appear as if ``create_newcase`` had just been run.
+modifications in the **SourceMods/** directory tree. The collected
+``shell_commands_post_setup`` file of the original case, if any, is also
+copied so that the clone runs the same post-setup commands when its own
+``./case.setup`` first completes (see :ref:`ccs_create_newcase`); the
+original case's record of having run them is not copied. Otherwise, your
+**$CASEROOT** directory will appear as if ``create_newcase`` had just been run.
 
 .. danger::
 
@@ -59,8 +63,9 @@ and ``user_nl_xxx`` files in a user_mods directory by calling:
     ./scripts/create_clone --case <case> --clone <clone> --user-mods-dir USER_MODS_DIR [--keepexe]
 
 Note that an optional ``--keepexe`` flag can also be used in this case.
-A ``shell_commands_post_setup`` file in the user_mods directory is collected
-into the cloned case and run there when ``./case.setup`` first completes and on
+A ``shell_commands_post_setup`` file in the user_mods directory is appended to
+the clone's collected ``shell_commands_post_setup`` (after any commands inherited
+from the original case) and run there when ``./case.setup`` first completes and on
 each ``./case.setup --reset`` (see :ref:`ccs_create_newcase`).
 
 .. warning:: 
