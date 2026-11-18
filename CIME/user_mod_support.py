@@ -136,7 +136,7 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
         if os.path.isfile(post_setup_file):
             case_post_setup = os.path.join(caseroot, SHELL_COMMANDS_POST_SETUP)
             _append_shell_commands(post_setup_file, case_post_setup)
-            os.chmod(case_post_setup, 0o777)
+            os.chmod(case_post_setup, 0o755)
 
     for shell_command_file in case_shell_command_files:
         if os.path.isfile(shell_command_file):
