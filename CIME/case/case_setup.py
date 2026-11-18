@@ -356,6 +356,7 @@ def _run_post_setup_shell_commands(case, caseroot, reset=False):
     # The commands may change xml files via xmlchange, so write out pending
     # changes first and re-read everything afterwards.
     case.flush()
+    unlock_file(SHELL_COMMANDS_POST_SETUP, caseroot)
     run_cmd_no_fail(sc_file, from_dir=caseroot, verbose=True)
     lock_file(SHELL_COMMANDS_POST_SETUP, caseroot)
     case.read_xml()
