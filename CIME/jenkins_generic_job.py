@@ -542,11 +542,11 @@ def jenkins_generic_job(
     )
 
     time_left = job_timeout.time_left()
-    if time_left is not None and time_left <= 0 or wait_for_tests.SIGNAL_RECEIVED:
+    if time_left is not None and time_left <= 0 or CIME.wait_for_tests.SIGNAL_RECEIVED:
         # We have already timed out, no point in arming another alarm
         job_timeout.expire("wait_for_tests")
         time_left = None
-        wait_for_tests.SIGNAL_RECEIVED = True
+        CIME.wait_for_tests.SIGNAL_RECEIVED = True
 
     job_timeout.log_status("wait_for_tests")
 
