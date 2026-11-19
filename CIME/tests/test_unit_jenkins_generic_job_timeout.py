@@ -288,30 +288,71 @@ def test_timeout_logs_budget_at_each_stage(scratch_root, clock, common_mocks, ca
     assert any("within its timeout of 42s" in m for m in messages)
 
 
-def test_timeout_firing_during_wait_for_tests_fails_job(
-    scratch_root, clock, common_mocks, caplog
-):
+@pytest.mark.parametrize(
+    "stage", ["create_test", "before_wait_for_tests", "wait_for_tests"]
+)
+def test_batch_timeouts_cancel_jobs(scratch_root, clock, common_mocks, caplog, stage):
     # Context
     machine = _make_machine(scratch_root)
+    machine.has_batch_system.return_value = True
+    get_value = machine.get_value.side_effect
+    machine.get_value.side_effect = (
+        lambda name: "slurm" if name == "BATCH_SYSTEM" else get_value(name)
+    )
+    test_id = "JMasterDeveloper123"
+    test_status = f"{scratch_root}/J/case.mymachine_gnu.{test_id}/TestStatus"
 
-    def fire_alarm_on_enter(seconds, action=None, **_):
+    def run_create_test(*_, **__):
+        if stage == "create_test":
+            clock.now = 10
+            return (-signal.SIGTERM, "", "")
+        return (0, "", "")
+
+    def collect_statuses(*_):
+        if stage == "before_wait_for_tests":
+            clock.now = 10
+        return [test_status]
+
+    def make_timeout(seconds, action=None, **_):
         context = mock.MagicMock()
-        context.__enter__.side_effect = lambda: action(signal.SIGALRM, None)
+        if stage == "wait_for_tests" and seconds is not None:
+
+            def fire_alarm():
+                clock.now = 10
+                action(signal.SIGALRM, None)
+
+            context.__enter__.side_effect = fire_alarm
         return context
 
     # Mocks
     with mock.patch(
-        "CIME.jenkins_generic_job.Timeout", side_effect=fire_alarm_on_enter
-    ), caplog.at_level(logging.INFO):
+        "CIME.utils.run_cmd", side_effect=run_create_test
+    ), mock.patch("CIME.jenkins_generic_job.threading.Thread"), mock.patch(
+        "CIME.utils.get_timestamp", return_value="123"
+    ), mock.patch(
+        "CIME.jenkins_generic_job.glob.glob", side_effect=collect_statuses
+    ), mock.patch(
+        "CIME.jenkins_generic_job.Timeout", side_effect=make_timeout
+    ), mock.patch(
+        "CIME.jenkins_generic_job.cleanup_queue"
+    ) as cleanup_queue, caplog.at_level(logging.INFO):
         # Act
-        result = _call(scratch_root, machine, timeout=42)
+        result = _call(
+            scratch_root,
+            machine,
+            no_batch=False,
+            use_existing_test_id=None,
+            timeout=10,
+        )
 
     # Assert
     assert result is False
     assert CIME.wait_for_tests.SIGNAL_RECEIVED is True
     assert common_mocks.call_args.kwargs["no_wait"] is True
+    cleanup_queue.assert_called_once_with(f"{scratch_root}/J", test_id)
+    expected_stage = "create_test" if stage == "create_test" else "wait_for_tests"
     messages = [r.message for r in caplog.records]
-    assert any("exceeded during wait_for_tests" in m for m in messages)
+    assert any(f"exceeded during {expected_stage}" in m for m in messages)
     assert any("reported as FAILED" in m for m in messages)
     assert not any("RECEIVED SIGNAL" in m for m in messages)
 
