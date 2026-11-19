@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.wait\_for\_tests.submit\_cdash\_files
-==========================================
-
-.. currentmodule:: CIME.wait_for_tests
-
-.. autofunction:: submit_cdash_files

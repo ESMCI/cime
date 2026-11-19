@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.run\_cmd\_no\_fail
-=============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: run_cmd_no_fail

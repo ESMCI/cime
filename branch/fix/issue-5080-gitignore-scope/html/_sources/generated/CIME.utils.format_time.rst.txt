@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.format\_time
-=======================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: format_time

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.wait\_for\_tests.parse\_uploaded\_files
-============================================
-
-.. currentmodule:: CIME.wait_for_tests
-
-.. autofunction:: parse_uploaded_files

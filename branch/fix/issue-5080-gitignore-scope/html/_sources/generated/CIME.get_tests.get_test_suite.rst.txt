@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.get\_tests.get\_test\_suite
-================================
-
-.. currentmodule:: CIME.get_tests
-
-.. autofunction:: get_test_suite

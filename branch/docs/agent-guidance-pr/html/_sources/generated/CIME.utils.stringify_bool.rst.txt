@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.stringify\_bool
-==========================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: stringify_bool

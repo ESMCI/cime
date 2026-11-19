@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.hist\_utils.copy\_histfiles
-================================
-
-.. currentmodule:: CIME.hist_utils
-
-.. autofunction:: copy_histfiles

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.buildnml.copy\_inputs\_to\_rundir
-======================================
-
-.. currentmodule:: CIME.buildnml
-
-.. autofunction:: copy_inputs_to_rundir

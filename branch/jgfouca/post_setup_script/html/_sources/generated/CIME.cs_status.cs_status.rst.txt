@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.cs\_status.cs\_status
-==========================
-
-.. currentmodule:: CIME.cs_status
-
-.. autofunction:: cs_status

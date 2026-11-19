@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.build.check\_ninja
-=======================
-
-.. currentmodule:: CIME.build
-
-.. autofunction:: check_ninja

@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.namelist.string\_to\_character\_literal
-============================================
-
-.. currentmodule:: CIME.namelist
-
-.. autofunction:: string_to_character_literal

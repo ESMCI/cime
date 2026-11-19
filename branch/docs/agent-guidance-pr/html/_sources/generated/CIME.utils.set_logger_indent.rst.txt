@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.set\_logger\_indent
-==============================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: set_logger_indent

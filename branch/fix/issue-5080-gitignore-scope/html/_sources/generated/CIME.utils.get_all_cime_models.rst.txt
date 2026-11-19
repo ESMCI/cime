@@ -1,9 +1,0 @@
-..
-  base.rst
-
-CIME.utils.get\_all\_cime\_models
-=================================
-
-.. currentmodule:: CIME.utils
-
-.. autofunction:: get_all_cime_models
