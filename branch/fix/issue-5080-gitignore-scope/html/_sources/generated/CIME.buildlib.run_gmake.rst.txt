@@ -1,0 +1,9 @@
+..
+  base.rst
+
+CIME.buildlib.run\_gmake
+========================
+
+.. currentmodule:: CIME.buildlib
+
+.. autofunction:: run_gmake
