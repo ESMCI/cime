@@ -145,6 +145,10 @@ updating SourceMods and creating case shell_commands and xmlchange_cmds files</p
 <p>First remove case shell_commands files if any already exist</p>
 <p>If this function is called multiple times, settings from later calls will
 take precedence over earlier calls, if there are conflicts.</p>
+<p>shell_commands are executed immediately. shell_commands_post_setup are
+only collected into caseroot/shell_commands_post_setup (accumulating across
+calls) and are executed by case.setup when it first completes and on each
+case.setup –reset.</p>
 <p>keepexe is an optional argument that is needed for cases where apply_user_mods is
 called from create_clone</p>
 </dd></dl>

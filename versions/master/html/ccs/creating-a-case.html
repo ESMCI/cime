@@ -124,6 +124,7 @@
 <li><p>Namelist files</p></li>
 <li><p>Source code modifications</p></li>
 <li><p>Shell commands (can call <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code>)</p></li>
+<li><p>Shell commands to run after <code class="docutils literal notranslate"><span class="pre">case.setup</span></code></p></li>
 </ul>
 <p>This can be useful when a user wants to carry out a series of experiments based on a common set of changes to the namelists, source code, and/or case XML settings.</p>
 <p>Here’s an example <strong>user mod</strong> to demonstrate.</p>
@@ -138,6 +139,28 @@
 <p>It is important to note that the file containing the <strong>xmlchange</strong>
 commands must be named <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code> in order for it to be recognized
 and run upon case creation.</p>
+</div>
+<p>Some changes can only be made once <code class="docutils literal notranslate"><span class="pre">case.setup</span></code> has generated the case
+files they depend on, for example per-instance <code class="docutils literal notranslate"><span class="pre">user_nl_&lt;comp&gt;_&lt;inst&gt;</span></code> files
+or <code class="docutils literal notranslate"><span class="pre">env_mach_specific.xml</span></code>. Place such commands in a file named
+<code class="docutils literal notranslate"><span class="pre">shell_commands_post_setup</span></code>. These commands are collected into
+<code class="docutils literal notranslate"><span class="pre">$CASEROOT/shell_commands_post_setup</span></code> when the case is created and run from
+<code class="docutils literal notranslate"><span class="pre">$CASEROOT</span></code> when <code class="docutils literal notranslate"><span class="pre">./case.setup</span></code> first completes and again on each
+<code class="docutils literal notranslate"><span class="pre">./case.setup</span> <span class="pre">--reset</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">&gt;</span> <span class="o">./</span><span class="n">usermod</span><span class="o">/</span><span class="n">shell_commands_post_setup</span> <span class="o">&lt;&lt;</span> <span class="s1">'EOF'</span>
+<span class="n">grep</span> <span class="o">-</span><span class="n">q</span> <span class="n">nlmaps_verbosity</span> <span class="n">user_nl_cpl</span> <span class="o">||</span> <span class="n">echo</span> <span class="s2">"nlmaps_verbosity = 2"</span> <span class="o">&gt;&gt;</span> <span class="n">user_nl_cpl</span>
+<span class="n">EOF</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A plain re-run of <code class="docutils literal notranslate"><span class="pre">./case.setup</span></code> does not repeat <code class="docutils literal notranslate"><span class="pre">shell_commands_post_setup</span></code>.
+A copy of the executed file is kept in <code class="docutils literal notranslate"><span class="pre">$CASEROOT/LockedFiles/shell_commands_post_setup</span></code>
+as the record that it has run; remove that copy to have the commands run on the
+next plain <code class="docutils literal notranslate"><span class="pre">./case.setup</span></code>. Because <code class="docutils literal notranslate"><span class="pre">--reset</span></code> re-runs the commands, they should
+be written so that repeating them is safe (for example prefer <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> over
+appending to files). As with <code class="docutils literal notranslate"><span class="pre">shell_commands</span></code>, any <code class="docutils literal notranslate"><span class="pre">xmlchange</span></code> call is run with
+<code class="docutils literal notranslate"><span class="pre">--force</span></code>.</p>
 </div>
 <p>The structure of the component directories does not need to be the
 same as in the component source code. As an example, should the user
