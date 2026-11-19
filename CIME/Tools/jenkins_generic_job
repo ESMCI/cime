@@ -232,7 +232,9 @@ OR
         default="23:00:00",
         help="Maximum time to wait for tests to complete. Default is "
         "23 hours. If the timeout is exceeded, this job stops waiting, cancels any "
-        "outstanding batch jobs, and reports the results gathered so far. This is "
+        "outstanding batch jobs, reports the results gathered so far, and exits with "
+        "a failure status. The configured timeout and the time remaining at each "
+        "stage are logged with a TIMEOUT prefix. This is "
         "useful for very long jobs where Jenkins may be unable to signal a timeout "
         "itself, e.g. if the network connection to the agent is dropped. Set this to "
         "zero to have no timeout. You can use babylonian (HH:MM:SS) or raw seconds.",

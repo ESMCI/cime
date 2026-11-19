@@ -1,8 +1,107 @@
 import CIME.wait_for_tests
-from CIME.utils import expect, run_cmd_no_fail, Timeout
+from CIME.utils import expect, run_cmd_no_fail, Timeout, convert_to_babylonian_time
 from CIME.case import Case
 
 import os, shutil, glob, signal, logging, threading, sys, re, tarfile, time
+import functools
+
+
+###############################################################################
+class JobTimeout(object):
+    ###############################################################################
+    """
+    Tracks the wall-clock budget of a jenkins_generic_job run.
+
+    Keeps the user informed of how much of the budget each stage has left and
+    records whether the budget ran out so a timed-out job is reported clearly
+    and never reported as a success.
+
+    Args:
+        seconds: Total budget in seconds, or None for no limit.
+        clock: Callable returning the current time in seconds. Defaults to
+            ``time.time``; injectable for testing.
+    """
+
+    def __init__(self, seconds, clock=None):
+        self._seconds = seconds
+        self._clock = clock if clock is not None else time.time
+        self._start = self._clock()
+        self.expired_stage = None
+
+    @property
+    def enabled(self):
+        return self._seconds is not None
+
+    @property
+    def timed_out(self):
+        return self.expired_stage is not None
+
+    def elapsed(self):
+        return int(self._clock() - self._start)
+
+    def time_left(self):
+        """Return the seconds remaining, or None if there is no timeout."""
+        if not self.enabled:
+            return None
+
+        return int(self._seconds - (self._clock() - self._start))
+
+    def describe(self):
+        if not self.enabled:
+            return "no timeout"
+
+        deadline = time.strftime(
+            "%Y-%m-%d %H:%M:%S", time.localtime(self._start + self._seconds)
+        )
+        return f"{self._seconds} seconds ({convert_to_babylonian_time(self._seconds)}), deadline {deadline}"
+
+    def log_status(self, stage):
+        """Log the elapsed and remaining time as ``stage`` begins."""
+        if self.enabled:
+            logging.info(
+                f"TIMEOUT: starting {stage} with {self.elapsed()}s elapsed, "
+                f"{max(self.time_left(), 0)}s remaining of {self._seconds}s"
+            )
+        else:
+            logging.info(
+                f"TIMEOUT: starting {stage} with {self.elapsed()}s elapsed, no timeout configured"
+            )
+
+    def expire(self, stage, *_):
+        """
+        Record that the budget ran out during ``stage`` and tell wait_for_tests
+        to stop waiting. Usable as a signal handler via functools.partial.
+        """
+        if self.timed_out:
+            return
+
+        self.expired_stage = stage
+        logging.warning(
+            f"TIMEOUT: job timeout of {self._seconds}s ({convert_to_babylonian_time(self._seconds)}) "
+            f"exceeded during {stage} after {self.elapsed()}s. Tests that have not finished "
+            "will be reported as failures and any outstanding batch jobs will be cancelled."
+        )
+        CIME.wait_for_tests.SIGNAL_RECEIVED = True
+
+    def handler(self, stage):
+        """Return a SIGALRM-compatible callable that expires the budget during ``stage``."""
+        return functools.partial(self.expire, stage)
+
+    def log_summary(self):
+        """Log the final timeout outcome. Returns True if the job timed out."""
+        if self.timed_out:
+            logging.warning(
+                f"TIMEOUT: this job exceeded its timeout of {self._seconds}s "
+                f"({convert_to_babylonian_time(self._seconds)}) during {self.expired_stage}. "
+                "Results are incomplete and the job is reported as FAILED. Tests left in "
+                "PEND above did not finish before the timeout."
+            )
+        elif self.enabled:
+            logging.info(
+                f"TIMEOUT: job finished in {self.elapsed()}s, within its timeout of {self._seconds}s"
+            )
+
+        return self.timed_out
 
 
 ##############################################################################
@@ -270,15 +369,21 @@ def jenkins_generic_job(
 ):
     ###############################################################################
     """
-    Return True if all tests passed
+    Return True if all tests passed.
+
+    The run is bounded by ``timeout`` seconds (0 for no limit). Progress against
+    the budget is logged with a ``TIMEOUT:`` prefix at each stage. If the budget
+    is exhausted, create_test is killed and/or wait_for_tests stops waiting,
+    outstanding batch jobs are cancelled, the partial results are reported and
+    False is returned.
     """
     use_batch = machine.has_batch_system() and not no_batch
     test_suite = machine.get_value("TESTS")
     proxy = machine.get_value("PROXY")
     test_suite = test_suite if arg_test_suite is None else arg_test_suite
     test_root = os.path.join(scratch_root, "J")
-    curr_time = time.time()
-    timeout = None if timeout == 0 else timeout
+    job_timeout = JobTimeout(None if timeout == 0 else timeout)
+    logging.info(f"TIMEOUT: job timeout is {job_timeout.describe()}")
 
     if use_batch:
         batch_system = machine.get_value("BATCH_SYSTEM")
@@ -377,14 +482,26 @@ def jenkins_generic_job(
 
         create_test_cmd = "./create_test " + " ".join(create_test_args)
 
+        job_timeout.log_status("create_test")
         create_test_stat = CIME.utils.run_cmd(
             create_test_cmd,
             from_dir=CIME.utils.get_scripts_root(),
             verbose=True,
             arg_stdout=None,
             arg_stderr=None,
-            timeout=timeout,
+            timeout=job_timeout.time_left(),
         )[0]
+        # run_cmd kills create_test once the budget is spent, so an exhausted
+        # budget here means create_test was cut short
+        time_left = job_timeout.time_left()
+        if time_left is not None and time_left <= 0:
+            job_timeout.expire("create_test")
+        elif create_test_stat in [-signal.SIGKILL, -signal.SIGTERM]:
+            logging.warning(
+                f"create_test was terminated by signal {signal.Signals(-create_test_stat).name} "
+                f"after {job_timeout.elapsed()}s, before the job timeout expired"
+            )
+
         # Create_test should have either passed, detected failing tests, or timed out
         expect(
             create_test_stat
@@ -414,23 +531,27 @@ def jenkins_generic_job(
         )
 
     glob_matches = glob.glob(globstr)
-    expect(glob_matches, f"{globstr} didn't match anything?")
+    expect(
+        glob_matches,
+        f"{globstr} didn't match anything?"
+        + (
+            " The job timed out during create_test before any test case was created."
+            if job_timeout.timed_out
+            else ""
+        ),
+    )
 
-    if timeout:
-        time_left = int(timeout - (time.time() - curr_time))
-        if time_left > 0:
-            timeout_context = Timeout(
-                time_left, action=CIME.wait_for_tests.signal_handler
-            )
-        else:
-            # We have already timed out
-            timeout_context = Timeout(None)
-            CIME.wait_for_tests.signal_handler()
-    else:
-        timeout_context = Timeout(None)
+    time_left = job_timeout.time_left()
+    if time_left is not None and time_left <= 0 or CIME.wait_for_tests.SIGNAL_RECEIVED:
+        # We have already timed out, no point in arming another alarm
+        job_timeout.expire("wait_for_tests")
+        time_left = None
+        CIME.wait_for_tests.SIGNAL_RECEIVED = True
+
+    job_timeout.log_status("wait_for_tests")
 
     # Run wait_for_tests
-    with timeout_context:
+    with Timeout(time_left, action=job_timeout.handler("wait_for_tests")):
         no_wait = not use_batch or CIME.wait_for_tests.SIGNAL_RECEIVED
         tests_passed = CIME.wait_for_tests.wait_for_tests(
             glob.glob(globstr),
@@ -446,20 +567,30 @@ def jenkins_generic_job(
             update_success=update_success,
         )
 
-    # Cleanup queue if this is a batch machine and we timed out
+    # Cleanup queue if this is a batch machine and we timed out or were signaled
     if use_batch and CIME.wait_for_tests.SIGNAL_RECEIVED:
+        logging.info(f"Cancelling any outstanding batch jobs for test id {test_id}")
         cleanup_queue(test_root, test_id)
 
     # If there is time remaining and the archiver has not finished, we can wait for it.
     if archiver_thread is not None and not CIME.wait_for_tests.SIGNAL_RECEIVED:
-        if timeout:
-            time_left = int(timeout - (time.time() - curr_time))
-        else:
-            time_left = None
+        time_left = job_timeout.time_left()
         if time_left is None or time_left > 0:
-            with Timeout(time_left):
-                logging.info("TEST ARCHIVER: Waiting for archiver thread")
-                archiver_thread.join()
-                logging.info("TEST ARCHIVER: Waiting for archiver finished")
+            job_timeout.log_status("archiver wait")
+            try:
+                with Timeout(time_left, name="archiver wait"):
+                    logging.info("TEST ARCHIVER: Waiting for archiver thread")
+                    archiver_thread.join()
+                    logging.info("TEST ARCHIVER: Waiting for archiver finished")
+            except RuntimeError:
+                # The archiver only tidies old test data, so this does not affect
+                # the results of this job
+                logging.warning(
+                    f"TIMEOUT: gave up waiting for the archiver thread after {job_timeout.elapsed()}s; "
+                    "old test data may be left partially archived and will be retried next run"
+                )
+
+    if job_timeout.log_summary():
+        return False
 
     return tests_passed
