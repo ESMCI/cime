@@ -325,17 +325,17 @@ def test_batch_timeouts_cancel_jobs(scratch_root, clock, common_mocks, caplog, s
         return context
 
     # Mocks
-    with mock.patch(
-        "CIME.utils.run_cmd", side_effect=run_create_test
-    ), mock.patch("CIME.jenkins_generic_job.threading.Thread"), mock.patch(
-        "CIME.utils.get_timestamp", return_value="123"
-    ), mock.patch(
+    with mock.patch("CIME.utils.run_cmd", side_effect=run_create_test), mock.patch(
+        "CIME.jenkins_generic_job.threading.Thread"
+    ), mock.patch("CIME.utils.get_timestamp", return_value="123"), mock.patch(
         "CIME.jenkins_generic_job.glob.glob", side_effect=collect_statuses
     ), mock.patch(
         "CIME.jenkins_generic_job.Timeout", side_effect=make_timeout
     ), mock.patch(
         "CIME.jenkins_generic_job.cleanup_queue"
-    ) as cleanup_queue, caplog.at_level(logging.INFO):
+    ) as cleanup_queue, caplog.at_level(
+        logging.INFO
+    ):
         # Act
         result = _call(
             scratch_root,
