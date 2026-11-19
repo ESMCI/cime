@@ -136,6 +136,8 @@ def parse_command_line(args, cimeroot, description):
         nargs="*",
         help="Full pathname to a directory containing any combination of user_nl_* files "
         "\nand a shell_commands script (typically containing xmlchange commands). "
+        "\nA shell_commands_post_setup script may also be provided; it is run from the"
+        "\ncase directory when case.setup first completes and on each case.setup --reset."
         "\nThe directory can also contain an SourceMods/ directory with the same structure "
         "\nas would be found in a case directory."
         "\nIt can also contain a file named 'include_user_mods' which gives the path to"

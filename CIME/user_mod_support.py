@@ -8,6 +8,23 @@ import glob
 
 logger = logging.getLogger(__name__)
 
+# Shell commands collected from user_mods but deferred until case.setup
+# completes (see CIME.case.case_setup).
+SHELL_COMMANDS_POST_SETUP = "shell_commands_post_setup"
+
+
+def _append_shell_commands(shell_commands_file, case_shell_commands):
+    """Append the commands in shell_commands_file to case_shell_commands.
+
+    xmlchange calls are forced so they can modify locked files. Appending
+    means that commands from later include_dirs take precedence over
+    earlier ones.
+    """
+    with open(shell_commands_file, "r") as fd:
+        new_shell_commands = fd.read().replace("xmlchange", "xmlchange --force")
+    with open(case_shell_commands, "a") as fd:
+        fd.write(new_shell_commands)
+
 
 def apply_user_mods(caseroot, user_mods_path, keepexe=None):
     """
@@ -18,6 +35,11 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
 
     If this function is called multiple times, settings from later calls will
     take precedence over earlier calls, if there are conflicts.
+
+    shell_commands are executed immediately. shell_commands_post_setup are
+    only collected into caseroot/shell_commands_post_setup (accumulating across
+    calls) and are executed by case.setup when it first completes and on each
+    case.setup --reset.
 
     keepexe is an optional argument that is needed for cases where apply_user_mods is
     called from create_clone
@@ -108,12 +130,13 @@ def apply_user_mods(caseroot, user_mods_path, keepexe=None):
                         shell_commands_file
                     )
                 )
-            with open(shell_commands_file, "r") as fd:
-                new_shell_commands = fd.read().replace("xmlchange", "xmlchange --force")
-            # By appending the new commands to the end, settings from later
-            # include_dirs take precedence over earlier ones
-            with open(case_shell_commands, "a") as fd:
-                fd.write(new_shell_commands)
+            _append_shell_commands(shell_commands_file, case_shell_commands)
+
+        post_setup_file = os.path.join(include_dir, SHELL_COMMANDS_POST_SETUP)
+        if os.path.isfile(post_setup_file):
+            case_post_setup = os.path.join(caseroot, SHELL_COMMANDS_POST_SETUP)
+            _append_shell_commands(post_setup_file, case_post_setup)
+            os.chmod(case_post_setup, 0o755)
 
     for shell_command_file in case_shell_command_files:
         if os.path.isfile(shell_command_file):

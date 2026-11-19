@@ -226,6 +226,160 @@ class TestCreateNewcase(base.BaseTestCase):
             )
         cls._do_teardown.append(testdir)
 
+    def _create_post_setup_case(self, testdir):
+        """Create a case from user_mods_test4, which provides both shell hooks."""
+        cls = self.__class__
+
+        if os.path.exists(testdir):
+            shutil.rmtree(testdir)
+
+        user_mods_dir = os.path.join(os.path.dirname(__file__), "user_mods_test4")
+        args = (
+            " --case %s --compset X --user-mods-dir %s --output-root %s --handle-preexisting-dirs=r"
+            % (testdir, user_mods_dir, cls._testroot)
+        )
+        if self._config.allow_unsupported:
+            args += " --run-unsupported"
+        if self.TEST_COMPILER is not None:
+            args = args + " --compiler %s" % self.TEST_COMPILER
+        if self.TEST_MPILIB is not None:
+            args = args + " --mpilib %s" % self.TEST_MPILIB
+        if utils.get_cime_default_driver() == "nuopc":
+            args += " --res f19_g17 "
+        else:
+            args += " --res f19_g16 "
+
+        args += f" --machine {self.MACHINE.get_machine_name()}"
+
+        self.run_cmd_assert_result(
+            "%s/create_newcase %s " % (self.SCRIPT_DIR, args), from_dir=self.SCRIPT_DIR
+        )
+
+    def test_bb_user_mods_post_setup(self):
+        cls = self.__class__
+
+        # Context
+        testdir = os.path.join(cls._testroot, "testusermodspostsetup")
+        result_file = os.path.join(testdir, "post_setup_result")
+
+        # Act
+        self._create_post_setup_case(testdir)
+        with open(result_file, "r") as fd:
+            after_create = fd.read()
+
+        self.run_cmd_assert_result("./case.setup", from_dir=testdir)
+        with open(result_file, "r") as fd:
+            after_setup = fd.read()
+
+        self.run_cmd_assert_result("./case.setup", from_dir=testdir)
+        with open(result_file, "r") as fd:
+            after_resetup = fd.read()
+
+        self.run_cmd_assert_result("./case.setup --reset", from_dir=testdir)
+        with open(result_file, "r") as fd:
+            after_reset = fd.read()
+
+        # Assert
+        self.assertEqual(
+            after_create,
+            "shell_commands_ran\n",
+            msg="shell_commands_post_setup must not run during create_newcase",
+        )
+        self.assertEqual(
+            after_setup,
+            "shell_commands_ran\npost_setup_ran\n",
+            msg="shell_commands_post_setup should run after case.setup",
+        )
+        self.assertEqual(
+            after_resetup,
+            after_setup,
+            msg="shell_commands_post_setup should not re-run on a plain case.setup",
+        )
+        self.assertEqual(
+            after_reset,
+            after_setup + "post_setup_ran\n",
+            msg="shell_commands_post_setup should re-run on case.setup --reset",
+        )
+        self.assertTrue(
+            os.path.isfile(
+                os.path.join(testdir, "LockedFiles", "shell_commands_post_setup")
+            ),
+            msg="executed shell_commands_post_setup should be recorded in LockedFiles",
+        )
+        cls._do_teardown.append(testdir)
+
+    def test_bc_create_clone_post_setup(self):
+        cls = self.__class__
+
+        # Context
+        srcdir = os.path.join(cls._testroot, "testpostsetupclonesrc")
+        clonedir = os.path.join(cls._testroot, "testpostsetupclone")
+        if os.path.exists(clonedir):
+            shutil.rmtree(clonedir)
+
+        self._create_post_setup_case(srcdir)
+        self.run_cmd_assert_result("./case.setup", from_dir=srcdir)
+
+        src_result_file = os.path.join(srcdir, "post_setup_result")
+        clone_result_file = os.path.join(clonedir, "post_setup_result")
+        clone_hook = os.path.join(clonedir, "shell_commands_post_setup")
+        clone_marker = os.path.join(
+            clonedir, "LockedFiles", "shell_commands_post_setup"
+        )
+        with open(src_result_file, "r") as fd:
+            src_before_clone = fd.read()
+
+        # Act
+        self.run_cmd_assert_result(
+            "%s/create_clone --clone %s --case %s"
+            % (self.SCRIPT_DIR, srcdir, clonedir),
+            from_dir=self.SCRIPT_DIR,
+        )
+        hook_copied = os.path.isfile(clone_hook)
+        hook_executable = hook_copied and os.access(clone_hook, os.X_OK)
+        marker_after_clone = os.path.isfile(clone_marker)
+        result_after_clone = os.path.isfile(clone_result_file)
+
+        # Mirror what SystemTestsCompareTwo/CompareN do to their cloned cases.
+        self.run_cmd_assert_result("./case.setup --reset", from_dir=clonedir)
+        with open(clone_result_file, "r") as fd:
+            clone_after_reset = fd.read()
+        with open(src_result_file, "r") as fd:
+            src_after_reset = fd.read()
+
+        # Assert
+        self.assertTrue(
+            hook_copied, msg="create_clone should copy shell_commands_post_setup"
+        )
+        self.assertTrue(
+            hook_executable,
+            msg="cloned shell_commands_post_setup should remain executable",
+        )
+        self.assertFalse(
+            marker_after_clone,
+            msg="create_clone must not copy the LockedFiles execution marker",
+        )
+        self.assertFalse(
+            result_after_clone,
+            msg="create_clone must not run either shell hook",
+        )
+        self.assertEqual(
+            clone_after_reset,
+            "post_setup_ran\n",
+            msg="shell_commands_post_setup should run when the clone is set up",
+        )
+        self.assertTrue(
+            os.path.isfile(clone_marker),
+            msg="clone should record its own shell_commands_post_setup execution",
+        )
+        self.assertEqual(
+            src_after_reset,
+            src_before_clone,
+            msg="setting up the clone must not touch the source case",
+        )
+        cls._do_teardown.append(srcdir)
+        cls._do_teardown.append(clonedir)
+
     def test_c_create_clone_keepexe(self):
         cls = self.__class__
 
