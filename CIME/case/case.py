@@ -5,10 +5,18 @@ Wrapper around all env XML for a case.
 All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
-from copy import deepcopy
+import getpass
+import glob
+import hashlib
+import logging
+import math
+import os
+import re
+import shutil
 import sys
-import glob, os, shutil, math, time, hashlib, socket, getpass
-from CIME.XML.standard_module_setup import *
+import socket
+import time
+from copy import deepcopy
 
 # pylint: disable=import-error,redefined-builtin
 from CIME import utils

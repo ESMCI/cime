@@ -2,8 +2,10 @@
 Abstract class for restart tests
 """
 
+import logging
+
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
-from CIME.XML.standard_module_setup import *
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 

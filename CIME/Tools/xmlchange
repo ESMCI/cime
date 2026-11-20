@@ -50,18 +50,18 @@ Examples:
       ./xmlchange JOB_WALLCLOCK_TIME=0:30
 """
 
+import re
+
 from standard_script_setup import *
 
-from CIME.utils import (
-    expect,
-    convert_to_type,
-    Timeout,
-)
-from CIME.status import append_case_status
 from CIME.case import Case
 from CIME.locked_files import check_lockedfiles
-
-import re
+from CIME.status import append_case_status
+from CIME.utils import (
+    Timeout,
+    convert_to_type,
+    expect,
+)
 
 # Set logger
 logger = logging.getLogger("xmlchange")

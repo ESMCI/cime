@@ -17,13 +17,13 @@ automatically when running case.submit. However, you can run this if you
 want to perform these checks without actually submitting the case.
 """
 
+import argparse
+
 from standard_script_setup import *
 
-from CIME.utils import expect
 from CIME.case import Case
 from CIME.locked_files import check_lockedfiles
-
-import argparse
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 

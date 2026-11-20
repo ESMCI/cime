@@ -19,8 +19,9 @@ To rerun after making changes to env_mach_pes.xml or env_mach_specific.xml, run:
 from standard_script_setup import *
 
 from CIME.case import Case
-from CIME.test_status import *
+from CIME.test_status import SETUP_PHASE, TEST_FAIL_STATUS, TestStatus
 from CIME.utils import find_system_test
+
 
 ###############################################################################
 def parse_command_line(args, description):

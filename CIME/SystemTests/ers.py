@@ -1,9 +1,13 @@
 """
 CIME restart test  This class inherits from SystemTestsCommon
 """
-from CIME.XML.standard_module_setup import *
-from CIME.SystemTests.system_tests_common import SystemTestsCommon
+
 import glob
+import logging
+import os
+
+from CIME.SystemTests.system_tests_common import SystemTestsCommon
+from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 

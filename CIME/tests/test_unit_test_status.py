@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
-from CIME import test_status
-from CIME import expected_fails
+import unittest
+
+from CIME import expected_fails, test_status
 from CIME.tests.custom_assertions_test_status import CustomAssertionsTestStatus
 
 

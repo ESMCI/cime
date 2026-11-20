@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import unittest
 import os
 import shutil
 import tempfile
+import unittest
+
 from CIME.SystemTests.test_utils import user_nl_utils
 
 

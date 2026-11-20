@@ -1,18 +1,37 @@
 # pylint: disable=import-error
-import queue, os, re, time, threading, socket, signal, shutil, glob, tempfile
-from pathlib import Path
+import glob
 
 # pylint: disable=import-error
 import logging
+import os
+import queue
+import re
+import shutil
+import signal
+import socket
+import tempfile
+import threading
+import time
 import xml.etree.ElementTree as xmlet
+from pathlib import Path
 
 import CIME.utils
-from CIME.core.exceptions import CIMEError
-from CIME.utils import expect, Timeout, run_cmd, run_cmd_no_fail, safe_copy
-from CIME.XML.machines import Machines
-from CIME.test_status import *
-from CIME.provenance import save_test_success
 from CIME.case.case import Case
+from CIME.core.exceptions import CIMEError
+from CIME.provenance import save_test_success
+from CIME.test_status import (
+    CREATE_NEWCASE_PHASE,
+    NAMELIST_FAIL_STATUS,
+    NAMELIST_PHASE,
+    RUN_PHASE,
+    TEST_FAIL_STATUS,
+    TEST_PASS_STATUS,
+    TEST_PEND_STATUS,
+    TEST_STATUS_FILENAME,
+    TestStatus,
+)
+from CIME.utils import Timeout, expect, run_cmd, run_cmd_no_fail, safe_copy
+from CIME.XML.machines import Machines
 
 SIGNAL_RECEIVED = False
 E3SM_MAIN_CDASH = "E3SM"
@@ -398,7 +417,6 @@ def create_cdash_upload_xml(
             need_to_upload = True
 
     if need_to_upload:
-
         tarball = f"{log_dirname}.tar.gz"
 
         run_cmd_no_fail(
@@ -501,7 +519,7 @@ DropSitePassword:
 DropSiteMode:
 DropMethod: {drop_method}
 TriggerSite:
-ScpCommand: {shutil.which('scp')}
+ScpCommand: {shutil.which("scp")}
 
 # Dashboard start time
 NightlyStartTime: {cdash_timestamp} UTC

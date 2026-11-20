@@ -3,11 +3,11 @@ Aprun is far too complex to handle purely through XML. We need python
 code to compute and assemble aprun commands.
 """
 
-from CIME.XML.standard_module_setup import *
-
+import logging
 import math
 
 logger = logging.getLogger(__name__)
+
 
 ###############################################################################
 def _get_aprun_cmd_for_case_impl(

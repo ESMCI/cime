@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import tempfile
 import unittest
 from unittest import mock
-import tempfile
 
-from CIME.case import case_submit
-from CIME.case import Case
 from CIME import utils
+from CIME.case import Case, case_submit
 from CIME.tests.utils import mock_case
 
 

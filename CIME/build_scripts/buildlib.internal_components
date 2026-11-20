@@ -5,7 +5,8 @@ build cime component model library.   This buildlib script is used by all cime i
 components.
 """
 
-import sys, os
+import os
+import sys
 
 _CIMEROOT = os.environ.get("CIMEROOT")
 if _CIMEROOT == None:

@@ -1,10 +1,10 @@
-import os
-import re
-import sys
-import logging
 import importlib.machinery
 import importlib.util
 import inspect
+import logging
+import os
+import re
+import sys
 from pathlib import Path
 
 from CIME import utils
@@ -185,7 +185,7 @@ class ConfigBase:
             if x[1].__class__ != Config and x[0] not in ignore
         ]
 
-        for (name, sig, doc) in child_methods:
+        for name, sig, doc in child_methods:
             if doc is None:
                 continue
             print(".. code-block::\n")

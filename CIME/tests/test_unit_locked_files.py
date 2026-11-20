@@ -1,13 +1,11 @@
 import tempfile
 import unittest
-from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 from CIME import locked_files
 from CIME.core.exceptions import CIMEError
-from CIME.XML.entry_id import EntryID
 from CIME.XML.env_batch import EnvBatch
-from CIME.XML.files import Files
 
 
 def create_batch_system(env_batch, batch_submit_value=None):

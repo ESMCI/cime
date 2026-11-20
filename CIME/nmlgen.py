@@ -3,27 +3,25 @@
 # Typically ignore this.
 # pylint: disable=invalid-name
 
-# Disable these because this is our standard setup
-# pylint: disable=wildcard-import,unused-wildcard-import
-
 import datetime
-import re
 import hashlib
+import logging
+import os
+import re
 
-from CIME.XML.standard_module_setup import *
 from CIME.namelist import (
     Namelist,
-    parse,
     character_literal_to_string,
-    string_to_character_literal,
-    expand_literal_list,
     compress_literal_list,
+    expand_literal_list,
     merge_literal_lists,
+    parse,
+    string_to_character_literal,
 )
-from CIME.XML.namelist_definition import NamelistDefinition
 from CIME.utils import expect, safe_copy
-from CIME.XML.stream import Stream
 from CIME.XML.grids import GRID_SEP
+from CIME.XML.namelist_definition import NamelistDefinition
+from CIME.XML.stream import Stream
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +64,6 @@ _stream_mct_file_template = """<?xml version="1.0"?>
 
 
 class NamelistGenerator(object):
-
     """Utility class for generating namelists for a given component."""
 
     _streams_variables = []

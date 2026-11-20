@@ -4,10 +4,9 @@ import getpass
 import glob
 import os
 
-from CIME import provenance
-from CIME import utils
-from CIME.tests import base
+from CIME import provenance, utils
 from CIME.case.case import Case
+from CIME.tests import base
 
 
 class TestSaveTimings(base.BaseTestCase):
