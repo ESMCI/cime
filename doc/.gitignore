@@ -1,5 +1,6 @@
 # Ignore auto-generated documentation for the addendum
 source/Tools_user/*.rst
+source/Tools_user/temp_files
 source/Tools_api
 source/CIME_api
 source/_autosummary
