@@ -30,7 +30,9 @@ OR
     > {0} -d
     \033[1;32m# Run the tests, generating a full set of baselines (useful for first run on a machine) \033[0m
     > {0} -g
-""".format(os.path.basename(args[0])),
+""".format(
+            os.path.basename(args[0])
+        ),
         description=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
