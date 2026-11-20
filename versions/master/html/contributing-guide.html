@@ -73,6 +73,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#development-model">Development model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#development-process">Development process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-python-tests">Running Python tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#code-style">Code style</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pre-commit-hooks">Pre-commit hooks</a></li>
 </ul>
@@ -231,6 +232,63 @@ requests should be made against the master branch.</p>
 <li><p>Push your changes to your fork</p></li>
 <li><p>Open a pull request</p></li>
 </ol>
+</section>
+<section id="running-python-tests">
+<h2>Running Python tests<a class="headerlink" href="#running-python-tests" title="Link to this heading"></a></h2>
+<p>Use the repository test helper to run the complete Python unit- or system-test
+suite in a suitable environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">run_tests</span> <span class="n">unit</span>
+<span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">run_tests</span> <span class="n">system</span>
+<span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">run_tests</span> <span class="nb">all</span>
+</pre></div>
+</div>
+<p>Pass one or more pytest paths or node IDs after <code class="docutils literal notranslate"><span class="pre">--</span></code> to run selected tests
+instead of the complete suite:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">run_tests</span> <span class="n">unit</span> <span class="o">--</span> <span class="n">CIME</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_unit_utils</span><span class="o">.</span><span class="n">py</span> <span class="n">CIME</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_unit_machines</span><span class="o">.</span><span class="n">py</span><span class="p">::</span><span class="n">TestMachines</span><span class="p">::</span><span class="n">test_machine_name</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">all</span></code> suite runs unit and system tests in one pytest process and reports
+their aggregate coverage together. Coverage measures the <code class="docutils literal notranslate"><span class="pre">CIME</span></code> package;
+test modules are excluded from the report. As with the system suite, running
+<code class="docutils literal notranslate"><span class="pre">all</span></code> on a batch-enabled host requires <code class="docutils literal notranslate"><span class="pre">--allow-batch</span></code>.</p>
+<p>The helper prefers a host machine recognized by <code class="docutils literal notranslate"><span class="pre">query_config</span></code>. Otherwise,
+it uses Docker or Podman when available; unit tests can fall back to the
+<code class="docutils literal notranslate"><span class="pre">linux-generic</span></code> machine and a local Python virtual environment. System tests
+require a full E3SM or CESM source checkout and either a matching host machine
+or a container runtime. The default container image is
+<code class="docutils literal notranslate"><span class="pre">ghcr.io/esmci/cime:latest</span></code>; use <code class="docutils literal notranslate"><span class="pre">--build-image</span></code> to build the local test
+image with Docker BuildKit instead (for example, <code class="docutils literal notranslate"><span class="pre">./devtools/run_tests</span> <span class="pre">system</span>
+<span class="pre">--backend</span> <span class="pre">docker</span> <span class="pre">--build-image</span></code>).</p>
+<p>System tests populate a versioned input-data cache under the user’s cache
+directory from the image tagged in <code class="docutils literal notranslate"><span class="pre">docker/INPUTDATA_VERSION</span></code>. Test artifacts
+are written to a temporary directory, and <code class="docutils literal notranslate"><span class="pre">--no-teardown</span></code> is enabled so the
+cases and logs remain available for inspection. The helper prints the artifact
+directory and retains it after the run. Use <code class="docutils literal notranslate"><span class="pre">--artifact-dir</span></code> to choose a
+specific new directory, or <code class="docutils literal notranslate"><span class="pre">--cache-dir</span></code> to override the cache location.
+Pytest’s native output includes the test status summary and a terminal coverage
+table with missing lines. The helper uses pytest verbosity level 3 by default;
+pass <code class="docutils literal notranslate"><span class="pre">--verbosity</span> <span class="pre">LEVEL</span></code> to select a level from 0 to 3.</p>
+<p>On a batch-enabled host, system tests stop unless <code class="docutils literal notranslate"><span class="pre">--allow-batch</span></code> is passed.
+The helper does not submit batch jobs without it. Container tests use the
+container’s non-batch machine configuration.</p>
+<p>Podman storage on an NFS-backed home directory can fail while unpacking an
+image because the filesystem lacks extended-attribute support. Configure Podman
+storage on a site-provided local scratch filesystem, then pass its configuration
+to the helper. For example, when <code class="docutils literal notranslate"><span class="pre">$TMPDIR</span></code> is xattr-capable:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="s2">"$TMPDIR/podman"</span><span class="o">/</span><span class="p">{</span><span class="n">graphroot</span><span class="p">,</span><span class="n">runroot</span><span class="p">}</span>
+<span class="n">cat</span> <span class="o">&gt;</span> <span class="s2">"$TMPDIR/podman-storage.conf"</span> <span class="o">&lt;&lt;</span><span class="s1">'EOF'</span>
+<span class="p">[</span><span class="n">storage</span><span class="p">]</span>
+<span class="n">driver</span> <span class="o">=</span> <span class="s2">"overlay"</span>
+<span class="n">graphroot</span> <span class="o">=</span> <span class="s2">"$TMPDIR/podman/graphroot"</span>
+<span class="n">runroot</span> <span class="o">=</span> <span class="s2">"$TMPDIR/podman/runroot"</span>
+<span class="n">EOF</span>
+<span class="o">./</span><span class="n">devtools</span><span class="o">/</span><span class="n">run_tests</span> <span class="n">unit</span> <span class="o">--</span><span class="n">backend</span> <span class="n">podman</span> \
+    <span class="o">--</span><span class="n">podman</span><span class="o">-</span><span class="n">storage</span><span class="o">-</span><span class="n">conf</span> <span class="s2">"$TMPDIR/podman-storage.conf"</span>
+</pre></div>
+</div>
+<p>The storage location must remain available for the complete test run. Consult
+your site’s container documentation when <code class="docutils literal notranslate"><span class="pre">$TMPDIR</span></code> is unavailable or is not
+node-local storage.</p>
 </section>
 <section id="code-style">
 <h2>Code style<a class="headerlink" href="#code-style" title="Link to this heading"></a></h2>

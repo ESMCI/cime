@@ -1,0 +1,30 @@
+..
+  class.rst
+
+CIME.jenkins\_generic\_job.JobTimeout
+=====================================
+
+.. currentmodule:: CIME.jenkins_generic_job
+
+.. autoclass:: JobTimeout
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+    
+        
+            .. rubric:: Methods
+
+            .. autosummary::
+                :nosignatures:
+                
+                    ~JobTimeout.__init__
+                    ~JobTimeout.describe
+                    ~JobTimeout.elapsed
+                    ~JobTimeout.expire
+                    ~JobTimeout.handler
+                    ~JobTimeout.log_status
+                    ~JobTimeout.log_summary
+                    ~JobTimeout.time_left
+        
+    
