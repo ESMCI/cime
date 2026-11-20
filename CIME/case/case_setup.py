@@ -15,7 +15,7 @@ from CIME.BuildTools.configure import (
 )
 from CIME.config import Config
 from CIME.gitinterface import GitInterface
-from CIME.locked_files import check_lockedfiles, lock_file, unlock_file
+from CIME.locked_files import check_lockedfiles, lock_file, is_locked, unlock_file
 from CIME.status import append_case_status, run_and_log_case_status
 from CIME.test_status import (
     SETUP_PHASE,
